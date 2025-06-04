@@ -31,38 +31,29 @@ class ProblemGenerationTask:
         logger.info("Creating ProblemGenerationTask")
         
         description = """
-        Analyze the initial cybersecurity problem definitions from problems_init.json and generate 
-        an expanded set of problems within the same operational areas (Enterprise, Cloud, EDTC).
-        
-        For each area in the initial problems, create 3-5 additional problems that:
-        1. Use different attack vectors and techniques
-        2. Target different assets or systems
-        3. Represent realistic threat scenarios from 2023-2025
-        4. Follow the same schema structure as the initial problems
-        5. Include comprehensive risk reduction strategies
-        
-        Focus on current and emerging threats such as:
-        - AI-generated attacks and deepfakes
-        - Supply chain compromises
-        - Cloud misconfigurations and container escapes
-        - Advanced persistent threats (APTs)
-        - Ransomware with lateral movement
-        - IoT and edge computing vulnerabilities
-        
-        Ensure each problem includes:
-        - area: Operational environment (Enterprise, Cloud, EDTC)
-        - nature: Specific attack type or vulnerability
-        - description: Detailed technical scenario
-        - risk_reduction: List of 3-4 concrete mitigation strategies
-        
-        Output the results as a properly formatted JSON structure that can be saved to problems_updated.json.
+        You are tasked with expanding the initial cybersecurity problem set into a comprehensive collection of threat scenarios.
+
+        **Your Process:**
+        1. Use the 'load_initial_problems' tool to get the starting problems from problems_init.json
+        2. Use the 'get_problems_prompt' tool to get detailed generation instructions
+        3. Use the 'generate_with_llm' tool to create expanded problems following the prompt instructions
+        4. Use the 'validate_json' tool to ensure your output is valid JSON
+        5. Use the 'save_problems' tool to save the expanded problems to problems_updated.json
+
+        **Requirements:**
+        - Generate 15-25 total problems across Enterprise, Cloud, and EDTC areas
+        - Each problem must include: area, nature, description, risk_reduction
+        - Focus on current and emerging threats (2023-2025)
+        - Ensure technical accuracy and realistic scenarios
+        - Use different attack vectors from the initial set
+
+        **Output:** Save a comprehensive JSON file with expanded cybersecurity problems.
         """
         
         expected_output = """
-        A JSON object with a 'problems' key containing an array of problem definitions.
-        Each problem must include: area, nature, description, and risk_reduction fields.
-        The output should contain 15-25 total problems across all operational areas.
-        Ensure the JSON is valid and properly formatted for file saving.
+        A successfully saved problems_updated.json file containing 15-25 cybersecurity problems.
+        Each problem includes area, nature, description, and risk_reduction fields.
+        The problems should cover diverse attack vectors and current threat scenarios.
         """
         
         return Task(

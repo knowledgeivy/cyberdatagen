@@ -33,69 +33,37 @@ class SeedGenerationTask:
         area = problem.get('area', 'Unknown')
         nature = problem.get('nature', 'Unknown')
         description = problem.get('description', 'No description provided')
-        risk_reduction = problem.get('risk_reduction', [])
+        risk_reduction = ', '.join(problem.get('risk_reduction', []))
         
         task_description = f"""
-        Generate 2-3 highly detailed, technically accurate seed examples for the following cybersecurity problem:
+        You are tasked with generating realistic seed examples for a specific cybersecurity problem.
 
         **Problem Details:**
         - Area: {area}
         - Nature: {nature}
         - Description: {description}
-        - Risk Reduction: {', '.join(risk_reduction)}
+        - Risk Reduction: {risk_reduction}
 
-        For each example, create realistic technical data that includes:
+        **Your Process:**
+        1. Use the 'get_seed_generation_prompt' tool with the problem details to get detailed generation instructions
+        2. Use the 'generate_with_llm' tool to create 2-3 highly detailed technical examples following the prompt
+        3. Use the 'validate_json' tool to ensure your output is valid JSON
+        4. Use the 'save_examples' tool to save the examples with area="{area}" and nature="{nature}"
 
-        **For network-based attacks:**
-        - Raw HTTP request/response data with headers and payloads
-        - Network packet captures (text format similar to Wireshark output)
-        - Log entries from web servers, WAFs, or IDS/IPS systems
-        - Actual exploit code or injection strings
+        **Requirements:**
+        - Generate 2-3 detailed examples with realistic technical artifacts
+        - Include scenario, technical_data, indicators, detection_method, and relevant_mitre_techniques
+        - Ensure all technical details are accurate and realistic
+        - Examples should be indistinguishable from real-world security incidents
 
-        **For phishing and social engineering:**
-        - Complete email content with realistic headers (including X-headers)
-        - SMTP transaction logs
-        - Domain registration details for suspicious domains
-        - URL structures with obfuscation techniques
-
-        **For malware and system compromise:**
-        - File hashes (MD5, SHA-1, SHA-256)
-        - Registry changes or file system artifacts
-        - Memory dump analysis snippets
-        - Command-and-control traffic patterns
-        - Process creation and execution chains
-
-        **For cloud security issues:**
-        - API call sequences demonstrating the attack
-        - IAM policy definitions showing misconfigurations
-        - CloudTrail or equivalent logs showing suspicious activity
-        - Container escape proof-of-concept details
-
-        Each example must include:
-        1. **scenario**: Brief description of this specific attack instance
-        2. **technical_data**: Detailed technical information as described above
-        3. **indicators**: Specific technical indicators of compromise
-        4. **detection_method**: How this would be detected in practice
-        5. **relevant_mitre_techniques**: MITRE ATT&CK techniques relevant to this example
+        **Output:** Successfully saved seed examples for the specified problem.
         """
 
         expected_output = f"""
-        A JSON object with an 'examples' key containing an array of 2-3 detailed examples.
-        Each example must be technically accurate and contain realistic data artifacts
-        that a security professional would encounter during an actual security incident.
-        
-        The examples should be for: {area} / {nature}
-        
-        Structure each example as:
-        {{
-            "scenario": "Brief description of the attack instance",
-            "technical_data": "Detailed technical information with realistic artifacts",
-            "indicators": ["List", "of", "specific", "IoCs"],
-            "detection_method": "How this would be detected",
-            "relevant_mitre_techniques": ["T1234", "T5678"]
-        }}
-        
-        Ensure the JSON is valid and ready for file saving.
+        Successfully saved seed examples file for {area}/{nature} containing 2-3 detailed examples.
+        Each example includes realistic technical data, indicators of compromise, detection methods,
+        and relevant MITRE ATT&CK techniques. The examples are technically accurate and could be
+        used for training security analysts or testing detection systems.
         """
         
         return Task(

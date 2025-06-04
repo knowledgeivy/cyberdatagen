@@ -19,21 +19,21 @@ class LoadProblemsInput(BaseModel):
 
 class SaveProblemsInput(BaseModel):
     """Input schema for saving problems."""
-    problems: List[Dict[str, Any]] = Field(..., description="List of problems to save")
+    problems: List[Dict[str, Any]] = Field(description="List of problems to save")
     filename: str = Field(default="problems_updated", description="Filename (without .json extension)")
 
 
 class LoadExamplesInput(BaseModel):
     """Input schema for loading examples."""
-    area: str = Field(..., description="Problem area")
-    nature: str = Field(..., description="Problem nature")
+    area: str = Field(description="Problem area")
+    nature: str = Field(description="Problem nature")
 
 
 class SaveExamplesInput(BaseModel):
     """Input schema for saving examples."""
-    area: str = Field(..., description="Problem area")
-    nature: str = Field(..., description="Problem nature")
-    examples: List[Dict[str, Any]] = Field(..., description="List of examples to save")
+    area: str = Field(description="Problem area")
+    nature: str = Field(description="Problem nature")
+    examples: List[Dict[str, Any]] = Field(description="List of examples to save")
 
 
 class FileManagerTool(BaseTool):
@@ -182,7 +182,7 @@ class LoadProblemsTool(BaseTool):
 
 class SaveProblemsToolInput(BaseModel):
     """Input for save problems tool."""
-    problems_json: str = Field(..., description="JSON string containing problems to save")
+    problems_json: str = Field(description="JSON string containing problems to save")
     filename: str = Field(default="problems_updated", description="Output filename")
 
 
@@ -210,9 +210,9 @@ class SaveProblemsTool(BaseTool):
 
 class SaveExamplesToolInput(BaseModel):
     """Input for save examples tool."""
-    area: str = Field(..., description="Problem area")
-    nature: str = Field(..., description="Problem nature")
-    examples_json: str = Field(..., description="JSON string containing examples to save")
+    area: str = Field(description="Problem area")
+    nature: str = Field(description="Problem nature")
+    examples_json: str = Field(description="JSON string containing examples to save")
 
 
 class SaveExamplesTool(BaseTool):

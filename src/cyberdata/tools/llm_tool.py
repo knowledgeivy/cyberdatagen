@@ -1,7 +1,7 @@
 # cyberdata/tools/llm_tool.py
 
 from crewai.tools import BaseTool
-from typing import Type, Dict, Any
+from typing import Type, Dict, Any, Optional
 from pydantic import BaseModel, Field
 import json
 
@@ -15,11 +15,11 @@ logger = setup_logger("cyberdata.tools.llm_tool")
 
 class LLMToolInput(BaseModel):
     """Input schema for LLM Tool."""
-    prompt_file: str = Field(..., description="Name of the YAML prompt file to use")
-    prompt_type: str = Field(..., description="Type of prompt: 'system' or 'user'")
-    prompt_name: str = Field(default=None, description="Specific prompt name if file has multiple prompts")
-    variables: Dict[str, Any] = Field(default={}, description="Variables to substitute in the prompt")
-    model_config: Dict[str, Any] = Field(default={}, description="Model configuration (temperature, max_tokens, etc.)")
+    prompt_file: str = Field(description="Name of the YAML prompt file to use")
+    prompt_type: str = Field(description="Type of prompt: 'system' or 'user'")
+    prompt_name: Optional[str] = Field(default=None, description="Specific prompt name if file has multiple prompts")
+    variables: Dict[str, Any] = Field(default_factory=dict, description="Variables to substitute in the prompt")
+    model_config: Dict[str, Any] = Field(default_factory=dict, description="Model configuration (temperature, max_tokens, etc.)")
 
 
 class LLMTool(BaseTool):
@@ -41,9 +41,9 @@ class LLMTool(BaseTool):
     def _run(self, 
              prompt_file: str, 
              prompt_type: str, 
-             prompt_name: str = None,
-             variables: Dict[str, Any] = {},
-             model_config: Dict[str, Any] = {}) -> str:
+             prompt_name: Optional[str] = None,
+             variables: Dict[str, Any] = None,
+             model_config: Dict[str, Any] = None) -> str:
         """
         Execute LLM request using existing prompt infrastructure.
         
@@ -60,6 +60,12 @@ class LLMTool(BaseTool):
         try:
             logger.info(f"LLM Tool invoked: {prompt_file} / {prompt_type}")
             logger.debug(f"Variables: {variables}")
+            
+            # Handle None values
+            if variables is None:
+                variables = {}
+            if model_config is None:
+                model_config = {}
             
             # Default model configuration
             default_config = {
@@ -114,9 +120,9 @@ class LLMTool(BaseTool):
 
 class DirectLLMToolInput(BaseModel):
     """Input schema for Direct LLM Tool."""
-    system_prompt: str = Field(..., description="System prompt content")
-    user_prompt: str = Field(..., description="User prompt content")
-    model_config: Dict[str, Any] = Field(default={}, description="Model configuration")
+    system_prompt: str = Field(description="System prompt content")
+    user_prompt: str = Field(description="User prompt content")
+    model_config: Dict[str, Any] = Field(default_factory=dict, description="Model configuration")
 
 
 class DirectLLMTool(BaseTool):
@@ -137,7 +143,7 @@ class DirectLLMTool(BaseTool):
     def _run(self, 
              system_prompt: str, 
              user_prompt: str,
-             model_config: Dict[str, Any] = {}) -> str:
+             model_config: Dict[str, Any] = None) -> str:
         """
         Execute direct LLM request.
         
@@ -151,6 +157,10 @@ class DirectLLMTool(BaseTool):
         """
         try:
             logger.info("Direct LLM Tool invoked")
+            
+            # Handle None values
+            if model_config is None:
+                model_config = {}
             
             # Default model configuration
             default_config = {

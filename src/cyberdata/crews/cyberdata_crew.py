@@ -7,11 +7,10 @@ from cyberdata.agents.taxonomy_agent import TaxonomyAgent
 from cyberdata.agents.seed_generator_agent import SeedGeneratorAgent
 from cyberdata.tasks.problem_generation_task import ProblemGenerationTask
 from cyberdata.tasks.seed_generation_task import SeedGenerationTask
-from cyberdata.tools.llm_tool import LLMTool, DirectLLMTool
-from cyberdata.tools.file_manager_tool import (
-    LoadProblemsTool, SaveProblemsTool, LoadInitialProblemsTool, SaveExamplesTool
+from cyberdata.tools.simple_tools import (
+    load_initial_problems, save_problems, save_examples, generate_with_llm,
+    validate_json, get_problems_prompt, get_seed_generation_prompt
 )
-from cyberdata.tools.validation_tool import ValidateProblemTool, ValidateExampleTool
 from cyberdata.utils.logger_config import setup_logger
 
 # Set up logger
@@ -44,19 +43,13 @@ class CyberDataCrew:
         logger.info("Setting up tools for agents")
         
         tools = [
-            # LLM tools
-            LLMTool(),
-            DirectLLMTool(),
-            
-            # File management tools
-            LoadProblemsTool(),
-            SaveProblemsTool(),
-            LoadInitialProblemsTool(),
-            SaveExamplesTool(),
-            
-            # Validation tools
-            ValidateProblemTool(),
-            ValidateExampleTool()
+            load_initial_problems,
+            save_problems,
+            save_examples,
+            generate_with_llm,
+            validate_json,
+            get_problems_prompt,
+            get_seed_generation_prompt
         ]
         
         logger.info(f"Set up {len(tools)} tools for agents")

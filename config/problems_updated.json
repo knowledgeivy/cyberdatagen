@@ -1,104 +1,210 @@
 {
   "problems": [
     {
-      "id": "SE-PH-001",
-      "area": "Social Engineering",
-      "category": "Phishing",
-      "variant": "Credential Harvesting",
-      "nature": "credential_harvesting",
-      "description": "Attackers send emails impersonating trusted entities to trick users into submitting their login credentials on fake websites.",
-      "attack_vector": "Email",
-      "asset_targeted": "User Credentials",
-      "kill_chain_phase": "Delivery",
-      "impact_level": "High",
-      "mitre_attack_id": "T1566",
+      "area": "Enterprise",
+      "nature": "ransomware_as_a_service",
+      "description": "Attackers use Ransomware-as-a-Service platforms to launch targeted ransomware attacks on enterprise networks, encrypting critical data and demanding high ransoms. These services lower the technical barrier for attackers, increasing attack frequency.",
       "risk_reduction": [
-        "Implement multi-factor authentication (MFA) to reduce impact of stolen credentials",
-        "Deploy advanced email filtering and anti-phishing tools",
-        "Conduct regular user training and phishing simulation exercises"
-      ],
-      "last_updated": "2024-06-01",
-      "references": []
+        "Implement robust endpoint detection and response (EDR) solutions",
+        "Maintain offline backups",
+        "Adopt zero trust architecture",
+        "Conduct regular employee phishing awareness training"
+      ]
     },
     {
-      "id": "SE-PH-002",
-      "area": "Social Engineering",
-      "category": "Phishing",
-      "variant": "Spear Phishing",
-      "nature": "spear_phishing",
-      "description": "Highly targeted phishing emails crafted using personal information to deceive specific individuals into revealing sensitive data or executing malicious actions.",
-      "attack_vector": "Email",
-      "asset_targeted": "User Credentials",
-      "kill_chain_phase": "Delivery",
-      "impact_level": "High",
-      "mitre_attack_id": "T1566.002",
+      "area": "Enterprise",
+      "nature": "insider_threat_privilege_escalation",
+      "description": "Malicious or negligent insiders exploit privilege escalation vulnerabilities to access sensitive data or sabotage systems, bypassing security controls.",
       "risk_reduction": [
-        "Use threat intelligence to identify and block targeted phishing campaigns",
-        "Educate employees on recognizing spear phishing tactics",
-        "Verify unusual requests through secondary communication channels"
-      ],
-      "last_updated": "2024-06-01",
-      "references": []
+        "Enforce the principle of least privilege (PoLP)",
+        "Conduct continuous monitoring of privileged accounts",
+        "Use behavior analytics to detect anomalies"
+      ]
     },
     {
-      "id": "SE-PH-003",
-      "area": "Social Engineering",
-      "category": "Phishing",
-      "variant": "Business Email Compromise",
-      "nature": "business_email_compromise",
-      "description": "Attackers compromise or spoof executive email accounts to request fraudulent wire transfers or sensitive information from employees.",
-      "attack_vector": "Email",
-      "asset_targeted": "Financial Systems",
-      "kill_chain_phase": "Delivery",
-      "impact_level": "Critical",
-      "mitre_attack_id": "T1566.003",
+      "area": "Enterprise",
+      "nature": "supply_chain_attacks",
+      "description": "Attackers compromise third-party software or hardware vendors to inject malware or backdoors into enterprise environments, making detection difficult until widespread damage occurs.",
       "risk_reduction": [
-        "Enable email authentication protocols like DMARC, DKIM, and SPF",
-        "Establish strict verification procedures for financial transactions",
-        "Monitor email accounts for unusual login activity and anomalies"
-      ],
-      "last_updated": "2024-06-01",
-      "references": []
+        "Conduct thorough vendor risk assessments",
+        "Implement software bill of materials (SBOM) tracking",
+        "Use code signing and integrity verification"
+      ]
     },
     {
-      "id": "CS-CLD-001",
-      "area": "Cloud Security",
-      "category": "Cloud Misconfiguration",
-      "variant": "Misconfigured Storage Bucket",
-      "nature": "misconfigured_storage_bucket",
-      "description": "Publicly exposed cloud storage buckets (e.g., AWS S3, Azure Blob) leading to data leakage or unauthorized access.",
-      "attack_vector": "Cloud API",
-      "asset_targeted": "Cloud Storage",
-      "kill_chain_phase": "Exploitation",
-      "impact_level": "Critical",
-      "mitre_attack_id": "",
+      "area": "Enterprise",
+      "nature": "ai_powered_social_engineering",
+      "description": "Attackers leverage AI tools to craft highly convincing phishing and spear-phishing campaigns, dynamically adapting messages based on real-time information about the target.",
       "risk_reduction": [
-        "Implement least privilege access controls and bucket policies",
-        "Use automated cloud security posture management (CSPM) tools to detect misconfigurations",
-        "Enable logging and monitoring of cloud storage access"
-      ],
-      "last_updated": "2024-06-01",
-      "references": []
+        "Deploy advanced email filtering with AI detection",
+        "Train staff on recognizing sophisticated social engineering",
+        "Implement multi-factor authentication (MFA)"
+      ]
     },
     {
-      "id": "SC-SW-001",
-      "area": "Supply Chain",
-      "category": "Software Supply Chain Attack",
-      "variant": "Third Party Software Compromise",
-      "nature": "third_party_software_compromise",
-      "description": "Attackers compromise software vendors or update mechanisms to inject malicious code into trusted software distributed to customers.",
-      "attack_vector": "Supply Chain",
-      "asset_targeted": "Software",
-      "kill_chain_phase": "Installation",
-      "impact_level": "Critical",
-      "mitre_attack_id": "T1195",
+      "area": "Enterprise",
+      "nature": "data_exfiltration_encrypted_tunnels",
+      "description": "Threat actors use encrypted tunnels (e.g., VPNs, Tor, or custom protocols) to stealthily exfiltrate sensitive data, evading traditional data loss prevention (DLP) mechanisms.",
       "risk_reduction": [
-        "Implement software supply chain risk management and vendor assessments",
-        "Use code signing and integrity verification for software updates",
-        "Monitor for anomalous software behavior post-update"
-      ],
-      "last_updated": "2024-06-01",
-      "references": []
+        "Use network traffic analysis tools with SSL/TLS inspection",
+        "Implement strict egress filtering",
+        "Monitor for unusual outbound traffic patterns"
+      ]
+    },
+    {
+      "area": "Cloud",
+      "nature": "multi_cloud_misconfiguration_exploitation",
+      "description": "Organizations using multiple cloud providers suffer from inconsistent security policies and misconfigurations, leading to exposed storage buckets, open APIs, or excessive permissions.",
+      "risk_reduction": [
+        "Use centralized cloud security posture management (CSPM) tools",
+        "Enforce automated compliance checks",
+        "Conduct regular cloud environment audits"
+      ]
+    },
+    {
+      "area": "Cloud",
+      "nature": "account_takeover_credential_stuffing",
+      "description": "Attackers use leaked credentials from breaches to gain unauthorized access to cloud accounts, escalating privileges or deploying malicious workloads.",
+      "risk_reduction": [
+        "Implement MFA",
+        "Use adaptive authentication",
+        "Monitor for unusual login patterns",
+        "Enforce strong password policies"
+      ]
+    },
+    {
+      "area": "Cloud",
+      "nature": "serverless_function_abuse",
+      "description": "Threat actors exploit insecure serverless functions to run malicious code, evade detection, or use the cloud provider’s resources for cryptojacking or DDoS attacks.",
+      "risk_reduction": [
+        "Apply strict IAM policies",
+        "Monitor function execution logs",
+        "Use runtime protection tools specialized for serverless environments"
+      ]
+    },
+    {
+      "area": "Cloud",
+      "nature": "cloud_native_supply_chain_attacks",
+      "description": "Attackers inject malicious code into container images or CI/CD pipelines, which then propagate into production workloads in the cloud.",
+      "risk_reduction": [
+        "Use image scanning tools",
+        "Enforce pipeline security best practices",
+        "Employ immutable infrastructure",
+        "Restrict deployment privileges"
+      ]
+    },
+    {
+      "area": "Cloud",
+      "nature": "data_leakage_shadow_it",
+      "description": "Employees use unauthorized cloud services or personal accounts to store or share corporate data, bypassing security controls and risking data leakage.",
+      "risk_reduction": [
+        "Deploy cloud access security broker (CASB) solutions",
+        "Enforce DLP policies",
+        "Conduct regular awareness campaigns on shadow IT risks"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "iot_botnet_expansion",
+      "description": "Attackers compromise unsecured IoT devices at the edge to build large botnets used for DDoS attacks or as a pivot into enterprise networks.",
+      "risk_reduction": [
+        "Enforce device authentication",
+        "Apply firmware updates promptly",
+        "Segment IoT networks",
+        "Monitor for anomalous device behavior"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "5g_network_slice_exploitation",
+      "description": "Threat actors exploit vulnerabilities in 5G network slicing to intercept, manipulate, or disrupt critical telecom services or data streams.",
+      "risk_reduction": [
+        "Harden network slice isolation",
+        "Apply end-to-end encryption",
+        "Conduct continuous security testing of 5G infrastructure"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "ransomware_industrial_control_systems",
+      "description": "Ransomware targets ICS devices at the edge, disrupting manufacturing or utility operations with significant physical and financial impacts.",
+      "risk_reduction": [
+        "Implement network segmentation",
+        "Monitor ICS traffic with anomaly detection",
+        "Maintain offline backups",
+        "Conduct ICS-specific incident response drills"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "firmware_supply_chain_compromise",
+      "description": "Attackers inject malicious code into device firmware during manufacturing or updates, enabling persistent backdoors in edge and telecom devices.",
+      "risk_reduction": [
+        "Validate firmware integrity using cryptographic signatures",
+        "Source hardware from trusted vendors",
+        "Monitor device behavior post-update"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "ai_powered_phishing_mobile_devices",
+      "description": "Mobile devices are targeted with AI-generated phishing messages adapted to user behavior and context, increasing success rates.",
+      "risk_reduction": [
+        "Use mobile threat defense (MTD) solutions",
+        "Educate users on phishing",
+        "Deploy app reputation and behavior analysis tools"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "edge_device_cryptojacking",
+      "description": "Attackers compromise edge devices and use their processing power to mine cryptocurrency, degrading device performance and lifespan.",
+      "risk_reduction": [
+        "Monitor device resource usage",
+        "Use endpoint protection tailored for edge devices",
+        "Restrict installation of unauthorized software"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "telecom_signaling_attacks",
+      "description": "Exploitation of telecom signaling protocols to intercept calls, SMS, or manipulate billing and subscriber data.",
+      "risk_reduction": [
+        "Deploy signaling firewalls",
+        "Encrypt signaling traffic",
+        "Continuously monitor for protocol anomalies"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "edge_ai_model_poisoning",
+      "description": "Attackers inject poisoned data into AI models deployed on edge devices, causing incorrect outputs or backdoor access.",
+      "risk_reduction": [
+        "Validate training data integrity",
+        "Use federated learning with model validation",
+        "Monitor model performance and outputs for anomalies"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "zero_day_exploits_nfv",
+      "description": "Attackers exploit unknown vulnerabilities in NFV components, gaining control over virtualized telecom functions.",
+      "risk_reduction": [
+        "Implement robust patch management",
+        "Use runtime security monitoring",
+        "Apply micro-segmentation in NFV environments"
+      ]
+    },
+    {
+      "area": "EDTC",
+      "nature": "physical_tampering_edge_devices",
+      "description": "Adversaries gain physical access to edge devices, installing hardware implants or modifying components to facilitate long-term compromise.",
+      "risk_reduction": [
+        "Employ tamper-evident seals",
+        "Use hardware security modules (HSM)",
+        "Restrict physical access",
+        "Perform regular hardware integrity checks"
+      ]
     }
   ]
 }

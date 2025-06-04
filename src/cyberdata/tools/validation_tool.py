@@ -13,12 +13,12 @@ logger = setup_logger("cyberdata.tools.validation_tool")
 
 class ValidateProblemInput(BaseModel):
     """Input schema for problem validation."""
-    problem_json: str = Field(..., description="JSON string containing the problem to validate")
+    problem_json: str = Field(description="JSON string containing the problem to validate")
 
 
 class ValidateExampleInput(BaseModel):
     """Input schema for example validation."""
-    example_json: str = Field(..., description="JSON string containing the example to validate")
+    example_json: str = Field(description="JSON string containing the example to validate")
 
 
 class ValidationTool(BaseTool):
