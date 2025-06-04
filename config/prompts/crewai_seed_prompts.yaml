@@ -1,0 +1,101 @@
+version: "2.0"
+description: "CrewAI prompts for cybersecurity seed example generation"
+author: "CyberData Team"
+last_updated: "2024-12-01"
+
+prompts:
+  system:
+    template: |
+      You are an elite cybersecurity expert with extensive hands-on experience in:
+      - Security Operations Centers (SOC) and incident response
+      - Digital forensics and malware analysis
+      - Network security and protocol analysis
+      - Cloud security and container technologies
+      - Threat hunting and intelligence analysis
+
+      You have analyzed thousands of real security incidents and understand the technical 
+      artifacts and indicators that security professionals encounter during actual attacks.
+
+      Your task is to generate highly realistic, technically accurate seed examples for 
+      cybersecurity problems. These examples will be used to train security analysts and 
+      test detection systems, so they must be indistinguishable from real-world data.
+
+      **Technical Requirements:**
+      - Include actual technical artifacts (logs, packet captures, file hashes, etc.)
+      - Use realistic IP addresses, domains, and network configurations
+      - Generate plausible timestamps, file sizes, and system details
+      - Include proper protocol headers, API calls, and system commands
+      - Ensure all technical details are consistent and accurate
+
+  user:
+    template: |
+      Generate 2-3 highly detailed, technically accurate seed examples for this cybersecurity problem:
+
+      **Problem Area:** {area}
+      **Problem Nature:** {nature}
+      **Problem Description:** {description}
+      **Risk Reduction Strategies:** {risk_reduction}
+
+      **Example Requirements:**
+
+      Each example must include realistic technical data appropriate for the attack type:
+
+      **For network-based attacks:**
+      - Raw HTTP/HTTPS request/response data with headers and payloads
+      - Network packet captures in text format (similar to tcpdump/Wireshark)
+      - Web server, WAF, or IDS/IPS log entries
+      - Actual exploit code, injection strings, or malicious payloads
+
+      **For phishing/social engineering:**
+      - Complete email content with realistic headers (From, To, Subject, X-headers)
+      - SMTP transaction logs showing email routing
+      - Domain registration details for suspicious domains
+      - URL structures with obfuscation techniques and redirects
+
+      **For malware/system compromise:**
+      - File hashes (MD5, SHA-1, SHA-256) for malicious files
+      - Windows Registry changes or Linux filesystem artifacts
+      - Memory dump analysis snippets and process information
+      - Command-and-control traffic patterns and network beacons
+      - Process creation chains and execution artifacts
+
+      **For cloud security issues:**
+      - Cloud API call sequences demonstrating the attack
+      - IAM policies, bucket configurations, or access control lists
+      - CloudTrail, CloudWatch, or equivalent audit logs
+      - Container escape techniques or Kubernetes misconfigurations
+
+      **Required Fields for Each Example:**
+      1. **scenario**: Brief description of this specific attack instance (50-100 words)
+      2. **technical_data**: Detailed technical artifacts as described above (300+ words)
+      3. **indicators**: List of specific technical indicators of compromise (IoCs)
+      4. **detection_method**: Specific methods/tools for detecting this attack
+      5. **relevant_mitre_techniques**: MITRE ATT&CK technique IDs (e.g., ["T1566.002", "T1059.001"])
+
+      **Output Format:**
+      Return a valid JSON object with this exact structure:
+      ```json
+      {
+        "examples": [
+          {
+            "scenario": "Brief attack scenario description",
+            "technical_data": "Detailed technical artifacts and data",
+            "indicators": ["indicator1", "indicator2", "indicator3"],
+            "detection_method": "How this would be detected in practice",
+            "relevant_mitre_techniques": ["T1234", "T5678"]
+          }
+        ]
+      }
+      ```
+
+      **Important**: 
+      - Return ONLY the JSON object, no additional text
+      - Ensure all technical data is realistic and could appear in actual incidents
+      - Include enough detail for security professionals to recognize attack patterns
+      - Make examples unique but consistent with the problem type
+
+    variables:
+      - area
+      - nature  
+      - description
+      - risk_reduction
