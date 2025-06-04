@@ -1,0 +1,143 @@
+{
+  "examples": [
+    {
+      "scenario": "Spear-phishing attack on company executives using malicious document.",
+      "technical_data": "An APT group sent spear-phishing emails to C-level executives with a malicious PDF attachment named 'Confidential_Report_2023.pdf'. The PDF exploited a vulnerability (CVE-2020-17021) allowing remote code execution. Upon opening, a PowerShell script was triggered, downloading the 'EvilBot' backdoor from an attacker-controlled server (http://malicious.example.com/malware.zip). The backdoor established a reverse shell on port 443 to the attacker's server, allowing continuous access to the network. The PDF's SHA256 hash is 'DA39A3EE5E6B4B0D3255BFC427B35B0B2E0D0D6A3A7854022F9B5DB8F1E5E3B4'. Additional artifacts included registry changes to persist the malware and scheduled tasks to maintain execution.",
+      "indicators": [
+        "SHA256: DA39A3EE5E6B4B0D3255BFC427B35B0B2E0D0D6A3A7854022F9B5DB8F1E5E3B4",
+        "Unusual outbound connections to http://malicious.example.com",
+        "Registry keys: HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\EvilBot"
+      ],
+      "detection_method": "Monitor email traffic for attachments with known exploit signatures. Use endpoint detection tools to catch PowerShell scripts invoking network connections. Analyze outbound traffic patterns for unusual destination IPs.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1203",
+        "T1059.001",
+        "T1105"
+      ]
+    },
+    {
+      "scenario": "APT group utilizes lateral movement for data exfiltration.",
+      "technical_data": "After establishing a foothold in the finance department's workstation, attackers used 'PsExec' to execute commands on other internal machines, targeting the HR department. The command line used was 'PsExec \\HR-Server -u admin -p password cmd.exe'. They leveraged admin credentials obtained from a keylogger on the initial system. Lateral movement revealed sensitive employee data stored on the HR server. Network logs indicated large data transfers from HR-Server to an external IP (192.0.2.15), associated with a command and control server. The file transferred (sensitive_data.zip) was later found to have a SHA256 hash of '1D4F9D8A54D8F5E690AA9A5378D12F673A024C9D1D78FCD12E7C228076C2508B'.",
+      "indicators": [
+        "SHA256: 1D4F9D8A54D8F5E690AA9A5378D12F673A024C9D1D78FCD12E7C228076C2508B",
+        "Command execution logs showing PsExec activity",
+        "Data transferred to external IP: 192.0.2.15"
+      ],
+      "detection_method": "Implement monitoring for PsExec usage and lateral movement attempts, especially in sensitive departments. Analyze network traffic for large, unusual outbound transfers during non-business hours.",
+      "relevant_mitre_techniques": [
+        "T1075",
+        "T1021.001",
+        "T1041",
+        "T1086"
+      ]
+    },
+    {
+      "scenario": "Custom malware establishes persistence and data collection.",
+      "technical_data": "Once inside, the APT installed a custom-built malware named 'StealthyLogger' on a domain controller. This malware used a rootkit to remain undetected and logged keystrokes, capturing sensitive user credentials across the domain. Logs revealed that the malware created a hidden directory, 'C:\\ProgramData\\SystemUpdates', where it stored keystroke logs and additional payloads. The file's hash was identified as 'C9D8A56E78415BDEEA3089C69A895C88DA939BF1FFA20D3A6A6BDFD3A62AFA1D'. The malware also sent periodic traffic to an external IP (203.0.113.10) using HTTPS.",
+      "indicators": [
+        "SHA256: C9D8A56E78415BDEEA3089C69A895C88DA939BF1FFA20D3A6A6BDFD3A62AFA1D",
+        "Hidden directory found at 'C:\\ProgramData\\SystemUpdates'",
+        "HTTPS traffic to external IP: 203.0.113.10"
+      ],
+      "detection_method": "Use endpoint security solutions to check for abnormal process execution and hidden files. Monitor network traffic patterns for encrypted connections to unknown external IPs and review endpoint logs for keystroke logging activities.",
+      "relevant_mitre_techniques": [
+        "T1059.003",
+        "T1043",
+        "T1071.001",
+        "T1060"
+      ]
+    },
+    {
+      "scenario": "Data exfiltration using encrypted channels.",
+      "technical_data": "The APT group employed a custom encryption algorithm to exfiltrate data from the corporate file server. They scheduled a task to run a Python script every hour that would search for files with sensitive information and send them to a c2 server (198.51.100.25) via HTTPS POST requests. The encryption used AES-256, and the script obfuscated its payload to bypass traditional network monitoring tools. The script was saved as 'backup_script.py' in a user's app data directory. The hash for the script was found to be '2BB80D537B1DA3E38BD303EAA857B5D1C8283D46'.",
+      "indicators": [
+        "SHA256: 2BB80D537B1DA3E38BD303EAA857B5D1C8283D46",
+        "Frequent HTTPS POST requests to 198.51.100.25",
+        "Scheduled tasks executing Python scripts outside normal business operations"
+      ],
+      "detection_method": "Monitor for unusual outbound HTTPS traffic and conduct regular audits of scheduled tasks, especially those invoking Python or scripts. Employ encryption key management practices to help identify unauthorized encrypted communications.",
+      "relevant_mitre_techniques": [
+        "T1041",
+        "T1573",
+        "T1071.001",
+        "T1022"
+      ]
+    },
+    {
+      "scenario": "Leveraging misconfigured cloud services for lateral movement.",
+      "technical_data": "The attackers exploited misconfigurations in AWS IAM roles, gaining access to critical services by assuming roles that should have been restricted. They performed an 'AssumeRole' API call from a compromised system, subsequently accessing sensitive S3 buckets containing client data. Network logs showed AWS API calls originating from an unknown source. The attackers were able to exfiltrate data by copying bucket contents to their controlled S3 bucket. The bucket transfer was logged with the request ID '5LQ3C1DR1H6L', and the transferred file hash was '3F8D25DFF1E29ED5F8C739C4CC867393EA5B4070'.",
+      "indicators": [
+        "Request ID: 5LQ3C1DR1H6L",
+        "SHA256 of transferred file: 3F8D25DFF1E29ED5F8C739C4CC867393EA5B4070",
+        "AssumeRole activities from unauthorized IPs"
+      ],
+      "detection_method": "Implement strict IAM policies adhering to the principle of least privilege, continuously audit access logs for unusual AssumeRole activities, and monitor S3 bucket permissions for public write access or cross-account permissions.",
+      "relevant_mitre_techniques": [
+        "T1078",
+        "T1190",
+        "T1531"
+      ]
+    },
+    {
+      "scenario": "APT utilizes Cobalt Strike for command and control.",
+      "technical_data": "After initial access, the APT group deployed Cobalt Strike to maintain persistence and facilitate command and control (C2). They used phishing emails to deliver the initial payload which installed a Beacon that checked in with the Cobalt Strike server every 90 seconds. The server was hosted at 192.0.2.100. The malware utilized DNS tunneling to mask its traffic, and the hash of the Beacon executable was 'A5D7E8C4F58B9C7FC536DBE2B8D8DE1E8F1483B1'.",
+      "indicators": [
+        "DNS traffic to 192.0.2.100",
+        "SHA256 of Cobalt Strike Beacon: A5D7E8C4F58B9C7FC536DBE2B8D8DE1E8F1483B1",
+        "Unusual outbound DNS requests on non-standard ports"
+      ],
+      "detection_method": "Implement DNS filtering and monitoring to block C2 communications. Conduct threat hunting efforts looking for Cobalt Strike signatures and activity across endpoints and network layers.",
+      "relevant_mitre_techniques": [
+        "T1071.001",
+        "T1203",
+        "T1071.004"
+      ]
+    },
+    {
+      "scenario": "APT exfiltrates data via steganography.",
+      "technical_data": "In a stealthy move, the attackers used steganography techniques to hide sensitive data within image files. They modified the RGB values of a series of PNG files used in internal presentations, embedding sensitive documents within them. Network analyzes revealed outgoing traffic to an external server (203.0.113.34) that received these images. The modified PNG file had a hash of 'AB2C3D4E5F6789ABCDEF01234E56789ABCDE12345'.",
+      "indicators": [
+        "PNG hash: AB2C3D4E5F6789ABCDEF01234E56789ABCDE12345",
+        "Outbound connections to 203.0.113.34",
+        "Unusual patterns in image file sizes and metadata"
+      ],
+      "detection_method": "Implement file integrity monitoring and analyze outbound traffic for unusual deviations in image file sizes. Use data loss prevention tools that can detect embedded content within files.",
+      "relevant_mitre_techniques": [
+        "T1041",
+        "T1071.001",
+        "T1560.001"
+      ]
+    },
+    {
+      "scenario": "Utilizing Windows Management Instrumentation (WMI) for lateral movement.",
+      "technical_data": "The team used WMI to enumerate and execute commands on other machines in the network. Using the command 'wmic /node:HR-Computer process call create 'C:\\malicious.exe'', they executed their payload on another workstation. The malicious executable was scheduled to run on startup and was found in the directory 'C:\\Windows\\Temp\\malicious.exe', with the hash of '9A76E6B2C7AA4E15D11DDAB3E017B8B2A8F0E45C'. Logs captured a spike in WMI activity correlating with the executed command.",
+      "indicators": [
+        "SHA256: 9A76E6B2C7AA4E15D11DDAB3E017B8B2A8F0E45C",
+        "WMI logs showing unexpected command executions",
+        "Process creation logs indicating 'C:\\malicious.exe'"
+      ],
+      "detection_method": "Use endpoint monitoring for WMI activity, particularly tracking remote calls to WMI objects. Implement alerts for unauthorized command executions and monitor creation of new processes in unusual directories.",
+      "relevant_mitre_techniques": [
+        "T1021.002",
+        "T1047",
+        "T1053.005"
+      ]
+    },
+    {
+      "scenario": "Exploiting weak credentials to gain access.",
+      "technical_data": "An attacker exploited weak credentials across multiple accounts with common passwords through a brute-force attack on the SMTP server. They utilized a tool like Hydra to attempt logins and successfully accessed several accounts. The logs showed successful logins at odd hours from a foreign IP 185.72.202.94. Compromised accounts were used to send out phishing emails to collect further credentials from unsuspecting employees.",
+      "indicators": [
+        "Multiple login attempts from 185.72.202.94",
+        "Successful logins from unusual hours",
+        "SMTP server logs indicating mass email sending from compromised accounts"
+      ],
+      "detection_method": "Implement multi-factor authentication to harden account access, monitor for unusual logins, and use threat intelligence feedback to block known malicious IPs.",
+      "relevant_mitre_techniques": [
+        "T1078",
+        "T1110.001",
+        "T1071.001"
+      ]
+    }
+  ]
+}

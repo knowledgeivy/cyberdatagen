@@ -143,9 +143,9 @@ Focus on emerging threats including:
 - Zero-day exploits and vulnerability management"""
 
     user_prompt = """Analyze the initial cybersecurity problems and generate an expanded 
-set of 15-25 problems across the same operational areas.
+set of exactly 3 NEW problems (in addition to the existing ones) across the operational areas.
 
-For each operational area (Enterprise, Cloud, EDTC), create 3-5 additional problems that:
+For the operational areas (Enterprise, Cloud, EDTC), create 1 additional problem per area that:
 
 1. **Use different attack vectors**: Don't repeat the same attack types from the initial set
 2. **Target different assets**: Focus on various systems, data types, and infrastructure components  
@@ -175,7 +175,7 @@ Return a valid JSON object with this exact structure:
 }
 ```
 
-**Important**: Return ONLY the JSON object, no additional text or formatting."""
+**Important**: Return ONLY the JSON object with exactly 3 problems, no additional text or formatting."""
 
     return f"SYSTEM: {system_prompt}\n\nUSER: {user_prompt}"
 
@@ -205,7 +205,7 @@ test detection systems, so they must be indistinguishable from real-world data.
 - Include proper protocol headers, API calls, and system commands
 - Ensure all technical details are consistent and accurate"""
 
-    user_prompt = f"""Generate 2-3 highly detailed, technically accurate seed examples for this cybersecurity problem:
+    user_prompt = f"""Generate exactly 10 highly detailed, technically accurate seed examples for this cybersecurity problem:
 
 **Problem Area:** {area}
 **Problem Nature:** {nature}
@@ -265,7 +265,7 @@ Return a valid JSON object with this exact structure:
 ```
 
 **Important**: 
-- Return ONLY the JSON object, no additional text
+- Return ONLY the JSON object with exactly 10 examples, no additional text
 - Ensure all technical data is realistic and could appear in actual incidents
 - Include enough detail for security professionals to recognize attack patterns
 - Make examples unique but consistent with the problem type"""

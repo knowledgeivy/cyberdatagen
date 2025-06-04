@@ -1,4 +1,12 @@
-# cyberdata/tools/llm_tool.py
+# cyberdata/tools/archive/llm_tool.py
+
+"""
+ARCHIVED: Complex Pydantic-based LLM tool.
+
+This tool uses advanced Pydantic schemas which caused compatibility issues
+with the current CrewAI version. Kept for future reference when Pydantic
+compatibility improves.
+"""
 
 from crewai.tools import BaseTool
 from typing import Type, Dict, Any, Optional
@@ -10,7 +18,7 @@ from cyberdata.utils.prompt_loader import load_system_prompt, load_user_prompt
 from cyberdata.utils.logger_config import setup_logger
 
 # Set up logger
-logger = setup_logger("cyberdata.tools.llm_tool")
+logger = setup_logger("cyberdata.tools.archive.llm_tool")
 
 
 class LLMToolInput(BaseModel):

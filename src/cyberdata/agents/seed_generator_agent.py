@@ -51,6 +51,6 @@ class SeedGeneratorAgent:
             tools=tools,
             verbose=True,
             memory=True,
-            max_iter=3,
+            max_iter=1,
             allow_delegation=False
         )

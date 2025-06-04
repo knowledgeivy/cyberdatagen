@@ -41,17 +41,17 @@ class ProblemGenerationTask:
         5. Use the 'save_problems' tool to save the expanded problems to problems_updated.json
 
         **Requirements:**
-        - Generate 15-25 total problems across Enterprise, Cloud, and EDTC areas
+        - Generate exactly 3 NEW problems (1 per area: Enterprise, Cloud, EDTC)
         - Each problem must include: area, nature, description, risk_reduction
         - Focus on current and emerging threats (2023-2025)
         - Ensure technical accuracy and realistic scenarios
         - Use different attack vectors from the initial set
 
-        **Output:** Save a comprehensive JSON file with expanded cybersecurity problems.
+        **Output:** Save a comprehensive JSON file with 3 additional cybersecurity problems.
         """
         
         expected_output = """
-        A successfully saved problems_updated.json file containing 15-25 cybersecurity problems.
+        A successfully saved problems_updated.json file containing exactly 3 NEW cybersecurity problems.
         Each problem includes area, nature, description, and risk_reduction fields.
         The problems should cover diverse attack vectors and current threat scenarios.
         """

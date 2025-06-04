@@ -1,0 +1,139 @@
+{
+  "examples": [
+    {
+      "scenario": "An employee noticed unusual behavior on an edge computing device in a smart building, leading to the discovery of hardware implants placed by an attacker.",
+      "technical_data": "The edge device, responsible for managing HVAC systems, began sending abnormal telemetry data indicating high temperatures. A physical inspection revealed a hardware implant connected through a hidden interface on the circuit board. The implant was capable of intercepting and processing communication between the device and the central server. Network captures showed unusual TCP connections to 192.0.2.150, with packets containing device management commands instead of normal telemetry. The device logs showed a regular command schedule altered to execute at odd hours, suggesting remote manipulation. The implant's firmware was identified with a SHA256 hash: 'AAD4A3B77A3908B3DD1C2B350E92DB8B0FF8DA3A040C86C7703B630B009FB712'.",
+      "indicators": [
+        "Unusual TCP connection to 192.0.2.150",
+        "Device logs showing frequent command changes",
+        "Firmware hash: AAD4A3B77A3908B3DD1C2B350E92DB8B0FF8DA3A040C86C7703B630B009FB712"
+      ],
+      "detection_method": "Implement continuous monitoring of device logs for anomaly detection. Review network traffic patterns for unusual outbound connections and changes in command schedules.",
+      "relevant_mitre_techniques": [
+        "T1499.001 - Endpoint Denial of Service",
+        "T1203 - Exploitation for Client Execution",
+        "T1086 - PowerShell"
+      ]
+    },
+    {
+      "scenario": "An attacker accessed an edge device's physical interface to implant malware for data exfiltration.",
+      "technical_data": "The criminal gained physical access to a smart security camera and connected a malicious USB device with a custom-built firmware that recorded video feeds. The device was programmed to periodically send data to an external server with the IP address 203.0.113.50 using HTTPS. The device firmware was altered to send out streams of video compression in a proprietary format. S3 logs indicated unauthorized PUT requests to the attacker-controlled bucket named 'stolen-data-bucket', with file hashes including 'D5A69E9E89F733F6CCE71A45ABCFB40A15D123F678A98B1D5A39C004C30DB795'.",
+      "indicators": [
+        "HTTPS traffic to 203.0.113.50",
+        "Unauthorized PUT requests to 'stolen-data-bucket'",
+        "Firmware hash: D5A69E9E89F733F6CCE71A45ABCFB40A15D123F678A98B1D5A39C004C30DB795"
+      ],
+      "detection_method": "Implement physical security controls including alerts for USB device connections. Monitor S3 bucket activities for unusual data uploads and request patterns.",
+      "relevant_mitre_techniques": [
+        "T1552.001 - Uninitialized Memory",
+        "T1404 - Remote Access Tools",
+        "T1098 - Account Manipulation"
+      ]
+    },
+    {
+      "scenario": "Discovered tampering in a smart building environmental control system where attackers altered sensor configurations.",
+      "technical_data": "During a routine audit, security personnel found altered configurations on temperature and humidity sensors that allowed external manipulation. The attackers had accessed the serial console interface of the control unit, changing thresholds that led to improper ventilation. Network logs revealed spikes in Modbus TCP traffic to an unauthorized IP 198.51.100.25. The attacker installed a rogue firmware version identified by its SHA256 hash 'E9B7F5D30A93ED4DA81C3725CE085D951A4C0B2D034C1B2A6DC8A56CCCE745D4'.",
+      "indicators": [
+        "Modbus TCP connections to 198.51.100.25",
+        "Unusual log entries for configuration changes",
+        "Firmware hash: E9B7F5D30A93ED4DA81C3725CE085D951A4C0B2D034C1B2A6DC8A56CCCE745D4"
+      ],
+      "detection_method": "Set alerts for unexpected configuration changes in physical devices. Monitor Modbus traffic for unauthorized source IPs and execute routine integrity checks.",
+      "relevant_mitre_techniques": [
+        "T1047 - Windows Management Instrumentation",
+        "T1390 - Network Traffic Analysis",
+        "T1069 - Permission Groups Discovery"
+      ]
+    },
+    {
+      "scenario": "Malware discovered on edge devices used for smart lighting control, enabling unauthorized data collection.",
+      "technical_data": "Attackers exploited a vulnerability in the smart lighting system, gaining physical access to its controller. They installed a piggyback device that captured wireless communications and turned the lights into a botnet, sending collected data to a C2 server at 192.0.2.30 through UDP. Packet captures showed consistent traffic to the external IP, with payloads containing sensitive operational data. The compromised firmware's SHA256 hash is 'BAE345F16B544901C28D41F9CD9BFAABC97A567DBCFD27F65C13B12D66CDF229'.",
+      "indicators": [
+        "Unusual UDP outbound traffic to 192.0.2.30",
+        "Payloads in traffic containing operational data",
+        "Firmware hash: BAE345F16B544901C28D41F9CD9BFAABC97A567DBCFD27F65C13B12D66CDF229"
+      ],
+      "detection_method": "Monitor for anomalous UDP traffic patterns. Review device logs for unauthorized firmware updates or behavior changes.",
+      "relevant_mitre_techniques": [
+        "T1583.001 - Acquire Infrastructure",
+        "T1476 - Network Service Scanning",
+        "T1211 - Exploitation for Client Execution"
+      ]
+    },
+    {
+      "scenario": "Unauthorized installation of hardware implants in smart meters leading to data tampering.",
+      "technical_data": "During an inspection, security teams revealed unauthorized hardware modifications in smart meters that were misreporting consumption data. The implant was capable of altering readings to reduce apparent usage for some accounts. Network traffic analysis from these meters showed DNP3 (Distributed Network Protocol) commands directed towards 10.0.0.152. The microcontroller firmware associated with the implant had the SHA256 hash '5A1BDC50C0B721E123455F27B8F60F06B003E90E6DF9A7F842E715D1D67C49A'.",
+      "indicators": [
+        "DNP3 traffic to 10.0.0.152",
+        "Inconsistent consumption data logged in centralized systems",
+        "Firmware hash: 5A1BDC50C0B721E123455F27B8F60F06B003E90E6DF9A7F842E715D1D67C49A"
+      ],
+      "detection_method": "Conduct regular inspections of hardware among high-risk devices. Implement anomaly detection in consumption logs and monitor communication ports.",
+      "relevant_mitre_techniques": [
+        "T1555 - Credentials from Web Browsers",
+        "T1623 - Data from Information Repositories",
+        "T1563 - Account Manipulation"
+      ]
+    },
+    {
+      "scenario": "Attackers gained access to service consoles of multiple edge devices in a building, affecting security protocols.",
+      "technical_data": "The attackers used physical access to install spyware on service consoles of the edge computing devices which managed emergency protocols. They replaced system binaries to include a keylogger and exfiltrated sensitive configurations to an external server at 172.16.254.10. The forensic analysis found unusually high disk I/O during specific time frames. The spyware's binary had a SHA256 hash of '75B9B0E9F65DA67B2FA49F7D5D23A9F3A520B09EA2F8B3DDCABF00F59B3A752A'.",
+      "indicators": [
+        "High disk I/O patterns matching operational downtime",
+        "Communications to external server 172.16.254.10",
+        "Spyware binary hash: 75B9B0E9F65DA67B2FA49F7D5D23A9F3A520B09EA2F8B3DDCABF00F59B3A752A"
+      ],
+      "detection_method": "Monitor system logs for fluctuations in disk activity. Establish alerts for unauthorized configurations or background processes on service consoles.",
+      "relevant_mitre_techniques": [
+        "T1036 - Masquerading",
+        "T1040 - Network Sniffing",
+        "T1566 - Phishing"
+      ]
+    },
+    {
+      "scenario": "Physical access to a control unit for smart blinds enabled an attacker to execute remote exploits.",
+      "technical_data": "An attacker accessed the smart blinds control unit, enabling them to install a rogue firmware update that opened a backdoor for external commands. Network analysis showed traffic stemming from 10.1.1.1 to an external IP 192.0.2.100 with command strings resembling: 'SET_BLEND_MODE=1;'. The malicious firmware's SHA256 hash was identified as 'B123EFA456901DDA23FA123E8A120A12456EF1A2BCD4D8B32123456789BCCC83'.",
+      "indicators": [
+        "Network traffic to 192.0.2.100 with unusual command strings",
+        "Log entries of unauthorized firmware updates",
+        "Firmware hash: B123EFA456901DDA23FA123E8A120A12456EF1A2BCD4D8B32123456789BCCC83"
+      ],
+      "detection_method": "Deploy network segmentation strategies to isolate smart devices. Regularly review firmware authenticity and control logs for unauthorized changes.",
+      "relevant_mitre_techniques": [
+        "T1413 - Access an External Service",
+        "T1491 - Use of Alternative Command and Control",
+        "T1483 - Domain Generation Algorithms"
+      ]
+    },
+    {
+      "scenario": "Detection of tampering in edge devices controlling energy distribution led to the discovery of a backdoor.",
+      "technical_data": "Security audits revealed anomalous behavior in edge devices handling power distribution; they were configured to reroute energy outputs based on external commands from an identified IP - 198.51.100.100. Forensic examination uncovered a backdoor that allowed remote energy command execution documented with the SHA256 hash 'CCC0AA123456B123EFA3DBA35DDA35415FC561A1128A0A0BBC1F45B98C5C321'.",
+      "indicators": [
+        "Remote command executions from 198.51.100.100",
+        "Log alterations indicating command manipulation",
+        "Backdoor hash: CCC0AA123456B123EFA3DBA35DDA35415FC561A1128A0A0BBC1F45B98C5C321"
+      ],
+      "detection_method": "Implement enhanced logging for power distribution commands and alert mechanisms for unusual execution patterns on energy management devices.",
+      "relevant_mitre_techniques": [
+        "T1555.003 - Credentials from Information Repositories",
+        "T1494 - Access Control List Manipulation",
+        "T1059 - Command-Line Interface"
+      ]
+    },
+    {
+      "scenario": "Unusual firmware updates on multiple edge computing devices indicated potential tampering within infrastructure.",
+      "technical_data": "Infrastructure monitoring logs revealed that firmware updates on several edge devices were executed during off-hours. Analysts tracked changes back to physical access by unauthorized personnel who utilized stolen credentials leading to firmware flash operations that enabled remote backdoor access. The SHA256 of the rogue update was recorded as 'ABCD1234EF567890ABCDEF1234567890ABCDEFFEDCBA0987654321'.",
+      "indicators": [
+        "Firmware updates applied outside of scheduled maintenance",
+        "Unauthorized access executions through compromised credentials",
+        "Firmware hash: ABCD1234EF567890ABCDEF1234567890ABCDEFFEDCBA0987654321"
+      ],
+      "detection_method": "Regular audits of firmware update logs, implementing mandatory two-factor authentication on edge device administrative access.",
+      "relevant_mitre_techniques": [
+        "T1190 - Exploit Public-Facing Application",
+        "T1078 - Valid Accounts",
+        "T1033 - System Owner/User Discovery"
+      ]
+    }
+  ]
+}

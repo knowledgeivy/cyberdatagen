@@ -46,12 +46,12 @@ class SeedGenerationTask:
 
         **Your Process:**
         1. Use the 'get_seed_generation_prompt' tool with the problem details to get detailed generation instructions
-        2. Use the 'generate_with_llm' tool to create 2-3 highly detailed technical examples following the prompt
+        2. Use the 'generate_with_llm' tool to create exactly 10 highly detailed technical examples following the prompt
         3. Use the 'validate_json' tool to ensure your output is valid JSON
         4. Use the 'save_examples' tool to save the examples with area="{area}" and nature="{nature}"
 
         **Requirements:**
-        - Generate 2-3 detailed examples with realistic technical artifacts
+        - Generate exactly 10 detailed examples with realistic technical artifacts
         - Include scenario, technical_data, indicators, detection_method, and relevant_mitre_techniques
         - Ensure all technical details are accurate and realistic
         - Examples should be indistinguishable from real-world security incidents
@@ -60,7 +60,7 @@ class SeedGenerationTask:
         """
 
         expected_output = f"""
-        Successfully saved seed examples file for {area}/{nature} containing 2-3 detailed examples.
+        Successfully saved seed examples file for {area}/{nature} containing exactly 10 detailed examples.
         Each example includes realistic technical data, indicators of compromise, detection methods,
         and relevant MITRE ATT&CK techniques. The examples are technically accurate and could be
         used for training security analysts or testing detection systems.

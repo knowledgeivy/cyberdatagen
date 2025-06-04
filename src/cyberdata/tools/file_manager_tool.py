@@ -1,4 +1,12 @@
-# cyberdata/tools/file_manager_tool.py
+# cyberdata/tools/archive/file_manager_tool.py
+
+"""
+ARCHIVED: Complex Pydantic-based file manager tool.
+
+This tool uses advanced Pydantic schemas which caused compatibility issues
+with the current CrewAI version. Kept for future reference when Pydantic
+compatibility improves.
+"""
 
 from crewai.tools import BaseTool
 from typing import Type, Dict, Any, List, Optional
@@ -9,7 +17,7 @@ from cyberdata.utils.config_manager import get_config_manager
 from cyberdata.utils.logger_config import setup_logger
 
 # Set up logger
-logger = setup_logger("cyberdata.tools.file_manager_tool")
+logger = setup_logger("cyberdata.tools.archive.file_manager_tool")
 
 
 class LoadProblemsInput(BaseModel):

@@ -44,6 +44,11 @@ def run_pipeline(stages: list = None) -> dict:
     
     logger.info("="*80)
     logger.info("CYBERDATA SYNTHETIC DATA GENERATION PIPELINE")
+    logger.info("Current Configuration:")
+    logger.info("- Problems Generated: 3 (1 per operational area)")
+    logger.info("- Seed Examples: 10 per problem")
+    logger.info("- Model: GPT-4.1-mini")
+    logger.info("- Architecture: Simplified CrewAI tools")
     logger.info("="*80)
     logger.info(f"Stages to execute: {stages}")
     
