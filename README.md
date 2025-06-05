@@ -153,6 +153,15 @@ The toolkit implements multi-layered quality assurance:
 3. **Add validation rules** for new data structures
 4. **Update README** with new threat category documentation
 
+## To-do
+Parallel Generation
+```
+python parallel_generator.py --count 100 --malicious-ratio 0.6 --max-workers 4 --batch-size 2
+
+python async_generator.py --count 1000 --malicious-ratio 0.6 --concurrent 15
+```
+
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
