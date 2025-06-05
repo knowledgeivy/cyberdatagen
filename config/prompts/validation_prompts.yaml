@@ -70,7 +70,7 @@ prompts:
         - description
         - snippet_json
 
-  # For individual sample validation in large datasets
+  # For individual sample validation in large datasets (malicious samples)
   individual_sample_validation:
     system:
       template: |
@@ -118,3 +118,92 @@ prompts:
       
       variables:
         - sample_json
+
+  # For validating benign samples
+  benign_sample_validation:
+    system:
+      template: |
+        You are a cybersecurity data quality expert specializing in benign/legitimate activity validation.
+        Evaluate individual benign synthetic data samples for quality metrics.
+        
+        Context:
+        - Area: {area}
+        - Related Problem Nature: {nature}
+        - Description: {description}
+        
+        Evaluate each benign sample on these criteria (0.0 to 1.0 scale):
+        1. **Legitimacy**: How well does the sample represent legitimate, non-malicious activity?
+        2. **Consistency**: Does the sample follow expected schema and format for benign activities?
+        3. **Correctness**: Are the technical details accurate for normal operations?
+        4. **Completeness**: Does the sample include all necessary information for a benign scenario?
+        5. **Realism**: Could this be a real-world legitimate activity?
+        6. **Distinctiveness**: Is this clearly distinguishable from malicious activity?
+      
+      variables:
+        - area
+        - nature
+        - description
+
+    user:
+      template: |
+        Evaluate this benign cybersecurity data sample:
+        
+        {sample_json}
+        
+        Provide a JSON response with:
+        {{
+          "is_valid": boolean (true if overall score >= 0.7),
+          "scores": {{
+            "legitimacy": float (0.0-1.0),
+            "consistency": float (0.0-1.0),
+            "correctness": float (0.0-1.0),
+            "completeness": float (0.0-1.0),
+            "realism": float (0.0-1.0),
+            "distinctiveness": float (0.0-1.0)
+          }},
+          "overall_score": float (average of all scores),
+          "issues": [list of specific issues found, if any],
+          "strengths": [list of notable strengths, if any],
+          "benign_indicators": [list of indicators that confirm this is legitimate activity]
+        }}
+        
+        Return only valid JSON.
+      
+      variables:
+        - sample_json
+
+  # For quality assessment of mixed datasets
+  mixed_quality_assessment:
+    system:
+      template: |
+        You are a synthetic data quality evaluator specializing in mixed cybersecurity datasets containing both malicious and benign samples.
+        Assess the quality of the mixed dataset in terms of realism, consistency, and proper distinction between malicious and benign activities.
+
+    user:
+      template: |
+        Problem Nature: {nature} (Area: {area})
+        Description: {description}
+        
+        This mixed dataset contains:
+        - {malicious_count} malicious samples
+        - {benign_count} benign samples
+        
+        Sample entries:
+        {snippet_json}
+        
+        Please provide a JSON object with keys:
+        - 'realism': comment on how realistic both malicious and benign samples are
+        - 'consistency': comment on uniformity and schema adherence across both sample types
+        - 'distinction': comment on how well malicious and benign samples are distinguished
+        - 'balance': comment on the balance and representativeness of the dataset
+        - 'suggestions': list of improvement suggestions for the mixed dataset
+        
+        Return only valid JSON.
+      
+      variables:
+        - nature
+        - area
+        - description
+        - malicious_count
+        - benign_count
+        - snippet_json

@@ -1,0 +1,27 @@
+{
+    "description": "Configuration for malicious vs benign sample ratios",
+    "version": "1.0",
+    "ratios": {
+      "global": 0.3,
+      "Enterprise": 0.4,
+      "Cloud": 0.25,
+      "Social Engineering": 0.35,
+      "phishing": 0.5,
+      "credential_harvesting": 0.6,
+      "spear_phishing": 0.4,
+      "business_email_compromise": 0.3,
+      "misconfigured_storage_bucket": 0.2,
+      "third_party_software_compromise": 0.15
+    },
+    "metadata": {
+      "last_updated": "2024-12-01",
+      "author": "CyberData Team",
+      "notes": [
+        "Global ratio applies to all problems unless overridden",
+        "Area-specific ratios override global for all problems in that area",
+        "Problem-specific ratios override both global and area ratios",
+        "Ratios represent the proportion of malicious samples (0.0 to 1.0)",
+        "Lower ratios create more realistic imbalanced datasets"
+      ]
+    }
+  }

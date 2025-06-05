@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, Tuple
 from functools import lru_cache
 
 from cyberdata.utils.logger_config import setup_logger
@@ -200,6 +200,107 @@ class ConfigManager:
         data = {"problems": problems}
         return self.save_config_file(filename, data)
     
+    # === Ratio Configuration Management ===
+    
+    def validate_ratio(self, ratio: float) -> bool:
+        """
+        Validate that a ratio is between 0.0 and 1.0.
+        
+        Args:
+            ratio (float): The ratio to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        return 0.0 <= ratio <= 1.0
+    
+    def calculate_sample_distribution(self, total_count: int, malicious_ratio: float) -> Tuple[int, int]:
+        """
+        Calculate malicious and benign sample counts based on total and ratio.
+        
+        Args:
+            total_count (int): Total number of samples
+            malicious_ratio (float): Ratio of malicious samples (0.0 to 1.0)
+            
+        Returns:
+            Tuple[int, int]: (malicious_count, benign_count)
+            
+        Raises:
+            ValueError: If ratio is invalid
+        """
+        if not self.validate_ratio(malicious_ratio):
+            raise ValueError(f"Invalid malicious ratio: {malicious_ratio}. Must be between 0.0 and 1.0")
+        
+        malicious_count = int(total_count * malicious_ratio)
+        benign_count = total_count - malicious_count
+        
+        logger.debug(f"Sample distribution for {total_count} total: {malicious_count} malicious, {benign_count} benign")
+        return malicious_count, benign_count
+    
+    def parse_ratio_config(self, ratio_config: Union[str, Dict, float]) -> Dict[str, float]:
+        """
+        Parse ratio configuration from various input formats.
+        
+        Args:
+            ratio_config: Can be:
+                - float: Global ratio for all problems
+                - dict: Per-problem or per-area ratios
+                - str: Path to JSON config file
+                
+        Returns:
+            Dict[str, float]: Mapping of identifiers to ratios
+        """
+        if isinstance(ratio_config, float):
+            if not self.validate_ratio(ratio_config):
+                raise ValueError(f"Invalid ratio: {ratio_config}")
+            return {"global": ratio_config}
+        
+        elif isinstance(ratio_config, dict):
+            # Validate all ratios in the dict
+            for key, ratio in ratio_config.items():
+                if not self.validate_ratio(ratio):
+                    raise ValueError(f"Invalid ratio for {key}: {ratio}")
+            return ratio_config
+        
+        elif isinstance(ratio_config, str):
+            # Load from file
+            config_data = self.load_config_file(ratio_config, required=True)
+            return self.parse_ratio_config(config_data.get('ratios', {}))
+        
+        else:
+            raise ValueError(f"Unsupported ratio config type: {type(ratio_config)}")
+    
+    def get_ratio_for_problem(self, problem: Dict[str, Any], ratio_config: Dict[str, float], default_ratio: float = 0.5) -> float:
+        """
+        Get the appropriate ratio for a specific problem.
+        
+        Args:
+            problem (Dict[str, Any]): Problem definition
+            ratio_config (Dict[str, float]): Ratio configuration
+            default_ratio (float): Default ratio if none specified
+            
+        Returns:
+            float: The ratio to use for this problem
+        """
+        area = problem.get('area', '')
+        nature = problem.get('nature', '')
+        
+        # Check for specific problem nature first
+        if nature in ratio_config:
+            return ratio_config[nature]
+        
+        # Check for area-specific ratio
+        if area in ratio_config:
+            return ratio_config[area]
+        
+        # Check for global ratio
+        if 'global' in ratio_config:
+            return ratio_config['global']
+        
+        # Use default
+        logger.debug(f"Using default ratio {default_ratio} for {area}/{nature}")
+        return default_ratio
+    
     # === Data File Helpers ===
     
     def get_seeds_file(self, area: str, nature: str) -> Path:
@@ -254,6 +355,44 @@ class ConfigManager:
     def _sanitize_name(self, name: str) -> str:
         """Sanitize a name for use in filenames and directory names."""
         return name.replace(' ', '_').replace('(', '').replace(')', '').replace('-', '_')
+    
+    # === Sample Type Analysis ===
+    
+    def analyze_sample_types(self, samples: list) -> Dict[str, Any]:
+        """
+        Analyze the distribution of sample types in a dataset.
+        
+        Args:
+            samples (list): List of samples to analyze
+            
+        Returns:
+            Dict[str, Any]: Analysis results including counts and ratios
+        """
+        total = len(samples)
+        if total == 0:
+            return {
+                'total_samples': 0,
+                'malicious_count': 0,
+                'benign_count': 0,
+                'other_count': 0,
+                'malicious_ratio': 0.0,
+                'benign_ratio': 0.0,
+                'has_mixed_types': False
+            }
+        
+        malicious_count = sum(1 for s in samples if s.get('sample_type') == 'malicious')
+        benign_count = sum(1 for s in samples if s.get('sample_type') == 'benign')
+        other_count = total - malicious_count - benign_count
+        
+        return {
+            'total_samples': total,
+            'malicious_count': malicious_count,
+            'benign_count': benign_count,
+            'other_count': other_count,
+            'malicious_ratio': malicious_count / total,
+            'benign_ratio': benign_count / total,
+            'has_mixed_types': malicious_count > 0 and benign_count > 0
+        }
     
     # === Convenience Properties ===
     
@@ -324,3 +463,13 @@ def load_problems(prefer_updated: bool = True) -> list:
 def save_problems(problems: list, filename: str = "problems") -> Path:
     """Save problems using the default config manager."""
     return get_config_manager().save_problems(problems, filename)
+
+
+def validate_ratio(ratio: float) -> bool:
+    """Validate a ratio using the default config manager."""
+    return get_config_manager().validate_ratio(ratio)
+
+
+def calculate_sample_distribution(total_count: int, malicious_ratio: float) -> Tuple[int, int]:
+    """Calculate sample distribution using the default config manager."""
+    return get_config_manager().calculate_sample_distribution(total_count, malicious_ratio)

@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import re
+import random
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -39,6 +40,27 @@ logger.info(f"Output directory: {config_manager.large_samples_dir}")
 def load_problems() -> list:
     """Load problem definitions using config manager"""
     return config_manager.load_problems()
+
+
+def calculate_sample_counts(total_count: int, malicious_ratio: float) -> tuple:
+    """
+    Calculate the number of malicious and benign samples based on ratio.
+    
+    Args:
+        total_count (int): Total number of samples to generate
+        malicious_ratio (float): Ratio of malicious samples (0.0 to 1.0)
+        
+    Returns:
+        tuple: (malicious_count, benign_count)
+    """
+    if not 0.0 <= malicious_ratio <= 1.0:
+        raise ValueError("Malicious ratio must be between 0.0 and 1.0")
+    
+    malicious_count = int(total_count * malicious_ratio)
+    benign_count = total_count - malicious_count
+    
+    logger.info(f"Sample distribution: {malicious_count} malicious, {benign_count} benign (ratio: {malicious_ratio:.2f})")
+    return malicious_count, benign_count
 
 
 def find_examples_file(problem):
@@ -148,13 +170,16 @@ def extract_json_from_response(response_content: str) -> dict:
             return {"samples": []}
 
 
-def generate_in_batches(problem: dict, examples: list, total_count: int = 10, batch_size: int = 5) -> list:
+def generate_malicious_samples(problem: dict, examples: list, count: int, batch_size: int = 5) -> list:
     """
-    Generate samples in multiple batches to handle larger numbers of samples.
+    Generate malicious samples using existing prompts.
     """
-    logger.info(f"Generating {total_count} samples in batches of {batch_size} for {problem['nature']}")
+    if count <= 0:
+        return []
+    
+    logger.info(f"Generating {count} malicious samples for {problem['nature']}")
     all_samples = []
-    remaining = total_count
+    remaining = count
     
     # Only use the first two examples to avoid token limit issues
     examples_to_show = examples[:2]
@@ -162,7 +187,7 @@ def generate_in_batches(problem: dict, examples: list, total_count: int = 10, ba
     
     while remaining > 0:
         current_batch_size = min(batch_size, remaining)
-        logger.info(f"Generating batch of {current_batch_size} samples for {problem['nature']} ({len(all_samples)}/{total_count} so far)...")
+        logger.info(f"Generating malicious batch of {current_batch_size} samples for {problem['nature']} ({len(all_samples)}/{count} so far)...")
         
         # Load prompts from YAML
         system_content = load_prompt(
@@ -181,7 +206,7 @@ def generate_in_batches(problem: dict, examples: list, total_count: int = 10, ba
         )
         
         # Use process_llm_request to generate samples
-        logger.info(f"Calling LLM for batch generation")
+        logger.info(f"Calling LLM for malicious batch generation")
         response_content = process_llm_request(
             system_prompt=system_content,
             user_prompt=user_content,
@@ -189,83 +214,129 @@ def generate_in_batches(problem: dict, examples: list, total_count: int = 10, ba
             temperature=0.7
         )
         
-        logger.debug(f"Response received, length: {len(response_content)} characters")
+        logger.debug(f"Malicious response received, length: {len(response_content)} characters")
         
         # Extract samples from response
         parsed = extract_json_from_response(response_content)
         samples = parsed.get('samples', [])
         
         if samples:
+            # Mark samples as malicious
+            for sample in samples:
+                sample['sample_type'] = 'malicious'
+                sample['is_attack'] = True
+            
             all_samples.extend(samples)
             remaining -= len(samples)
-            logger.info(f"Generated {len(samples)} samples in this batch, total now: {len(all_samples)}")
+            logger.info(f"Generated {len(samples)} malicious samples in this batch, total now: {len(all_samples)}")
         else:
-            logger.warning(f"Failed to generate samples in this batch, continuing...")
-            # Try a slightly different approach for the next batch
-            remaining -= current_batch_size  # Still count this as an attempt
+            logger.warning(f"Failed to generate malicious samples in this batch, continuing...")
+            remaining -= current_batch_size
         
-        # If we have enough samples, stop
-        if len(all_samples) >= total_count:
-            logger.info(f"Reached target sample count of {total_count}")
+        if len(all_samples) >= count:
+            logger.info(f"Reached target malicious sample count of {count}")
             break
     
-    logger.info(f"Completed batch generation with {len(all_samples)} total samples")
-    return all_samples[:total_count]  # Return at most the requested number of samples
+    return all_samples[:count]
 
 
-def generate_for_problem(problem: dict, n: int = 10) -> list:
+def generate_benign_samples(problem: dict, count: int, batch_size: int = 5) -> list:
     """
-    Generate n synthetic samples for the given problem.
+    Generate benign samples using new benign prompts.
+    """
+    if count <= 0:
+        return []
+    
+    logger.info(f"Generating {count} benign samples for {problem['area']} area")
+    all_samples = []
+    remaining = count
+    
+    while remaining > 0:
+        current_batch_size = min(batch_size, remaining)
+        logger.info(f"Generating benign batch of {current_batch_size} samples for {problem['area']} ({len(all_samples)}/{count} so far)...")
+        
+        # Load benign prompts from YAML
+        system_content = load_prompt(
+            "large_generation_prompts",
+            "prompts.benign_generation.system.template"
+        )
+        
+        user_content = load_prompt(
+            "large_generation_prompts",
+            "prompts.benign_generation.user.template",
+            area=problem['area'],
+            count=current_batch_size,
+            context=problem.get('description', '')
+        )
+        
+        # Use process_llm_request to generate samples
+        logger.info(f"Calling LLM for benign batch generation")
+        response_content = process_llm_request(
+            system_prompt=system_content,
+            user_prompt=user_content,
+            model_name=MODEL_NAME,
+            temperature=0.7
+        )
+        
+        logger.debug(f"Benign response received, length: {len(response_content)} characters")
+        
+        # Extract samples from response
+        parsed = extract_json_from_response(response_content)
+        samples = parsed.get('samples', [])
+        
+        if samples:
+            # Mark samples as benign
+            for sample in samples:
+                sample['sample_type'] = 'benign'
+                sample['is_attack'] = False
+            
+            all_samples.extend(samples)
+            remaining -= len(samples)
+            logger.info(f"Generated {len(samples)} benign samples in this batch, total now: {len(all_samples)}")
+        else:
+            logger.warning(f"Failed to generate benign samples in this batch, continuing...")
+            remaining -= current_batch_size
+        
+        if len(all_samples) >= count:
+            logger.info(f"Reached target benign sample count of {count}")
+            break
+    
+    return all_samples[:count]
+
+
+def generate_for_problem(problem: dict, malicious_count: int, benign_count: int) -> list:
+    """
+    Generate both malicious and benign samples for the given problem.
     """
     nature = problem['nature']
     area = problem['area']
-    logger.info(f"Generating {n} samples for problem: {area}/{nature}")
+    total_count = malicious_count + benign_count
+    logger.info(f"Generating {total_count} samples for problem: {area}/{nature} (malicious: {malicious_count}, benign: {benign_count})")
+    
+    all_samples = []
     
     try:
-        # Load examples from appropriate area subdirectory
-        examples = load_examples(problem)
-        
-        if not examples:
-            logger.warning(f"No seed examples found for {area}/{nature}")
-            return []
-        
-        # Generate samples in batches
-        samples = generate_in_batches(problem, examples, n, batch_size=5)
-        
-        # If batched generation failed completely, try one more direct approach
-        if not samples:
-            logger.info(f"Trying backup approach for {nature}")
+        # Generate malicious samples if needed
+        if malicious_count > 0:
+            # Load examples from appropriate area subdirectory
+            examples = load_examples(problem)
             
-            # Load backup prompts from YAML
-            system_prompt = load_prompt(
-                "large_generation_prompts",
-                "prompts.backup_generation.system.template",
-                nature=nature,
-                area=area
-            )
-            
-            user_prompt = load_prompt(
-                "large_generation_prompts",
-                "prompts.backup_generation.user.template",
-                count=min(n, 5),
-                nature=nature,
-                description=problem.get('description', '')
-            )
-            
-            logger.info("Calling LLM with backup approach")
-            response_content = process_llm_request(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                model_name=MODEL_NAME,
-                temperature=0.7
-            )
-            
-            parsed = extract_json_from_response(response_content)
-            if parsed:
-                samples = parsed.get('samples', [])
-                logger.info(f"Generated {len(samples)} samples with backup approach")
+            if not examples:
+                logger.warning(f"No seed examples found for {area}/{nature}, skipping malicious generation")
+            else:
+                malicious_samples = generate_malicious_samples(problem, examples, malicious_count)
+                all_samples.extend(malicious_samples)
         
-        return samples
+        # Generate benign samples if needed
+        if benign_count > 0:
+            benign_samples = generate_benign_samples(problem, benign_count)
+            all_samples.extend(benign_samples)
+        
+        # Shuffle the combined samples to avoid clustering by type
+        random.shuffle(all_samples)
+        
+        logger.info(f"Generated total of {len(all_samples)} samples for {area}/{nature}")
+        return all_samples
             
     except FileNotFoundError as e:
         logger.error(f"Error: {e}")
@@ -305,18 +376,45 @@ def save_samples(problem: dict, samples: list):
     # Combine existing and new samples
     all_samples = existing_samples + samples
     
-    # Save samples
-    with out_file.open('w', encoding='utf-8') as f:
-        json.dump({'samples': all_samples}, f, indent=2)
+    # Calculate sample type distribution
+    malicious_count = sum(1 for s in samples if s.get('sample_type') == 'malicious')
+    benign_count = sum(1 for s in samples if s.get('sample_type') == 'benign')
     
-    logger.info(f"Saved {len(samples)} new samples (total: {len(all_samples)}) to {out_file}")
+    # Add metadata about the generation
+    metadata = {
+        'total_samples': len(all_samples),
+        'new_samples_added': len(samples),
+        'new_malicious_samples': malicious_count,
+        'new_benign_samples': benign_count,
+        'generation_timestamp': str(pd.Timestamp.now()) if 'pd' in globals() else None
+    }
+    
+    # Save samples with metadata
+    output_data = {
+        'samples': all_samples,
+        'metadata': metadata
+    }
+    
+    with out_file.open('w', encoding='utf-8') as f:
+        json.dump(output_data, f, indent=2)
+    
+    logger.info(f"Saved {len(samples)} new samples (malicious: {malicious_count}, benign: {benign_count}) to {out_file}")
+    logger.info(f"Total samples in file: {len(all_samples)}")
 
 
-def main(count: int = 10, problem_filter: list = None):
+def main(count: int = 10, malicious_ratio: float = 0.5, problem_filter: list = None):
     """
-    Main function to generate samples for all problems.
+    Main function to generate samples for all problems with specified ratio.
     """
-    logger.info(f"Starting sample generation with count={count}")
+    logger.info(f"Starting sample generation with count={count}, malicious_ratio={malicious_ratio}")
+    
+    # Validate ratio
+    if not 0.0 <= malicious_ratio <= 1.0:
+        logger.error(f"Invalid malicious ratio: {malicious_ratio}. Must be between 0.0 and 1.0")
+        return
+    
+    # Calculate sample counts
+    total_malicious, total_benign = calculate_sample_counts(count, malicious_ratio)
     
     # Load problem definitions using config manager
     problems = load_problems()
@@ -333,14 +431,31 @@ def main(count: int = 10, problem_filter: list = None):
     areas = set(problem['area'] for problem in problems)
     logger.info(f"Found {len(problems)} problems across {len(areas)} areas: {', '.join(areas)}")
     
-    for problem in problems:
+    # Calculate per-problem sample counts
+    problems_count = len(problems)
+    malicious_per_problem = total_malicious // problems_count if problems_count > 0 else 0
+    benign_per_problem = total_benign // problems_count if problems_count > 0 else 0
+    
+    # Handle remainder samples
+    malicious_remainder = total_malicious % problems_count if problems_count > 0 else 0
+    benign_remainder = total_benign % problems_count if problems_count > 0 else 0
+    
+    logger.info(f"Per-problem distribution: {malicious_per_problem} malicious, {benign_per_problem} benign")
+    
+    for i, problem in enumerate(problems):
         area = problem['area']
         nature = problem['nature']
-        logger.info(f"\nGenerating {count} samples for {area}/{nature}...")
+        
+        # Distribute remainder samples to first few problems
+        current_malicious = malicious_per_problem + (1 if i < malicious_remainder else 0)
+        current_benign = benign_per_problem + (1 if i < benign_remainder else 0)
+        current_total = current_malicious + current_benign
+        
+        logger.info(f"\nGenerating {current_total} samples for {area}/{nature} (malicious: {current_malicious}, benign: {current_benign})...")
         
         try:
             # Generate samples
-            samples = generate_for_problem(problem, count)
+            samples = generate_for_problem(problem, current_malicious, current_benign)
             
             if not samples:
                 logger.warning(f"No samples generated for {nature}, skipping to next problem")
@@ -359,11 +474,22 @@ def main(count: int = 10, problem_filter: list = None):
 if __name__ == '__main__':
     import argparse
     
-    parser = argparse.ArgumentParser(description="Generate synthetic cybersecurity data samples")
-    parser.add_argument('--count', type=int, default=10, help='Number of samples to generate per problem (default: 10)')
+    parser = argparse.ArgumentParser(description="Generate synthetic cybersecurity data samples with configurable malicious/benign ratio")
+    parser.add_argument('--count', type=int, default=10, help='Total number of samples to generate (default: 10)')
+    parser.add_argument('--malicious-ratio', type=float, default=0.5, help='Ratio of malicious samples (0.0 to 1.0, default: 0.5)')
+    parser.add_argument('--malicious-count', type=int, help='Specific number of malicious samples (overrides ratio)')
+    parser.add_argument('--benign-count', type=int, help='Specific number of benign samples (overrides ratio)')
     parser.add_argument('--problems', nargs='+', help='Specific problem natures to generate samples for (optional)')
     
     args = parser.parse_args()
     
-    logger.info(f"Starting generator.py with args: count={args.count}, problems={args.problems}")
-    main(args.count, args.problems)
+    # Handle specific count arguments
+    if args.malicious_count is not None and args.benign_count is not None:
+        total_count = args.malicious_count + args.benign_count
+        malicious_ratio = args.malicious_count / total_count if total_count > 0 else 0.5
+        logger.info(f"Using specific counts: malicious={args.malicious_count}, benign={args.benign_count}")
+        logger.info(f"Calculated ratio: {malicious_ratio:.2f}")
+        main(total_count, malicious_ratio, args.problems)
+    else:
+        logger.info(f"Starting generator.py with args: count={args.count}, malicious_ratio={args.malicious_ratio}, problems={args.problems}")
+        main(args.count, args.malicious_ratio, args.problems)

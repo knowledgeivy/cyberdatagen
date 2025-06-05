@@ -1,40 +1,336 @@
 {
   "samples": [
     {
-      "scenario": "Spear phishing email targeting IT staff with a malicious Excel attachment disguised as a software patch, using internal project names to increase trust.",
+      "scenario": "Employee sends internal email requesting updated sales figures from the marketing team.",
       "technical_data": {
-        "email_headers": "Return-Path: <it-support@secure-patches.com>\r\nReceived: from mail.secure-patches.com (mail.secure-patches.com [198.51.100.25])\r\n\tby mail.company.com (Postfix) with ESMTPS id 9F8D4512B7\r\n\tfor <michael.brown@company.com>; Fri, 28 Apr 2024 09:45:15 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of it-support@secure-patches.com designates 198.51.100.25 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=secure-patches.com; spf=pass smtp.mailfrom=it-support@secure-patches.com;\r\nX-Mailer: Microsoft Outlook 2019\r\nMessage-ID: <CAJf-9a8b7c3d4e5f@mail.secure-patches.com>\r\nSubject: Urgent: Patch for Project Falcon - Please Review\r\nFrom: \"IT Support\" <it-support@secure-patches.com>\r\nTo: michael.brown@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_98765_43210\"\r\nX-Originating-IP: [198.51.100.25]",
-        "email_body": "------=_Part_98765_43210\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHi Michael,\r\n\r\nPlease find attached the latest security patch for Project Falcon. This patch addresses critical vulnerabilities identified in the last audit. Kindly apply it at your earliest convenience.\r\n\r\nBest,\r\n\r\nIT Support Team\r\n\r\n------=_Part_98765_43210\r\nContent-Type: application/vnd.ms-excel; name=\"Falcon_Patch_April2024.xls\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Falcon_Patch_April2024.xls\"\r\n\r\nUEsDBBQABgAIAAAAIQCd1U1Q1QEAALAAAABMAAAAZmlsZS5leGNsDQoNCi8vIFRoaXMgaXMg\r\nYSBzaW1wbGUgZmFsaWNpb3VzIGV4Y2VsIGZpbGUuLi4NCmV4ZWN1dGUgZXhhbXBsZSBjb2Rl\r\nDQpQSwECHgMUAAcACAAAACEAndVNUUNUAAACwAAAExAAAAAAQAAAAAAAQAAAAAAAAAAZmls\r\nZS5leGNsCgAgAAAAAA==\r\n\r\n------=_Part_98765_43210--",
+        "timestamp": "2024-06-15T11:15:22Z",
+        "sender_email": "john.doe@company.com",
+        "recipient_email": "marketing.lead@company.com",
+        "email_subject": "Request for updated Q2 sales data",
+        "email_body": "Hi team, could you please share the latest sales figures for Q2? Thanks, John.",
+        "email_headers": {
+          "message_id": "<msgid12345@company.com>",
+          "received": [
+            {
+              "server": "mail1.company.com",
+              "timestamp": "2024-06-15T11:15:22Z"
+            }
+          ],
+          "spf_status": "pass",
+          "dkim_status": "pass",
+          "dmarc_status": "pass"
+        },
+        "network_traffic": {
+          "protocol": "SMTP",
+          "port": 587,
+          "encryption": "STARTTLS"
+        },
+        "authentication": {
+          "method": "OAuth2",
+          "status": "Success",
+          "timestamp": "2024-06-15T11:15:00Z"
+        }
+      },
+      "indicators": {
+        "valid email headers": true,
+        "internal domain addresses": true,
+        "authentication success": true,
+        "email sent during business hours": true
+      },
+      "activity_type": "Internal business communication",
+      "business_justification": "Normal communication between departments to facilitate business reporting.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Customer support representative sends a password reset confirmation email after verifying customer's identity.",
+      "technical_data": {
+        "timestamp": "2024-06-15T11:15:20Z",
+        "support_agent_id": "agent_452",
+        "customer_email": "customer123@example.com",
+        "email_subject": "Password Reset Confirmation",
+        "email_delivery_status": "sent",
+        "authentication_logs": [
+          {
+            "step": "identity_verification",
+            "method": "security_questions",
+            "result": "passed",
+            "timestamp": "2024-06-15T11:10:45Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "SMTP",
+          "bytes_sent": 2048,
+          "destination_ip": "203.0.113.50"
+        }
+      },
+      "indicators": {
+        "identity_verification_passed": true,
+        "legitimate_email_template_used": true,
+        "support_agent_authenticated": true,
+        "email_sent_to_verified_address": true,
+        "no suspicious activity detected": true
+      },
+      "activity_type": "Customer support communication",
+      "business_justification": "Confirming password reset maintains customer account security and supports user access recovery.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "IT administrator performs a routine software patch update on the internal HR management system to address known vulnerabilities.",
+      "technical_data": {
+        "timestamp": "2024-06-11T02:30:00Z",
+        "admin_user": "it.admin@enterprise.com",
+        "source_ip": "10.0.5.12",
+        "system_target": "hrms-server-03.enterprise.com",
+        "update_process": {
+          "package_name": "hrms-security-patch-v2.4.1",
+          "update_method": "SSH scripted deployment",
+          "pre_update_backup": "Completed at 2024-06-11T02:00:00Z",
+          "update_status": "Success",
+          "post_update_restart": "Executed"
+        },
+        "log_entries": [
+          "2024-06-11T02:00:00Z - Backup started",
+          "2024-06-11T02:25:30Z - Backup completed successfully",
+          "2024-06-11T02:30:05Z - Patch deployment initiated",
+          "2024-06-11T02:45:00Z - Patch deployed successfully",
+          "2024-06-11T02:50:00Z - System restarted"
+        ]
+      },
+      "indicators": [
+        "Activity performed during scheduled maintenance window",
+        "Successful backup prior to update",
+        "Use of secure SSH protocol",
+        "Update package version matches approved patch",
+        "No anomalies or error logs detected"
+      ],
+      "activity_type": "Routine IT system patching",
+      "business_justification": "Regular software updates are critical to maintain system security and compliance with IT policies.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Spear phishing email to marketing team member with a malicious Excel attachment masquerading as updated campaign budget, exploiting embedded macros.",
+      "technical_data": {
+        "email_headers": "Return-Path: <marketing@ad-campaigns.com>\r\nReceived: from mail.ad-campaigns.com (mail.ad-campaigns.com [203.0.113.55])\r\n\tby mail.company.com (Postfix) with ESMTPS id 8J7G6H8K20\r\n\tfor <david.kim@company.com>; Tue, 30 Apr 2024 13:22:47 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of marketing@ad-campaigns.com designates 203.0.113.55 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=ad-campaigns.com; spf=pass smtp.mailfrom=marketing@ad-campaigns.com;\r\nX-Mailer: Microsoft Outlook 2019\r\nMessage-ID: <CAJb7k9sO2fE0W6pQ@mail.ad-campaigns.com>\r\nSubject: Updated Q2 Campaign Budget Details\r\nFrom: \"Ad Campaigns\" <marketing@ad-campaigns.com>\r\nTo: david.kim@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_56789_12345\"\r\nX-Originating-IP: [203.0.113.55]",
+        "email_body": "------=_Part_56789_12345\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHi David,\r\n\r\nPlease review the updated Q2 campaign budget attached. Let me know if any adjustments are needed before Friday.\r\n\r\nThanks,\r\n\r\nAngela Perez\r\nAd Campaigns Team\r\n\r\n------=_Part_56789_12345\r\nContent-Type: application/vnd.ms-excel.sheet.macroenabled.12; name=\"Q2_Budget_Update.xlsm\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Q2_Budget_Update.xlsm\"\r\n\r\nUEsDBBQABgAIAAAAIQAAAAAAAAAAAAAAAAAJAAAAVU5JVA==\r\n",
         "smtp_transaction_logs": [
-          "220 mail.secure-patches.com ESMTP Postfix",
+          "220 mail.ad-campaigns.com ESMTP Postfix",
           "EHLO mail.company.com",
-          "250-mail.secure-patches.com",
+          "250-mail.ad-campaigns.com",
           "250-PIPELINING",
-          "250-SIZE 10485760",
+          "250-SIZE 10240000",
           "250-STARTTLS",
           "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<it-support@secure-patches.com>",
+          "MAIL FROM:<marketing@ad-campaigns.com>",
           "250 2.1.0 Ok",
-          "RCPT TO:<michael.brown@company.com>",
+          "RCPT TO:<david.kim@company.com>",
           "250 2.1.5 Ok",
           "DATA",
           "354 End data with <CR><LF>.<CR><LF>",
           "... [email content] ...",
           ".",
-          "250 2.0.0 Ok: queued as 9F8D4512B7",
+          "250 2.0.0 Ok: queued as 8J7G6H8K20",
           "QUIT",
           "221 2.0.0 Bye"
         ],
         "domain_registration": {
-          "domain": "secure-patches.com",
-          "registrar": "Google Domains",
-          "creation_date": "2023-12-20T08:45:00Z",
-          "expiration_date": "2025-12-20T08:45:00Z",
+          "domain": "ad-campaigns.com",
+          "registrar": "Tucows Domains Inc.",
+          "creation_date": "2023-12-20T14:45:00Z",
+          "expiration_date": "2024-12-20T14:45:00Z",
           "registrant": {
-            "name": "James Carter",
-            "organization": "Secure IT Solutions LLC",
-            "email": "james.carter@secure-patches.com",
-            "address": "789 Elm St, Seattle, WA"
+            "name": "Angela Perez",
+            "organization": "Ad Campaigns Inc.",
+            "email": "angela.perez@ad-campaigns.com",
+            "address": "789 Market St, San Francisco, CA"
+          },
+          "name_servers": [
+            "ns1.tucows.com",
+            "ns2.tucows.com"
+          ]
+        },
+        "urls_in_email": []
+      },
+      "indicators": [
+        "Macro-enabled Excel attachment (.xlsm) potentially containing malicious code",
+        "Domain ad-campaigns.com registered recently and mimics legitimate marketing domain",
+        "Sender IP 203.0.113.55 not previously seen in company mail logs",
+        "X-Originating-IP not matching company's outbound mail servers",
+        "Email content creates urgency to open attachment quickly"
+      ],
+      "detection_method": "Sandbox attachment for macro execution; verify domain age and reputation; analyze email headers and IP origin; monitor for anomalous attachments especially macro-enabled; educate marketing staff on phishing risks related to attachments.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1566.002 - Spearphishing Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
+    },
+    {
+      "scenario": "IT team performs scheduled backup of user data on enterprise file servers.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "server_name": "fileserver01.corp.local",
+        "backup_job_id": "backup_20240615_0200",
+        "backup_type": "incremental",
+        "data_volume_gb": 120,
+        "backup_status": "completed_successfully",
+        "network_traffic": {
+          "protocol": "SMB",
+          "bytes_transferred": 1288490188,
+          "duration_seconds": 3600
+        },
+        "system_logs": [
+          "2024-06-15T02:00:05Z - Backup job started",
+          "2024-06-15T02:59:50Z - Backup job completed"
+        ]
+      },
+      "indicators": {
+        "scheduled_job": true,
+        "backup_completed_without_errors": true,
+        "performed_outside_peak_hours": true,
+        "consistent_backup_volume": true
+      },
+      "activity_type": "Routine IT backup operation",
+      "business_justification": "Regular backups ensure data integrity and disaster recovery readiness.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "IT administrator performs scheduled backup of user data on company cloud storage.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "admin_id": "admin01",
+        "source_ip": "192.168.5.12",
+        "cloud_service": "AWS S3",
+        "backup_job_id": "backup_20240615_0200",
+        "api_calls": [
+          {
+            "call": "ListBuckets",
+            "status": 200,
+            "duration_ms": 150
+          },
+          {
+            "call": "GetObject",
+            "status": 200,
+            "bytes_transferred": 104857600,
+            "duration_ms": 3500
+          },
+          {
+            "call": "PutObject",
+            "status": 200,
+            "bytes_transferred": 104857600,
+            "duration_ms": 3400
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "traffic_pattern": "Steady throughput consistent with backup data"
+        },
+        "system_logs": [
+          {
+            "event_id": "BACKUP_START",
+            "timestamp": "2024-06-15T02:00:00Z",
+            "description": "Backup job backup_20240615_0200 initiated by admin01"
+          },
+          {
+            "event_id": "BACKUP_COMPLETE",
+            "timestamp": "2024-06-15T02:45:30Z",
+            "description": "Backup job backup_20240615_0200 completed successfully"
+          }
+        ]
+      },
+      "indicators": {
+        "backup_job_scheduled": true,
+        "api_status_codes": "200 OK",
+        "consistent_data volumes": true,
+        "performed by authorized admin": true
+      },
+      "activity_type": "Routine cloud backup operation",
+      "business_justification": "Regular scheduled backup to protect user data and ensure business continuity.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Employee accesses confidential HR policy document via internal document management system.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user_id": "employee123",
+        "source_ip": "10.12.45.78",
+        "destination_url": "https://intranet.company.com/docs/hr_policy_v3.pdf",
+        "access_method": "HTTPS",
+        "authentication": {
+          "type": "Kerberos",
+          "status": "Success",
+          "timestamp": "2024-06-15T09:23:30Z"
+        },
+        "network_traffic": {
+          "bytes_sent": 1024,
+          "bytes_received": 51200,
+          "protocol": "TLS 1.3",
+          "port": 443
+        },
+        "system_logs": [
+          {
+            "event_id": "DOC_ACCESS",
+            "timestamp": "2024-06-15T09:23:45Z",
+            "description": "User employee123 downloaded hr_policy_v3.pdf"
+          }
+        ]
+      },
+      "indicators": {
+        "authentication_success": true,
+        "internal_ip_range": true,
+        "document_accessed": "HR policy document",
+        "access_time": "During business hours"
+      },
+      "activity_type": "Normal employee document access",
+      "business_justification": "Employee reviewing updated HR policies as part of routine compliance training.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Spear phishing email sent to a legal department associate impersonating a trusted law firm with a malicious Word document attachment exploiting macros.",
+      "technical_data": {
+        "email_headers": "Return-Path: <legal@trustlawfirm-secure.com>\r\nReceived: from mail.trustlawfirm-secure.com (mail.trustlawfirm-secure.com [198.51.100.23])\r\n\tby mail.company.com (Postfix) with ESMTPS id 9HG7D4L29F\r\n\tfor <maria.lopez@company.com>; Fri, 26 Apr 2024 09:45:10 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of legal@trustlawfirm-secure.com designates 198.51.100.23 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=trustlawfirm-secure.com; spf=pass smtp.mailfrom=legal@trustlawfirm-secure.com;\r\nX-Mailer: Microsoft Outlook 365\r\nMessage-ID: <CAJk8p3+O2fE0W6pQ@mail.trustlawfirm-secure.com>\r\nSubject: Urgent: Contract Review Required\r\nFrom: \"Trust Law Firm\" <legal@trustlawfirm-secure.com>\r\nTo: maria.lopez@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_98765_43210\"\r\nX-Originating-IP: [198.51.100.23]",
+        "email_body": "------=_Part_98765_43210\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nDear Maria,\r\n\r\nPlease find the attached contract draft for your urgent review. The document contains important clauses that need your approval by end of day tomorrow.\r\n\r\nBest regards,\r\n\r\nSamuel Turner\r\nTrust Law Firm\r\n\r\n------=_Part_98765_43210\r\nContent-Type: application/vnd.ms-word; name=\"Contract_Review.docm\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Contract_Review.docm\"\r\n\r\nTVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9n\r\ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGUuAA0AAAAAAAAAAOAADwAAAAAAQAAAAAAAAAAAAAA\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\n",
+        "smtp_transaction_logs": [
+          "220 mail.trustlawfirm-secure.com ESMTP Postfix",
+          "EHLO mail.company.com",
+          "250-mail.trustlawfirm-secure.com",
+          "250-PIPELINING",
+          "250-SIZE 10240000",
+          "250-STARTTLS",
+          "250-AUTH PLAIN LOGIN",
+          "250-ENHANCEDSTATUSCODES",
+          "250-8BITMIME",
+          "250 DSN",
+          "MAIL FROM:<legal@trustlawfirm-secure.com>",
+          "250 2.1.0 Ok",
+          "RCPT TO:<maria.lopez@company.com>",
+          "250 2.1.5 Ok",
+          "DATA",
+          "354 End data with <CR><LF>.<CR><LF>",
+          "... [email content] ...",
+          ".",
+          "250 2.0.0 Ok: queued as 9HG7D4L29F",
+          "QUIT",
+          "221 2.0.0 Bye"
+        ],
+        "domain_registration": {
+          "domain": "trustlawfirm-secure.com",
+          "registrar": "Google LLC",
+          "creation_date": "2024-02-28T08:15:30Z",
+          "expiration_date": "2025-02-28T08:15:30Z",
+          "registrant": {
+            "name": "Samuel Turner",
+            "organization": "Trust Law Firm Security",
+            "email": "sam.turner@trustlawfirm-secure.com",
+            "address": "456 Elm St, Seattle, WA"
           },
           "name_servers": [
             "ns1.google.com",
@@ -42,96 +338,200 @@
           ]
         },
         "urls_in_email": [
-          "https://secure-patches.com/patches/ProjectFalcon_Apr2024.xls"
+          "https://portal.trustlawfirm-secure.com/contract-review"
         ]
       },
       "indicators": [
-        "Attachment is an Excel file with suspicious macro content",
-        "Domain secure-patches.com registered recently (~4 months ago)",
-        "Sender IP 198.51.100.25 not in known company mail server list",
-        "Email subject references internal project name to increase trust",
-        "SPF and DKIM pass but domain reputation is low"
+        "Newly registered domain mimicking a known law firm",
+        "Attachment is a macro-enabled Word document (.docm) which is a common vector for malware",
+        "Sender IP 198.51.100.23 not associated with legitimate law firm mail servers",
+        "Email header contains X-Originating-IP inconsistent with company network",
+        "URL pointing to domain matching sender but newly created"
       ],
-      "detection_method": "Use sandbox analysis for Excel macros; correlate domain age and IP reputation; verify attachment hashes against known good patches; monitor for unusual email senders using internal project names; user awareness training about verifying patch sources.",
+      "detection_method": "Inspect attachments for macro content; verify domain registration age and ownership; correlate sender IP with known law firm mail servers; sandbox document to detect malicious macro behavior; user training to verify unexpected contract requests.",
       "relevant_mitre_techniques": [
         "T1566.001 - Spearphishing Attachment",
         "T1204.002 - User Execution: Malicious File",
-        "T1566.002 - Spearphishing Link"
-      ]
+        "T1566.002 - Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
     },
     {
-      "scenario": "Spear phishing email sent to a legal department employee impersonating a trusted external law firm partner, containing a malicious Word document requesting urgent review.",
+      "scenario": "HR sends an internal memo updating employees on new workplace safety policies.",
       "technical_data": {
-        "email_headers": "Return-Path: <legal@lawpartners-secure.com>\r\nReceived: from mail.lawpartners-secure.com (mail.lawpartners-secure.com [203.0.113.120])\r\n\tby mail.company.com (Postfix) with ESMTPS id D5B4C1E3\r\n\tfor <emma.wilson@company.com>; Fri, 28 Apr 2024 11:22:33 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of legal@lawpartners-secure.com designates 203.0.113.120 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=lawpartners-secure.com; spf=pass smtp.mailfrom=legal@lawpartners-secure.com;\r\nX-Mailer: Microsoft Outlook 16.0\r\nMessage-ID: <CAJf-5e8f7a9b2c@mail.lawpartners-secure.com>\r\nSubject: Confidential: Contract Amendment Review Required\r\nFrom: \"Law Partners LLP\" <legal@lawpartners-secure.com>\r\nTo: emma.wilson@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_67890_12345\"\r\nX-Originating-IP: [203.0.113.120]",
-        "email_body": "------=_Part_67890_12345\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nDear Emma,\r\n\r\nPlease review the attached contract amendment prepared by our legal team. Kindly provide your feedback by EOD tomorrow.\r\n\r\nBest regards,\r\n\r\nPaul Reynolds\r\nLaw Partners LLP\r\n\r\n------=_Part_67890_12345\r\nContent-Type: application/msword; name=\"Contract_Amendment_0424.doc\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Contract_Amendment_0424.doc\"\r\n\r\n0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAPgADAP7/CQAGAAAAAAAAAAAAAAABAAAAAAAAAAEAA\r\nAAAAAAAAAAAAAAIAAAAgAAAAAAEAAAAAAADQAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAA==\r\n\r\n------=_Part_67890_12345--",
+        "timestamp": "2024-06-15T08:00:00Z",
+        "sender_id": "hr_manager@example.com",
+        "recipient_list": "all_staff@example.com",
+        "email_subject": "Updated Workplace Safety Policies",
+        "email_body_length": 1250,
+        "email_delivery_status": "delivered",
+        "email_client": "Outlook",
+        "network_traffic": {
+          "protocol": "SMTP",
+          "bytes_sent": 5320
+        }
+      },
+      "indicators": {
+        "sender_verified": true,
+        "recipients_valid": true,
+        "email_sent_during_business_hours": true,
+        "no phishing indicators": true,
+        "email_signed_with_dkim": true
+      },
+      "activity_type": "Internal administrative communication",
+      "business_justification": "Regular policy updates are essential for compliance and employee awareness.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Cloud DevOps team deploys a new microservice version via CI/CD pipeline in the production environment.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:30Z",
+        "user_id": "devops_engineer@example.com",
+        "pipeline_id": "ci-cd-prod-deploy",
+        "deployment_version": "microservice_v2.3.1",
+        "kubernetes_namespace": "production",
+        "api_calls": [
+          {
+            "endpoint": "/deployments/microservice",
+            "method": "POST",
+            "status_code": 201,
+            "response_time_ms": 350
+          }
+        ],
+        "cloud_events": [
+          {
+            "event_type": "pod_created",
+            "pod_name": "microservice-v2-3-1-xyz",
+            "timestamp": "2024-06-15T14:46:05Z"
+          },
+          {
+            "event_type": "service_updated",
+            "service_name": "microservice",
+            "timestamp": "2024-06-15T14:47:10Z"
+          }
+        ]
+      },
+      "indicators": {
+        "authenticated_user": true,
+        "authorized_role": "devops",
+        "valid_ci_cd_token": true,
+        "deployment_successful": true,
+        "no rollback triggered": true
+      },
+      "activity_type": "DevOps deployment activity",
+      "business_justification": "Deploying updated microservice versions is part of continuous improvement and feature delivery.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Spear phishing email targeting HR assistant with a message about upcoming employee survey containing a malicious HTML attachment designed to steal credentials.",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr@company-surveys.com>\r\nReceived: from mail.company-surveys.com (mail.company-surveys.com [198.51.100.110])\r\n\tby mail.company.com (Postfix) with ESMTPS id 6D8F2A3L17\r\n\tfor <susan.nguyen@company.com>; Thu, 2 May 2024 16:45:55 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of hr@company-surveys.com designates 198.51.100.110 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company-surveys.com; spf=pass smtp.mailfrom=hr@company-surveys.com;\r\nX-Mailer: Microsoft Outlook 2013\r\nMessage-ID: <CAJf+54ZMO2fE0W6pQ@mail.company-surveys.com>\r\nSubject: Mandatory: Complete Employee Survey\r\nFrom: \"HR Surveys\" <hr@company-surveys.com>\r\nTo: susan.nguyen@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_11223_44556\"",
+        "email_body": "------=_Part_11223_44556\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello Susan,\r\n\r\nPlease complete the attached employee survey to help us improve workplace policies. Your participation is required by end of this week.\r\n\r\nBest,\r\nHR Team\r\n\r\n------=_Part_11223_44556\r\nContent-Type: text/html; name=\"survey.html\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"survey.html\"\r\n\r\nPGh0bWw+PGJvZHk+PGZvcm0gYWN0aW9uPSIvaW5kZXgucGhwIiBtZXRob2Q9IlBPU1QiPg0KPGlu\r\ncHV0IHR5cGU9InRleHQiIG5hbWU9InVzZXJuYW1lIiAvPg0KPGlucHV0IHR5cGU9InBhc3N3b3Jk\r\nIiBuYW1lPSJwYXNzd29yZCIgLz4NCjxzdWJtaXQgdHlwZT0ic3VibWl0IiB2YWx1ZT0iU3VibWl0\r\nIiAvPg0KPC9mb3JtPjxkaXY+U3VyZ2VyZWQgc3ViamVjdCBmb3IgaGV4IGF0dGFja21lbnQ8L2Rp\r\ndj48L2JvZHk+PC9odG1sPg0K",
         "smtp_transaction_logs": [
-          "220 mail.lawpartners-secure.com ESMTP Postfix",
+          "220 mail.company-surveys.com ESMTP Postfix",
           "EHLO mail.company.com",
-          "250-mail.lawpartners-secure.com",
+          "250-mail.company-surveys.com",
           "250-PIPELINING",
-          "250-SIZE 20480000",
+          "250-SIZE 10240000",
           "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<legal@lawpartners-secure.com>",
+          "250-AUTH PLAIN LOGIN",
+          "250-ENHANCEDSTATUSCODES",
+          "250-8BITMIME",
+          "250 DSN",
+          "MAIL FROM:<hr@company-surveys.com>",
           "250 2.1.0 Ok",
-          "RCPT TO:<emma.wilson@company.com>",
+          "RCPT TO:<susan.nguyen@company.com>",
           "250 2.1.5 Ok",
           "DATA",
           "354 End data with <CR><LF>.<CR><LF>",
           "... [email content] ...",
           ".",
-          "250 2.0.0 Ok: queued as D5B4C1E3",
+          "250 2.0.0 Ok: queued as 6D8F2A3L17",
           "QUIT",
           "221 2.0.0 Bye"
         ],
         "domain_registration": {
-          "domain": "lawpartners-secure.com",
-          "registrar": "Tucows Domains Inc.",
-          "creation_date": "2024-02-05T10:10:00Z",
-          "expiration_date": "2025-02-05T10:10:00Z",
+          "domain": "company-surveys.com",
+          "registrar": "Porkbun LLC",
+          "creation_date": "2024-03-05T07:20:00Z",
+          "expiration_date": "2025-03-05T07:20:00Z",
           "registrant": {
-            "name": "Paul Reynolds",
-            "organization": "Law Partners Security LLC",
-            "email": "paul.reynolds@lawpartners-secure.com",
-            "address": "456 Oak Ave, New York, NY"
+            "name": "HR Surveys Admin",
+            "organization": "Company Surveys Inc.",
+            "email": "admin@company-surveys.com",
+            "address": "234 King St, Boston, MA"
           },
           "name_servers": [
-            "ns1.tucows.com",
-            "ns2.tucows.com"
+            "ns1.porkbun.com",
+            "ns2.porkbun.com"
           ]
         },
-        "urls_in_email": [
-          "https://lawpartners-secure.com/contract/Contract_Amendment_0424.doc"
-        ]
+        "urls_in_email": []
       },
       "indicators": [
-        "New domain lawpartners-secure.com registered recently (~2 months ago)",
-        "Attachment is a Word document potentially containing macros",
-        "Sender IP 203.0.113.120 not recognized as a legitimate partner mail server",
-        "Email references legitimate internal contacts and legal terminology",
-        "SPF and DKIM checks pass but domain reputation is low"
+        "Attachment is an HTML file containing a form designed to capture credentials",
+        "Domain company-surveys.com newly created and similar to company internal domains",
+        "Sender IP 198.51.100.110 not present in company mail logs",
+        "Email uses urgency and mandatory language to pressure recipient",
+        "SPF and DKIM pass but domain reputation is low"
       ],
-      "detection_method": "Analyze Word document attachment in sandbox for macro behavior; monitor new domain registrations similar to known partners; verify sender email with external partner contacts; correlate IP addresses and email routing; educate users on verifying unexpected contract documents.",
+      "detection_method": "Analyze HTML attachments for embedded forms and credential capture attempts; verify domain registration and reputation; monitor sender IPs and email header anomalies; user training on risks of opening unexpected attachments; sandbox attachments to observe network activity.",
       "relevant_mitre_techniques": [
         "T1566.001 - Spearphishing Attachment",
+        "T1598.002 - Phishing for Information",
         "T1204.002 - User Execution: Malicious File",
-        "T1598.002 - Phishing for Information"
-      ]
+        "T1071.001 - Application Layer Protocol: Web Protocols"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
     },
     {
-      "scenario": "Spear phishing email sent to a CEO with an urgent request to approve a wire transfer, containing a link to a cloned internal finance portal hosted on a newly registered malicious domain.",
+      "scenario": "Employee accesses and reviews quarterly financial reports via the corporate document management system.",
       "technical_data": {
-        "email_headers": "Return-Path: <ceo-requests@finance-secure.net>\r\nReceived: from mail.finance-secure.net (mail.finance-secure.net [198.51.100.88])\r\n\tby mail.company.com (Postfix) with ESMTPS id 1A2B3C4D\r\n\tfor <ceo@company.com>; Sat, 29 Apr 2024 08:15:30 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of ceo-requests@finance-secure.net designates 198.51.100.88 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=finance-secure.net; spf=pass smtp.mailfrom=ceo-requests@finance-secure.net;\r\nX-Mailer: Microsoft Outlook 365\r\nMessage-ID: <CAJf-3b9f8d7e6f@mail.finance-secure.net>\r\nSubject: Urgent Wire Transfer Approval Needed\r\nFrom: \"Finance Requests\" <ceo-requests@finance-secure.net>\r\nTo: ceo@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\nX-Originating-IP: [198.51.100.88]",
-        "email_body_html": "<html><body><p>Dear CEO,</p><p>Please review and approve the pending wire transfer of $250,000 to our supplier immediately to avoid delays.</p><p><a href=\"https://finance-secure.net/approval?transaction=TX12345\">Approve Wire Transfer</a></p><p>Thank you,<br>Finance Department</p></body></html>",
+        "timestamp": "2024-06-15T09:23:42Z",
+        "user_id": "jdoe@example.com",
+        "action": "document_access",
+        "document_id": "fin_reports_Q2_2024.pdf",
+        "access_method": "web_portal",
+        "ip_address": "198.51.100.23",
+        "session_id": "abc123xyz789",
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "bytes_sent": 52340,
+          "bytes_received": 1048576,
+          "latency_ms": 45
+        }
+      },
+      "indicators": {
+        "consistent_user_behavior": true,
+        "document_access_during_business_hours": true,
+        "known_ip_address": true,
+        "valid_session_token": true,
+        "no_failed_auth_attempts": true
+      },
+      "activity_type": "Normal employee document access",
+      "business_justification": "Employee reviews critical financial data as part of routine quarterly performance evaluations.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Spear phishing email targeting a C-level executive with a personalized message referencing recent company merger and including a link to a credential harvesting site disguised as a confidential report portal.",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo-support@secure-company-portal.com>\r\nReceived: from mail.secure-company-portal.com (mail.secure-company-portal.com [192.0.2.77])\r\n\tby mail.company.com (Postfix) with ESMTPS id 4Q3D6J7L82\r\n\tfor <ceo@company.com>; Wed, 1 May 2024 11:15:00 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of ceo-support@secure-company-portal.com designates 192.0.2.77 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=secure-company-portal.com; spf=pass smtp.mailfrom=ceo-support@secure-company-portal.com;\r\nX-Mailer: Microsoft Outlook 2016\r\nMessage-ID: <CAJf+88XYO2fE0W6pQ@mail.secure-company-portal.com>\r\nSubject: Confidential: Merger Documents Access\r\nFrom: \"Company CEO Support\" <ceo-support@secure-company-portal.com>\r\nTo: ceo@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"",
+        "email_body_html": "<html><body><p>Dear CEO,</p><p>Following our recent merger, please review the confidential documents available at the secure portal below. Access requires your credentials for authentication.</p><p><a href=\"https://secure-company-portal.com/merger-docs/login?user=ceo\">Access Merger Documents</a></p><p>Let me know if you encounter any issues.</p><p>Best,<br>Executive Support Team</p></body></html>",
         "smtp_transaction_logs": [
-          "220 mail.finance-secure.net ESMTP Postfix",
+          "220 mail.secure-company-portal.com ESMTP Postfix",
           "EHLO mail.company.com",
-          "250-mail.finance-secure.net",
+          "250-mail.secure-company-portal.com",
           "250-PIPELINING",
-          "250-SIZE 1024000",
+          "250-SIZE 20480000",
           "250-STARTTLS",
           "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<ceo-requests@finance-secure.net>",
+          "MAIL FROM:<ceo-support@secure-company-portal.com>",
           "250 2.1.0 Ok",
           "RCPT TO:<ceo@company.com>",
           "250 2.1.5 Ok",
@@ -139,492 +539,375 @@
           "354 End data with <CR><LF>.<CR><LF>",
           "... [email content] ...",
           ".",
-          "250 2.0.0 Ok: queued as 1A2B3C4D",
+          "250 2.0.0 Ok: queued as 4Q3D6J7L82",
           "QUIT",
           "221 2.0.0 Bye"
         ],
         "domain_registration": {
-          "domain": "finance-secure.net",
-          "registrar": "NameSilo, LLC",
-          "creation_date": "2024-03-01T14:00:00Z",
-          "expiration_date": "2025-03-01T14:00:00Z",
-          "registrant": {
-            "name": "Anonymous",
-            "organization": "Privacy Protect Inc.",
-            "email": "proxy@privacyprotect.org",
-            "address": "PO Box 5678, Denver, CO"
-          },
-          "name_servers": [
-            "ns1.namesilo.com",
-            "ns2.namesilo.com"
-          ]
-        },
-        "urls_in_email": [
-          "https://finance-secure.net/approval?transaction=TX12345"
-        ],
-        "url_analysis": {
-          "redirect_chain": [],
-          "landing_page_response_headers": {
-            "Content-Type": "text/html; charset=UTF-8",
-            "Server": "nginx/1.21.3"
-          },
-          "landing_page_content_snippet": "<form action=\"/submit\" method=\"POST\"><input name=\"username\" /><input name=\"password\" type=\"password\" /><input type=\"submit\" /></form>"
-        }
-      },
-      "indicators": [
-        "New domain finance-secure.net registered ~2 months ago with privacy-protected registrant",
-        "Link points to cloned internal finance portal URL but hosted externally",
-        "SPF and DKIM pass but domain has low reputation",
-        "Urgent language to pressure CEO into action",
-        "Landing page captures login credentials"
-      ],
-      "detection_method": "Monitor newly registered domains mimicking internal services; sandbox test URL to detect credential harvesting; alert on unusual wire transfer approval requests; correlate sender IP and domain registration info; user awareness training on verifying requests via separate channels.",
-      "relevant_mitre_techniques": [
-        "T1566.002 - Spearphishing Link",
-        "T1598.002 - Phishing for Information",
-        "T1204.002 - User Execution: Malicious File"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email sent to a marketing executive with a personalized video file attachment, claiming to be a new campaign teaser, containing embedded malware.",
-      "technical_data": {
-        "email_headers": "Return-Path: <marketing@creative-videos.net>\r\nReceived: from mail.creative-videos.net (mail.creative-videos.net [198.51.100.150])\r\n\tby mail.company.com (Postfix) with ESMTPS id A1B2C3D4\r\n\tfor <sarah.jones@company.com>; Sat, 29 Apr 2024 13:05:22 -0400 (EDT)\r\nReceived-SPF: fail (company.com: domain of marketing@creative-videos.net does not designate 198.51.100.150 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=fail header.d=creative-videos.net; spf=fail smtp.mailfrom=marketing@creative-videos.net;\r\nX-Mailer: Mozilla Thunderbird 78.10.1\r\nMessage-ID: <CAJf-1d2e3f4g5h@mail.creative-videos.net>\r\nSubject: Exclusive: New Campaign Teaser Video\r\nFrom: \"Creative Videos\" <marketing@creative-videos.net>\r\nTo: sarah.jones@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_54321_98765\"",
-        "email_body": "------=_Part_54321_98765\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHi Sarah,\r\n\r\nCheck out the attached teaser video for the upcoming campaign. Let me know your thoughts!\r\n\r\nCheers,\r\n\r\nTom Harris\r\nCreative Videos Team\r\n\r\n------=_Part_54321_98765\r\nContent-Type: video/mp4; name=\"Campaign_Teaser_April2024.mp4\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Campaign_Teaser_April2024.mp4\"\r\n\r\nAAAAIGZ0eXBtcDQyAAAAAGlzb21tcDQyAAACAGlzb21tcDQyAAACAG1kYXQAAAAGbW9vdgAA\r\nAAZsbWRhdAAAAAGbWluZgAAABxtZGF0AAAAGm1vb3YAAABsbWRhdAAAAAGbWluZgAAABxtZ\r\nGF0AAAABQ==\r\n\r\n------=_Part_54321_98765--",
-        "smtp_transaction_logs": [
-          "220 mail.creative-videos.net ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.creative-videos.net",
-          "250-PIPELINING",
-          "250-SIZE 15728640",
-          "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<marketing@creative-videos.net>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<sarah.jones@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as A1B2C3D4",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "creative-videos.net",
-          "registrar": "NameCheap, Inc.",
-          "creation_date": "2024-01-18T09:00:00Z",
-          "expiration_date": "2025-01-18T09:00:00Z",
-          "registrant": {
-            "name": "Tom Harris",
-            "organization": "Creative Media LLC",
-            "email": "tom.harris@creative-videos.net",
-            "address": "321 Pine Rd, Austin, TX"
-          },
-          "name_servers": [
-            "ns1.namecheap.com",
-            "ns2.namecheap.com"
-          ]
-        },
-        "urls_in_email": []
-      },
-      "indicators": [
-        "SPF and DKIM fail for domain creative-videos.net",
-        "Attachment is a video file with unusual base64 encoding suggesting possible malware",
-        "Domain registered recently (~3 months ago)",
-        "Sender IP 198.51.100.150 not recognized in company mail logs",
-        "Email references internal marketing contacts and campaign details"
-      ],
-      "detection_method": "Sandbox video attachment to detect embedded malware or exploits; correlate SPF/DKIM failures and domain reputation; monitor new domain registrations mimicking creative agencies; user education on verifying unexpected media attachments.",
-      "relevant_mitre_techniques": [
-        "T1566.001 - Spearphishing Attachment",
-        "T1204.002 - User Execution: Malicious File",
-        "T1598.002 - Phishing for Information"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email targeting an engineering team member with a malicious ZIP attachment containing a trojan, leveraging knowledge of recent product launch to appear legitimate.",
-      "technical_data": {
-        "email_headers": "Return-Path: <eng-support@prodlaunch-secure.org>\r\nReceived: from mail.prodlaunch-secure.org (mail.prodlaunch-secure.org [203.0.113.200])\r\n\tby mail.company.com (Postfix) with ESMTPS id E7F6A1B2\r\n\tfor <david.lee@company.com>; Sun, 30 Apr 2024 10:50:05 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of eng-support@prodlaunch-secure.org designates 203.0.113.200 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=prodlaunch-secure.org; spf=pass smtp.mailfrom=eng-support@prodlaunch-secure.org;\r\nX-Mailer: Microsoft Outlook 2016\r\nMessage-ID: <CAJf-4c3b2d1e5f@mail.prodlaunch-secure.org>\r\nSubject: Product Launch - Firmware Update Package\r\nFrom: \"Engineering Support\" <eng-support@prodlaunch-secure.org>\r\nTo: david.lee@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_11223_44556\"\r\nX-Originating-IP: [203.0.113.200]",
-        "email_body": "------=_Part_11223_44556\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello David,\r\n\r\nAttached is the latest firmware update package for the new product launch. Please apply it to your testing devices and report any issues.\r\n\r\nRegards,\r\n\r\nEngineering Support Team\r\n\r\n------=_Part_11223_44556\r\nContent-Type: application/zip; name=\"Firmware_Update_0424.zip\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Firmware_Update_0424.zip\"\r\n\r\nUEsDBBQAAAAIAAeLbVQAAAAAAAAAAAAAAAAJABwAZmlsZS50eHRVVAkAA6W8K2vlvCtldXgLAA\r\nEEAAAAAAQAAAAAAABQSwECHgMUAAAACAAHi21UAAAAAAAAAAAAAAAACQAYAAAAAAAAAAAQAAAA\r\nAAAGZpbGUudHh0VVQFAAOlvCtrV3V4CwABBAAAAAAEAAAAAAQAAAA==\r\n\r\n------=_Part_11223_44556--",
-        "smtp_transaction_logs": [
-          "220 mail.prodlaunch-secure.org ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.prodlaunch-secure.org",
-          "250-PIPELINING",
-          "250-SIZE 15728640",
-          "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<eng-support@prodlaunch-secure.org>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<david.lee@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as E7F6A1B2",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "prodlaunch-secure.org",
-          "registrar": "Network Solutions, LLC",
-          "creation_date": "2024-02-15T13:25:00Z",
-          "expiration_date": "2025-02-15T13:25:00Z",
-          "registrant": {
-            "name": "Engineering Support",
-            "organization": "Product Launch Security LLC",
-            "email": "support@prodlaunch-secure.org",
-            "address": "234 Market St, San Francisco, CA"
-          },
-          "name_servers": [
-            "ns1.networksolutions.com",
-            "ns2.networksolutions.com"
-          ]
-        },
-        "urls_in_email": []
-      },
-      "indicators": [
-        "Recently registered domain prodlaunch-secure.org (~2.5 months ago)",
-        "Attachment is a ZIP file containing executable payload",
-        "Sender IP 203.0.113.200 not recognized in company mail logs",
-        "Email references current internal product launch to increase credibility",
-        "SPF and DKIM pass but domain reputation is low"
-      ],
-      "detection_method": "Sandbox analysis of ZIP attachment for malicious executables; correlate domain age and IP reputation; monitor for emails referencing internal projects with attachments; alert on unusual sender IPs and new domains; user training on verifying update requests.",
-      "relevant_mitre_techniques": [
-        "T1566.001 - Spearphishing Attachment",
-        "T1204.002 - User Execution: Malicious File",
-        "T1598.002 - Phishing for Information"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email sent to a procurement officer impersonating a vendor with a malicious link disguised as a payment portal, using specific invoice numbers to appear authentic.",
-      "technical_data": {
-        "email_headers": "Return-Path: <payments@vendor-secure-pay.com>\r\nReceived: from mail.vendor-secure-pay.com (mail.vendor-secure-pay.com [198.51.100.75])\r\n\tby mail.company.com (Postfix) with ESMTPS id C9D8E7F1\r\n\tfor <linda.kim@company.com>; Sun, 30 Apr 2024 15:30:45 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of payments@vendor-secure-pay.com designates 198.51.100.75 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=vendor-secure-pay.com; spf=pass smtp.mailfrom=payments@vendor-secure-pay.com;\r\nX-Mailer: Microsoft Outlook 2016\r\nMessage-ID: <CAJf-7f1e2d3c4b@mail.vendor-secure-pay.com>\r\nSubject: Payment Portal Access for Invoice INV-2024-0398\r\nFrom: \"Vendor Payments\" <payments@vendor-secure-pay.com>\r\nTo: linda.kim@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\nX-Originating-IP: [198.51.100.75]",
-        "email_body_html": "<html><body><p>Dear Linda,</p><p>Please access the secure payment portal below to process payment for invoice <strong>INV-2024-0398</strong>:</p><p><a href=\"https://vendor-secure-pay.com/payments?invoice=INV-2024-0398\">Pay Invoice INV-2024-0398</a></p><p>Thank you for your prompt attention.</p><p>Best regards,<br>Accounts Receivable Team</p></body></html>",
-        "smtp_transaction_logs": [
-          "220 mail.vendor-secure-pay.com ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.vendor-secure-pay.com",
-          "250-PIPELINING",
-          "250-SIZE 10240000",
-          "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<payments@vendor-secure-pay.com>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<linda.kim@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as C9D8E7F1",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "vendor-secure-pay.com",
-          "registrar": "GoDaddy.com, LLC",
-          "creation_date": "2024-02-28T12:45:00Z",
-          "expiration_date": "2025-02-28T12:45:00Z",
-          "registrant": {
-            "name": "Private Registration",
-            "organization": "Privacy Protect, LLC",
-            "email": "contact@privacyprotect.org",
-            "address": "PO Box 1234, Scottsdale, AZ"
-          },
-          "name_servers": [
-            "ns1.godaddy.com",
-            "ns2.godaddy.com"
-          ]
-        },
-        "urls_in_email": [
-          "https://vendor-secure-pay.com/payments?invoice=INV-2024-0398"
-        ],
-        "url_analysis": {
-          "redirect_chain": [],
-          "landing_page_response_headers": {
-            "Content-Type": "text/html; charset=UTF-8",
-            "Server": "Apache/2.4.46 (Ubuntu)"
-          },
-          "landing_page_content_snippet": "<form action=\"/submit\" method=\"POST\"><input name=\"account\" /><input name=\"routing\" /><input type=\"submit\" /></form>"
-        }
-      },
-      "indicators": [
-        "Recently registered domain vendor-secure-pay.com (~2 months ago) with privacy-protected registrant",
-        "URL mimics legitimate vendor payment portal but hosted externally",
-        "SPF and DKIM pass but domain reputation is low",
-        "Email includes specific invoice number to increase legitimacy",
-        "Landing page collects sensitive banking details"
-      ],
-      "detection_method": "Analyze URLs for newly registered domains mimicking vendors; sandbox test payment portal forms; monitor SPF/DKIM and domain reputation; verify invoice details with known vendors; user training on verifying payment requests via phone or known channels.",
-      "relevant_mitre_techniques": [
-        "T1566.002 - Spearphishing Link",
-        "T1598.002 - Phishing for Information",
-        "T1204.002 - User Execution: Malicious File"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email targeting an IT administrator with a malicious Word document attachment exploiting recent CVE, using internal project names to increase trust.",
-      "technical_data": {
-        "email_headers": "Return-Path: <it-support@secure-itdept.com>\r\nReceived: from mail.secure-itdept.com (mail.secure-itdept.com [198.51.100.23])\r\n\tby mail.company.com (Postfix) with ESMTPS id 9K3D123A45\r\n\tfor <alice.adams@company.com>; Fri, 28 Apr 2024 08:33:50 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of it-support@secure-itdept.com designates 198.51.100.23 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=secure-itdept.com; spf=pass smtp.mailfrom=it-support@secure-itdept.com;\r\nX-Mailer: Microsoft Outlook 16.0\r\nMessage-ID: <CAJf54g7kO2fE0W7pR@mail.secure-itdept.com>\r\nSubject: Urgent: Patch Required for Project Helix\r\nFrom: \"IT Support\" <it-support@secure-itdept.com>\r\nTo: alice.adams@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_98765_43210\"\r\nX-Originating-IP: [198.51.100.23]",
-        "email_body": "------=_Part_98765_43210\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHi Alice,\r\n\r\nPlease find attached the urgent patch document for Project Helix addressing the recent vulnerabilities. Kindly review and apply the patch immediately.\r\n\r\nBest,\r\nIT Support Team\r\n\r\n------=_Part_98765_43210\r\nContent-Type: application/msword; name=\"Project_Helix_Patch.docm\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Project_Helix_Patch.docm\"\r\n\r\nUEsDBBQABgAIAAAAIQAAAAAAAAAAAAAAAAAJABwAUHJvamVjdF9IZWxpeF9QYXRjaC5kb2Nt\r\nTVQFAANn/mNQ0uYtV7MDAQa+7/3W2nD1H9v1bZp6V+O2BzD+gCkWnoKAgAUEsHCAAAAAAC\r\nAAAAAA==\r\n------=_Part_98765_43210--",
-        "smtp_transaction_logs": [
-          "220 mail.secure-itdept.com ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.secure-itdept.com",
-          "250-PIPELINING",
-          "250-SIZE 10485760",
-          "250-STARTTLS",
-          "250-AUTH PLAIN LOGIN",
-          "250-ENHANCEDSTATUSCODES",
-          "250-8BITMIME",
-          "250 DSN",
-          "MAIL FROM:<it-support@secure-itdept.com>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<alice.adams@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as 9K3D123A45",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "secure-itdept.com",
-          "registrar": "Google LLC",
-          "creation_date": "2024-02-28T09:45:00Z",
-          "expiration_date": "2025-02-28T09:45:00Z",
-          "registrant": {
-            "name": "Jason Lee",
-            "organization": "Secure IT Dept Inc.",
-            "email": "jason.lee@secure-itdept.com",
-            "address": "456 Technology Blvd, San Francisco, CA"
-          },
-          "name_servers": [
-            "ns-cloud-a1.googledomains.com",
-            "ns-cloud-a2.googledomains.com"
-          ]
-        },
-        "urls_in_email": [
-          "https://secure-itdept.com/patches/Project_Helix_Patch.docm"
-        ]
-      },
-      "indicators": [
-        "New domain registered 2 months ago not previously known to company",
-        "Attachment is a macro-enabled Word document (.docm), commonly used for malware delivery",
-        "Email references internal project name 'Project Helix' to increase trust",
-        "Sender IP 198.51.100.23 not recognized in company mail logs",
-        "SPF and DKIM pass but domain is newly created and suspicious"
-      ],
-      "detection_method": "Use sandbox environment to analyze macro behavior in attachment; correlate domain registration date with sender domain; monitor for new domains mimicking internal IT department; user education on macro-enabled documents from unverified sources.",
-      "relevant_mitre_techniques": [
-        "T1566.001 - Spearphishing Attachment",
-        "T1204.002 - User Execution: Malicious File",
-        "T1193 - Spearphishing via Service"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email sent to a senior executive with a link to a cloned internal SharePoint site, using social media gathered data to personalize the request.",
-      "technical_data": {
-        "email_headers": "Return-Path: <admin@sharepoint-secure.com>\r\nReceived: from mail.sharepoint-secure.com (mail.sharepoint-secure.com [203.0.113.129])\r\n\tby mail.company.com (Postfix) with ESMTPS id B7C5D982\r\n\tfor <michael.brown@company.com>; Thu, 27 Apr 2024 16:45:12 -0400 (EDT)\r\nReceived-SPF: fail (company.com: domain of admin@sharepoint-secure.com does not designate 203.0.113.129 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=fail header.d=sharepoint-secure.com; spf=fail smtp.mailfrom=admin@sharepoint-secure.com;\r\nX-Mailer: Mozilla Thunderbird 91.9.0\r\nMessage-ID: <CAJf89j2kO2fE0W8qd@mail.sharepoint-secure.com>\r\nSubject: Action Required: Review Q1 Financial Documents\r\nFrom: \"SharePoint Admin\" <admin@sharepoint-secure.com>\r\nTo: michael.brown@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"",
-        "email_body_html": "<html><body><p>Dear Michael,</p><p>As discussed during last week's board meeting, please review the Q1 Financial Documents at the secure SharePoint portal below:</p><p><a href=\"http://sharepoint-secure.com/login?user=michael.brown\">Access Documents</a></p><p>Let me know if you have any questions.</p><p>Regards,<br>Sarah Johnson<br>IT Administrator</p></body></html>",
-        "smtp_transaction_logs": [
-          "220 mail.sharepoint-secure.com ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.sharepoint-secure.com",
-          "250-PIPELINING",
-          "250-SIZE 10485760",
-          "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<admin@sharepoint-secure.com>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<michael.brown@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as B7C5D982",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "sharepoint-secure.com",
-          "registrar": "NameSilo, LLC",
-          "creation_date": "2024-04-05T13:12:00Z",
-          "expiration_date": "2025-04-05T13:12:00Z",
-          "registrant": {
-            "name": "Private Registration",
-            "organization": "Privacy Protect, Inc.",
-            "email": "contact@privacyprotect.org",
-            "address": "PO Box 6789, Dallas, TX"
-          },
-          "name_servers": [
-            "ns1.namesilo.com",
-            "ns2.namesilo.com"
-          ]
-        },
-        "urls_in_email": [
-          "http://sharepoint-secure.com/login?user=michael.brown"
-        ],
-        "url_analysis": {
-          "punycode": null,
-          "unicode_homoglyph_domain": null,
-          "homoglyph_characters": {},
-          "redirect_chain": [],
-          "landing_page_response_headers": {
-            "Content-Type": "text/html; charset=UTF-8",
-            "Server": "nginx/1.18.0"
-          },
-          "landing_page_content_snippet": "<form action=\"/auth\" method=\"POST\"><input name=\"username\" /><input name=\"password\" type=\"password\" /><button type=\"submit\">Sign In</button></form>"
-        }
-      },
-      "indicators": [
-        "Sender domain sharepoint-secure.com newly registered in April 2024",
-        "SPF and DKIM fail indicating unauthorized sender",
-        "Link points to domain mimicking internal SharePoint portal but externally hosted",
-        "Landing page mimics internal login form requesting credentials",
-        "Email uses personal details from social media to tailor message"
-      ],
-      "detection_method": "Employ domain monitoring to detect newly registered domains mimicking internal services; validate SPF/DKIM results; sandbox URLs to inspect phishing pages; user training to verify URLs and report suspicious credential requests.",
-      "relevant_mitre_techniques": [
-        "T1566.002 - Spearphishing Link",
-        "T1598.002 - Phishing for Information",
-        "T1204.002 - User Execution: Malicious Link"
-      ]
-    },
-    {
-      "scenario": "Spear phishing email sent to HR personnel with a malicious Excel attachment containing embedded macros to steal credentials, crafted using leaked employee data.",
-      "technical_data": {
-        "email_headers": "Return-Path: <hr-alerts@company-updates.net>\r\nReceived: from mail.company-updates.net (mail.company-updates.net [198.51.100.88])\r\n\tby mail.company.com (Postfix) with ESMTPS id D4F8E7B3\r\n\tfor <emily.watson@company.com>; Fri, 28 Apr 2024 11:20:40 -0400 (EDT)\r\nReceived-SPF: neutral (company.com: domain of hr-alerts@company-updates.net does not designate 198.51.100.88 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=fail header.d=company-updates.net; spf=neutral smtp.mailfrom=hr-alerts@company-updates.net;\r\nX-Mailer: Microsoft Excel 16.0\r\nMessage-ID: <CAJf32klmO2fE0W9uv@mail.company-updates.net>\r\nSubject: Updated Employee Roster Q2 2024\r\nFrom: \"HR Alerts\" <hr-alerts@company-updates.net>\r\nTo: emily.watson@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_56789_12345\"",
-        "email_body": "------=_Part_56789_12345\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHi Emily,\r\n\r\nPlease review the attached updated employee roster for Q2 2024. The file includes recent changes and requires your confirmation.\r\n\r\nRegards,\r\nHR Team\r\n\r\n------=_Part_56789_12345\r\nContent-Type: application/vnd.ms-excel; name=\"Employee_Roster_Q2_2024.xlsm\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Employee_Roster_Q2_2024.xlsm\"\r\n\r\nTVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\nAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9T\r\nIG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAEICAAA=\r\n------=_Part_56789_12345--",
-        "smtp_transaction_logs": [
-          "220 mail.company-updates.net ESMTP Postfix",
-          "EHLO mail.company.com",
-          "250-mail.company-updates.net",
-          "250-PIPELINING",
-          "250-SIZE 10485760",
-          "250-STARTTLS",
-          "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<hr-alerts@company-updates.net>",
-          "250 2.1.0 Ok",
-          "RCPT TO:<emily.watson@company.com>",
-          "250 2.1.5 Ok",
-          "DATA",
-          "354 End data with <CR><LF>.<CR><LF>",
-          "... [email content] ...",
-          ".",
-          "250 2.0.0 Ok: queued as D4F8E7B3",
-          "QUIT",
-          "221 2.0.0 Bye"
-        ],
-        "domain_registration": {
-          "domain": "company-updates.net",
+          "domain": "secure-company-portal.com",
           "registrar": "Dynadot, LLC",
-          "creation_date": "2024-03-28T15:05:00Z",
-          "expiration_date": "2025-03-28T15:05:00Z",
+          "creation_date": "2024-01-05T12:00:00Z",
+          "expiration_date": "2025-01-05T12:00:00Z",
           "registrant": {
-            "name": "Mark Johnson",
-            "organization": "Updates Corp",
-            "email": "mark.johnson@company-updates.net",
-            "address": "890 Corporate Dr, Seattle, WA"
+            "name": "Executive Support",
+            "organization": "Secure Portals LLC",
+            "email": "support@secure-company-portal.com",
+            "address": "1010 Executive Dr, New York, NY"
           },
           "name_servers": [
             "ns1.dynadot.com",
             "ns2.dynadot.com"
           ]
         },
-        "urls_in_email": [],
-        "url_analysis": {}
+        "urls_in_email": [
+          "https://secure-company-portal.com/merger-docs/login?user=ceo"
+        ]
       },
       "indicators": [
-        "Attachment is macro-enabled Excel file (.xlsm) often used for malware",
-        "Sender domain company-updates.net is newly registered and unrelated to company",
-        "SPF neutral and DKIM fail, indicating possible spoofing",
-        "Email references HR and employee roster data leaked from previous breaches",
-        "Sender IP 198.51.100.88 not recognized in company mail logs"
+        "Domain recently registered and mimics company internal portal",
+        "Sender IP 192.0.2.77 not recognized as official company mail server",
+        "Link leads to credential harvesting page disguised as confidential document portal",
+        "Email specifically references recent merger to increase credibility",
+        "SPF and DKIM pass but domain is suspicious and unrelated to company"
       ],
-      "detection_method": "Automated sandbox analysis of Excel macro behavior; monitor email SPF/DKIM status; domain age and reputation checks; user training to verify unexpected attachment sources; block macro-enabled documents from untrusted domains.",
+      "detection_method": "Use domain reputation and registration age checks; sandbox URL to detect credential harvesting forms; correlate sender IP address with legitimate mail servers; user awareness training for high-profile targets on verifying URLs; multi-factor authentication enforcement.",
       "relevant_mitre_techniques": [
-        "T1566.001 - Spearphishing Attachment",
-        "T1204.002 - User Execution: Malicious File",
-        "T1598.002 - Phishing for Information"
-      ]
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1204.002 - User Execution: Malicious Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
     },
     {
-      "scenario": "Spear phishing email to a legal department member with a link to a credential harvesting page disguised as an official court summons portal, using email spoofing to appear from a known government domain.",
+      "scenario": "Spear phishing email to IT administrator from a spoofed internal IT helpdesk address requesting password reset via a malicious link.",
       "technical_data": {
-        "email_headers": "Return-Path: <no-reply@court.gov>\r\nReceived: from mail.fake-court.gov (unknown [192.0.2.77])\r\n\tby mail.company.com (Postfix) with SMTP id E4B1C3D7\r\n\tfor <david.greene@company.com>; Wed, 26 Apr 2024 09:55:09 -0400 (EDT)\r\nReceived-SPF: fail (company.com: domain of no-reply@court.gov does not designate 192.0.2.77 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=fail header.d=court.gov; spf=fail smtp.mailfrom=no-reply@court.gov;\r\nX-Mailer: Microsoft Outlook 15.0\r\nMessage-ID: <CAJf32o9kO2fE0W0qr@mail.fake-court.gov>\r\nSubject: Official Court Summons - Immediate Action Required\r\nFrom: \"Court Notifications\" <no-reply@court.gov>\r\nTo: david.greene@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"",
-        "email_body_html": "<html><body><p>Dear David Greene,</p><p>You have been issued an official court summons. Please review the document and respond within 48 hours by logging into the official portal below:</p><p><a href=\"http://fake-court.gov/summons/login?user=david.greene\">View Summons</a></p><p>Failure to comply may result in legal penalties.</p><p>Sincerely,<br>Clerk of Court</p></body></html>",
+        "email_headers": "Return-Path: <helpdesk@company-it-support.com>\r\nReceived: from mail.company-it-support.com (mail.company-it-support.com [198.51.100.88])\r\n\tby mail.company.com (Postfix) with ESMTPS id 7F5E3D8B21\r\n\tfor <it.admin@company.com>; Mon, 29 Apr 2024 08:30:12 -0400 (EDT)\r\nReceived-SPF: neutral (company.com: domain of helpdesk@company-it-support.com does not designate 198.51.100.88 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=fail header.d=company-it-support.com; spf=neutral smtp.mailfrom=helpdesk@company-it-support.com;\r\nX-Mailer: Mozilla Thunderbird 91.9.0\r\nMessage-ID: <CAJf+99UQO2fE0W6pQ@mail.company-it-support.com>\r\nSubject: Immediate Action Required: Password Reset\r\nFrom: \"IT Helpdesk\" <helpdesk@company-it-support.com>\r\nTo: it.admin@company.com\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"",
+        "email_body_html": "<html><body><p>Dear IT Administrator,</p><p>Due to recent security updates, you are required to reset your system password immediately to maintain system access. Please click the link below to proceed:</p><p><a href=\"https://secure.company-it-support.com/reset?user=it.admin\">Reset Your Password</a></p><p>Failure to comply will result in account suspension.</p><p>Regards,<br>IT Helpdesk Team</p></body></html>",
         "smtp_transaction_logs": [
-          "220 mail.fake-court.gov ESMTP Postfix",
+          "220 mail.company-it-support.com ESMTP Postfix",
           "EHLO mail.company.com",
-          "250-mail.fake-court.gov",
+          "250-mail.company-it-support.com",
           "250-PIPELINING",
           "250-SIZE 5120000",
           "250-STARTTLS",
           "250 AUTH PLAIN LOGIN",
-          "MAIL FROM:<no-reply@court.gov>",
+          "MAIL FROM:<helpdesk@company-it-support.com>",
           "250 2.1.0 Ok",
-          "RCPT TO:<david.greene@company.com>",
+          "RCPT TO:<it.admin@company.com>",
           "250 2.1.5 Ok",
           "DATA",
           "354 End data with <CR><LF>.<CR><LF>",
           "... [email content] ...",
           ".",
-          "250 2.0.0 Ok: queued as E4B1C3D7",
+          "250 2.0.0 Ok: queued as 7F5E3D8B21",
           "QUIT",
           "221 2.0.0 Bye"
         ],
         "domain_registration": {
-          "domain": "fake-court.gov",
-          "registrar": "Unknown",
-          "creation_date": "2024-04-15T08:00:00Z",
-          "expiration_date": "2025-04-15T08:00:00Z",
+          "domain": "company-it-support.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2024-04-15T09:00:00Z",
+          "expiration_date": "2025-04-15T09:00:00Z",
           "registrant": {
             "name": "Redacted for Privacy",
-            "organization": "Redacted",
-            "email": "redacted@privacyprotect.net",
-            "address": "Redacted"
+            "organization": "Privacy Protect, LLC",
+            "email": "proxy@privacyprotect.org",
+            "address": "PO Box 5678, Dallas, TX"
           },
           "name_servers": [
-            "ns1.fake-court.gov",
-            "ns2.fake-court.gov"
+            "ns1.namesilo.com",
+            "ns2.namesilo.com"
           ]
         },
         "urls_in_email": [
-          "http://fake-court.gov/summons/login?user=david.greene"
-        ],
-        "url_analysis": {
-          "punycode": null,
-          "unicode_homoglyph_domain": null,
-          "homoglyph_characters": {},
-          "redirect_chain": [],
-          "landing_page_response_headers": {
-            "Content-Type": "text/html; charset=UTF-8",
-            "Server": "Apache/2.4.46 (Unix)"
-          },
-          "landing_page_content_snippet": "<form action=\"/authenticate\" method=\"POST\"><input name=\"username\" /><input name=\"password\" type=\"password\" /><input type=\"submit\" value=\"Login\" /></form>"
-        }
+          "https://secure.company-it-support.com/reset?user=it.admin"
+        ]
       },
       "indicators": [
-        "Sender domain fake-court.gov impersonates official government domain but is newly registered",
-        "SPF and DKIM fail indicating unauthorized sender",
-        "Sender IP 192.0.2.77 not associated with legitimate government infrastructure",
-        "Email contains urgent legal language to pressure recipient",
-        "Link leads to credential harvesting page mimicking court portal login"
+        "Domain company-it-support.com newly registered and mimics internal IT support domain",
+        "SPF neutral and DKIM fail indicating potential spoofing",
+        "Sender IP 198.51.100.88 not part of company's authorized mail servers",
+        "Link uses HTTPS but domain is unrelated to official company domain",
+        "Email urges immediate action creating urgency to bypass user caution"
       ],
-      "detection_method": "Verify government domain ownership and registration details; monitor SPF/DKIM failures; sandbox URL to analyze phishing login page; train users to verify domain authenticity especially for legal notices.",
+      "detection_method": "Validate sender domain against official IT domains; monitor SPF/DKIM failures; analyze URL domain registration and reputation; sandbox URL to check phishing landing page; educate IT staff on verifying password reset requests via official channels.",
       "relevant_mitre_techniques": [
         "T1566.002 - Spearphishing Link",
         "T1598.002 - Phishing for Information",
-        "T1586.001 - Compromise Infrastructure: Domain Registrar"
-      ]
+        "T1204.002 - User Execution: Malicious Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
+    },
+    {
+      "scenario": "Cloud DevOps team performs a rolling deployment of a new microservice version to the production Kubernetes cluster ensuring zero downtime.",
+      "technical_data": {
+        "timestamp": "2024-06-12T14:45:10Z",
+        "user": "devops.engineer@cloudcorp.com",
+        "cluster": "prod-k8s-cluster",
+        "deployment_details": {
+          "namespace": "payments-service",
+          "deployment_name": "payment-api",
+          "old_version": "v1.5.3",
+          "new_version": "v1.6.0",
+          "strategy": "RollingUpdate",
+          "pods_updated": 5,
+          "success": true
+        },
+        "kubectl_commands": [
+          "kubectl set image deployment/payment-api payment-api=registry.cloudcorp.com/payment-api:v1.6.0 -n payments-service",
+          "kubectl rollout status deployment/payment-api -n payments-service"
+        ],
+        "monitoring_logs": {
+          "cpu_usage_percent": "stable 45-50%",
+          "error_rate": "0.01%",
+          "response_time_ms": "120 average"
+        }
+      },
+      "indicators": [
+        "Rolling update strategy confirming zero downtime",
+        "Deployment initiated by authorized DevOps user",
+        "No spike in error rates or resource usage",
+        "Use of official container registry",
+        "Consistent monitoring metrics post deployment"
+      ],
+      "activity_type": "Standard cloud DevOps deployment",
+      "business_justification": "Deploying new application versions with zero downtime is essential for continuous delivery and high availability.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Employee logs into corporate email and sends a calendar invite for a scheduled team meeting discussing quarterly sales targets.",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:23Z",
+        "user": "jane.doe@enterprise.com",
+        "source_ip": "192.168.10.45",
+        "authentication": {
+          "method": "OAuth2",
+          "status": "Success",
+          "token_issued": "2024-06-10T09:15:20Z",
+          "token_expiry": "2024-06-10T17:15:20Z"
+        },
+        "email_activity": {
+          "smtp_session_id": "abc123smtp",
+          "recipient": "sales-team@enterprise.com",
+          "subject": "Q2 Sales Strategy Meeting",
+          "attachments": [],
+          "email_size_bytes": 2456
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "data_transferred_bytes": 5120
+        }
+      },
+      "indicators": [
+        "Login from known corporate IP range",
+        "OAuth2 authentication success with valid token",
+        "Email sent to internal distribution list",
+        "No attachments or suspicious payloads",
+        "Normal working hour timestamp"
+      ],
+      "activity_type": "Normal employee email communication",
+      "business_justification": "Scheduling and coordinating team meetings is a standard collaborative activity to align on business goals.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "HR department sends company-wide email announcing updates to remote work policy including new guidelines and compliance requirements.",
+      "technical_data": {
+        "timestamp": "2024-06-14T08:00:00Z",
+        "sender": "hr@enterprise.com",
+        "email_headers": {
+          "from": "hr@enterprise.com",
+          "to": "all-employees@enterprise.com",
+          "subject": "Updated Remote Work Policy Effective July 1, 2024",
+          "message_id": "<20240614080000.hr.enterprise.com>",
+          "authentication_results": {
+            "spf": "pass",
+            "dkim": "pass",
+            "dmarc": "pass"
+          }
+        },
+        "email_body_summary": "Details new eligibility criteria, security protocols, and reporting procedures for remote work arrangements.",
+        "network_traffic": {
+          "protocol": "SMTP over TLS",
+          "port": 587,
+          "data_transferred_bytes": 10240
+        },
+        "recipient_count": 1500
+      },
+      "indicators": [
+        "Email signed and authenticated with SPF, DKIM, and DMARC",
+        "Distributed to internal mailing list",
+        "Content consistent with normal HR policy updates",
+        "Sent during business hours",
+        "No suspicious links or attachments"
+      ],
+      "activity_type": "Routine internal administrative communication",
+      "business_justification": "Communicating policy updates company-wide ensures all employees are informed and compliant with organizational governance.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Customer support representative replies to a client\u2019s inquiry providing requested account information after verifying customer identity through multi-factor authentication.",
+      "technical_data": {
+        "timestamp": "2024-06-13T11:22:35Z",
+        "support_user": "support.rep@enterprise.com",
+        "customer_id": "CUST-987654",
+        "communication_channel": "Secure web portal",
+        "authentication": {
+          "customer_mfa": "SMS code verified",
+          "support_user_auth": "LDAP bind successful"
+        },
+        "support_interaction": {
+          "ticket_id": "SR-20240613-1234",
+          "query_type": "Account balance inquiry",
+          "response_time_seconds": 120,
+          "message_content": "Provided current account balance and recent transaction summary.",
+          "attachments_sent": false
+        },
+        "network_activity": {
+          "encryption": "TLS 1.3",
+          "source_ip_support": "172.16.4.33",
+          "source_ip_customer": "203.0.113.77"
+        }
+      },
+      "indicators": [
+        "MFA verification completed before data disclosure",
+        "Support user authenticated via corporate directory",
+        "Communication over encrypted channel",
+        "Response time within SLA parameters",
+        "No sensitive data leakage beyond requested scope"
+      ],
+      "activity_type": "Legitimate customer support interaction",
+      "business_justification": "Verifying customer identity and providing requested account information is a routine and necessary customer service activity.",
+      "sample_type": "benign",
+      "is_attack": false
+    },
+    {
+      "scenario": "Spear phishing email impersonating vendor support to a procurement officer, containing a ZIP archive with a malicious executable disguised as an updated software patch.",
+      "technical_data": {
+        "email_headers": "Return-Path: <support@vendors-software.com>\r\nReceived: from mail.vendors-software.com (mail.vendors-software.com [192.0.2.150])\r\n\tby mail.company.com (Postfix) with ESMTPS id 5T3U9M2J58\r\n\tfor <procurement@company.com>; Fri, 3 May 2024 15:10:42 -0400 (EDT)\r\nReceived-SPF: pass (company.com: domain of support@vendors-software.com designates 192.0.2.150 as permitted sender)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=vendors-software.com; spf=pass smtp.mailfrom=support@vendors-software.com;\r\nX-Mailer: Microsoft Outlook 2016\r\nMessage-ID: <CAJf+11ZRO2fE0W6pQ@mail.vendors-software.com>\r\nSubject: Important: Software Patch Update\r\nFrom: \"Vendor Support\" <support@vendors-software.com>\r\nTo: procurement@company.com\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_33445_66778\"\r\nX-Originating-IP: [192.0.2.150]",
+        "email_body": "------=_Part_33445_66778\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nDear Procurement Team,\r\n\r\nPlease find attached the latest software patch as per your request. Kindly apply the patch at your earliest convenience.\r\n\r\nBest regards,\r\n\r\nJames Clarke\r\nVendor Support\r\n\r\n------=_Part_33445_66778\r\nContent-Type: application/zip; name=\"Patch_Update.zip\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"Patch_Update.zip\"\r\n\r\nUEsDBBQAAAAIAAeLbFIAAAAAAAAAAAAAAAAJAAQATUVUQS1JTi5YTUw1UEsFBgAAAAABAAEANQAA\r\nAA==\r\n",
+        "smtp_transaction_logs": [
+          "220 mail.vendors-software.com ESMTP Postfix",
+          "EHLO mail.company.com",
+          "250-mail.vendors-software.com",
+          "250-PIPELINING",
+          "250-SIZE 10240000",
+          "250-STARTTLS",
+          "250 AUTH PLAIN LOGIN",
+          "MAIL FROM:<support@vendors-software.com>",
+          "250 2.1.0 Ok",
+          "RCPT TO:<procurement@company.com>",
+          "250 2.1.5 Ok",
+          "DATA",
+          "354 End data with <CR><LF>.<CR><LF>",
+          "... [email content] ...",
+          ".",
+          "250 2.0.0 Ok: queued as 5T3U9M2J58",
+          "QUIT",
+          "221 2.0.0 Bye"
+        ],
+        "domain_registration": {
+          "domain": "vendors-software.com",
+          "registrar": "Enom, Inc.",
+          "creation_date": "2024-01-25T10:30:00Z",
+          "expiration_date": "2025-01-25T10:30:00Z",
+          "registrant": {
+            "name": "James Clarke",
+            "organization": "Vendor Software Solutions",
+            "email": "support@vendors-software.com",
+            "address": "321 Industrial Rd, Austin, TX"
+          },
+          "name_servers": [
+            "ns1.enom.com",
+            "ns2.enom.com"
+          ]
+        },
+        "urls_in_email": []
+      },
+      "indicators": [
+        "Attachment is a ZIP archive containing an executable masquerading as a software patch",
+        "Domain vendors-software.com recently registered and resembles legitimate vendor name",
+        "Sender IP 192.0.2.150 not authorized in company mail logs",
+        "X-Originating-IP header inconsistent with company's mail infrastructure",
+        "Email content requests urgent application of attachment"
+      ],
+      "detection_method": "Scan attachments for executables inside archives; verify domain age and reputation; check sender IP alignment with legitimate vendor infrastructure; sandbox executable to detect payload; train procurement staff on verifying vendor communications.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1566.002 - Spearphishing Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true
+    },
+    {
+      "scenario": "Cloud DevOps engineer deploys an approved application update to production environment.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:30:00Z",
+        "engineer_id": "devops_jane",
+        "source_ip": "172.20.10.5",
+        "deployment_tool": "Jenkins CI/CD",
+        "deployment_id": "deploy_20240615_prod_001",
+        "cloud_provider": "Azure",
+        "api_calls": [
+          {
+            "call": "Authenticate",
+            "status": 200,
+            "duration_ms": 200
+          },
+          {
+            "call": "UpdateVMScaleSet",
+            "status": 202,
+            "duration_ms": 4500
+          },
+          {
+            "call": "RestartServices",
+            "status": 200,
+            "duration_ms": 3000
+          }
+        ],
+        "system_logs": [
+          {
+            "event_id": "DEPLOYMENT_START",
+            "timestamp": "2024-06-15T14:30:00Z",
+            "description": "Deployment deploy_20240615_prod_001 started by devops_jane"
+          },
+          {
+            "event_id": "DEPLOYMENT_SUCCESS",
+            "timestamp": "2024-06-15T14:45:00Z",
+            "description": "Deployment deploy_20240615_prod_001 completed successfully"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "traffic_pattern": "Short burst of increased API calls and data transfer consistent with deployment"
+        }
+      },
+      "indicators": {
+        "deployment approved": true,
+        "authenticated user": true,
+        "expected API call sequence": true,
+        "no error status codes": true
+      },
+      "activity_type": "Standard DevOps deployment",
+      "business_justification": "Deploying new application features and bug fixes to production as part of release cycle.",
+      "sample_type": "benign",
+      "is_attack": false
     }
-  ]
+  ],
+  "metadata": {
+    "total_samples": 20,
+    "new_samples_added": 20,
+    "new_malicious_samples": 6,
+    "new_benign_samples": 14,
+    "generation_timestamp": null
+  }
 }
