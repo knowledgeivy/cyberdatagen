@@ -88,7 +88,7 @@ cd src/cyberdata/process
 # 1. Generate initial problems (optional - problems.json included)
 python problems.py
 
-# 2. Evaluate and enhance taxonomy
+# 2. Evaluate and enhance taxonomy (optional - problems_updated.json included)
 python extend_problems.py
 
 # 3. Create seed examples with technical details
@@ -97,8 +97,14 @@ python small_dataset.py
 # 4. Validate seed examples
 python validate_small.py
 
-# 5. Generate large synthetic datasets
-python generator.py --count 50
+# 5. Generate large synthetic datasets with malicious/benign ratios
+python generator.py --count 100 --malicious-ratio 0.3
+
+# Generate specific counts
+python generator.py --malicious-count 25 --benign-count 75
+
+# Use configuration file
+python generator.py --count 200 --ratio-config config/ratio_config.json
 
 # 6. Validate large datasets
 python validate_large.py
