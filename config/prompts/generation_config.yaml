@@ -1,0 +1,175 @@
+version: "1.0"
+description: "Unified configuration for synthetic data generation and prompts"
+author: "CyberData Team"
+last_updated: "2025-06-07"
+
+# Default generation settings
+generation:
+  # Default values (user can override via command line or config)
+  default_count: 20
+  default_malicious_ratio: 0.5
+  max_workers: 4
+  batch_size: 2
+  retry_attempts: 3
+  retry_delay: 2  # seconds between retries
+  temperature:
+    malicious_generation: 0.7
+    benign_generation: 0.7
+    validation: 0.0
+
+# Duplicate detection configuration
+duplicate_detection:
+  enabled: true
+  check_fields: 
+    - "scenario"
+    - "technical_data"
+    - "indicators"
+  
+  # Content normalization rules
+  normalization:
+    lowercase: true
+    remove_extra_whitespace: true
+    remove_specific_values: true  # Replace IPs, domains with placeholders
+
+# Quality control settings
+quality_control:
+  validation:
+    enabled: true
+    sample_rate: 0.1  # Validate 10% of generated samples
+    min_score_threshold: 0.7
+  
+  retry_logic:
+    enabled: true
+    max_failed_batches: 3
+    min_success_rate: 0.8  # 80% of batches must succeed
+
+# Logging configuration
+logging:
+  level: "INFO"
+  detailed_progress: true
+  log_generation_metrics: true
+
+# Output configuration
+output:
+  save_format: "json"
+  include_metadata: true
+  include_generation_stats: true
+  include_duplicate_stats: true
+
+# Prompts for generation (merged from large_generation_prompts.yaml)
+prompts:
+  # Main generation prompt for malicious samples
+  generation:
+    system:
+      template: |
+        You are a cybersecurity synthetic data generator specialized in creating realistic examples. 
+        Given a few example samples of a cybersecurity problem, generate additional samples following the same schema. 
+        Focus on technical accuracy and realism. Return valid JSON with a 'samples' key containing an array of examples.
+
+    user:
+      template: |
+        Problem Nature: {nature} (Area: {area})
+        Description: {description}
+        Seed Examples:
+        {examples_json}
+
+        Please generate {count} additional unique examples following the exact same structure as the examples. 
+        Each example should include the same fields as the examples provided. 
+        Make sure the examples are realistic and technically accurate for {nature} scenarios. 
+        Return ONLY valid JSON with a 'samples' key containing an array of generated examples.
+      
+      variables:
+        - nature
+        - area
+        - description
+        - examples_json
+        - count
+
+  # Prompt for generating benign/legitimate samples
+  benign_generation:
+    system:
+      template: |
+        You are a cybersecurity synthetic data generator specialized in creating realistic benign/legitimate activity examples.
+        Generate normal, non-malicious activities that would occur in the specified environment.
+        Focus on creating realistic examples of legitimate business operations, normal user behavior, and standard IT activities.
+        Return valid JSON with a 'samples' key containing an array of benign examples.
+
+    user:
+      template: |
+        Environment: {area}
+        Context: {context}
+
+        Please generate {count} examples of legitimate, benign activities for the {area} environment.
+        
+        For each example, create realistic scenarios that include:
+        
+        For Enterprise environments:
+        - Normal employee activities (document access, email communications, system logins)
+        - Routine IT operations (software updates, backup processes, monitoring)
+        - Standard business processes (report generation, data analysis, meetings)
+        - Legitimate administrative actions (user account management, policy updates)
+        
+        For Cloud environments:
+        - Normal API usage patterns (authentication, data retrieval, configuration)
+        - Routine cloud operations (scaling, monitoring, logging)
+        - Standard DevOps activities (deployments, updates, maintenance)
+        - Legitimate resource management (provisioning, optimization, cleanup)
+        
+        For Social Engineering contexts:
+        - Authentic business communications (internal memos, legitimate requests)
+        - Normal customer interactions (support requests, information sharing)
+        - Standard verification processes (identity confirmation, authorization)
+        - Routine administrative communications (policy updates, announcements)
+
+        Each example should include the same technical detail level as malicious examples but represent normal operations.
+        Include realistic technical data such as:
+        - Normal log entries and timestamps
+        - Legitimate network traffic patterns
+        - Standard authentication flows
+        - Routine system activities
+        - Normal user behavior patterns
+        
+        Structure each example with:
+        1. "scenario": Brief description of the legitimate activity
+        2. "technical_data": Detailed technical information showing normal operations
+        3. "indicators": Technical indicators showing this is legitimate activity
+        4. "activity_type": Specific type of legitimate activity
+        5. "business_justification": Why this activity is normal and expected
+
+        Return ONLY valid JSON with a 'samples' key containing an array of {count} benign examples.
+      
+      variables:
+        - area
+        - count
+        - context
+
+  # Backup generation prompt (when seeds are not available)
+  backup_generation:
+    system:
+      template: |
+        You are a cybersecurity example generator. Create examples 
+        for {nature} attacks in the {area} context. Return valid JSON.
+      
+      variables:
+        - nature
+        - area
+
+    user:
+      template: |
+        Generate {count} examples of {nature} attacks. 
+        Description: {description}
+        
+        Return ONLY a JSON object with a 'samples' array.
+      
+      variables:
+        - count
+        - nature
+        - description
+
+metadata:
+  models:
+    - name: "gpt-4.1-mini"
+      max_tokens: 16384
+      temperature:
+        generation: 0.7
+        validation: 0.0

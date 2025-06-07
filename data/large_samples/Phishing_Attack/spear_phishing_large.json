@@ -1,0 +1,2470 @@
+{
+  "samples": [
+    {
+      "scenario": "Spear phishing email sent to IT administrator impersonating internal security team requesting password reset via a fake internal portal with manipulated SPF records and DKIM signature spoofing.",
+      "technical_data": {
+        "email_headers": "Return-Path: <security@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.168.1.101])\r\n\tby mx.google.com with ESMTPS id def456uvw789\r\n\tfor <itadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:15:22 -0700 (PDT)\r\nReceived-SPF: neutral (google.com: 198.51.100.45 is neither permitted nor denied by domain of security@legitcorp.com) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=neutral smtp.mailfrom=security@legitcorp.com;\r\n\tdkim=pass header.d=legitcorp.com;\r\n\tdmarc=pass header.from=legitcorp.com\r\nMessage-ID: <security-req-20230327@mail.legitcorp.com>\r\nDate: Mon, 27 Mar 2023 09:15:00 -0700\r\nFrom: \"Security Team\" <security@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Immediate Password Reset Required\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Originating-IP: [198.51.100.45]\r\nX-Mailer: Mozilla Thunderbird 91.8.0\r\n",
+        "email_body": "<html><body><p>Dear IT Administrator,</p><p>Due to recent suspicious activity, you are required to reset your password immediately through our internal portal linked below to maintain network security compliance.</p><p><a href=\"https://secure-legitcorp.com/reset-password?user=itadmin&token=eyJhbGciOiJIUzI1NiJ9\">Reset Password</a></p><p>Failure to comply within 24 hours will result in account suspension.</p><p>Regards,<br>Security Team</p></body></html>",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerhost.com\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<security@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Security Team\" <security@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Immediate Password Reset Required\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as DEF123456\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "secure-legitcorp.com",
+          "registrar": "Dynadot, LLC",
+          "creation_date": "2023-03-20T14:30:00Z",
+          "expiration_date": "2024-03-20T14:30:00Z",
+          "registrant": {
+            "name": "Privacy Protection Service",
+            "organization": "WhoisGuard, Inc.",
+            "email": "contact@whoisguardprotected.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.whoisguard.com",
+            "ns2.whoisguard.com"
+          ]
+        },
+        "malicious_url": "https://secure-legitcorp.com/reset-password?user=itadmin&token=eyJhbGciOiJIUzI1NiJ9...",
+        "url_obfuscation": "Domain uses homoglyph substitution of letter 'i' with 'l' in 'legitcorp' (secure-legltcorp.com) visible in email client. Uses HTTPS with valid but recently issued Let's Encrypt certificate to appear legitimate."
+      },
+      "indicators": {
+        "spf_neutral": true,
+        "dkim_pass": true,
+        "dmarc_pass": true,
+        "unusual_sending_ip": "198.51.100.45 (not authorized in SPF record)",
+        "recent_domain_registration": "secure-legitcorp.com created 7 days prior",
+        "url_homoglyph": "secure-legltcorp.com (letter 'i' replaced by 'l')",
+        "use_of_jwt_token_in_url": true,
+        "email_html_content": "contains urgent password reset link with embedded token"
+      },
+      "detection_method": "Email gateway flagged SPF neutral result with mismatched sending IP. URL reputation service identified newly registered domain with homoglyph. User reported suspicious password reset email. Incident response team analyzed SMTP logs and domain WHOIS. Network sandbox confirmed credential harvesting payload on phishing page.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1556 - Compromise Accounts",
+        "T1586 - Compromise Infrastructure",
+        "T1598.002 - Phishing for Information"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_13",
+      "generation_timestamp": 1749307985.7551937
+    },
+    {
+      "scenario": "Spear phishing targeting legal department with a fake subpoena notice email impersonating court clerk, using spoofed SMTP headers and a zipped archive containing an encrypted executable payload.",
+      "technical_data": {
+        "email_headers": "Return-Path: <courtclerk@justice.gov>\r\nReceived: from unknown (HELO unknown) (198.51.100.99)\r\n\tby mail.legitcorp.com with SMTP; 15 May 2023 07:45:20 -0700\r\nReceived-SPF: fail (mail.legitcorp.com: domain of courtclerk@justice.gov does not designate 198.51.100.99 as permitted sender) client-ip=198.51.100.99;\r\nAuthentication-Results: mail.legitcorp.com; spf=fail; dkim=neutral; dmarc=fail\r\nFrom: \"Court Clerk\" <courtclerk@justice.gov>\r\nTo: legal@legitcorp.com\r\nSubject: Official Subpoena Notice - Action Required\r\nDate: Mon, 15 May 2023 07:44:55 -0700\r\nMessage-ID: <CA+9gK7tH7F@justice.gov>\r\nContent-Type: multipart/mixed; boundary=\"boundary42\"\r\nX-Mailer: Mozilla Thunderbird 78.10.0\r\n",
+        "email_body": "Dear Legal Team,\n\nAttached is an official subpoena notice regarding an ongoing investigation. Please review the document carefully and respond within 48 hours.\n\nAttachment: subpoena_notice.zip (password protected ZIP archive containing subpoena.exe encrypted with AES)\n\nRegards,\nCourt Clerk\nJustice Department",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO unknown\r\n250-mail.legitcorp.com\r\nMAIL FROM:<courtclerk@justice.gov>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Court Clerk\" <courtclerk@justice.gov>\r\nTo: legal@legitcorp.com\r\nSubject: Official Subpoena Notice - Action Required\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5D9C1E2B\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "justice.gov",
+          "registrar": "U.S. Government Network Information Center",
+          "creation_date": "1986-01-01T00:00:00Z",
+          "expiration_date": "2036-01-01T00:00:00Z",
+          "registrant": {
+            "name": "U.S. Government",
+            "organization": "U.S. Government",
+            "email": "noc@justice.gov",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.justice.gov",
+            "ns2.justice.gov"
+          ]
+        },
+        "malicious_url": null,
+        "url_obfuscation": null
+      },
+      "indicators": {
+        "spf_fail": true,
+        "dmarc_fail": true,
+        "unusual_smtp_source_ip": "198.51.100.99 (not authorized for justice.gov)",
+        "attachment_type": "password protected ZIP archive containing encrypted executable (subpoena.exe)",
+        "email_sender_domain_legitimate_but_header_spoofed": true,
+        "email_client_used": "Mozilla Thunderbird (possibly forged)",
+        "no malicious URLs present": true
+      },
+      "detection_method": "Email filtering systems flagged SPF and DMARC failures from sender domain justice.gov. Attachment scanning detected encrypted executable in password-protected ZIP, which is suspicious for spear phishing. SOC correlated SMTP source IP with known malicious hosts and user report of unusual subpoena email escalated response.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566.003 - Spearphishing via Service",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_10",
+      "generation_timestamp": 1749307949.2241464
+    },
+    {
+      "scenario": "Spear phishing email impersonating IT support sent to system administrators with malicious Excel attachment containing hidden macros for credential harvesting.",
+      "technical_data": {
+        "email_headers": "Return-Path: <itsupport@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.0.2.45])\r\n\tby mx.google.com with ESMTPS id def456uvw789\r\n\tfor <sysadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:15:43 -0700 (PDT)\r\nReceived-SPF: pass (google.com: domain of itsupport@legitcorp.com designates 192.0.2.45 as permitted sender) client-ip=192.0.2.45;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=pass (google.com: domain of itsupport@legitcorp.com designates 192.0.2.45 as permitted sender) smtp.mailfrom=itsupport@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=reject) header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.com>\r\nDate: Mon, 27 Mar 2023 09:15:30 -0700\r\nFrom: \"IT Support\" <itsupport@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nReply-To: itsupport@secure-update.net\r\nSubject: Critical: Security Patch Update Required\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary_123456\"\r\nX-Originating-IP: [198.51.100.77]\r\nX-Mailer: Mozilla Thunderbird 91.9.0\r\n",
+        "email_body": "Dear System Administrator,\n\nA critical vulnerability has been identified in our server infrastructure. Please review and apply the attached patch immediately to avoid potential compromise.\n\nOpen the attached Excel file 'Security_Patch_March2023.xlsm' and enable macros to begin the update process.\n\nThank you for your prompt attention.\n\nIT Support Team\n\nAttachment: Security_Patch_March2023.xlsm (Excel macro-enabled workbook containing malicious VBA code to capture credentials and send outbound requests)",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<itsupport@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<sysadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"IT Support\" <itsupport@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nSubject: Critical: Security Patch Update Required\r\nReply-To: itsupport@secure-update.net\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 9876543210\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "secure-update.net",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-22T16:55:00Z",
+          "expiration_date": "2024-03-22T16:55:00Z",
+          "registrant": {
+            "name": "Admin Contact",
+            "organization": "Redacted",
+            "email": "admin@redactedmail.com",
+            "country": "NL"
+          },
+          "nameservers": [
+            "ns1.secure-update.net",
+            "ns2.secure-update.net"
+          ]
+        },
+        "malicious_url": "https://secure-update.net/patches/validate?sys=admin&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "The URL includes a JWT token parameter to mimic authentication tokens and bypass URL filtering. The domain name uses a subtle misspelling of 'secureupdate.net' as 'secure-update.net' to confuse recipients."
+      },
+      "indicators": {
+        "suspicious_reply_to": "itsupport@secure-update.net",
+        "dkim_fail": true,
+        "dmarc_reject": true,
+        "unusual_sending_ip": "198.51.100.77 (absent from SPF records)",
+        "recent_domain_registration": "secure-update.net created 5 days before email",
+        "attachment_type": "malicious macro-enabled Excel file",
+        "URL_contains_jwt_token": true,
+        "domain_misspelling": "secure-update.net vs legitimate secureupdate.net"
+      },
+      "detection_method": "Advanced email filtering detected DKIM and DMARC failures, flagged macro-enabled Excel attachment, and anomalous Reply-To header. SOC analyzed SMTP logs confirming out-of-band IP. Threat intel correlation revealed recent domain registration with privacy protection. User reported suspicious patch email leading to incident response containment.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1598.002 - Phishing for Information"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_3",
+      "generation_timestamp": 1749307840.5457108
+    },
+    {
+      "scenario": "Spear phishing email targeting IT administrator with a fake software update request containing a malicious macro-enabled Excel attachment and DKIM spoofing.",
+      "technical_data": {
+        "email_headers": "Return-Path: <updates@legitsoftware.com>\r\nReceived: from mail.legitsoftware.com (mail.legitsoftware.com [198.51.100.45])\r\n\tby mx.legitcorp.com with ESMTPS id def789uvw123\r\n\tfor <itadmin@legitcorp.com>;\r\n\tFri, 24 Mar 2023 09:15:42 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of updates@legitsoftware.com designates 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of updates@legitsoftware.com designates 198.51.100.45 as permitted sender) smtp.mailfrom=updates@legitsoftware.com;\r\n\tdkim=pass header.d=legitsoftware.com;\r\n\tdmarc=pass (p=reject) header.from=legitsoftware.com\r\nMessage-ID: <update-20230324-001@legitsoftware.com>\r\nDate: Fri, 24 Mar 2023 09:15:40 -0700\r\nFrom: \"Software Updates\" <updates@legitsoftware.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Critical Security Update - Immediate Action Required\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_123456_7890123456.1679656540\"\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear IT Administrator,\n\nPlease find attached the latest critical security update for the corporate firewall software. This update addresses several zero-day vulnerabilities. Kindly apply this update immediately to maintain system integrity.\n\nBest regards,\nUpdate Team\nLegit Software Inc.\n\nAttachment: firewall_update_mar2023.xlsm (macro-enabled Excel file with embedded PowerShell downloader)",
+        "smtp_transaction_log": "220 mail.legitsoftware.com ESMTP Postfix\r\nEHLO mail.legitsoftware.com\r\n250-mail.legitsoftware.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<updates@legitsoftware.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Software Updates\" <updates@legitsoftware.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Critical Security Update - Immediate Action Required\r\n\r\n[Email body and attachment data]\r\n.\r\n250 2.0.0 Ok: queued as 9A7B6C5D2\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "legitsoftware.com",
+          "registrar": "MarkMonitor Inc.",
+          "creation_date": "2008-05-10T12:00:00Z",
+          "expiration_date": "2024-05-10T12:00:00Z",
+          "registrant": {
+            "name": "Legit Software Inc.",
+            "organization": "Legit Software Inc.",
+            "email": "security@legitsoftware.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.legitsoftware.com",
+            "ns2.legitsoftware.com"
+          ]
+        },
+        "malicious_url": "https://legitsoftware.com/update/install?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "The URL contains a JWT token parameter to simulate legitimacy and evade simple URL filters; the attachment macro downloads and executes a PowerShell script from a compromised CDN URL."
+      },
+      "indicators": {
+        "attachment_type": "macro-enabled Excel (.xlsm) with embedded PowerShell downloader",
+        "dkim_pass": true,
+        "dmarc_pass": true,
+        "url_contains_jwt_token": true,
+        "unusual_attachment_macro": true,
+        "sender_domain_legitimate": true,
+        "download_url_suspicious": true
+      },
+      "detection_method": "Advanced email gateway detected embedded macros in Excel attachment flagged as suspicious. Sandbox execution revealed PowerShell downloader behavior. URL analysis showed JWT token used for obfuscation. User reported unexpected update request prompting incident response team review.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1059.001 - Command and Scripting Interpreter: PowerShell",
+        "T1598.002 - Phishing for Information"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_0",
+      "generation_timestamp": 1749307839.386012
+    },
+    {
+      "scenario": "Spear phishing targeting legal department with a fake subpoena email containing a weaponized Word document leveraging macros and social engineering referencing ongoing litigation.",
+      "technical_data": {
+        "email_raw": "Return-Path: <legaldept@legitcorp.com>\r\nReceived: from mail.fakelegal.com (mail.fakelegal.com [203.0.113.102])\r\n\tby mail.legitcorp.com with ESMTPS id XYZ789LMN123\r\n\tfor <legal@legitcorp.com>;\r\n\tTue, 28 Mar 2023 16:45:12 -0700 (PDT)\r\nReceived-SPF: fail (mail.legitcorp.com: domain of legaldept@legitcorp.com does not designate 203.0.113.102 as permitted sender) client-ip=203.0.113.102;\r\nAuthentication-Results: mail.legitcorp.com;\r\n\tspf=fail (mail.legitcorp.com: domain of legaldept@legitcorp.com does not designate 203.0.113.102 as permitted sender) smtp.mailfrom=legaldept@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail header.from=legitcorp.com\r\nFrom: \"Legal Department\" <legaldept@legitcorp.com>\r\nTo: legal@legitcorp.com\r\nSubject: Urgent: Subpoena Document for Case #2023-05\r\nDate: Tue, 28 Mar 2023 16:44:50 -0700\r\nMessage-ID: <CA+PLm9aJkq@example.com>\r\nContent-Type: multipart/mixed; boundary=\"boundary98765\"\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear Legal Team,\n\nPlease review the attached subpoena document related to case #2023-05. Immediate attention is required to prepare for the upcoming court date.\n\nBest regards,\nLinda\nLegal Department\n\nAttachment: Subpoena_Case2023-05.docm (macro-enabled Word document with embedded malicious macro)",
+        "smtp_session": "220 mail.fakelegal.com ESMTP Postfix\r\nEHLO attackermail.net\r\n250-mail.fakelegal.com\r\nMAIL FROM:<legaldept@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\n[Email data]\r\n.\r\n250 2.0.0 Ok: queued as BCD987XYZ\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_whois": {
+          "domain": "attackermail.net",
+          "registrar": "Enom, Inc.",
+          "creation_date": "2023-03-25T12:00:00Z",
+          "expiration_date": "2024-03-25T12:00:00Z",
+          "registrant": {
+            "name": "Privacy Protect",
+            "organization": "Privacy Guard",
+            "email": "privacy@privacyguardservice.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.privacyguard.com",
+            "ns2.privacyguard.com"
+          ]
+        },
+        "malicious_url": "N/A",
+        "url_obfuscation": "N/A"
+      },
+      "indicators": {
+        "spf_fail": true,
+        "dkim_fail": true,
+        "dmarc_fail": true,
+        "unusual_sending_ip": "203.0.113.102 not authorized mail server",
+        "attachment_type": "macro-enabled Word document",
+        "recent_domain_registration": "attackermail.net created 3 days before email",
+        "social_engineering_reference": "Case #2023-05 litigation used to increase credibility",
+        "email_client": "Microsoft Outlook 16.0"
+      },
+      "detection_method": "Email security gateway flagged SPF, DKIM, and DMARC failures. Macro detection sandbox detected malicious behavior in Word document attachment. User reported suspicious subpoena which triggered SOC analysis of SMTP logs and domain registration. IOC matching attackermail.net domain led to blocking and threat intel sharing.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure",
+        "T1598.002 - Phishing for Information"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_11",
+      "generation_timestamp": 1749307953.804886
+    },
+    {
+      "scenario": "Cloud infrastructure auto-scaling triggered by increased web traffic, followed by deployment of a new application version by DevOps team.",
+      "technical_data": {
+        "timestamp": "2024-06-11T14:45:00Z",
+        "cloud_provider": "AWS",
+        "events": [
+          {
+            "event": "auto_scaling_triggered",
+            "resource_id": "web-server-group-prod",
+            "metric": "CPUUtilization",
+            "threshold": "75%",
+            "current_value": "82%",
+            "action": "scale_out",
+            "new_instance_count": 6,
+            "timestamp": "2024-06-11T14:45:00Z"
+          },
+          {
+            "event": "deployment",
+            "deployment_id": "deploy_20240611_1445",
+            "application": "web-frontend",
+            "version": "v2.3.1",
+            "deployed_by": "devops_user",
+            "method": "CI/CD pipeline",
+            "timestamp": "2024-06-11T14:50:00Z",
+            "deployment_status": "success"
+          }
+        ],
+        "api_calls": [
+          {
+            "api": "DescribeAutoScalingGroups",
+            "user": "auto-scaling-service",
+            "timestamp": "2024-06-11T14:44:59Z",
+            "response_code": 200
+          },
+          {
+            "api": "CreateLaunchConfiguration",
+            "user": "devops_user",
+            "timestamp": "2024-06-11T14:46:30Z",
+            "response_code": 200
+          }
+        ],
+        "network_logs": {
+          "load_balancer": "prod-lb-01",
+          "incoming_traffic": "12000 requests/min",
+          "instance_ips": [
+            "10.0.1.15",
+            "10.0.1.16",
+            "10.0.1.17",
+            "10.0.1.18",
+            "10.0.1.19",
+            "10.0.1.20"
+          ]
+        }
+      },
+      "indicators": {
+        "scaling_reasonable_traffic_increase": true,
+        "deployment_from_authorized_user": true,
+        "ci_cd_pipeline_used": true,
+        "no_error_codes": true,
+        "normal_cloud_api_usage_patterns": true
+      },
+      "activity_type": "Routine cloud auto-scaling and DevOps deployment",
+      "business_justification": "Auto-scaling ensures performance during traffic spikes; timely application updates maintain security and feature availability.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_15",
+      "generation_timestamp": 1749307969.3125327
+    },
+    {
+      "scenario": "Cloud infrastructure team performs a routine deployment of a new microservice version, scales up the API servers based on load metrics, and updates monitoring configurations to include new endpoints.",
+      "technical_data": {
+        "deployment": {
+          "service_name": "payment-processing-api",
+          "version": "v2.4.1",
+          "deployment_time": "2024-06-12T14:30:00Z",
+          "deployed_by": "devops_lead",
+          "deployment_tool": "Kubernetes kubectl",
+          "namespace": "production",
+          "pod_rollout_status": "success"
+        },
+        "scaling": {
+          "resource": "api-server-pods",
+          "scale_direction": "up",
+          "previous_replicas": 5,
+          "new_replicas": 8,
+          "trigger_metric": "CPU utilization",
+          "metric_value": 75,
+          "scaling_time": "2024-06-12T14:35:00Z"
+        },
+        "monitoring_update": {
+          "monitoring_tool": "Prometheus",
+          "config_change": "Added new endpoint /v2/payment/status",
+          "update_time": "2024-06-12T14:40:00Z",
+          "changed_by": "cloud_ops_engineer"
+        },
+        "api_authentication_logs": {
+          "auth_method": "OAuth 2.0",
+          "client_id": "api-gateway",
+          "token_issue_time": "2024-06-12T14:29:55Z",
+          "token_expiry": "2024-06-12T15:29:55Z",
+          "request_count": 1500,
+          "source_ip_range": "10.0.0.0/24"
+        }
+      },
+      "indicators": {
+        "deployment_successful": true,
+        "scaling_triggered_by_valid_metric": true,
+        "monitoring_config_verified": true,
+        "authentication_logs_match_known_clients": true,
+        "no_error_logs": true,
+        "activity_scheduled_and_authorized": true
+      },
+      "activity_type": "Routine cloud deployment and scaling operations",
+      "business_justification": "Continuous delivery and scaling of microservices ensure application reliability and performance during peak usage periods.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_16",
+      "generation_timestamp": 1749307986.3507938
+    },
+    {
+      "scenario": "Spear phishing email to procurement manager impersonating a trusted supplier with a malicious link embedded in the email, including sophisticated URL obfuscation and use of a newly registered domain mimicking vendor's brand.",
+      "technical_data": {
+        "email_headers": "Return-Path: <orders@suppl1er-secure.com>\r\nReceived: from mail.suppl1er-secure.com (mail.suppl1er-secure.com [203.0.113.150])\r\n\tby mx.legitcorp.com with ESMTPS id ghi789rst234\r\n\tfor <procurement@legitcorp.com>;\r\n\tMon, 27 Mar 2023 08:49:10 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of orders@suppl1er-secure.com designates 203.0.113.150 as permitted sender) client-ip=203.0.113.150;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of suppl1er-secure.com designates 203.0.113.150 as permitted sender) smtp.mailfrom=orders@suppl1er-secure.com;\r\n\tdkim=fail header.d=supplier-secure.com;\r\n\tdmarc=fail (p=quarantine) header.from=suppl1er-secure.com\r\nMessage-ID: <5566778899@mail.suppl1er-secure.com>\r\nDate: Mon, 27 Mar 2023 08:48:55 -0700\r\nFrom: \"Supplier Secure\" <orders@suppl1er-secure.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Updated Invoice and Payment Instructions\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Apple Mail (2.3445.5.20)\r\n",
+        "email_body": "<html><body><p>Dear Procurement Team,</p><p>Please find your updated invoice and payment instructions at the secure link below. Kindly process the payment promptly to avoid service disruption.</p><p><a href=\"https://suppl1er-secure.com/invoice?id=12345&token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9jdXJlbWVudCIsImlhdCI6MTY3OTc3NjAwMCwiZXhwIjoxNjc5NzgwNjAwfQ.Xx7yzz7zRqkfLj8bEVmLkFvKg9aG8X9SkWZpHxJ7dUM\">View Invoice</a></p><p>Best regards,<br>Supplier Billing Team</p></body></html>",
+        "smtp_transaction_log": "220 mail.suppl1er-secure.com ESMTP Postfix\r\nEHLO attackerhost.biz\r\n250-mail.suppl1er-secure.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<orders@suppl1er-secure.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<procurement@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Supplier Secure\" <orders@suppl1er-secure.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Updated Invoice and Payment Instructions\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5678def456\r\nQUIT\r\n221 2.0.0 Bye",
+        "phishing_url_redirect_chain": [
+          "https://suppl1er-secure.com/invoice?id=12345&token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9jdXJlbWVudCIsImlhdCI6MTY3OTc3NjAwMCwiZXhwIjoxNjc5NzgwNjAwfQ.Xx7yzz7zRqkfLj8bEVmLkFvKg9aG8X9SkWZpHxJ7dUM",
+          "http://invoice.suppl1er-secure.com/secure/pay.php?inv=12345",
+          "http://pay.suppl1er-secure.com/process.php"
+        ],
+        "phishing_page_html_snippet": "<form action=\"process.php\" method=\"POST\">\n<input type=\"text\" name=\"account_number\" placeholder=\"Account Number\" required>\n<input type=\"text\" name=\"routing_number\" placeholder=\"Routing Number\" required>\n<button type=\"submit\">Submit Payment</button>\n</form>",
+        "domain_registration": {
+          "domain": "suppl1er-secure.com",
+          "registrar": "PDR Ltd. d/b/a PublicDomainRegistry.com",
+          "creation_date": "2023-02-28T12:20:00Z",
+          "expiration_date": "2024-02-28T12:20:00Z",
+          "registrant": {
+            "name": "Ivan Petrov",
+            "organization": "Redacted",
+            "email": "ivan.petrov@privacyservice.com",
+            "country": "RU"
+          },
+          "nameservers": [
+            "ns1.privdns.net",
+            "ns2.privdns.net"
+          ]
+        }
+      },
+      "indicators": {
+        "spf_pass": true,
+        "dkim_fail": true,
+        "dmarc_quarantine": true,
+        "domain_typosquatting": "suppl1er-secure.com replacing 'i' with '1'",
+        "recent_domain_registration": "registered one month prior",
+        "jwt_token_in_url": true,
+        "phishing_page_form_action": "process.php harvesting banking details",
+        "email_html_content": "contains embedded link with obfuscated domain and JWT token"
+      },
+      "detection_method": "Email filtering identified DKIM failure and DMARC quarantine policy triggered. URL inspection revealed JWT token in query string used for obfuscation. User reported unexpected invoice email, triggering investigation. Network logs showed access to suspicious subdomains. Domain reputation flagged recent registration and typosquatting.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_12",
+      "generation_timestamp": 1749307985.5214865
+    },
+    {
+      "scenario": "Spear phishing targeting legal department with a fake subpoena email containing a link to a credential harvesting page hosted on a recently registered homoglyph domain.",
+      "technical_data": {
+        "email_headers": "Return-Path: <legal@lawfirm.com>\r\nReceived: from mail.lawfirm.com (mail.lawfirm.com [203.0.113.85])\r\n\tby mx.legitcorp.com with ESMTPS id ghi456rst789\r\n\tfor <legal@legitcorp.com>;\r\n\tMon, 27 Mar 2023 08:45:33 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of legal@lawfirm.com designates 203.0.113.85 as permitted sender) client-ip=203.0.113.85;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass smtp.mailfrom=legal@lawfirm.com;\r\n\tdkim=fail header.d=lawfirm.com;\r\n\tdmarc=fail (p=reject) header.from=lawfirm.com\r\nMessage-ID: <subpoena-20230327-legal@lawfirm.com>\r\nDate: Mon, 27 Mar 2023 08:45:30 -0700\r\nFrom: \"Law Firm Legal Dept\" <legal@lawfirm.com>\r\nTo: legal@legitcorp.com\r\nSubject: Urgent: Court Subpoena Document\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Mozilla Thunderbird 78.14.0\r\n",
+        "email_body": "<html><body><p>Dear Legal Team,</p><p>Please review the attached subpoena document at the link below and provide your response within 24 hours.</p><p><a href=\"http://lawf1rm.com/subpoena/response?case=12345\">View Subpoena Document</a></p><p>Regards,<br>Legal Department</p></body></html>",
+        "smtp_transaction_log": "220 mail.lawfirm.com ESMTP Postfix\r\nEHLO mail.lawfirm.com\r\n250-mail.lawfirm.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<legal@lawfirm.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Law Firm Legal Dept\" <legal@lawfirm.com>\r\nTo: legal@legitcorp.com\r\nSubject: Urgent: Court Subpoena Document\r\n\r\n[Email body with link]\r\n.\r\n250 2.0.0 Ok: queued as 7B8E9F3D1\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "lawf1rm.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-20T15:30:00Z",
+          "expiration_date": "2024-03-20T15:30:00Z",
+          "registrant": {
+            "name": "PrivacyGuard Service",
+            "organization": "PrivacyGuard",
+            "email": "proxy@privacyguard.org",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.privacyguard.net",
+            "ns2.privacyguard.net"
+          ]
+        },
+        "malicious_url": "http://lawf1rm.com/subpoena/response?case=12345",
+        "url_obfuscation": "The domain 'lawf1rm.com' replaces the letter 'i' with the digit '1' as a homoglyph to mimic 'lawfirm.com'. The link leads to a credential phishing page requesting user login."
+      },
+      "indicators": {
+        "dkim_fail": true,
+        "dmarc_fail": true,
+        "unusual_sender_ip": "203.0.113.85 (not in authorized IP list for lawfirm.com)",
+        "recent_domain_registration": "lawf1rm.com registered 1 week prior",
+        "url_homoglyph": "lawf1rm.com (digit '1' instead of 'i')",
+        "phishing_page_form_action": "POST /login.php collecting credentials",
+        "email_html_contains_suspicious_link": true
+      },
+      "detection_method": "Email gateway flagged DKIM and DMARC failures. Threat intel matched suspicious domain lawf1rm.com recently registered. User reported unexpected subpoena email. URL sandboxing revealed credential harvesting page. Network logs confirmed user attempted to access malicious domain.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1110 - Brute Force (Credential Harvesting)"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_0",
+      "generation_timestamp": 1749307839.3869662
+    },
+    {
+      "scenario": "Cloud operations team performs a scheduled deployment of an application update using automated CI/CD pipeline, followed by scaling up compute resources to manage increased expected load.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "user": "ci-cd-bot@cloud.enterprise.com",
+        "source_ip": "10.0.5.12",
+        "api_calls": [
+          {
+            "endpoint": "/deployments/start",
+            "method": "POST",
+            "status_code": 202,
+            "payload": {
+              "application": "customer-portal",
+              "version": "v2.3.1"
+            },
+            "timestamp": "2024-06-15T02:00:05Z"
+          },
+          {
+            "endpoint": "/resources/scale",
+            "method": "PATCH",
+            "status_code": 200,
+            "payload": {
+              "resource_type": "vm",
+              "count": 15
+            },
+            "timestamp": "2024-06-15T02:15:30Z"
+          }
+        ],
+        "system_logs": [
+          {
+            "service": "deployment-service",
+            "level": "INFO",
+            "message": "Deployment v2.3.1 started for customer-portal",
+            "timestamp": "2024-06-15T02:00:10Z"
+          },
+          {
+            "service": "resource-manager",
+            "level": "INFO",
+            "message": "Scaled VM instances from 10 to 15",
+            "timestamp": "2024-06-15T02:16:00Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "api.cloudprovider.com",
+          "port": 443,
+          "bytes_sent": 10240,
+          "bytes_received": 8192
+        }
+      },
+      "indicators": [
+        "API calls performed by authorized CI/CD service account",
+        "Successful HTTP 2xx status codes on deployment and scaling requests",
+        "Logs indicate normal start and completion messages without errors",
+        "Actions performed during scheduled maintenance window",
+        "Network traffic consistent with cloud provider API usage"
+      ],
+      "activity_type": "Routine DevOps deployment and resource scaling",
+      "business_justification": "Deploying application updates and scaling resources are standard cloud operations to ensure application performance and availability in response to business needs.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_22",
+      "generation_timestamp": 1749308018.2316258
+    },
+    {
+      "scenario": "Spear phishing email targeting IT administrator with a malicious Excel attachment exploiting macro to deploy ransomware, leveraging spoofed internal IT helpdesk address with slight domain typo.",
+      "technical_data": {
+        "email_headers": "Return-Path: <helpdesk@legitcorp.co>\r\nReceived: from mail.legitcorp.co (mail.legitcorp.co [198.51.100.45])\r\n\tby mx.legitcorp.com with ESMTPS id def789uvw123\r\n\tfor <itadmin@legitcorp.com>;\r\n\tFri, 24 Mar 2023 09:15:22 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of helpdesk@legitcorp.co designates 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of helpdesk@legitcorp.co designates 198.51.100.45 as permitted sender) smtp.mailfrom=helpdesk@legitcorp.co;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=none) header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.co>\r\nDate: Fri, 24 Mar 2023 09:15:00 -0700\r\nFrom: \"IT Helpdesk\" <helpdesk@legitcorp.co>\r\nTo: itadmin@legitcorp.com\r\nSubject: Immediate action required: Security update Excel attached\r\nMIME-Version: 1.0\r\nContent-Type: application/vnd.ms-excel; name=\"security_update.xlsm\"\r\nContent-Transfer-Encoding: base64\r\nX-Originating-IP: [203.0.113.101]\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear IT Administrator,\n\nPlease find attached the latest security update spreadsheet that contains critical patches for our internal systems. Enable macros to apply the update.\n\nKindly ensure this is executed on all servers by end of day.\n\nBest Regards,\nIT Helpdesk\n\nAttachment: security_update.xlsm (malicious macro-enabled Excel file with ransomware payload)",
+        "smtp_transaction_log": "220 mail.legitcorp.co ESMTP Postfix\r\nEHLO attackerhost.co\r\n250-mail.legitcorp.co\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<helpdesk@legitcorp.co>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"IT Helpdesk\" <helpdesk@legitcorp.co>\r\nTo: itadmin@legitcorp.com\r\nSubject: Immediate action required: Security update Excel attached\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 9876543210\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "legitcorp.co",
+          "registrar": "Google Domains",
+          "creation_date": "2023-03-10T12:30:00Z",
+          "expiration_date": "2024-03-10T12:30:00Z",
+          "registrant": {
+            "name": "Redacted for Privacy",
+            "organization": "PrivacyGuard",
+            "email": "contact@privacyguardservice.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.privacyguard.com",
+            "ns2.privacyguard.com"
+          ]
+        },
+        "malicious_url": "",
+        "url_obfuscation": ""
+      },
+      "indicators": {
+        "domain_typo": "legitcorp.co (instead of legitcorp.com)",
+        "dkim_fail": true,
+        "dmarc_none": true,
+        "attachment_type": "malicious macro-enabled Excel (.xlsm)",
+        "unusual_sending_ip": "203.0.113.101 not in SPF authorized list",
+        "recent_domain_registration": "legitcorp.co domain registered 2 weeks prior",
+        "missing_malicious_url": true
+      },
+      "detection_method": "Email gateway SPF passed due to typo domain but DKIM failed and DMARC policy was none. Macro-enabled Excel attachment flagged by sandboxing with ransomware behavior. SOC correlated sending IP with newly registered domain and identified typo-squatting. User report of suspicious attachment led to endpoint isolation and forensic analysis.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1490 - Inhibit System Recovery",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_14",
+      "generation_timestamp": 1749307995.7621884
+    },
+    {
+      "scenario": "An employee in the finance department accesses the quarterly sales report, sends an email to the accounting team with the attached report, and logs into the enterprise portal for routine timesheet submission.",
+      "technical_data": {
+        "employee_id": "emp10234",
+        "timestamp": "2024-06-12T10:15:30Z",
+        "document_access": {
+          "file_name": "Q2_Sales_Report_2024.xlsx",
+          "access_method": "enterprise_document_management_system",
+          "access_time": "2024-06-12T10:14:50Z",
+          "access_type": "read"
+        },
+        "email_communication": {
+          "from": "jane.doe@company.com",
+          "to": [
+            "accounting@company.com"
+          ],
+          "subject": "Q2 Sales Report Attached",
+          "attachments": [
+            "Q2_Sales_Report_2024.xlsx"
+          ],
+          "email_client": "Outlook 365",
+          "send_time": "2024-06-12T10:15:20Z",
+          "message_id": "<20240612101520.jdoe@company.com>"
+        },
+        "system_login": {
+          "username": "jane.doe",
+          "login_time": "2024-06-12T09:55:00Z",
+          "login_method": "SSO",
+          "source_ip": "192.168.15.44",
+          "device": "Windows 10 Laptop",
+          "session_duration_minutes": 120
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "portal.company.com",
+          "port": 443,
+          "bytes_sent": 3500,
+          "bytes_received": 8000
+        }
+      },
+      "indicators": {
+        "consistent_login_pattern": true,
+        "document_access_matches_role": true,
+        "email_recipient_valid": true,
+        "no_unusual_network_activity": true,
+        "email_headers_normal": true,
+        "session_duration_within_typical_range": true
+      },
+      "activity_type": "Normal employee document access and email communication",
+      "business_justification": "Quarterly financial reporting and communication with accounting is a regular business process needed to support financial operations and compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_16",
+      "generation_timestamp": 1749307986.3498518
+    },
+    {
+      "scenario": "Spear phishing email aimed at legal department impersonating external law firm with forged DKIM and DMARC headers and embedded link to credential harvesting site disguised with Unicode homoglyph domain.",
+      "technical_data": {
+        "email_headers": "Return-Path: <contact@lawfirmexample.com>\r\nReceived: from mail.lawfirmexample.com (mail.lawfirmexample.com [198.51.100.45])\r\n\tby mx.google.com with ESMTPS id ghi789rst012\r\n\tfor <legal@legitcorp.com>;\r\n\tMon, 27 Mar 2023 13:50:18 -0700 (PDT)\r\nReceived-SPF: fail (google.com: domain of contact@lawfirmexample.com does not designate 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=fail (google.com: domain of contact@lawfirmexample.com does not designate 198.51.100.45 as permitted sender) smtp.mailfrom=contact@lawfirmexample.com;\r\n\tdkim=fail header.d=lawfirmexample.com;\r\n\tdmarc=fail (p=reject) header.from=lawfirmexample.com\r\nMessage-ID: <law-update-20230327@mail.lawfirmexample.com>\r\nDate: Mon, 27 Mar 2023 13:50:00 -0700\r\nFrom: \"Law Firm Example\" <contact@lawfirmexample.com>\r\nTo: legal@legitcorp.com\r\nReply-To: contact@lawfirmexamp1e.com\r\nSubject: Confidential: Case Update and Required Action\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Originating-IP: [198.51.100.45]\r\nX-Mailer: Mozilla Thunderbird 91.6.0\r\n",
+        "email_body": "<html><body><p>Dear Legal Team,</p><p>Please review the latest update on the Johnson case via the secure portal below. Your prompt action is required to proceed with the next steps.</p><p><a href=\"https://lawfirmexamp1e.com/secure-login?session=abc123def456\">Access Case Documents</a></p><p>Best regards,<br>Law Firm Example</p></body></html>",
+        "smtp_transaction_log": "220 mail.lawfirmexample.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-mail.lawfirmexample.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<contact@lawfirmexample.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Law Firm Example\" <contact@lawfirmexample.com>\r\nTo: legal@legitcorp.com\r\nSubject: Confidential: Case Update and Required Action\r\nReply-To: contact@lawfirmexamp1e.com\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 56789abcd\r\nQUIT\r\n221 2.0.0 Bye",
+        "phishing_url_redirect_chain": [
+          "https://lawfirmexamp1e.com/secure-login?session=abc123def456",
+          "http://secure.lawfirmexamp1e.com/login.php?user=legal&token=7e9f8a3d",
+          "http://secure.lawfirmexamp1e.com/authenticate.php"
+        ],
+        "phishing_page_html_snippet": "<form action=\"authenticate.php\" method=\"POST\">\n<input type=\"text\" name=\"user\" placeholder=\"User ID\" required>\n<input type=\"password\" name=\"pass\" placeholder=\"Password\" required>\n<button type=\"submit\">Sign In</button>\n</form>",
+        "domain_registration": {
+          "domain": "lawfirmexamp1e.com",
+          "registrar": "PDR Ltd. d/b/a PublicDomainRegistry.com",
+          "creation_date": "2023-03-05T15:30:00Z",
+          "expiration_date": "2024-03-05T15:30:00Z",
+          "registrant": {
+            "name": "Redacted for Privacy",
+            "organization": "Privacy Protect Inc.",
+            "email": "privacy@privacyprotectinc.com",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.privacyprotectinc.com",
+            "ns2.privacyprotectinc.com"
+          ]
+        },
+        "url_obfuscation": "The domain uses a Unicode homoglyph replacing letter 'l' with digit '1' (lawfirmexamp1e.com) to mimic legitimate lawfirmexample.com."
+      },
+      "indicators": {
+        "spf_fail": true,
+        "dkim_fail": true,
+        "dmarc_reject": true,
+        "unusual_sending_ip": "198.51.100.45 (not authorized by SPF)",
+        "use_of_unicode_homoglyph_domain": "lawfirmexamp1e.com with '1' replacing 'l'",
+        "phishing_page_form_action": "authenticate.php collecting credentials",
+        "email_html_content": "contains suspicious link impersonating trusted law firm",
+        "recent_domain_registration": "domain registered 3 weeks before email sent"
+      },
+      "detection_method": "Email filtering detected SPF, DKIM, and DMARC failures. Domain reputation analysis flagged recently registered homoglyph domain. URL sandboxing revealed credential harvesting forms. User reported suspicious legal update email, triggering incident response and domain blocklisting.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_6",
+      "generation_timestamp": 1749307904.193841
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of application update with monitoring and logging enabled.",
+      "technical_data": {
+        "timestamp": "2024-06-15T22:15:00Z",
+        "user": "devops_bot@cloud.enterprise.com",
+        "action": "deployment",
+        "deployment_id": "deploy_20240615_2215",
+        "application": "customer_portal_v2",
+        "cloud_provider": "AWS",
+        "api_calls": [
+          {
+            "api_endpoint": "/ecs/update-service",
+            "method": "POST",
+            "status_code": 200,
+            "request_id": "req-34f2d1b7"
+          },
+          {
+            "api_endpoint": "/cloudwatch/put-metric-data",
+            "method": "PUT",
+            "status_code": 200,
+            "request_id": "req-34f2d1b8"
+          }
+        ],
+        "resource_changes": {
+          "ecs_service": "updated to new task definition v12",
+          "autoscaling_group": "unchanged"
+        },
+        "logging": {
+          "cloudwatch_logs_group": "/aws/ecs/customer_portal",
+          "log_stream": "deploy_20240615_2215",
+          "entries_count": 45,
+          "errors_detected": 0
+        },
+        "network_activity": {
+          "outbound_connections": [
+            {
+              "ip": "52.94.76.20",
+              "port": 443,
+              "protocol": "TLSv1.2"
+            }
+          ]
+        }
+      },
+      "indicators": {
+        "deployment_within_maintenance_window": true,
+        "no_errors_in_logs": true,
+        "api_status_codes_all_200": true,
+        "resource_changes_expected": true,
+        "logging_enabled_and_complete": true
+      },
+      "activity_type": "Scheduled cloud application deployment and monitoring",
+      "business_justification": "Planned rollout of application improvements to ensure service reliability and feature enhancements for customers.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_17",
+      "generation_timestamp": 1749308000.5090513
+    },
+    {
+      "scenario": "Spear phishing email to procurement manager impersonating vendor with a PDF invoice link leading to credential harvesting site, leveraging compromised legitimate domain and subtle URL manipulation.",
+      "technical_data": {
+        "email_headers": "Return-Path: <billing@trustedvendor.com>\r\nReceived: from mail.trustedvendor.com (mail.trustedvendor.com [192.0.2.50])\r\n\tby mx.legitcorp.com with ESMTPS id ghi234rst567\r\n\tfor <procurement@legitcorp.com>;\r\n\tMon, 27 Mar 2023 08:48:17 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of billing@trustedvendor.com designates 192.0.2.50 as permitted sender) client-ip=192.0.2.50;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass smtp.mailfrom=billing@trustedvendor.com;\r\n\tdkim=pass header.d=trustedvendor.com;\r\n\tdmarc=pass header.from=trustedvendor.com\r\nMessage-ID: <A1B2C3D4E5@mail.trustedvendor.com>\r\nDate: Mon, 27 Mar 2023 08:48:00 -0700\r\nFrom: \"Trusted Vendor Billing\" <billing@trustedvendor.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice #45678 Attached - Payment Due\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "<html><body><p>Dear Procurement,</p><p>Please find your invoice #45678 attached. Kindly review and process payment at your earliest convenience.</p><p><a href=\"https://trustedvendor.com.invoice-payments.com/invoice_45678.pdf\">Download Invoice</a></p><p>Thank you,<br>Trusted Vendor Billing Team</p></body></html>",
+        "smtp_transaction_log": "220 mail.trustedvendor.com ESMTP Postfix\r\nEHLO mail.trustedvendor.com\r\n250-mail.trustedvendor.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<billing@trustedvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<procurement@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendor Billing\" <billing@trustedvendor.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice #45678 Attached - Payment Due\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as A1B2C3D4E5\r\nQUIT\r\n221 2.0.0 Bye",
+        "phishing_url_redirect_chain": [
+          "https://trustedvendor.com.invoice-payments.com/invoice_45678.pdf",
+          "https://invoice-payments.com/legitcorp/login?invoice=45678",
+          "https://invoice-payments.com/legitcorp/credentials.php"
+        ],
+        "phishing_page_html_snippet": "<form action=\"credentials.php\" method=\"POST\">\n<input type=\"text\" name=\"user\" placeholder=\"Username\" required>\n<input type=\"password\" name=\"pass\" placeholder=\"Password\" required>\n<button type=\"submit\">Submit</button>\n</form>",
+        "domain_whois": {
+          "domain": "invoice-payments.com",
+          "registrar": "NameCheap, Inc.",
+          "creation_date": "2023-03-01T07:00:00Z",
+          "expiration_date": "2024-03-01T07:00:00Z",
+          "registrant": {
+            "name": "Fake Registrant",
+            "organization": "Fake Org",
+            "email": "fake.registrant@example.com",
+            "country": "NL"
+          },
+          "nameservers": [
+            "ns1.invoice-payments.com",
+            "ns2.invoice-payments.com"
+          ]
+        }
+      },
+      "indicators": {
+        "subdomain_abuse": "trustedvendor.com.invoice-payments.com (typo-subdomain to confuse)",
+        "spf_pass_legitimate_domain": true,
+        "dkim_pass_legitimate_domain": true,
+        "dmarc_pass_legitimate_domain": true,
+        "recent_domain_registration": "invoice-payments.com registered less than 1 month ago",
+        "phishing_url_form_action": "credentials.php harvesting login credentials",
+        "email_html_content": "contains plausible invoice link with misleading subdomain",
+        "unusual_domain_for_invoices": "invoice-payments.com not known vendor domain"
+      },
+      "detection_method": "Email passed SPF, DKIM, and DMARC for trustedvendor.com but link domain was invoice-payments.com, newly registered and flagged by URL reputation engines. User reported unexpected invoice email prompting investigation of URL and WHOIS data. Network proxy logs confirmed user clicked link leading to credential harvesting page. IOC added to blocklist.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1598.002 - Phishing for Information",
+        "T1531 - Account Access Removal"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_14",
+      "generation_timestamp": 1749307995.764238
+    },
+    {
+      "scenario": "Employee performs routine quarterly report generation and shares results via internal email.",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:30Z",
+        "user": "jane.doe@enterprise.com",
+        "activity_log": [
+          {
+            "event": "login",
+            "source_ip": "192.168.10.25",
+            "auth_method": "SSO",
+            "status": "success",
+            "timestamp": "2024-06-10T09:10:00Z"
+          },
+          {
+            "event": "document_access",
+            "document_id": "Q2_Sales_Report_2024.xlsx",
+            "access_type": "read/write",
+            "application": "Microsoft Excel",
+            "timestamp": "2024-06-10T09:12:00Z"
+          },
+          {
+            "event": "email_sent",
+            "to": [
+              "team_leads@enterprise.com"
+            ],
+            "subject": "Quarterly Sales Report Q2 2024",
+            "attachments": [
+              "Q2_Sales_Report_2024.xlsx"
+            ],
+            "timestamp": "2024-06-10T09:15:25Z",
+            "email_client": "Outlook 365"
+          }
+        ],
+        "network_traffic": {
+          "destination_ip": "10.20.30.40",
+          "port": 443,
+          "protocol": "TLS 1.3",
+          "data_volume_kb": 150
+        }
+      },
+      "indicators": {
+        "consistent_login_ip": true,
+        "document_access_pattern": "regular quarterly reports",
+        "email_recipients_internal": true,
+        "TLS_encrypted_traffic": true,
+        "timestamp_within_business_hours": true
+      },
+      "activity_type": "Standard business process - report generation and communication",
+      "business_justification": "Quarterly sales reports are regularly generated and shared with team leads for performance review and planning.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_19",
+      "generation_timestamp": 1749308001.6016178
+    },
+    {
+      "scenario": "Spear phishing targeting procurement officer with a fake vendor invoice email including reply-to manipulation, SPF fail, and a URL using homoglyph characters for credential phishing.",
+      "technical_data": {
+        "email_headers": "Return-Path: <accounts@trustedvendors.com>\r\nReceived: from compromised-host.net (compromised-host.net [198.51.100.77])\r\n\tby smtp.legitcorp.com with SMTP; 28 Mar 2023 16:05:12 -0700\r\nReceived-SPF: fail (smtp.legitcorp.com: domain of accounts@trustedvendors.com does not designate 198.51.100.77 as permitted sender) client-ip=198.51.100.77;\r\nAuthentication-Results: smtp.legitcorp.com; spf=fail; dkim=fail; dmarc=fail\r\nFrom: \"Trusted Vendors\" <accounts@trustedvendors.com>\r\nTo: procurement@legitcorp.com\r\nReply-To: payment@trustedvend0rs.com\r\nSubject: Invoice #4589723 for Immediate Payment\r\nDate: Tue, 28 Mar 2023 16:04:50 -0700\r\nMessage-ID: <INV-4589723@trustedvendors.com>\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Mozilla Thunderbird 78.10.2\r\n",
+        "email_body": "Dear Procurement Team,\n\nPlease find attached the invoice #4589723 for the recent order. Kindly process the payment to the updated bank account provided in the link below:\n\nhttps://trustedvend0rs.com/payment?invoice=4589723&auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n\nThank you for your prompt attention.\n\nBest regards,\nAccounts Department\nTrusted Vendors Inc.\n\nAttachment: invoice_4589723.pdf (clean PDF)\n",
+        "smtp_transaction_log": "220 smtp.legitcorp.com ESMTP Postfix\r\nEHLO compromised-host.net\r\n250-smtp.legitcorp.com\r\nMAIL FROM:<accounts@trustedvendors.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<procurement@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendors\" <accounts@trustedvendors.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice #4589723 for Immediate Payment\r\nReply-To: payment@trustedvend0rs.com\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5F6E7D8C9A\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "trustedvend0rs.com",
+          "registrar": "Namecheap, Inc.",
+          "creation_date": "2023-03-10T11:25:00Z",
+          "expiration_date": "2024-03-10T11:25:00Z",
+          "registrant": {
+            "name": "Redacted for Privacy",
+            "organization": "Privacy Protection Service",
+            "email": "privacy@privacyprotectservice.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.privacyprotect.net",
+            "ns2.privacyprotect.net"
+          ]
+        },
+        "malicious_url": "https://trustedvend0rs.com/payment?invoice=4589723&auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "Domain uses homoglyph 'o' replaced with '0' in 'trustedvend0rs.com' to mimic legitimate 'trustedvendors.com'. URL contains JWT token in query string to appear authentic and bypass filters."
+      },
+      "indicators": {
+        "reply_to_manipulation": "payment@trustedvend0rs.com (different from From address domain)",
+        "spf_fail": true,
+        "dkim_fail": true,
+        "dmarc_fail": true,
+        "unusual_smtp_source_ip": "198.51.100.77 not authorized for trustedvendors.com",
+        "recent_domain_registration": "trustedvend0rs.com registered 18 days before email received",
+        "URL_homoglyph_domain": "trustedvend0rs.com vs trustedvendors.com",
+        "attachment_type": "clean PDF invoice (no malware but phishing via URL)"
+      },
+      "detection_method": "Email security gateway flagged SPF, DKIM, and DMARC failures. URL analysis identified homoglyph domain with embedded JWT token. User reported suspicious invoice email. Network logs showed DNS resolution for homoglyph domain and outbound connections to suspicious IPs. Domain registration data corroborated recent creation consistent with phishing campaign.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_2",
+      "generation_timestamp": 1749307858.6904154
+    },
+    {
+      "scenario": "Cloud infrastructure team performs scheduled scaling operation and deployment of updated web application version in production environment.",
+      "technical_data": {
+        "timestamp": "2024-06-10T22:45:00Z",
+        "user": "cloud-admin@enterprise.com",
+        "source_ip": "192.168.100.45",
+        "api_calls": [
+          {
+            "api_endpoint": "/v2/compute/instances/scale",
+            "method": "POST",
+            "request_body": {
+              "instance_group_id": "web-app-prod-group",
+              "desired_capacity": 15
+            },
+            "response_code": 200,
+            "timestamp": "2024-06-10T22:45:05Z"
+          },
+          {
+            "api_endpoint": "/v2/deployments",
+            "method": "POST",
+            "request_body": {
+              "application": "web-app",
+              "version": "2.3.1",
+              "environment": "production"
+            },
+            "response_code": 202,
+            "timestamp": "2024-06-10T22:45:30Z"
+          }
+        ],
+        "cloud_logs": [
+          {
+            "event": "ScalingOperation",
+            "details": "Scaled web-app-prod-group from 12 to 15 instances",
+            "timestamp": "2024-06-10T22:45:10Z"
+          },
+          {
+            "event": "DeploymentStarted",
+            "application": "web-app",
+            "version": "2.3.1",
+            "timestamp": "2024-06-10T22:45:30Z"
+          }
+        ],
+        "network_activity": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "source_ip": "192.168.100.45",
+          "destination_ip": "cloud-api.enterprise.com",
+          "bytes_sent": 3500,
+          "bytes_received": 2700
+        },
+        "auth_flow": {
+          "method": "OAuth 2.0 token",
+          "token_expiry": "2024-06-10T23:45:00Z",
+          "scopes": [
+            "compute:scale",
+            "deployments:create"
+          ]
+        }
+      },
+      "indicators": [
+        "API calls authenticated with valid OAuth 2.0 token",
+        "Scaling and deployment actions match scheduled maintenance window",
+        "No error or failed response codes in API calls",
+        "Operations performed by authorized cloud-admin user",
+        "Network communication limited to cloud provider API endpoints"
+      ],
+      "activity_type": "Routine cloud operations: scaling and deployment",
+      "business_justification": "Scheduled scaling to handle increased traffic and deployment of latest web application version ensures optimal performance and security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_24",
+      "generation_timestamp": 1749308033.6897216
+    },
+    {
+      "scenario": "Spear phishing email impersonating IT helpdesk sent to systems administrator with a malicious Excel attachment exploiting macros to deploy remote access trojan.",
+      "technical_data": {
+        "email_headers": "Return-Path: <helpdesk@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.168.1.101])\r\n\tby mx.google.com with ESMTPS id def456uvw789\r\n\tfor <sysadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:15:43 -0700 (PDT)\r\nReceived-SPF: pass (google.com: domain of helpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) client-ip=192.168.1.101;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=pass (google.com: domain of helpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) smtp.mailfrom=helpdesk@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=quarantine) header.from=legitcorp.com\r\nMessage-ID: <0987654321@mail.legitcorp.com>\r\nDate: Mon, 27 Mar 2023 09:15:40 -0700\r\nFrom: \"IT Helpdesk\" <helpdesk@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nReply-To: helpdesk@legit-support.com\r\nSubject: Immediate Action Required: Security Update Installation\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary123\"\r\nX-Originating-IP: [203.0.113.50]\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear Systems Administrator,\n\nPlease find attached the latest security update patch in the Excel file. Enable macros to apply the patch to critical systems immediately to mitigate recent vulnerabilities.\n\nContact us if you have any questions.\n\nRegards,\nIT Helpdesk\n\nAttachment: Security_Update_March2023.xlsm (macro-enabled Excel file containing remote access trojan payload)",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<helpdesk@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<sysadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"IT Helpdesk\" <helpdesk@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nSubject: Immediate Action Required: Security Update Installation\r\nReply-To: helpdesk@legit-support.com\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 0987654321\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "legit-support.com",
+          "registrar": "Google LLC",
+          "creation_date": "2023-03-10T15:30:00Z",
+          "expiration_date": "2024-03-10T15:30:00Z",
+          "registrant": {
+            "name": "Privacy Protect",
+            "organization": "PrivacyGuard Inc.",
+            "email": "privacy@privacyguard.com",
+            "country": "GB"
+          },
+          "nameservers": [
+            "ns1.privacyguard-dns.com",
+            "ns2.privacyguard-dns.com"
+          ]
+        },
+        "malicious_url": "https://legit-support.com/updates/install?user=sysadmin&session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "The URL embeds a JWT token in the query string to evade detection. The domain uses a visually similar font to legitcorp.com to confuse recipients."
+      },
+      "indicators": {
+        "suspicious_reply_to": "helpdesk@legit-support.com",
+        "dkim_fail": true,
+        "dmarc_quarantine": true,
+        "unusual_sending_ip": "203.0.113.50 (not in SPF records)",
+        "recent_domain_registration": "legit-support.com registered 17 days before email",
+        "attachment_type": "macro-enabled Excel file (.xlsm)",
+        "URL_contains_jwt_token": true,
+        "domain_lookalike": "legit-support.com resembles legitcorp.com"
+      },
+      "detection_method": "Email gateway detected DKIM and DMARC failures and flagged macro-enabled attachment. URL sandboxing identified remote access trojan behavior. SOC correlation of SMTP logs showed sending IP not in SPF records. Domain registration checks confirmed recent creation of lookalike domain.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1204.002 - User Execution: Malicious File"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_8",
+      "generation_timestamp": 1749307942.9668634
+    },
+    {
+      "scenario": "Spear phishing email sent to IT administrator impersonating a trusted software vendor requesting immediate patch installation with a malicious attachment and forged DKIM signature.",
+      "technical_data": {
+        "email_headers": "Return-Path: <security@trustedvendor.com>\r\nReceived: from mail.trustedvendor.com (mail.trustedvendor.com [198.51.100.45])\r\n\tby mx.corpnet.com with ESMTPS id def789uvw123\r\n\tfor <itadmin@corpnet.com>;\r\n\tFri, 24 Mar 2023 09:15:30 -0700 (PDT)\r\nReceived-SPF: pass (mx.corpnet.com: domain of security@trustedvendor.com designates 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.corpnet.com;\r\n\tspf=pass (mx.corpnet.com: domain of security@trustedvendor.com designates 198.51.100.45 as permitted sender) smtp.mailfrom=security@trustedvendor.com;\r\n\tdkim=pass header.d=trustedvendor.com;\r\n\tdmarc=pass (p=reject) header.from=trustedvendor.com\r\nMessage-ID: <patchupdate-20230324@mail.trustedvendor.com>\r\nDate: Fri, 24 Mar 2023 09:15:00 -0700\r\nFrom: \"Trusted Vendor Security\" <security@trustedvendor.com>\r\nTo: itadmin@corpnet.com\r\nSubject: Critical Security Patch - Immediate Action Required\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"BoundaryString\"\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear IT Administrator,\n\nPlease find attached the latest critical security patch for our software. This patch addresses multiple vulnerabilities that could be exploited if left unpatched.\n\nInstall the patch immediately and confirm once done.\n\nRegards,\nSecurity Team\nTrusted Vendor\n\nAttachment: patch_update_critical.zip (contains malicious executable disguised as patch installer)",
+        "smtp_transaction_log": "220 mail.trustedvendor.com ESMTP Postfix\r\nEHLO mail.corpnet.com\r\n250-mail.trustedvendor.com\r\n250-PIPELINING\r\n250-SIZE 102400000\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250 8BITMIME\r\nMAIL FROM:<security@trustedvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@corpnet.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendor Security\" <security@trustedvendor.com>\r\nTo: itadmin@corpnet.com\r\nSubject: Critical Security Patch - Immediate Action Required\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 9ABF12345\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "trustedvendor.com",
+          "registrar": "Google LLC",
+          "creation_date": "2015-06-10T12:00:00Z",
+          "expiration_date": "2025-06-10T12:00:00Z",
+          "registrant": {
+            "name": "Trusted Vendor Inc.",
+            "organization": "Trusted Vendor Inc.",
+            "email": "admin@trustedvendor.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.trustedvendor.com",
+            "ns2.trustedvendor.com"
+          ]
+        },
+        "malicious_url": "N/A",
+        "url_obfuscation": "N/A"
+      },
+      "indicators": {
+        "attachment_type": "malicious executable disguised as patch installer inside ZIP",
+        "dkim_pass": true,
+        "spf_pass": true,
+        "dmarc_pass": true,
+        "email_source_ip": "198.51.100.45 (matches trustedvendor.com SPF record)",
+        "unusual_attachment": "Executable file within ZIP archive not typical for vendor communication",
+        "unexpected_request": "Urgent patch installation with no prior notification from vendor"
+      },
+      "detection_method": "Endpoint AV detected known malware signature in executable attachment. Email security gateway validated DKIM and SPF but flagged attachment type as suspicious. User reported unexpected patch email. Incident response team correlated with vendor communication logs confirming no patch release on that date.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1193 - Spearphishing via Service"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_9",
+      "generation_timestamp": 1749307934.9709737
+    },
+    {
+      "scenario": "Employee accesses confidential project documentation and sends a status update email to the project team.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "activity_log": [
+          {
+            "event": "login",
+            "source_ip": "192.168.10.45",
+            "auth_method": "Kerberos",
+            "result": "success",
+            "timestamp": "2024-06-15T10:20:12Z"
+          },
+          {
+            "event": "file_access",
+            "file_path": "/projects/alpha/confidential_spec.docx",
+            "access_type": "read",
+            "timestamp": "2024-06-15T10:21:00Z"
+          },
+          {
+            "event": "email_send",
+            "email_headers": {
+              "from": "jane.doe@enterprise.com",
+              "to": [
+                "alpha_team@enterprise.com"
+              ],
+              "subject": "Alpha Project Status Update",
+              "message_id": "<20240615102345.jdoe@enterprise.com>"
+            },
+            "email_body_summary": "Summary of project milestones achieved so far.",
+            "timestamp": "2024-06-15T10:23:45Z"
+          }
+        ],
+        "network_traffic": {
+          "src_ip": "192.168.10.45",
+          "dst_ip": "10.20.30.15",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 3500,
+          "bytes_received": 1200,
+          "session_duration_seconds": 180
+        }
+      },
+      "indicators": {
+        "auth_success": true,
+        "access_to_authorized_resources": true,
+        "email_domain_consistency": true,
+        "no_anomalous_network_behavior": true,
+        "normal_session_length": true
+      },
+      "activity_type": "Normal employee document access and communication",
+      "business_justification": "Employee routinely accesses project documents and communicates updates to team members as part of standard project management.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_20",
+      "generation_timestamp": 1749308013.7989614
+    },
+    {
+      "scenario": "An employee accesses a shared project document and sends a status update email to the project team.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "activity": [
+          {
+            "type": "document_access",
+            "resource": "SharePoint://Projects/Alpha/StatusReport.docx",
+            "access_method": "Web",
+            "ip_address": "192.168.10.45",
+            "device": "Windows-10-Laptop-JD",
+            "auth_method": "OAuth2",
+            "session_id": "abc123session"
+          },
+          {
+            "type": "email_sent",
+            "email_headers": {
+              "from": "jane.doe@enterprise.com",
+              "to": [
+                "project.team@enterprise.com"
+              ],
+              "subject": "Weekly Status Update - Project Alpha",
+              "message_id": "<20240615092345.jdoe@enterprise.com>",
+              "received_spf": "pass",
+              "dkim_signature": "pass"
+            },
+            "email_body": "Attached is the latest status report for Project Alpha. Please review prior to our next meeting.",
+            "network_info": {
+              "smtp_server": "smtp.enterprise.com",
+              "source_ip": "192.168.10.45",
+              "port": 587,
+              "tls_enabled": true
+            }
+          }
+        ]
+      },
+      "indicators": {
+        "consistent_ip_and_device": true,
+        "email_authentication_passed": true,
+        "document_access_within_office_hours": true,
+        "no_unusual_data_transfers": true,
+        "session_authenticated_normally": true
+      },
+      "activity_type": "Employee Document Access and Internal Email Communication",
+      "business_justification": "Employees regularly access shared documents and communicate status updates via email as part of standard project collaboration.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_18",
+      "generation_timestamp": 1749307999.5513625
+    },
+    {
+      "scenario": "Employee performs routine access of sensitive HR documents and sends an internal email to HR team about upcoming policy changes.",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:23Z",
+        "user": "jdoe@enterprise.com",
+        "activity_log": [
+          {
+            "event": "login",
+            "source_ip": "192.168.12.45",
+            "device": "CORP-LAPTOP-45",
+            "auth_method": "SAML",
+            "status": "success",
+            "timestamp": "2024-06-10T09:14:55Z"
+          },
+          {
+            "event": "file_access",
+            "file_path": "/shared/hr/policies/2024-employee-handbook.pdf",
+            "access_type": "read",
+            "timestamp": "2024-06-10T09:15:05Z",
+            "application": "Adobe Acrobat Reader"
+          },
+          {
+            "event": "email_sent",
+            "to": [
+              "hr-team@enterprise.com"
+            ],
+            "from": "jdoe@enterprise.com",
+            "subject": "Upcoming Employee Policy Updates",
+            "timestamp": "2024-06-10T09:15:23Z",
+            "email_client": "Outlook 2021",
+            "network": {
+              "source_ip": "192.168.12.45",
+              "destination_ip": "10.10.5.12",
+              "protocol": "SMTP",
+              "port": 587
+            }
+          }
+        ]
+      },
+      "indicators": {
+        "consistent_source_ip": true,
+        "normal_authentication_method": true,
+        "legitimate_application_usage": true,
+        "internal_email_domain": true,
+        "expected_file_access": true,
+        "timestamp_within_business_hours": true
+      },
+      "activity_type": "normal employee document access and internal email communication",
+      "business_justification": "Employees regularly access HR documents and communicate policy updates to relevant teams as part of standard operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_21",
+      "generation_timestamp": 1749308015.0537672
+    },
+    {
+      "scenario": "Spear phishing email sent to procurement officer impersonating trusted supplier with attachment containing weaponized Excel sheet exploiting VBA macro to deploy malware.",
+      "technical_data": {
+        "email_headers": "Return-Path: <orders@trusted-supplier.com>\r\nReceived: from mail.trusted-supplier.com (mail.trusted-supplier.com [203.0.113.50])\r\n\tby smtp.legitcorp.com with ESMTPS id ghi789rst012\r\n\tfor <procurement@legitcorp.com>;\r\n\tFri, 31 Mar 2023 16:45:33 -0700 (PDT)\r\nReceived-SPF: pass (smtp.legitcorp.com: domain of orders@trusted-supplier.com designates 203.0.113.50 as permitted sender) client-ip=203.0.113.50;\r\nAuthentication-Results: smtp.legitcorp.com;\r\n\tspf=pass smtp.mailfrom=orders@trusted-supplier.com;\r\n\tdkim=pass header.d=trusted-supplier.com;\r\n\tdmarc=pass header.from=trusted-supplier.com\r\nMessage-ID: <order-invoice-20230331@mail.trusted-supplier.com>\r\nDate: Fri, 31 Mar 2023 16:45:00 -0700\r\nFrom: \"Trusted Supplier\" <orders@trusted-supplier.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice and Order Confirmation\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary123\"\r\nX-Mailer: Microsoft Outlook 365\r\n",
+        "email_body": "--boundary123\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\n\r\nDear Procurement Team,\r\n\r\nPlease find attached the invoice and order details for your recent purchase. Kindly review and process payment at the earliest.\r\n\r\nBest regards,\r\nTrusted Supplier\r\n--boundary123\r\nContent-Type: application/vnd.ms-excel; name=\"invoice_order_33123.xlsm\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"invoice_order_33123.xlsm\"\r\n\r\n[Base64 encoded macro-enabled Excel file with embedded payload]\r\n--boundary123--",
+        "smtp_transaction_log": "220 smtp.legitcorp.com ESMTP Postfix\r\nEHLO mail.trusted-supplier.com\r\n250-smtp.legitcorp.com\r\nMAIL FROM:<orders@trusted-supplier.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<procurement@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Supplier\" <orders@trusted-supplier.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice and Order Confirmation\r\n\r\n[Email body and attachment]\r\n.\r\n250 2.0.0 Ok: queued as GHI789RST\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "trusted-supplier.com",
+          "registrar": "Tucows Domains Inc.",
+          "creation_date": "2022-11-10T12:00:00Z",
+          "expiration_date": "2024-11-10T12:00:00Z",
+          "registrant": {
+            "name": "Trusted Supplier Inc.",
+            "organization": "Trusted Supplier Inc.",
+            "email": "admin@trusted-supplier.com",
+            "country": "GB"
+          },
+          "nameservers": [
+            "ns1.trusted-supplier.com",
+            "ns2.trusted-supplier.com"
+          ]
+        },
+        "malicious_url": "",
+        "url_obfuscation": ""
+      },
+      "indicators": {
+        "spf_pass": true,
+        "dkim_pass": true,
+        "dmarc_pass": true,
+        "sending_ip_authorized": "203.0.113.50 authorized in SPF",
+        "attachment_type": "macro-enabled Excel file (.xlsm)",
+        "attachment_contains_vba_macro": true,
+        "domain_age": "trusted-supplier.com registered 4 months ago",
+        "email_content_impersonation": "trusted supplier branding and legitimate language",
+        "no embedded URLs": true
+      },
+      "detection_method": "Anti-malware gateway detected suspicious VBA macros in Excel attachment flagged as potential malware. Email headers and SPF/DKIM/DMARC validated legitimate domain but recent domain registration and low reputation triggered alert. User reported unexpected invoice leading to incident investigation and malware sandbox detonation confirming payload.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1059.005 - Command and Scripting Interpreter: Visual Basic",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_13",
+      "generation_timestamp": 1749307985.7571971
+    },
+    {
+      "scenario": "Spear phishing email targeting legal department with a forged LinkedIn notification containing a link to a credential harvesting site using a lookalike domain with typosquatting.",
+      "technical_data": {
+        "email_headers": "Return-Path: <notifications@linkedin.com>\r\nReceived: from mail.linkedin.com (mail.linkedin.com [203.0.113.22])\r\n\tby mail.corpnet.com with ESMTPS id ghi567rst890\r\n\tfor <legal@corpnet.com>;\r\n\tMon, 27 Mar 2023 08:05:45 -0700 (PDT)\r\nReceived-SPF: neutral (mail.corpnet.com: domain of notifications@linkedin.com does not designate 203.0.113.22 as permitted sender) client-ip=203.0.113.22;\r\nAuthentication-Results: mail.corpnet.com;\r\n\tspf=neutral;\r\n\tdkim=fail header.d=linkedin.com;\r\n\tdmarc=fail (p=reject) header.from=linkedin.com\r\nMessage-ID: <notification-230327@mail.linkedin.com>\r\nDate: Mon, 27 Mar 2023 08:05:00 -0700\r\nFrom: \"LinkedIn Notifications\" <notifications@linkedin.com>\r\nTo: legal@corpnet.com\r\nSubject: New Connection Request from David Smith\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Thunderbird 78.11.0\r\n",
+        "email_body": "<html><body><p>Hi,</p><p>You have a new connection request from David Smith. Click the link below to view the profile and respond.</p><p><a href=\"http://linkdln-secure.com/login?user=legal&session=abc123\">View Connection Request</a></p><p>Regards,<br>LinkedIn Team</p></body></html>",
+        "smtp_transaction_log": "220 mail.linkedin.com ESMTP\r\nEHLO mail.corpnet.com\r\n250-mail.linkedin.com\r\nMAIL FROM:<notifications@linkedin.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@corpnet.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\n[Email data]\r\n.\r\n250 2.0.0 Ok: queued as 7C8D9E45\r\nQUIT\r\n221 2.0.0 Bye",
+        "phishing_url_redirect_chain": [
+          "http://linkdln-secure.com/login?user=legal&session=abc123",
+          "http://linkd1n-login.com/authenticate.php",
+          "http://linkd1n-login.com/submit_credentials.php"
+        ],
+        "phishing_page_html_snippet": "<form action=\"submit_credentials.php\" method=\"POST\">\n<input type=\"text\" name=\"username\" placeholder=\"Email or Phone\" required>\n<input type=\"password\" name=\"password\" placeholder=\"Password\" required>\n<button type=\"submit\">Sign In</button>\n</form>",
+        "domain_whois": {
+          "domain": "linkdln-secure.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-20T15:30:00Z",
+          "expiration_date": "2024-03-20T15:30:00Z",
+          "registrant": {
+            "name": "Private Registration",
+            "organization": "Privacy Protect LLC",
+            "email": "contact@privacyprotect.org",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.privacyprotectdns.com",
+            "ns2.privacyprotectdns.com"
+          ]
+        }
+      },
+      "indicators": {
+        "spf_neutral": true,
+        "dkim_fail": true,
+        "dmarc_fail": true,
+        "domain_age": "linkdln-secure.com created 1 week prior",
+        "domain_registrar": "Privacy Protect LLC used for anonymization",
+        "typosquatting_domain": "linkdln-secure.com (letter 'i' replaced with 'l')",
+        "phishing_page_form_action": "submit_credentials.php collecting credentials",
+        "email_html_content": "contains spoofed LinkedIn branding and urgent connection request"
+      },
+      "detection_method": "Email security gateway flagged DKIM and DMARC failures. URL reputation service identified domain as newly registered and typosquatting. User clicked link and endpoint protection blocked credential submission attempt. Incident responders traced domain registration and phishing infrastructure.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1598.001 - Phishing: Spearphishing via Service",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_9",
+      "generation_timestamp": 1749307934.9719744
+    },
+    {
+      "scenario": "Spear phishing email targeting IT admin impersonating internal helpdesk with malicious Excel attachment containing VBA macro to deploy remote access trojan.",
+      "technical_data": {
+        "email_headers": "Return-Path: <helpdesk@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.168.1.101])\r\n\tby mx.google.com with ESMTPS id def456uvw789\r\n\tfor <itadmin@legitcorp.com>;\r\n\tFri, 24 Mar 2023 09:15:45 -0700 (PDT)\r\nReceived-SPF: pass (google.com: domain of helpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) client-ip=192.168.1.101;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=pass (google.com: domain of helpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) smtp.mailfrom=helpdesk@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=quarantine) header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.com>\r\nDate: Fri, 24 Mar 2023 09:15:30 -0700\r\nFrom: \"Internal Helpdesk\" <helpdesk@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nReply-To: helpdesk@legitcorp.com\r\nSubject: Critical: Update Required for Remote Access Configuration\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary123\"\r\nX-Originating-IP: [203.0.113.88]\r\nX-Mailer: Microsoft Outlook 15.0\r\n",
+        "email_body": "Dear IT Team,\n\nPlease find attached the latest remote access configuration update required for compliance with recent security guidelines. Enable macros to apply the changes.\n\nContact me immediately if you encounter any issues.\n\nRegards,\nHelpdesk\n\nAttachment: RemoteAccess_Update_March2023.xlsm (contains malicious VBA macro to download RAT payload)",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerhost.com\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<helpdesk@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Internal Helpdesk\" <helpdesk@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Critical: Update Required for Remote Access Configuration\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 9876543210\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "secure-update-service.com",
+          "registrar": "Google LLC",
+          "creation_date": "2023-03-10T07:20:00Z",
+          "expiration_date": "2024-03-10T07:20:00Z",
+          "registrant": {
+            "name": "Privacy Protection Service",
+            "organization": "Domains By Proxy, LLC",
+            "email": "proxy@domainsbyproxy.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.google.com",
+            "ns2.google.com"
+          ]
+        },
+        "malicious_url": "http://secure-update-service.com/download?file=RemoteAccess_Update_March2023.xlsm&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "URL uses HTTP with a legitimate-sounding domain and a JWT token parameter to simulate authenticity and evade detection."
+      },
+      "indicators": {
+        "dkim_fail": true,
+        "dmarc_quarantine": true,
+        "unusual_sending_ip": "203.0.113.88 (external IP not in SPF records)",
+        "recent_domain_registration": "secure-update-service.com registered 2 weeks prior",
+        "attachment_type": "macro-enabled Excel file (.xlsm)",
+        "URL_contains_jwt_token": true,
+        "email_request_macros_enabled": true
+      },
+      "detection_method": "Email security gateway flagged DKIM and DMARC failures and macro-enabled attachment. Network monitoring detected outbound connection to suspicious domain. Endpoint security sandbox detonated Excel macro resulting in RAT download. Incident response team correlated domain registration data and IP reputation.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure",
+        "T1566.002 - Spearphishing Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_6",
+      "generation_timestamp": 1749307904.1928098
+    },
+    {
+      "scenario": "Spear phishing email to finance department impersonating vendor with invoice link hosted on recently registered domain using homoglyph substitution.",
+      "technical_data": {
+        "email_headers": "Return-Path: <accounts@trustedvendor.com>\r\nReceived: from mail.trustedvendor.com (mail.trustedvendor.com [198.51.100.50])\r\n\tby mx.office365.com with ESMTPS id ghi789rst123\r\n\tfor <finance@legitcorp.com>;\r\n\tMon, 27 Mar 2023 10:45:21 -0700\r\nReceived-SPF: pass (office365.com: domain of accounts@trustedvendor.com designates 198.51.100.50 as permitted sender) client-ip=198.51.100.50;\r\nAuthentication-Results: mx.office365.com;\r\n\tspf=pass smtp.mailfrom=accounts@trustedvendor.com;\r\n\tdkim=pass header.d=trustedvendor.com;\r\n\tdmarc=pass header.from=trustedvendor.com\r\nMessage-ID: <inv-20230327-001@trustedvendor.com>\r\nDate: Mon, 27 Mar 2023 10:45:00 -0700\r\nFrom: \"Trusted Vendor\" <accounts@trustedvendor.com>\r\nTo: finance@legitcorp.com\r\nSubject: Invoice #12345 Due for Payment\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Originating-IP: [203.0.113.88]\r\nX-Mailer: Apple Mail (2.3445.9.1)\r\n",
+        "email_body": "<html><body><p>Dear Finance Team,</p><p>Please find your invoice #12345 attached. Kindly make payment by the due date to avoid service interruption.</p><p>View and pay your invoice here: <a href=\"https://trustedvend0r.com/invoice/12345\">https://trustedvend0r.com/invoice/12345</a></p><p>Thank you for your business.</p><p>Best regards,<br>Accounts Payable<br>Trusted Vendor</p></body></html>",
+        "smtp_transaction_log": "220 mail.trustedvendor.com ESMTP Postfix\r\nEHLO attackerpc.fake\r\n250-mail.trustedvendor.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<accounts@trustedvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<finance@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendor\" <accounts@trustedvendor.com>\r\nTo: finance@legitcorp.com\r\nSubject: Invoice #12345 Due for Payment\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5F6G7H8I9J\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "trustedvend0r.com",
+          "registrar": "Google Domains",
+          "creation_date": "2023-03-20T12:00:00Z",
+          "expiration_date": "2024-03-20T12:00:00Z",
+          "registrant": {
+            "name": "Fake Registrant",
+            "organization": "Fake Org",
+            "email": "registrant@privacyemail.com",
+            "country": "CN"
+          },
+          "nameservers": [
+            "ns-cloud-a1.googledomains.com",
+            "ns-cloud-a2.googledomains.com"
+          ]
+        },
+        "malicious_url": "https://trustedvend0r.com/invoice/12345",
+        "url_obfuscation": "Domain uses homoglyph substitution replacing letter 'o' with zero '0' making it visually similar to legitimate trustedvendor.com. URL path mimics invoice numbering to appear authentic."
+      },
+      "indicators": {
+        "valid_spf": true,
+        "valid_dkim": true,
+        "valid_dmarc": true,
+        "domain_age": "trustedvend0r.com registered 7 days before email sent",
+        "homoglyph_domain": true,
+        "phishing_url_invoice_page": true,
+        "email_html_content": "contains invoice link with subtle domain spoofing",
+        "originating_ip": "203.0.113.88 not recognized as vendor IP"
+      },
+      "detection_method": "Threat intelligence detected newly registered domain with homoglyph substitution targeting finance department. URL sandboxing revealed fake invoice page designed to capture credentials and payment information. Email authentication passed but domain reputation was low and alerts were raised by user behavior analytics based on unexpected invoice request.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_5",
+      "generation_timestamp": 1749307891.33192
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs a routine deployment update on a web application, including scaling the number of instances and validating deployment success via monitoring logs.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:10Z",
+        "user": "devops.engineer@examplecloud.com",
+        "actions": [
+          {
+            "event": "api_authentication",
+            "service": "Cloud Management Console",
+            "method": "OAuth2 Token",
+            "status": "success",
+            "ip_address": "203.0.113.22",
+            "timestamp": "2024-06-15T14:44:55Z"
+          },
+          {
+            "event": "deployment",
+            "application": "customer-portal",
+            "version": "v3.2.1",
+            "instances_before": 4,
+            "instances_after": 6,
+            "timestamp": "2024-06-15T14:45:05Z",
+            "api_calls": [
+              {
+                "endpoint": "/api/v1/apps/customer-portal/scale",
+                "method": "POST",
+                "response_code": 200,
+                "latency_ms": 180
+              },
+              {
+                "endpoint": "/api/v1/apps/customer-portal/deploy",
+                "method": "POST",
+                "response_code": 202,
+                "latency_ms": 250
+              }
+            ]
+          },
+          {
+            "event": "monitoring_check",
+            "service": "AppHealthMonitor",
+            "metrics_checked": [
+              "cpu_usage",
+              "response_time",
+              "error_rate"
+            ],
+            "results": {
+              "cpu_usage_percent": 45,
+              "response_time_ms": 120,
+              "error_rate_percent": 0.02
+            },
+            "timestamp": "2024-06-15T14:46:00Z"
+          }
+        ],
+        "network_traffic": {
+          "outbound": "1.5MB",
+          "inbound": "2.3MB",
+          "protocols": [
+            "HTTPS",
+            "REST API"
+          ]
+        }
+      },
+      "indicators": [
+        "Successful OAuth2 token authentication from known DevOps IP",
+        "API calls returned HTTP 200/202 indicating accepted and successful deployment operations",
+        "Scaling operation increased instance count consistent with expected load increase",
+        "Monitoring metrics remain within normal performance thresholds post-deployment"
+      ],
+      "activity_type": "Routine cloud deployment update and scaling operation",
+      "business_justification": "Regular deployments and scaling maintain application availability and performance as user demand fluctuates.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_23",
+      "generation_timestamp": 1749308019.8648844
+    },
+    {
+      "scenario": "Spear phishing email sent to procurement team impersonating vendor with a malicious HTML attachment designed to harvest login credentials.",
+      "technical_data": {
+        "email_headers": "Return-Path: <billing@trustedvendor.com>\r\nReceived: from mail.trustedvendor.com (mail.trustedvendor.com [203.0.113.101])\r\n\tby mx.legitcorp.com with ESMTPS id ghi789rst012\r\n\tfor <procurement@legitcorp.com>;\r\n\tTue, 28 Mar 2023 15:42:18 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of billing@trustedvendor.com designates 203.0.113.101 as permitted sender) client-ip=203.0.113.101;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of billing@trustedvendor.com designates 203.0.113.101 as permitted sender) smtp.mailfrom=billing@trustedvendor.com;\r\n\tdkim=pass header.d=trustedvendor.com;\r\n\tdmarc=pass header.from=trustedvendor.com\r\nMessage-ID: <5678901234@mail.trustedvendor.com>\r\nDate: Tue, 28 Mar 2023 15:42:00 -0700\r\nFrom: \"Trusted Vendor Billing\" <billing@trustedvendor.com>\r\nTo: procurement@legitcorp.com\r\nReply-To: billing@invoice-payments.com\r\nSubject: Invoice #45872 Due - Payment Instructions\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"abc123boundary\"\r\nX-Originating-IP: [198.51.100.88]\r\nX-Mailer: Apple Mail (2.3445.9.1)\r\n",
+        "email_body": "Dear Procurement Team,\n\nPlease find attached the invoice #45872 for your recent order. Kindly review and process the payment by the due date to avoid any service disruption.\n\nBest regards,\nAlice Smith\nTrusted Vendor Billing\n\nAttachment: invoice_45872.html (malicious HTML file prompting user to login to fake vendor portal)",
+        "smtp_transaction_log": "220 mx.legitcorp.com ESMTP Postfix\r\nEHLO mail.trustedvendor.com\r\n250-mx.legitcorp.com\r\nMAIL FROM:<billing@trustedvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<procurement@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendor Billing\" <billing@trustedvendor.com>\r\nTo: procurement@legitcorp.com\r\nSubject: Invoice #45872 Due - Payment Instructions\r\nReply-To: billing@invoice-payments.com\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5678901234\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "invoice-payments.com",
+          "registrar": "Tucows Domains Inc.",
+          "creation_date": "2023-03-10T12:00:00Z",
+          "expiration_date": "2024-03-10T12:00:00Z",
+          "registrant": {
+            "name": "Redacted Privacy Proxy",
+            "organization": "Privacy Protect LLC",
+            "email": "contact@privacy-protect.net",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.privacy-protect.net",
+            "ns2.privacy-protect.net"
+          ]
+        },
+        "malicious_url": "https://invoice-payments.com/login?user=procurement&session=abc123xyz",
+        "url_obfuscation": "The HTML attachment contains embedded JavaScript that auto-submits credentials to the malicious domain. The domain mimics legitimate vendor payment portals and uses HTTPS with a valid but fraudulent SSL certificate."
+      },
+      "indicators": {
+        "suspicious_reply_to": "billing@invoice-payments.com",
+        "domain_age": "invoice-payments.com created 18 days before email",
+        "attachment_type": "malicious HTML file",
+        "spf_pass": true,
+        "dkim_pass": true,
+        "dmarc_pass": true,
+        "unusual_sending_ip": "198.51.100.88 (not in vendor's known IP range)",
+        "malicious_url_https": true,
+        "url_embedded_javascript_auto_submit": true
+      },
+      "detection_method": "Email filtering allowed SPF, DKIM, and DMARC passes but detected anomalies in Reply-To header. Sandbox detonation of HTML attachment revealed credential harvesting behavior. Network monitoring observed outbound connections from user workstation to invoice-payments.com domain. Threat intelligence confirmed recent domain and privacy-proxy registration.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure",
+        "T1566.002 - Spearphishing Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_3",
+      "generation_timestamp": 1749307840.547703
+    },
+    {
+      "scenario": "Spear phishing email targeting legal department impersonating external law firm with malicious Excel attachment exploiting macro to exfiltrate data.",
+      "technical_data": {
+        "email_headers": "Return-Path: <contact@lawfirm-external.com>\r\nReceived: from smtp.lawfirm-external.com (smtp.lawfirm-external.com [198.51.100.250])\r\n\tby mail.legitcorp.com with ESMTPS id ghi456rst789\r\n\tfor <legal@legitcorp.com>;\r\n\tTue, 28 Mar 2023 15:17:35 -0700 (PDT)\r\nReceived-SPF: pass (mail.legitcorp.com: domain of contact@lawfirm-external.com designates 198.51.100.250 as permitted sender) client-ip=198.51.100.250;\r\nAuthentication-Results: mail.legitcorp.com;\r\n\tspf=pass smtp.mailfrom=contact@lawfirm-external.com;\r\n\tdkim=fail header.d=lawfirm-external.com;\r\n\tdmarc=fail (p=reject) header.from=lawfirm-external.com\r\nMessage-ID: <CA+LawFirmExternal202303281517@mail.lawfirm-external.com>\r\nDate: Tue, 28 Mar 2023 15:17:30 -0700\r\nFrom: \"External Legal Counsel\" <contact@lawfirm-external.com>\r\nTo: legal@legitcorp.com\r\nReply-To: contact@lawfirm-external.com\r\nSubject: Confidential: Contract Review Required\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_7891011_1213141516\"\r\nX-Mailer: Microsoft Outlook 365\r\n",
+        "email_body": "Dear Legal Team,\n\nPlease find attached the latest contract draft for your immediate review. Kindly execute the macros to enable document features and provide your feedback by end of day.\n\nBest regards,\nAmanda Smith\nExternal Legal Counsel\n\nAttachment: Contract_Review_March2023.xlsm (macro-enabled Excel file with embedded exfiltration script)",
+        "smtp_transaction_log": "220 smtp.lawfirm-external.com ESMTP Postfix\r\nEHLO mail.legitcorp.com\r\n250-smtp.lawfirm-external.com\r\nMAIL FROM:<contact@lawfirm-external.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"External Legal Counsel\" <contact@lawfirm-external.com>\r\nTo: legal@legitcorp.com\r\nSubject: Confidential: Contract Review Required\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 987654321abc\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "lawfirm-external.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-01T07:30:00Z",
+          "expiration_date": "2024-03-01T07:30:00Z",
+          "registrant": {
+            "name": "Privacy Protection Service",
+            "organization": "WhoisGuard, Inc.",
+            "email": "contact@whoisguard.com",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.whoisguard.com",
+            "ns2.whoisguard.com"
+          ]
+        },
+        "malicious_url": "http://lawfirm-external.com/macros/download?file=contract_review.xlsm",
+        "url_obfuscation": "The attachment prompts user to enable macros with social engineering text; domain uses privacy protection to hide registrant details and is newly registered mimicking a legitimate law firm domain."
+      },
+      "indicators": {
+        "dkim_fail": true,
+        "dmarc_fail_reject": true,
+        "recent_domain_registration": "lawfirm-external.com registered less than 4 weeks before email sent",
+        "attachment_type": "macro-enabled Excel spreadsheet with data exfiltration macro",
+        "unusual_sending_ip": "198.51.100.250 outside known law firm IP ranges",
+        "use_of_privacy_protection": true,
+        "email_subject_urgency": "Confidential: Contract Review Required",
+        "social_engineering_macro_enable": true
+      },
+      "detection_method": "Email security filters flagged DKIM and DMARC failures, and attachment was sandboxed revealing macro behavior attempting to connect to external C2 server. Threat intel matched domain lawfirm-external.com to recent fraudulent registrations. User alerted security team after suspicious macro prompt. Network IDS logs showed outbound connections post macro execution.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1041 - Exfiltration Over C2 Channel",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_4",
+      "generation_timestamp": 1749307889.1841385
+    },
+    {
+      "scenario": "Spear phishing email targeting IT administrator with malicious ISO attachment pretending to be a security update notification from the software vendor.",
+      "technical_data": {
+        "email_headers": "Return-Path: <security@softvendor.com>\r\nReceived: from mail.softvendor.com (mail.softvendor.com [203.0.113.150])\r\n\tby mx.legitcorp.com with ESMTPS id def789uvw123\r\n\tfor <itadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:45:12 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of security@softvendor.com designates 203.0.113.150 as permitted sender) client-ip=203.0.113.150;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of security@softvendor.com designates 203.0.113.150 as permitted sender) smtp.mailfrom=security@softvendor.com;\r\n\tdkim=pass header.d=softvendor.com;\r\n\tdmarc=pass header.from=softvendor.com\r\nMessage-ID: <20230327094512@mail.softvendor.com>\r\nDate: Mon, 27 Mar 2023 09:45:00 -0700\r\nFrom: \"SoftVendor Security Team\" <security@softvendor.com>\r\nTo: itadmin@legitcorp.com\r\nReply-To: security@softvendor.com\r\nSubject: Critical Security Update Available - Immediate Action Required\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_123456_789012345.1679911500\"\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "Dear IT Team,\n\nWe have identified critical vulnerabilities in the latest version of our software suite. Please find attached the security update ISO image to patch your systems immediately.\n\nFailure to apply this update may expose your infrastructure to potential attacks.\n\nBest regards,\nSoftVendor Security Team\n\nAttachment: SoftVendor_Update_2023-03.iso (contains embedded payload exploiting Windows autorun feature)",
+        "smtp_transaction_log": "220 mail.softvendor.com ESMTP Postfix\r\nEHLO mail.legitcorp.com\r\n250-mail.softvendor.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\nMAIL FROM:<security@softvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"SoftVendor Security Team\" <security@softvendor.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Critical Security Update Available - Immediate Action Required\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 654321fedcba\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "softvendor.com",
+          "registrar": "Enom, Inc.",
+          "creation_date": "2010-11-05T12:00:00Z",
+          "expiration_date": "2024-11-05T12:00:00Z",
+          "registrant": {
+            "name": "SoftVendor Inc.",
+            "organization": "SoftVendor Inc.",
+            "email": "admin@softvendor.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.softvendordns.com",
+            "ns2.softvendordns.com"
+          ]
+        },
+        "malicious_url": "https://update.softvendor-secure.com/download?file=security_patch.iso&user=itadmin",
+        "url_obfuscation": "Uses a lookalike domain 'softvendor-secure.com' registered recently with homoglyph 's' replaced by '5' in some phishing emails to evade detection."
+      },
+      "indicators": {
+        "recent_domain_registration": "softvendor-secure.com created 3 days before email sent",
+        "attachment_type": "malicious ISO image with autorun payload",
+        "dkim_pass": true,
+        "spf_pass": true,
+        "dmarc_pass": true,
+        "unusual_sending_ip": "203.0.113.150 not in known vendor IP range",
+        "URL_homoglyph": "softvendor-secure.com with 's' replaced by '5' in some variants",
+        "reply_to_legitimate": true
+      },
+      "detection_method": "Email gateway flagged domain softvendor-secure.com as suspicious due to recent registration and mismatch with known vendor domains. Sandbox analysis of attached ISO showed autorun scripts with malicious payload. Network logs revealed no prior communication with softvendor-secure.com. User reported unusual update email prompting SOC investigation.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure",
+        "T1193 - Spearphishing via Link"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_4",
+      "generation_timestamp": 1749307889.183138
+    },
+    {
+      "scenario": "An employee accesses a confidential project document and sends a status update email to the project team.",
+      "technical_data": {
+        "timestamp": "2024-06-10T10:15:30Z",
+        "user": "jane.doe@examplecorp.com",
+        "activity_logs": [
+          {
+            "event": "document_access",
+            "document_id": "projX_spec_v3.docx",
+            "access_type": "read",
+            "location": "10.25.30.72",
+            "device": "CORP-LAPTOP-23",
+            "timestamp": "2024-06-10T10:15:05Z"
+          },
+          {
+            "event": "email_sent",
+            "recipient_list": [
+              "project.team@examplecorp.com"
+            ],
+            "subject": "Weekly Status Update - Project X",
+            "email_size_bytes": 5120,
+            "timestamp": "2024-06-10T10:15:30Z",
+            "email_headers": {
+              "from": "jane.doe@examplecorp.com",
+              "to": "project.team@examplecorp.com",
+              "message_id": "<20240610101530.jdoe@examplecorp.com>"
+            }
+          }
+        ],
+        "network_traffic": {
+          "src_ip": "10.25.30.72",
+          "dst_ip": "mail.examplecorp.com",
+          "protocol": "SMTP",
+          "port": 587,
+          "bytes_sent": 5120,
+          "bytes_received": 1024
+        },
+        "authentication": {
+          "method": "password",
+          "status": "success",
+          "timestamp": "2024-06-10T10:00:00Z",
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+      },
+      "indicators": {
+        "consistent_user_ip": true,
+        "valid_corp_email_domain": true,
+        "no_malicious_attachments": true,
+        "typical_business_hours": true,
+        "email_headers_legitimate": true
+      },
+      "activity_type": "Normal employee document access and email communication",
+      "business_justification": "Routine project communication and document review are essential for collaborative progress and status reporting.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_15",
+      "generation_timestamp": 1749307969.3115342
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs a scheduled deployment of a new microservice version and updates monitoring configurations.",
+      "technical_data": {
+        "timestamp": "2024-06-15T17:45:00Z",
+        "user": "devops.engineer@cloudcorp.com",
+        "api_calls": [
+          {
+            "endpoint": "https://api.cloudprovider.com/v1/deployments",
+            "method": "POST",
+            "request_body": {
+              "service_name": "payment-microservice",
+              "version": "v2.3.1",
+              "environment": "production"
+            },
+            "response_status": 202,
+            "response_time_ms": 350,
+            "timestamp": "2024-06-15T17:44:50Z"
+          },
+          {
+            "endpoint": "https://api.cloudprovider.com/v1/monitoring/config",
+            "method": "PUT",
+            "request_body": {
+              "service": "payment-microservice",
+              "alert_thresholds": {
+                "cpu_usage_pct": 80,
+                "error_rate_pct": 5
+              }
+            },
+            "response_status": 200,
+            "response_time_ms": 150,
+            "timestamp": "2024-06-15T17:45:00Z"
+          }
+        ],
+        "system_logs": [
+          {
+            "service": "payment-microservice",
+            "event": "deployment_started",
+            "version": "v2.3.1",
+            "timestamp": "2024-06-15T17:44:55Z"
+          },
+          {
+            "service": "payment-microservice",
+            "event": "deployment_completed",
+            "status": "success",
+            "timestamp": "2024-06-15T17:46:30Z"
+          }
+        ],
+        "network_traffic": {
+          "src_ip": "203.0.113.25",
+          "dst_ip": "198.51.100.10",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 12000,
+          "bytes_received": 4500,
+          "session_duration_seconds": 120
+        }
+      },
+      "indicators": {
+        "api_authentication_success": true,
+        "expected_api_endpoints": true,
+        "normal_response_codes": [
+          200,
+          202
+        ],
+        "deployment_logs_show_success": true,
+        "traffic_patterns_consistent_with_api_calls": true
+      },
+      "activity_type": "Routine cloud deployment and monitoring update",
+      "business_justification": "Scheduled update to improve microservice functionality and update monitoring thresholds to maintain system reliability.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_20",
+      "generation_timestamp": 1749308013.7989614
+    },
+    {
+      "scenario": "Employee accesses quarterly sales report via internal document management system and shares summary in team email.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "action": "document_access",
+        "document_id": "report_sales_Q2_2024.pdf",
+        "access_method": "internal_portal_web",
+        "ip_address": "10.12.45.78",
+        "email_sent": {
+          "from": "jane.doe@enterprise.com",
+          "to": [
+            "sales.team@enterprise.com"
+          ],
+          "subject": "Q2 Sales Report Summary",
+          "timestamp": "2024-06-15T09:30:12Z",
+          "message_id": "<20240615093012.jane.doe@enterprise.com>"
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_in": 124000,
+          "bytes_out": 4800,
+          "session_duration_seconds": 180
+        },
+        "authentication": {
+          "method": "sso",
+          "status": "success",
+          "mfa_used": true,
+          "login_timestamp": "2024-06-15T09:00:00Z"
+        }
+      },
+      "indicators": {
+        "consistent_ip_and_user": true,
+        "mfa_enforced": true,
+        "document_accessed_within_business_hours": true,
+        "email_recipient_list_internal": true,
+        "no_anomalous_network_behavior": true,
+        "session_duration_typical": true
+      },
+      "activity_type": "Normal employee document access and internal communication",
+      "business_justification": "Routine review and dissemination of sales performance data among authorized team members to support ongoing business operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_17",
+      "generation_timestamp": 1749308000.5090513
+    },
+    {
+      "scenario": "Targeted spear phishing email sent to legal department with forged executive language requesting confidential contract documents via a disguised OneDrive link leading to credential harvesting page.",
+      "technical_data": {
+        "email_raw": "Return-Path: <legal@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.168.1.102])\r\n\tby mx.outlook.com with ESMTPS id ghi789rst012\r\n\tfor <legal@legitcorp.com>;\r\n\tFri, 31 Mar 2023 16:50:22 -0700 (PDT)\r\nReceived-SPF: pass (outlook.com: domain of legal@legitcorp.com designates 192.168.1.102 as permitted sender) client-ip=192.168.1.102;\r\nAuthentication-Results: mx.outlook.com;\r\n\tspf=pass (outlook.com: domain of legal@legitcorp.com designates 192.168.1.102 as permitted sender) smtp.mailfrom=legal@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=quarantine) header.from=legitcorp.com\r\nMessage-ID: <5678901234@mail.legitcorp.com>\r\nDate: Fri, 31 Mar 2023 16:50:20 -0700\r\nFrom: \"Legal Department\" <legal@legitcorp.com>\r\nTo: legal@legitcorp.com\r\nReply-To: legal-team@onedrive-secure.com\r\nSubject: Confidential: Please Review Updated Contracts\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Originating-IP: [198.51.100.75]\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "<html><body><p>Dear Legal Team,</p><p>Attached are the updated contract documents requiring your immediate attention. Please review and provide your feedback at your earliest convenience.</p><p>Access the files securely via the link below:</p><p><a href=\"https://onedrive-secure.com/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\">Secure Contract Files</a></p><p>Thank you,<br>Legal Department</p></body></html>",
+        "smtp_session": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerhost.org\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<legal@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<legal@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Legal Department\" <legal@legitcorp.com>\r\nTo: legal@legitcorp.com\r\nSubject: Confidential: Please Review Updated Contracts\r\nReply-To: legal-team@onedrive-secure.com\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 5678901234\r\nQUIT\r\n221 2.0.0 Bye",
+        "phishing_url_redirect_chain": [
+          "https://onedrive-secure.com/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+          "http://securefiles-upload.net/authenticate.php",
+          "http://securefiles-upload.net/collect_credentials.php"
+        ],
+        "phishing_page_html_snippet": "<form action=\"collect_credentials.php\" method=\"POST\">\n<input type=\"email\" name=\"email\" placeholder=\"Email\" required>\n<input type=\"password\" name=\"password\" placeholder=\"Password\" required>\n<button type=\"submit\">Sign In</button>\n</form>",
+        "domain_whois": {
+          "domain": "onedrive-secure.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-20T12:00:00Z",
+          "expiration_date": "2024-03-20T12:00:00Z",
+          "registrant": {
+            "name": "Domain Privacy",
+            "organization": "Privacy Protect",
+            "email": "privacy@domainsentry.com",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.domainsentry.com",
+            "ns2.domainsentry.com"
+          ]
+        }
+      },
+      "indicators": {
+        "suspicious_reply_to": "legal-team@onedrive-secure.com",
+        "dkim_fail": true,
+        "dmarc_quarantine": true,
+        "unusual_sending_ip": "198.51.100.75 (not authorized in SPF)",
+        "recent_domain_registration": "onedrive-secure.com created 11 days before email",
+        "use_of_legitimate_service_name_in_domain": "onedrive-secure.com mimics Microsoft OneDrive",
+        "phishing_page_form_action": "collect_credentials.php harvesting login credentials",
+        "email_html_content": "contains impersonation and malicious credential harvesting link"
+      },
+      "detection_method": "Email security system flagged DKIM and DMARC failures. URL analysis revealed phishing redirect chain to credential harvesting site. User reported unexpected request prompting SOC to investigate SMTP logs and domain WHOIS data confirming recent suspicious domain registration.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1598.001 - Phishing: Spearphishing via Service",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_8",
+      "generation_timestamp": 1749307942.9689047
+    },
+    {
+      "scenario": "An employee accesses a shared project report document and sends an internal email update to the team regarding upcoming deadlines.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:22:34Z",
+        "user": "jane.doe@examplecorp.com",
+        "activity_log": [
+          {
+            "event": "document_access",
+            "resource": "/shared/projects/Q2_report.xlsx",
+            "access_type": "read",
+            "ip_address": "192.168.10.45",
+            "device": "CORP-LAPTOP-15",
+            "protocol": "SMB",
+            "duration_seconds": 45
+          },
+          {
+            "event": "email_sent",
+            "recipient": "project.team@examplecorp.com",
+            "subject": "Q2 Project Deadlines Update",
+            "message_id": "<20240615092234.JD@examplecorp.com>",
+            "email_protocol": "SMTP",
+            "ip_address": "192.168.10.45",
+            "attachments": [],
+            "email_size_kb": 12
+          }
+        ],
+        "authentication": {
+          "method": "password+MFA",
+          "success": true,
+          "timestamp": "2024-06-15T09:20:00Z",
+          "source_ip": "192.168.10.45",
+          "device": "CORP-LAPTOP-15"
+        },
+        "network_traffic": {
+          "outbound": "500KB",
+          "inbound": "1.2MB",
+          "protocols": [
+            "SMB",
+            "SMTP"
+          ]
+        }
+      },
+      "indicators": [
+        "User authenticated successfully with MFA from corporate IP",
+        "Accessed internal shared resource with no abnormal file modifications",
+        "Email sent internally with standard corporate subject format and no external recipients",
+        "Network traffic consistent with file access and internal email transmission"
+      ],
+      "activity_type": "Normal employee document access and internal email communication",
+      "business_justification": "Employees regularly review and share project documents and send internal updates to ensure timely collaboration and workflow continuity.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_23",
+      "generation_timestamp": 1749308019.8638823
+    },
+    {
+      "scenario": "An employee in the finance department accesses the quarterly financial report, sends an email to the CFO with the updated figures, and logs out after completing the task.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "source_ip": "192.168.10.45",
+        "activity_log": [
+          {
+            "event": "login",
+            "timestamp": "2024-06-15T10:20:00Z",
+            "method": "SSO",
+            "device": "Windows-10-Laptop"
+          },
+          {
+            "event": "file_access",
+            "timestamp": "2024-06-15T10:21:30Z",
+            "file": "/reports/finance/Q2_2024_report.xlsx",
+            "access_type": "read"
+          },
+          {
+            "event": "email_sent",
+            "timestamp": "2024-06-15T10:23:00Z",
+            "to": "cfo@enterprise.com",
+            "subject": "Q2 Financial Report Update",
+            "attachment": "Q2_2024_report.xlsx",
+            "email_client": "Outlook 365"
+          },
+          {
+            "event": "logout",
+            "timestamp": "2024-06-15T10:24:00Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "mail.enterprise.com",
+          "port": 443,
+          "bytes_sent": 5120,
+          "bytes_received": 2048
+        }
+      },
+      "indicators": [
+        "SSO authentication within business hours",
+        "Access to finance department shared folder",
+        "Email sent only to authorized internal recipient",
+        "No anomalous file downloads or external communications",
+        "Network traffic consistent with normal email client behavior"
+      ],
+      "activity_type": "Normal employee document access and internal email communication",
+      "business_justification": "Accessing and sharing financial reports within the finance team is a routine business operation necessary for decision making and reporting.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_22",
+      "generation_timestamp": 1749308018.2316258
+    },
+    {
+      "scenario": "Spear phishing email sent to IT administrator with a fake security alert impersonating a well-known vendor, including a malicious Excel attachment with macros and subtle domain typosquatting in sender address.",
+      "technical_data": {
+        "email_headers": "Return-Path: <security@micros0ft-support.com>\r\nReceived: from mail.micros0ft-support.com (mail.micros0ft-support.com [198.51.100.45])\r\n\tby mx.legitcorp.com with ESMTPS id def456uvw789\r\n\tfor <itadmin@legitcorp.com>;\r\n\tFri, 24 Mar 2023 09:15:23 -0700 (PDT)\r\nReceived-SPF: fail (mx.legitcorp.com: domain of security@micros0ft-support.com does not designate 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=fail (mx.legitcorp.com: domain of micros0ft-support.com does not permit 198.51.100.45) smtp.mailfrom=security@micros0ft-support.com;\r\n\tdkim=none;\r\n\tdmarc=fail (p=reject) header.from=micros0ft-support.com\r\nMessage-ID: <9876543210@mail.micros0ft-support.com>\r\nDate: Fri, 24 Mar 2023 09:15:00 -0700\r\nFrom: \"Microsoft Security Team\" <security@micros0ft-support.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Urgent Security Update Required: Vulnerability Patch Notification\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary123\"\r\nX-Mailer: Mozilla Thunderbird 102.3.0\r\n",
+        "email_body": "Dear IT Team,\n\nOur latest security audit has identified critical vulnerabilities on your systems. Please review the attached patch file and execute the macro to apply necessary fixes immediately.\n\nFailure to comply may result in system compromise.\n\nRegards,\nMicrosoft Security Team\n\nAttachment: SecurityPatch_March2023.xlsm (macro-enabled Excel file with embedded malicious macro)",
+        "smtp_transaction_log": "220 mail.micros0ft-support.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-mail.micros0ft-support.com\r\n250-PIPELINING\r\n250-SIZE 51200000\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<security@micros0ft-support.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Microsoft Security Team\" <security@micros0ft-support.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Urgent Security Update Required: Vulnerability Patch Notification\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 7890abc123\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "micros0ft-support.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-10T14:30:00Z",
+          "expiration_date": "2024-03-10T14:30:00Z",
+          "registrant": {
+            "name": "Redacted Privacy",
+            "organization": "PrivacyProtect Inc.",
+            "email": "privacy@privacyprotect.com",
+            "country": "NL"
+          },
+          "nameservers": [
+            "ns1.privacyprotect.net",
+            "ns2.privacyprotect.net"
+          ]
+        },
+        "malicious_url": "n/a",
+        "url_obfuscation": "n/a - attachment-based attack",
+        "email_raw": null
+      },
+      "indicators": {
+        "spf_fail": true,
+        "dmarc_fail": true,
+        "domain_typosquatting": "micros0ft-support.com with zero replacing 'o'",
+        "attachment_type": "macro-enabled Excel (.xlsm)",
+        "unusual_sending_ip": "198.51.100.45 not in authorized Microsoft IP ranges",
+        "recent_domain_registration": "registered two weeks prior",
+        "missing_dkim_signature": true,
+        "threat_payload": "malicious macro to download and execute payload"
+      },
+      "detection_method": "Email security gateway flagged SPF and DMARC failures and absence of DKIM signature. Macro analysis sandbox identified malicious macro behavior in Excel attachment. Domain reputation services highlighted recent registration and typosquatting domain. User reported suspicious email after seeing domain mismatch.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566 - Phishing",
+        "T1204.002 - User Execution: Malicious File",
+        "T1598.002 - Phishing for Information"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_12",
+      "generation_timestamp": 1749307985.5204694
+    },
+    {
+      "scenario": "Spear phishing email sent to IT administrator impersonating a trusted vendor with digitally forged email headers and a malicious Excel attachment containing a VBA macro.",
+      "technical_data": {
+        "email_headers": "Return-Path: <support@trustedvendor.com>\r\nReceived: from mail.trustedvendor.com (mail.trustedvendor.com [198.51.100.45])\r\n\tby mx.legitcorp.com with ESMTPS id def456uvw789\r\n\tfor <itadmin@legitcorp.com>;\r\n\tMon, 10 Apr 2023 09:15:32 -0700 (PDT)\r\nReceived-SPF: pass (mx.legitcorp.com: domain of support@trustedvendor.com designates 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mx.legitcorp.com;\r\n\tspf=pass (mx.legitcorp.com: domain of support@trustedvendor.com designates 198.51.100.45 as permitted sender) smtp.mailfrom=support@trustedvendor.com;\r\n\tdkim=fail header.d=trustedvendor.com;\r\n\tdmarc=fail (p=reject) header.from=trustedvendor.com\r\nMessage-ID: <9876543210@mail.trustedvendor.com>\r\nDate: Mon, 10 Apr 2023 09:15:00 -0700\r\nFrom: \"Trusted Vendor Support\" <support@trustedvendor.com>\r\nTo: itadmin@legitcorp.com\r\nReply-To: support@trustedvendor.com\r\nSubject: Critical Update Required for Network Appliance\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"frontier\"\r\nX-Originating-IP: [203.0.113.88]\r\nX-Mailer: Microsoft Outlook 365\r\n",
+        "email_body": "Dear IT Team,\n\nPlease find attached the critical firmware update for your network appliance. This update addresses several security vulnerabilities and must be applied immediately to maintain compliance.\n\nThe attached Excel file contains the update instructions and scripts.\n\nBest regards,\nSupport Team\nTrusted Vendor\n\nAttachment: Network_Update_April2023.xlsm (macro-enabled Excel file with embedded malicious VBA script)",
+        "smtp_transaction_log": "220 mail.trustedvendor.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-mail.trustedvendor.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<support@trustedvendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Trusted Vendor Support\" <support@trustedvendor.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Critical Update Required for Network Appliance\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 9876543210\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "trustedvendor.com",
+          "registrar": "Tucows Domains Inc.",
+          "creation_date": "2023-03-28T12:00:00Z",
+          "expiration_date": "2024-03-28T12:00:00Z",
+          "registrant": {
+            "name": "Privacy Protect LLC",
+            "organization": "Privacy Protect",
+            "email": "contact@privacyprotectservice.com",
+            "country": "CA"
+          },
+          "nameservers": [
+            "ns1.privacyprotect.com",
+            "ns2.privacyprotect.com"
+          ]
+        },
+        "malicious_url": "https://trustedvendor.com/update/install?device=netappliance&session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "The domain name closely mimics a legitimate vendor, but uses a recently registered domain with privacy-protected WHOIS. The URL contains a JWT token to evade detection and looks like a legitimate update endpoint."
+      },
+      "indicators": {
+        "dkim_fail": true,
+        "dmarc_reject": true,
+        "spf_pass": true,
+        "recent_domain_registration": "trustedvendor.com created 13 days prior to email delivery",
+        "attachment_type": "macro-enabled Excel (.xlsm) with malicious VBA scripts",
+        "email_originating_ip": "203.0.113.88 (unusual and not on known vendor IP list)",
+        "URL_contains_jwt_token": true,
+        "domain_privacy_protected": true
+      },
+      "detection_method": "Email security gateway detected DKIM failure and DMARC policy set to reject, flagged macro-enabled Excel attachment as high risk. Correlation with domain age and IP reputation triggered alerts. User reported unexpected update email leading to SOC investigation and URLs sandbox analysis.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566.002 - Spearphishing Link",
+        "T1586 - Compromise Infrastructure",
+        "T1204.002 - User Execution: Malicious File"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_10",
+      "generation_timestamp": 1749307949.2231886
+    },
+    {
+      "scenario": "Employee accesses sensitive financial report from internal document management system and sends a summary email to the finance team.",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:32Z",
+        "user": "j.smith@enterprise.com",
+        "source_ip": "10.1.5.23",
+        "auth_method": "SAML SSO",
+        "document_access": {
+          "document_id": "FIN-2024-Q1-Report.pdf",
+          "access_type": "read",
+          "access_time": "2024-06-10T09:15:30Z",
+          "device": "Windows-10-PC"
+        },
+        "email_sent": {
+          "to": [
+            "finance-team@enterprise.com"
+          ],
+          "subject": "Q1 Financial Report Summary",
+          "timestamp": "2024-06-10T09:18:45Z",
+          "attachments": [],
+          "email_client": "Outlook 365"
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 4500,
+          "bytes_received": 12000,
+          "destination_ip": "10.1.5.10"
+        },
+        "system_logs": [
+          {
+            "event": "UserLogin",
+            "status": "Success",
+            "timestamp": "2024-06-10T09:14:50Z",
+            "user": "j.smith@enterprise.com"
+          },
+          {
+            "event": "DocumentRead",
+            "document_id": "FIN-2024-Q1-Report.pdf",
+            "timestamp": "2024-06-10T09:15:30Z"
+          },
+          {
+            "event": "EmailSent",
+            "message_id": "MSG-789456123",
+            "timestamp": "2024-06-10T09:18:45Z"
+          }
+        ]
+      },
+      "indicators": [
+        "Authentication via corporate SSO with no failed attempts",
+        "Access to document consistent with user's finance department role",
+        "Email sent internally to authorized finance group",
+        "Network traffic over encrypted HTTPS channel",
+        "No anomalous data volume or destination IPs outside enterprise network"
+      ],
+      "activity_type": "Normal employee document access and internal email communication",
+      "business_justification": "Quarterly financial report review and team update is a routine business operation for employee in finance role.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_24",
+      "generation_timestamp": 1749308033.6887226
+    },
+    {
+      "scenario": "Spear phishing email sent to IT administrator with a disguised malware payload attachment, leveraging social engineering with internal project references and spoofed sender address.",
+      "technical_data": {
+        "email_headers": "Return-Path: <it-support@legitcorp.com>\r\nReceived: from smtp.mailhost.com (smtp.mailhost.com [198.51.100.45])\r\n\tby mail.legitcorp.com with ESMTPS id DEF456GHI789\r\n\tfor <itadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:15:23 -0700 (PDT)\r\nReceived-SPF: pass (mail.legitcorp.com: domain of it-support@legitcorp.com designates 198.51.100.45 as permitted sender) client-ip=198.51.100.45;\r\nAuthentication-Results: mail.legitcorp.com;\r\n\tspf=pass (mail.legitcorp.com: domain of it-support@legitcorp.com designates 198.51.100.45 as permitted sender) smtp.mailfrom=it-support@legitcorp.com;\r\n\tdkim=pass header.d=legitcorp.com;\r\n\tdmarc=pass header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.com>\r\nDate: Mon, 27 Mar 2023 09:15:00 -0700\r\nFrom: \"IT Support\" <it-support@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Urgent: Patch deployment for Project Orion\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary_12345\"\r\nX-Mailer: Mozilla Thunderbird 78.12.0\r\n",
+        "email_body": "Dear Alex,\n\nPlease find attached the latest patch for Project Orion critical vulnerability. Apply this update immediately to avoid potential exploitation.\n\nLet me know if you encounter any issues.\n\nBest,\nSarah\nIT Support\n\nAttachment: Orion_patch_update.exe (malicious executable disguised as patch)",
+        "smtp_transaction_log": "220 smtp.mailhost.com ESMTP Postfix\r\nEHLO attackerhost.net\r\n250-smtp.mailhost.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\nMAIL FROM:<it-support@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"IT Support\" <it-support@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Urgent: Patch deployment for Project Orion\r\n\r\n[Email body here]\r\n.\r\n250 2.0.0 Ok: queued as 67890ABC\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "attackerhost.net",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-20T05:30:00Z",
+          "expiration_date": "2024-03-20T05:30:00Z",
+          "registrant": {
+            "name": "Privacy Protection Service",
+            "organization": "PrivacyGuard",
+            "email": "contact@privacyguardservice.com",
+            "country": "US"
+          },
+          "nameservers": [
+            "ns1.privacyguard.com",
+            "ns2.privacyguard.com"
+          ]
+        },
+        "malicious_url": "http://attackerhost.net/downloads/Orion_patch_update.exe",
+        "url_obfuscation": "The URL uses HTTP instead of HTTPS to avoid certificate scrutiny. The executable is named to mimic legitimate patch files and is hosted on a recently registered domain mimicking internal server naming conventions."
+      },
+      "indicators": {
+        "spoofed_sender": "it-support@legitcorp.com but sent from unauthorized IP 198.51.100.45",
+        "spf_pass_but_domain_new": true,
+        "attachment_type": "malicious executable disguised as patch",
+        "recent_domain_registration": "attackerhost.net created 1 week prior",
+        "unusual_sending_ip": "198.51.100.45 not in organization's authorized mail servers",
+        "use_of_internal_project_reference": "Project Orion used to increase trust",
+        "url_http_no_tls": true
+      },
+      "detection_method": "Host-based email gateway detected mismatch of sending IP and internal authorized servers despite SPF pass due to domain alignment issues. Endpoint AV flagged executable attachment as malware. Threat intel correlated new domain attackerhost.net with known phishing campaigns. User report triggered SOC investigation reviewing SMTP logs and domain registration data.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_11",
+      "generation_timestamp": 1749307953.8028529
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled application deployment with monitoring and logging.",
+      "technical_data": {
+        "timestamp": "2024-06-12T22:00:00Z",
+        "user": "devops_engineer@cloudcorp.com",
+        "deployment_details": {
+          "application": "CustomerPortal",
+          "version": "v3.2.1",
+          "environment": "production",
+          "deployment_method": "CI/CD pipeline (Jenkins)",
+          "steps": [
+            {
+              "step": "build",
+              "status": "success",
+              "duration_sec": 180
+            },
+            {
+              "step": "test",
+              "status": "success",
+              "duration_sec": 240
+            },
+            {
+              "step": "deploy",
+              "status": "success",
+              "duration_sec": 120
+            }
+          ],
+          "timestamp_start": "2024-06-12T21:55:00Z",
+          "timestamp_end": "2024-06-12T22:00:00Z"
+        },
+        "cloud_api_calls": [
+          {
+            "api": "Authenticate",
+            "status_code": 200,
+            "user_agent": "Jenkins/2.319",
+            "timestamp": "2024-06-12T21:54:50Z"
+          },
+          {
+            "api": "UpdateDeployment",
+            "status_code": 200,
+            "resource_id": "app-customerportal-prod",
+            "timestamp": "2024-06-12T21:59:50Z"
+          },
+          {
+            "api": "StartMonitoring",
+            "status_code": 200,
+            "service": "CloudWatch",
+            "timestamp": "2024-06-12T22:00:05Z"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "172.16.5.10",
+          "destination_ip": "54.239.28.85",
+          "protocol": "HTTPS",
+          "data_volume_kb": 320
+        }
+      },
+      "indicators": {
+        "successful_authentication": true,
+        "all_deployment_steps_successful": true,
+        "deployment_during_off_hours": true,
+        "API_response_codes_200": true,
+        "cloud_monitoring_started_post_deployment": true
+      },
+      "activity_type": "DevOps deployment and monitoring",
+      "business_justification": "Scheduled application deployments during off-hours minimize user impact and ensure system stability with continuous monitoring.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_19",
+      "generation_timestamp": 1749308001.6025875
+    },
+    {
+      "scenario": "Cloud infrastructure auto-scaling event triggered by increased web application traffic during business hours.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:00:00Z",
+        "cloud_provider": "AWS",
+        "service": "EC2 Auto Scaling",
+        "instance_id": "i-0abcd1234ef567890",
+        "scaling_event": {
+          "trigger": "CPUUtilization > 70% for 5 minutes",
+          "action": "Launch new instance",
+          "new_instance_id": "i-0bcde2345fa678901",
+          "region": "us-east-1",
+          "network_info": {
+            "vpc_id": "vpc-0a1b2c3d",
+            "subnet_id": "subnet-1234abcd",
+            "security_groups": [
+              "sg-0ab12cd34ef56gh78"
+            ]
+          },
+          "monitoring_metrics": {
+            "cpu_utilization": 75,
+            "network_in": "250 Mbps",
+            "network_out": "230 Mbps"
+          }
+        },
+        "logs": {
+          "cloudwatch_events": [
+            {
+              "event_id": "evt-1234567890",
+              "event_type": "AutoScaling:EC2_INSTANCE_LAUNCH",
+              "timestamp": "2024-06-15T14:00:01Z",
+              "details": "New instance i-0bcde2345fa678901 launched to handle increased load."
+            }
+          ]
+        }
+      },
+      "indicators": {
+        "event_triggered_by_performance_metric": true,
+        "scaling_action_successful": true,
+        "occurs_during_business_hours": true,
+        "instance_launch_from_authorized_ami": true,
+        "no_error_logs_or_alerts": true
+      },
+      "activity_type": "Cloud Infrastructure Auto-Scaling Operation",
+      "business_justification": "Auto-scaling dynamically adjusts resources to maintain application performance during predictable traffic spikes.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_18",
+      "generation_timestamp": 1749307999.5523534
+    },
+    {
+      "scenario": "Spear phishing email targeting IT administrator with a request to reset VPN credentials using a forged internal security alert and a malicious HTML attachment.",
+      "technical_data": {
+        "email_headers": "Return-Path: <security@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.0.2.45])\r\n\tby mx.google.com with ESMTPS id def789uvw123\r\n\tfor <itadmin@legitcorp.com>;\r\n\tMon, 27 Mar 2023 09:15:42 -0700 (PDT)\r\nReceived-SPF: pass (google.com: domain of security@legitcorp.com designates 192.0.2.45 as permitted sender) client-ip=192.0.2.45;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=pass (google.com: domain of security@legitcorp.com designates 192.0.2.45 as permitted sender) smtp.mailfrom=security@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=quarantine) header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.com>\r\nDate: Mon, 27 Mar 2023 09:15:30 -0700\r\nFrom: \"Security Team\" <security@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nReply-To: reset@vpn-reset-support.com\r\nSubject: Immediate Action Required: VPN Credential Reset\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary123\"\r\nX-Originating-IP: [203.0.113.50]\r\nX-Mailer: Microsoft Outlook 16.0\r\n",
+        "email_body": "This is a multipart message in MIME format.\r\n--boundary123\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\n\r\nDear IT Administrator,\r\n\r\nDue to recent suspicious activities detected on our VPN gateway, all administrators are required to reset their VPN credentials immediately. Please review the attached security advisory and follow the instructions carefully.\r\n\r\nFailure to comply within 24 hours may result in account suspension.\r\n\r\nRegards,\r\nSecurity Team\r\n\r\n--boundary123\r\nContent-Type: text/html; name=\"vpn_security_advisory.html\"\r\nContent-Disposition: attachment; filename=\"vpn_security_advisory.html\"\r\nContent-Transfer-Encoding: base64\r\n\r\nPGh0bWw+PGJvZHk+PGgxPlZQTiBTZWN1cml0eSBBZHZpc29yeTwvaDE+PHA+Q2xpY2sgdGhlIGxpbmsgYmVsb3cgdG8gdXBkYXRlIHlvdXIgaW5mb3JtYXRpb25zOjwv\r\ncD48YSBocmVmPSJodHRwOi8vdnAtc3VwcG9ydC5ldmlsLmNvbS9yZXNldF9jcmVkZW50aWFscyI+UmVzZXQgVnBOLWxpbmsgPC9hPjwvYm9keT48L2h0bWw+\r\n\r\n--boundary123--",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<security@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<itadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"Security Team\" <security@legitcorp.com>\r\nTo: itadmin@legitcorp.com\r\nSubject: Immediate Action Required: VPN Credential Reset\r\nReply-To: reset@vpn-reset-support.com\r\n\r\n[Email multipart content with attached HTML advisory]\r\n.\r\n250 2.0.0 Ok: queued as 9ABCDEF123\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "vpn-reset-support.com",
+          "registrar": "NameSilo, LLC",
+          "creation_date": "2023-03-20T13:40:00Z",
+          "expiration_date": "2024-03-20T13:40:00Z",
+          "registrant": {
+            "name": "Anonymous Proxy",
+            "organization": "PrivacyGuardian",
+            "email": "contact@privacyguardianservice.net",
+            "country": "NL"
+          },
+          "nameservers": [
+            "ns1.privacyguardian.net",
+            "ns2.privacyguardian.net"
+          ]
+        },
+        "malicious_url": "http://vpn-reset-support.com/reset_credentials?user=itadmin&session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "url_obfuscation": "The URL uses HTTP (non-secure) and appends a JWT token in query parameters to mimic legitimate session tokens. Domain name visually resembles legitimate VPN support sites but uses subtle typo-squatting with 'vpn-reset-support.com' instead of 'vpn-support.legitcorp.com'."
+      },
+      "indicators": {
+        "suspicious_reply_to": "reset@vpn-reset-support.com",
+        "dkim_fail": true,
+        "dmarc_quarantine": true,
+        "unusual_sending_ip": "203.0.113.50 (not listed in SPF records)",
+        "recent_domain_registration": "vpn-reset-support.com registered 7 days before email received",
+        "attachment_type": "malicious HTML file with embedded phishing form",
+        "URL_contains_jwt_token": true,
+        "URL_typo_squatting": "vpn-reset-support.com vs legitimate vpn-support.legitcorp.com"
+      },
+      "detection_method": "Email security gateway detected DKIM and DMARC failures, flagged suspicious Reply-To header and attachment type. Sandbox analysis of HTML attachment revealed phishing form harvesting VPN credentials. Threat intelligence match on domain vpn-reset-support.com triggered alerts. Manual review uncovered spoofed email headers and anomalous SMTP source IP.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1566.002 - Spearphishing Link",
+        "T1598.002 - Phishing for Information",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_2",
+      "generation_timestamp": 1749307858.6874104
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of application update with API calls for authentication and monitoring of resource scaling.",
+      "technical_data": {
+        "timestamp": "2024-06-10T02:30:00Z",
+        "user": "devops-automation@cloudplatform.com",
+        "api_calls": [
+          {
+            "endpoint": "/auth/token",
+            "method": "POST",
+            "status_code": 200,
+            "response_time_ms": 120,
+            "timestamp": "2024-06-10T02:29:58Z",
+            "auth_type": "OAuth2"
+          },
+          {
+            "endpoint": "/deployments/start",
+            "method": "POST",
+            "status_code": 202,
+            "response_time_ms": 350,
+            "deployment_id": "deploy-20240610-0230",
+            "timestamp": "2024-06-10T02:30:00Z"
+          },
+          {
+            "endpoint": "/resources/scale",
+            "method": "PATCH",
+            "status_code": 200,
+            "details": {
+              "resource_type": "container",
+              "count_before": 5,
+              "count_after": 8
+            },
+            "timestamp": "2024-06-10T02:31:15Z"
+          },
+          {
+            "endpoint": "/monitoring/logs",
+            "method": "GET",
+            "status_code": 200,
+            "log_entries_retrieved": 150,
+            "timestamp": "2024-06-10T02:32:00Z"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "10.0.1.22",
+          "destination_ips": [
+            "10.0.2.101",
+            "10.0.2.102"
+          ],
+          "protocols": [
+            "HTTPS"
+          ],
+          "ports": [
+            443
+          ]
+        }
+      },
+      "indicators": {
+        "authorized_service_account": true,
+        "valid_oauth_token": true,
+        "expected_api_endpoints": true,
+        "deployment_id_format_valid": true,
+        "resource_scaling_within_quota": true,
+        "network_traffic_encrypted": true
+      },
+      "activity_type": "scheduled cloud DevOps deployment and resource scaling",
+      "business_justification": "Routine deployment and scaling activities ensure application performance and availability as part of continuous integration and delivery processes.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "spear phishing_ben_21",
+      "generation_timestamp": 1749308015.054711
+    },
+    {
+      "scenario": "Spear phishing email impersonating IT helpdesk sent to system administrators with malicious attachment and reply-to address directing to attacker-controlled mailbox.",
+      "technical_data": {
+        "email_headers": "Return-Path: <ithelpdesk@legitcorp.com>\r\nReceived: from mail.legitcorp.com (mail.legitcorp.com [192.168.1.101])\r\n\tby mx.google.com with ESMTPS id def234uvw789\r\n\tfor <sysadmin@legitcorp.com>;\r\n\tFri, 24 Mar 2023 09:15:45 -0700 (PDT)\r\nReceived-SPF: pass (google.com: domain of ithelpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) client-ip=192.168.1.101;\r\nAuthentication-Results: mx.google.com;\r\n\tspf=pass (google.com: domain of ithelpdesk@legitcorp.com designates 192.168.1.101 as permitted sender) smtp.mailfrom=ithelpdesk@legitcorp.com;\r\n\tdkim=fail header.d=legitcorp.com;\r\n\tdmarc=fail (p=reject) header.from=legitcorp.com\r\nMessage-ID: <9876543210@mail.legitcorp.com>\r\nDate: Fri, 24 Mar 2023 09:15:30 -0700\r\nFrom: \"IT Helpdesk\" <ithelpdesk@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nReply-To: support@malicioussupport.net\r\nSubject: Critical: Patch Installation Required Immediately\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"boundary12345\"\r\nX-Originating-IP: [203.0.113.45]\r\nX-Mailer: Thunderbird 91.0\r\n",
+        "email_body": "Dear System Administrator,\n\nA critical vulnerability has been detected in the latest patch cycle. Please find the patch installer attached. Run the installer immediately to secure your systems.\n\nContact us at the reply-to email if you encounter any issues.\n\nRegards,\nIT Helpdesk\n\nAttachment: critical_patch_installer.exe (malicious executable with embedded trojan)",
+        "smtp_transaction_log": "220 mail.legitcorp.com ESMTP Postfix\r\nEHLO attackerpc.example.com\r\n250-mail.legitcorp.com\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-VRFY\r\n250-ETRN\r\n250-STARTTLS\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ithelpdesk@legitcorp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<sysadmin@legitcorp.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: \"IT Helpdesk\" <ithelpdesk@legitcorp.com>\r\nTo: sysadmin@legitcorp.com\r\nSubject: Critical: Patch Installation Required Immediately\r\nReply-To: support@malicioussupport.net\r\n\r\n[Email body and attachment data]\r\n.\r\n250 2.0.0 Ok: queued as 7890ABCDEF\r\nQUIT\r\n221 2.0.0 Bye",
+        "domain_registration": {
+          "domain": "malicioussupport.net",
+          "registrar": "Porkbun, LLC",
+          "creation_date": "2023-03-10T16:30:00Z",
+          "expiration_date": "2024-03-10T16:30:00Z",
+          "registrant": {
+            "name": "Anon User",
+            "organization": "Anon Org",
+            "email": "anonuser@anonymousmail.com",
+            "country": "NL"
+          },
+          "nameservers": [
+            "ns1.porkbun.com",
+            "ns2.porkbun.com"
+          ]
+        },
+        "malicious_url": "http://malicioussupport.net/patch_verification?user=sysadmin&session=3a7b9c8d",
+        "url_obfuscation": "URL uses HTTP and a deceptive path that mimics legitimate patch verification pages. The domain name is similar to the official IT support portal but uses a different TLD (.net vs .com)."
+      },
+      "indicators": {
+        "suspicious_reply_to": "support@malicioussupport.net",
+        "dkim_fail": true,
+        "dmarc_reject": true,
+        "unusual_sending_ip": "203.0.113.45 (not listed in SPF record)",
+        "recent_domain_registration": "malicioussupport.net registered 14 days before email sent",
+        "attachment_type": "malicious executable (.exe) with trojan payload",
+        "URL_http": true,
+        "domain_similar_to_legit": true
+      },
+      "detection_method": "Advanced email gateway detected DKIM and DMARC failures, flagged suspicious Reply-To header and blocked executable attachment. Threat intelligence identified the domain malicioussupport.net as newly registered and related to known attacker infrastructure. Endpoint protection detected execution of trojan payload during sandbox detonation.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Spearphishing Attachment",
+        "T1193 - Spearphishing via Link",
+        "T1204.002 - User Execution: Malicious File",
+        "T1586 - Compromise Infrastructure"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "spear phishing_mal_5",
+      "generation_timestamp": 1749307891.3299148
+    }
+  ],
+  "metadata": {
+    "total_samples": 46,
+    "new_samples_added": 46,
+    "new_malicious_samples": 26,
+    "new_benign_samples": 20,
+    "generation_method": "parallel",
+    "generation_stats": {
+      "total_generated": 46,
+      "duplicates_filtered": 0,
+      "failed_generations": 0,
+      "successful_batches": 23,
+      "total_api_calls": 25,
+      "generation_start_time": 1749307783.885244,
+      "generation_end_time": 1749308033.6937673
+    },
+    "duplicate_detection_stats": {
+      "enabled": true,
+      "total_hashes": 96,
+      "check_fields": [
+        "scenario",
+        "technical_data",
+        "indicators"
+      ]
+    },
+    "generation_timestamp": "2025-06-07 10:53:53",
+    "total_generation_time": 249.80852341651917,
+    "samples_per_minute": 11.048462087092615,
+    "max_workers": 4,
+    "batch_size": 2
+  }
+}

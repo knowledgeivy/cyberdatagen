@@ -1,0 +1,2733 @@
+{
+  "samples": [
+    {
+      "scenario": "Finance department employee accesses quarterly financial report and sends a summary email to the executive team.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:24:33Z",
+        "user_id": "finance.jane.doe@examplecorp.com",
+        "login": {
+          "source_ip": "192.168.12.45",
+          "auth_method": "MFA",
+          "status": "success",
+          "device": "Windows-10-Laptop"
+        },
+        "file_access": {
+          "file_path": "/shared/finance/Q2_2024_Financial_Report.xlsx",
+          "access_type": "read",
+          "access_time": "2024-06-15T10:25:01Z"
+        },
+        "email": {
+          "sent_to": [
+            "executive.ceo@examplecorp.com",
+            "executive.cfo@examplecorp.com"
+          ],
+          "subject": "Q2 2024 Financial Summary",
+          "timestamp": "2024-06-15T10:30:12Z",
+          "email_client": "Outlook-Desktop-16.0"
+        },
+        "network_traffic": {
+          "dst_ip": "10.20.30.50",
+          "dst_port": 443,
+          "protocol": "TLS1.3",
+          "bytes_sent": 2048,
+          "bytes_received": 512
+        }
+      },
+      "indicators": {
+        "consistent_ip_and_device": true,
+        "valid_multi_factor_authentication": true,
+        "file_access_within_department_shared_drive": true,
+        "email_sent_to_known_internal_recipients": true,
+        "no_anomalous_network_behavior": true
+      },
+      "activity_type": "Normal employee document access and internal communication",
+      "business_justification": "Quarterly financial reporting is a routine business process requiring secure access to financial documents and communication with executives for business decision-making.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_23",
+      "generation_timestamp": 1749308215.8884683
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email and External SMTP Relay",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from relay.attacker.net (relay.attacker.net [198.51.100.101])\r\n\tby mail.company.com (Postfix) with ESMTP id 7D2A5604C1\r\n\tfor <finance@company.com>; Mon, 20 Jun 2023 16:45:22 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: relay.attacker.net is not allowed to send mail for company.com) client-ip=198.51.100.101;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=company.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAJk4Zy=9Yk99@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: finance@company.com\r\nSubject: Confidential: Immediate Wire Transfer Request\r\nDate: Mon, 20 Jun 2023 16:45:21 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.113.88]",
+        "email_body": "Dear Finance Team,\n\nPlease urgently process a wire transfer of $310,000 to the account below. This is a confidential payment for an upcoming acquisition.\n\nBank: United Trust Bank\nAccount Number: 1122334455\nRouting Number: 021000021\nBeneficiary: Delta Partners LLC\n\nPlease confirm once the transfer is complete.\n\nRegards,\nAlice",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO relay.attacker.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@company.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<finance@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: finance@company.com\r\nSubject: Confidential: Immediate Wire Transfer Request\r\n\r\nPlease process wire transfer...\r\n.\r\n250 2.0.0 Ok: queued as 7D2A5604C1",
+        "dns_whois": {
+          "DomainName": "relay.attacker.net",
+          "Registrar": "Malicious Domains Ltd.",
+          "CreationDate": "2023-06-15T10:15:30Z",
+          "ExpirationDate": "2024-06-15T10:15:30Z",
+          "NameServers": [
+            "ns1.maliciousdns.net",
+            "ns2.maliciousdns.net"
+          ],
+          "RegistrantEmail": "badactor@maliciousmail.net"
+        },
+        "spf_record": "v=spf1 include:_spf.google.com -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@company.com",
+        "email_authentication_results": "spf=fail (relay.attacker.net: relay.attacker.net is not authorized to send mail for company.com) smtp.mailfrom=company.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 16:46:05 finance-server app[payments]: Wire transfer request initiated by user 'finance' for $310,000 to account 1122334455 (United Trust Bank). Transaction pending verification.",
+        "email_account_activity_log": [
+          "Jun 20 10:05:33 mailserver imapd[5123]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 20 16:44:59 mailserver postfix/smtpd[6702]: connect from relay.attacker.net[198.51.100.101]",
+          "Jun 20 16:45:22 mailserver postfix/smtpd[6702]: warning: relay.attacker.net[198.51.100.101]: SPF check failed",
+          "Jun 20 16:45:22 mailserver postfix/smtpd[6702]: disconnect from relay.attacker.net[198.51.100.101] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.101",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "relay.attacker.net",
+        "unusual_smtp_client": "relay.attacker.net[198.51.100.101]",
+        "wire_transfer_amount": 310000,
+        "unusual_email_origin_ip": "203.0.113.88",
+        "registration_age_days": 5,
+        "registrant_email": "badactor@maliciousmail.net"
+      },
+      "detection_method": "Email gateway flags SPF/DKIM/DMARC failures and sender IP mismatch. SIEM correlates domain registration information with suspicious IP activity and triggers alert for high-value wire transfer without multi-factor approval. UEBA detects unusual sending IP and timing inconsistent with executive's normal behavior. Finance team manual verification confirms fraud attempt.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_5",
+      "generation_timestamp": 1749308113.0070968
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs a routine deployment of application update and scales compute resources to handle increased user demand.",
+      "technical_data": {
+        "api_calls": [
+          {
+            "timestamp": "2024-06-15T14:20:05Z",
+            "user": "devops.engineer@cloud.enterprise.com",
+            "action": "Authenticate",
+            "service": "IAM",
+            "auth_method": "OAuth2",
+            "status": "success",
+            "source_ip": "192.168.100.25"
+          },
+          {
+            "timestamp": "2024-06-15T14:22:10Z",
+            "user": "devops.engineer@cloud.enterprise.com",
+            "action": "DeployApplication",
+            "service": "AppService",
+            "parameters": {
+              "app_version": "v2.3.1",
+              "environment": "production"
+            },
+            "status": "success"
+          },
+          {
+            "timestamp": "2024-06-15T14:25:30Z",
+            "user": "devops.engineer@cloud.enterprise.com",
+            "action": "ScaleResources",
+            "service": "Compute",
+            "parameters": {
+              "instances_added": 3,
+              "current_instances": 12
+            },
+            "status": "success"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T14:20:00Z",
+            "component": "CI/CD Pipeline",
+            "message": "Pipeline triggered by devops.engineer for production deployment"
+          },
+          {
+            "timestamp": "2024-06-15T14:22:15Z",
+            "component": "AppService",
+            "message": "Application v2.3.1 deployed successfully"
+          },
+          {
+            "timestamp": "2024-06-15T14:26:00Z",
+            "component": "ComputeManager",
+            "message": "Scaled up compute instances from 9 to 12"
+          }
+        ],
+        "monitoring": {
+          "cpu_usage_before": "75%",
+          "cpu_usage_after": "60%",
+          "memory_usage_before": "70%",
+          "memory_usage_after": "65%"
+        }
+      },
+      "indicators": {
+        "user_authentication": "OAuth2 success from known engineer IP",
+        "deployment_status": "successful with no errors",
+        "resource_scaling": "matches expected load increase patterns",
+        "log_timestamps": "continuous and consistent with deployment timeline",
+        "source_ip": "192.168.100.25 (corporate network)"
+      },
+      "activity_type": "Cloud application deployment and scaling",
+      "business_justification": "Routine deployment and scaling to maintain service performance during peak user activity.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_24",
+      "generation_timestamp": 1749308223.4223876
+    },
+    {
+      "scenario": "Business Email Compromise via Lookalike Domain and Social Engineering for Vendor Payment Fraud",
+      "technical_data": {
+        "email_headers": "Return-Path: <vendor.payments@company-payments.com>\r\nReceived: from mail.company-payments.com (mail.company-payments.com [203.0.113.77])\r\n\tby smtp.company.com (Postfix) with ESMTP id 8G7H9I0J1K\r\n\tfor <payments@company.com>; Tue, 20 Jun 2023 08:44:30 +0000 (UTC)\r\nReceived-SPF: fail (smtp.company.com: domain of company-payments.com does not designate 203.0.113.77 as permitted sender) client-ip=203.0.113.77;\r\nAuthentication-Results: smtp.company.com; spf=fail (sender IP is 203.0.113.77) smtp.mailfrom=vendor.company-payments.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAH987LKJ@mail.company-payments.com>\r\nFrom: \"Vendor Payments\" <vendor.payments@company-payments.com>\r\nTo: payments@company.com\r\nSubject: Updated Bank Details for Invoice Payment\r\nDate: Tue, 20 Jun 2023 08:44:29 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Mozilla Thunderbird 91.8.0\r\nX-Originating-IP: [198.51.100.101]",
+        "email_body": "<html><body><p>Dear Accounts Team,</p><p>Please update your records with the new bank account details for all future payments:</p><ul><li>Bank: National Commerce Bank</li><li>Account Number: 321654987</li><li>Routing Number: 051000017</li><li>Beneficiary: Apex Vendors Inc.</li></ul><p>Kindly confirm receipt of this update to avoid payment delays.</p><p>Best regards,<br/>Vendor Payments Team</p></body></html>",
+        "smtp_transaction_log": "220 mail.company-payments.com ESMTP Postfix\r\nEHLO attacker-laptop.net\r\n250-mail.company-payments.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<vendor.payments@company-payments.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<payments@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Vendor Payments <vendor.payments@company-payments.com>\r\nTo: payments@company.com\r\nSubject: Updated Bank Details for Invoice Payment\r\n\r\nPlease update your records...\r\n.\r\n250 2.0.0 Ok: queued as 8G7H9I0J1K",
+        "dns_whois": {
+          "DomainName": "company-payments.com",
+          "Registrar": "SpoofRegistrars Co.",
+          "CreationDate": "2023-06-15T14:05:22Z",
+          "ExpirationDate": "2024-06-15T14:05:22Z",
+          "NameServers": [
+            "ns1.spoofregistrars.com",
+            "ns2.spoofregistrars.com"
+          ],
+          "RegistrantEmail": "fraudster@anonymousmail.org"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc@company.com",
+        "email_authentication_results": "spf=fail (company-payments.com: domain of company-payments.com does not designate 203.0.113.77 as permitted sender) smtp.mailfrom=company-payments.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 08:45:12 payments-server app[wire]: Wire transfer request initiated by user 'payments' for $95,000 to account 321654987 (National Commerce Bank). Transaction held pending verification.",
+        "email_account_activity_log": [
+          "Jun 20 08:40:30 mailserver postfix/smtpd[11800]: connect from attacker-laptop.net[203.0.113.77]",
+          "Jun 20 08:44:29 mailserver postfix/smtpd[11800]: warning: attacker-laptop.net[203.0.113.77]: SPF check failed",
+          "Jun 20 08:44:29 mailserver postfix/smtpd[11800]: disconnect from attacker-laptop.net[203.0.113.77] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.113.77",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "company-payments.com",
+        "unusual_smtp_client": "attacker-laptop.net[203.0.113.77]",
+        "wire_transfer_amount": 95000,
+        "unusual_email_origin_ip": "198.51.100.101",
+        "registration_age_days": 5,
+        "registrant_email": "fraudster@anonymousmail.org"
+      },
+      "detection_method": "Email security gateway flags SPF, DKIM, and DMARC failures from lookalike domain company-payments.com. Threat intelligence identifies domain as newly registered with suspicious registrant details. Wire transfer system holds transaction for manual verification due to flagged origin and unusual beneficiary details. User awareness training reinforced to recognize vendor domain spoofing attacks.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing",
+        "T1204.002 - User Execution: Malicious File"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_10",
+      "generation_timestamp": 1749308152.5998428
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs scheduled deployment of a new version of the finance application, followed by routine monitoring and log review.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "user_id": "devops.brian.smith@cloud.examplecorp.com",
+        "api_calls": [
+          {
+            "service": "AWS CodeDeploy",
+            "operation": "StartDeployment",
+            "request_id": "c8fadb12-34e7-4d9b-8a1f-2d9a0b3bf6a5",
+            "status": "success",
+            "timestamp": "2024-06-15T02:00:05Z"
+          },
+          {
+            "service": "AWS CloudWatch",
+            "operation": "GetMetricData",
+            "metrics": [
+              "CPUUtilization",
+              "RequestCount"
+            ],
+            "status": "success",
+            "timestamp": "2024-06-15T02:15:00Z"
+          }
+        ],
+        "system_logs": {
+          "deployment_log": {
+            "entries": 150,
+            "errors": 0,
+            "warnings": 3,
+            "completion_status": "success"
+          },
+          "monitoring_log": {
+            "entries": 500,
+            "alerts_triggered": 0,
+            "timestamp": "2024-06-15T02:30:00Z"
+          }
+        },
+        "network_traffic": {
+          "source_ip": "54.240.196.123",
+          "destination_ip": "10.10.1.45",
+          "protocol": "HTTPS",
+          "bytes_sent": 102400,
+          "bytes_received": 20480
+        },
+        "authentication": {
+          "method": "IAM Role with MFA",
+          "duration": "15m",
+          "status": "success"
+        }
+      },
+      "indicators": {
+        "scheduled_deployment_time": true,
+        "successful_api_calls": true,
+        "no_error_or_alerts_in_logs": true,
+        "authorized_user_and_ip": true,
+        "use_of_strong_authentication": true
+      },
+      "activity_type": "Routine cloud DevOps deployment and monitoring",
+      "business_justification": "Scheduled application deployments and monitoring are standard DevOps procedures to ensure continuous delivery of software updates while maintaining system stability and performance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_23",
+      "generation_timestamp": 1749308215.8884683
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Finance Director Account with Insider Wire Transfer Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <finance.director@company.com>\r\nReceived: from 198.51.100.200 (mail.company.com [10.10.10.5])\r\n\tby mail.company.com (Postfix) with ESMTP id 7B4F6302C1\r\n\tfor <payments@company.com>; Tue, 20 Jun 2023 16:05:50 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAF_7ZbGH56@mail.company.com>\r\nFrom: \"Mark Reynolds\" <finance.director@company.com>\r\nTo: payments@company.com\r\nSubject: Urgent Wire Transfer Request\r\nDate: Tue, 20 Jun 2023 16:05:49 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Hi Team,\n\nPlease urgently transfer $320,000 to the account below for the new vendor onboarding. Confirm once done.\n\nBank: National Trust Bank\nAccount Number: 778899665\nRouting Number: 122105278\nBeneficiary: Omega Enterprises\n\nThanks,\nMark Reynolds",
+        "web_proxy_logs": [
+          "2023-06-20T15:50:12Z proxy.company.com GET https://mail.company.com/owa/ - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/112.0.0.0 Safari/537.36 - user=finance.director ip=10.10.10.5",
+          "2023-06-20T16:00:03Z proxy.company.com POST https://mail.company.com/owa/auth.owa - 200 - user=finance.director ip=10.10.10.5",
+          "2023-06-20T16:05:22Z proxy.company.com POST https://payment-portal.company.com/api/transfer - 200 - user=finance.director ip=10.10.10.5"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 15:50:00 mailserver imapd[10234]: login: user=finance.director@company.com ip=10.10.10.5 method=PLAIN",
+          "Jun 20 16:05:45 mailserver smtpd[10240]: send email from finance.director@company.com to payments@company.com",
+          "Jun 20 16:06:10 mailserver smtpd[10240]: email sent: id=CAF_7ZbGH56"
+        ],
+        "credential_harvested_url": "",
+        "dns_whois_credential_domain": {},
+        "email_account_anomaly": {
+          "last_successful_login_ip": "10.10.10.5",
+          "previous_login_ip_range": "10.10.0.0/16",
+          "login_time": "15:50 UTC (normal business hours)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_normal_ip": "10.10.10.5",
+        "phishing_url_domain": "",
+        "credential_harvesting_domain_age_days": null,
+        "deleted_emails_post_login": 0,
+        "email_sent_time_unusual": null,
+        "suspicious_web_proxy_url": null,
+        "unusual_forwarding_rules": true,
+        "wire_transfer_amount": 320000
+      },
+      "detection_method": "UEBA detects creation of unusual email forwarding rules on finance director's mailbox. Although login IP and time are normal, email forwarding to external addresses triggers alerts. High-value wire transfer request correlates with these anomalies. Security team initiates mailbox forensic and disables forwarding rules pending investigation.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1566 - Phishing",
+        "T1114 - Email Collection",
+        "T1098 - Account Manipulation",
+        "T1071.001 - Application Layer Protocol: Web Protocols"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_12",
+      "generation_timestamp": 1749308171.0656536
+    },
+    {
+      "scenario": "Finance department employee accesses executive expense reports and sends a routine monthly budget summary email to the CFO.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "user": "finance.emp01@enterprise.com",
+        "source_ip": "192.168.12.45",
+        "authentication": {
+          "method": "SSO",
+          "status": "success",
+          "mfa": true,
+          "timestamp": "2024-06-15T10:22:55Z"
+        },
+        "email": {
+          "recipient": "cfo@enterprise.com",
+          "subject": "Monthly Budget Summary - May 2024",
+          "sent_time": "2024-06-15T10:24:10Z",
+          "attachments": [
+            "May_2024_Expense_Report.pdf"
+          ],
+          "email_headers": {
+            "SPF": "pass",
+            "DKIM": "pass",
+            "DMARC": "pass"
+          }
+        },
+        "file_access": {
+          "file_name": "Executive_Expense_Reports_May_2024.xlsx",
+          "access_time": "2024-06-15T10:20:10Z",
+          "access_type": "read",
+          "application": "Office365 Excel Online"
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "office365.com",
+          "data_volume_kb": 150,
+          "normal_behavior": true
+        }
+      },
+      "indicators": {
+        "consistent_source_ip": true,
+        "successful_mfa": true,
+        "email_authentication_passed": true,
+        "expected_work_hours": true,
+        "no_unusual_file_modifications": true
+      },
+      "activity_type": "Finance Document Access and Internal Communication",
+      "business_justification": "Monthly financial reporting and communication to executive management is a routine and necessary business operation for budget tracking and decision-making.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_21",
+      "generation_timestamp": 1749308204.4150672
+    },
+    {
+      "scenario": "IT administrator performs scheduled backup and system health check on enterprise file servers",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:15:00Z",
+        "user": "it.admin@company.com",
+        "source_ip": "10.0.5.23",
+        "authentication": {
+          "method": "SSH key-based",
+          "result": "success"
+        },
+        "system_activity": {
+          "operation": "Scheduled backup",
+          "backup_id": "backup-20240615-021500",
+          "target_storage": "nas-backup01.company.com",
+          "data_volume_gb": 120,
+          "duration_minutes": 45,
+          "checksum_verification": "passed"
+        },
+        "monitoring_logs": [
+          {
+            "service": "file-server",
+            "status": "healthy",
+            "cpu_usage_percent": 15,
+            "memory_usage_percent": 45,
+            "timestamp": "2024-06-15T02:00:00Z"
+          },
+          {
+            "service": "backup-agent",
+            "status": "running",
+            "last_backup": "2024-06-14T02:15:00Z",
+            "timestamp": "2024-06-15T02:15:00Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "SMB",
+          "destination": "nas-backup01.company.com",
+          "port": 445,
+          "bytes_sent": 128000000000,
+          "bytes_received": 1024000
+        }
+      },
+      "indicators": [
+        "Authentication via secure SSH key succeeded",
+        "Backup duration and data volume consistent with historical backups",
+        "System health metrics within normal operating ranges",
+        "Backup checksum verification passed",
+        "Traffic to known backup storage device and standard SMB port"
+      ],
+      "activity_type": "Routine IT backup and system monitoring",
+      "business_justification": "Regular backups and health checks are essential to ensure data integrity and availability for business continuity and disaster recovery.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_19",
+      "generation_timestamp": 1749308199.0975735
+    },
+    {
+      "scenario": "Finance team member accesses executive budget report and sends an internal email to request clarification on a line item.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "user": "finance.jane.doe@example.com",
+        "source_ip": "192.168.10.45",
+        "actions": [
+          {
+            "action": "login",
+            "service": "corporate_vpn",
+            "timestamp": "2024-06-15T10:20:01Z",
+            "status": "success"
+          },
+          {
+            "action": "access_file",
+            "file_path": "/finance/reports/exec_budget_Q2_2024.xlsx",
+            "timestamp": "2024-06-15T10:22:30Z",
+            "method": "corporate_file_server",
+            "status": "read"
+          },
+          {
+            "action": "send_email",
+            "email_subject": "Question on Q2 Budget Line Item",
+            "email_to": "executive.team@example.com",
+            "email_cc": "",
+            "timestamp": "2024-06-15T10:23:40Z",
+            "email_body_excerpt": "Could you please clarify the variance on marketing expenses for Q2?"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination_ip": "10.22.33.44",
+          "bytes_sent": 1024,
+          "bytes_received": 2048
+        }
+      },
+      "indicators": {
+        "consistent_user_ip": true,
+        "successful_mfa": true,
+        "normal_business_hours": true,
+        "typical_file_access_pattern": true,
+        "internal_email_domain": true,
+        "no_anomalies_in_network_traffic": true
+      },
+      "activity_type": "Internal communication and document access",
+      "business_justification": "Finance staff routinely review and clarify budget reports with executives to ensure accuracy before financial planning and forecasting.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_15",
+      "generation_timestamp": 1749308169.19206
+    },
+    {
+      "scenario": "Cloud operations team performs routine scaling of application servers and deploys a security patch update to production environment.",
+      "technical_data": {
+        "timestamp": "2024-06-15T03:15:10Z",
+        "user": "cloudops.alex.smith@example.com",
+        "source_ip": "198.51.100.23",
+        "actions": [
+          {
+            "action": "api_authentication",
+            "service": "cloud_management_api",
+            "timestamp": "2024-06-15T03:14:50Z",
+            "status": "success",
+            "auth_method": "OAuth2"
+          },
+          {
+            "action": "scale_resources",
+            "resource_type": "app_server",
+            "original_instance_count": 5,
+            "new_instance_count": 7,
+            "timestamp": "2024-06-15T03:15:00Z"
+          },
+          {
+            "action": "deploy_update",
+            "deployment_id": "deploy-20240615-0315",
+            "component": "web_application",
+            "patch_version": "v4.3.12-security",
+            "timestamp": "2024-06-15T03:15:05Z",
+            "status": "success"
+          }
+        ],
+        "monitoring_logs": {
+          "cpu_usage_before": "65%",
+          "cpu_usage_after": "45%",
+          "error_rates": "0.01%",
+          "deployment_duration_seconds": 30
+        }
+      },
+      "indicators": {
+        "authorized_user": true,
+        "successful_api_authentication": true,
+        "expected_scaling_pattern": true,
+        "deployment_within_maintenance_window": true,
+        "no_error_spikes": true,
+        "cloud_resource_metrics_normal": true
+      },
+      "activity_type": "Cloud resource scaling and patch deployment",
+      "business_justification": "Regular scaling and security patch deployment are critical to maintaining application performance and protecting against vulnerabilities.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_15",
+      "generation_timestamp": 1749308169.1930366
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs routine deployment of updated finance application microservice, with related logs showing normal authentication, API calls, and resource scaling.",
+      "technical_data": {
+        "user": "devops.engineer@enterprise.com",
+        "timestamp": "2024-06-15T14:03:12Z",
+        "cloud_provider": "AWS",
+        "api_calls": [
+          {
+            "service": "IAM",
+            "action": "GetUser",
+            "status": "200 OK",
+            "timestamp": "2024-06-15T14:02:55Z"
+          },
+          {
+            "service": "ECS",
+            "action": "UpdateService",
+            "parameters": {
+              "serviceName": "finance-microservice",
+              "desiredCount": 3,
+              "taskDefinition": "finance-app:12"
+            },
+            "status": "200 OK",
+            "timestamp": "2024-06-15T14:03:05Z"
+          },
+          {
+            "service": "CloudWatch",
+            "action": "PutMetricAlarm",
+            "parameters": {
+              "AlarmName": "FinanceApp-HighCPU",
+              "Threshold": 80,
+              "ComparisonOperator": "GreaterThanThreshold"
+            },
+            "status": "200 OK",
+            "timestamp": "2024-06-15T14:03:10Z"
+          }
+        ],
+        "resource_scaling": {
+          "service": "ECS",
+          "previous_task_count": 2,
+          "updated_task_count": 3,
+          "timestamp": "2024-06-15T14:03:12Z"
+        }
+      },
+      "indicators": [
+        "API calls authenticated with valid IAM user credentials",
+        "Standard ECS service update parameters",
+        "CloudWatch alarm creation consistent with monitoring best practices",
+        "Scaling event matches deployment of updated application version",
+        "Activity occurs during normal deployment window"
+      ],
+      "activity_type": "Routine cloud DevOps deployment and resource management",
+      "business_justification": "Monthly application updates and scaling of finance microservice ensure system reliability and performance to support critical business transactions.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_22",
+      "generation_timestamp": 1749308213.681917
+    },
+    {
+      "scenario": "Finance team lead accesses monthly financial report, sends update email to executive team, and system logs show normal authenticated access from corporate network.",
+      "technical_data": {
+        "user": "jane.doe@enterprise.com",
+        "timestamp": "2024-06-15T09:15:23Z",
+        "activity": [
+          {
+            "type": "login",
+            "source_ip": "10.12.45.67",
+            "auth_method": "SAML SSO",
+            "status": "success",
+            "device": "Windows-10-Workstation"
+          },
+          {
+            "type": "file_access",
+            "file_path": "/shared/finance/monthly_reports/2024-05-financial-summary.xlsx",
+            "operation": "read",
+            "timestamp": "2024-06-15T09:17:10Z"
+          },
+          {
+            "type": "email_sent",
+            "email_metadata": {
+              "from": "jane.doe@enterprise.com",
+              "to": [
+                "ceo@enterprise.com",
+                "cfo@enterprise.com"
+              ],
+              "subject": "May 2024 Financial Summary",
+              "timestamp": "2024-06-15T09:25:45Z",
+              "message_id": "<1234567890.finance.enterprise.com>"
+            },
+            "network_traffic": {
+              "smtp_server": "smtp.enterprise.com",
+              "port": 587,
+              "tls": true
+            }
+          }
+        ]
+      },
+      "indicators": [
+        "Login from corporate IP range (10.12.0.0/16)",
+        "Successful SAML authentication without any failure events",
+        "File access timestamp consistent with business hours",
+        "Email sent to known executive distribution list",
+        "No anomalies in network traffic, standard SMTP over TLS"
+      ],
+      "activity_type": "Normal employee document access and internal communication",
+      "business_justification": "Finance team lead routinely reviews and shares monthly financial reports with executives to ensure transparency and support business planning.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_22",
+      "generation_timestamp": 1749308213.6809182
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised CEO Email with Urgent Vendor Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from compromised-host.net (compromised-host.net [198.51.100.91])\r\n\tby mail.company.com (Postfix) with ESMTP id 7G2H5409K1\r\n\tfor <accounts@company.com>; Mon, 19 Jun 2023 16:48:33 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of compromised-host.net does not designate 198.51.100.91 as permitted sender) client-ip=198.51.100.91;\r\nAuthentication-Results: mail.company.com; spf=fail (sender IP is 198.51.100.91) smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAJio9X8K8f@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounts@company.com\r\nSubject: Immediate Payment Processing Required\r\nDate: Mon, 19 Jun 2023 16:48:31 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.113.77]",
+        "email_body": "Hi Team,\n\nPlease expedite a payment of $175,000 to the vendor below immediately. This payment is critical to maintaining our supply chain.\n\nBank: Continental Bank\nAccount Number: 555667788\nRouting Number: 021000021\nBeneficiary: Delta Electronics Inc.\n\nConfirm once the transfer is complete.\n\nThanks,\nAlice",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO compromised-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@compromised-host.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounts@company.com\r\nSubject: Immediate Payment Processing Required\r\n\r\nPlease expedite payment...\r\n.\r\n250 2.0.0 Ok: queued as 7G2H5409K1",
+        "dns_whois": {
+          "DomainName": "compromised-host.net",
+          "Registrar": "Dodgy Domains Ltd",
+          "CreationDate": "2023-06-15T10:00:00Z",
+          "ExpirationDate": "2024-06-15T10:00:00Z",
+          "NameServers": [
+            "ns1.dodgydomains.net",
+            "ns2.dodgydomains.net"
+          ],
+          "RegistrantEmail": "fraudster@dodgydomains.net"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromised-host.net: domain of compromised-host.net does not designate 198.51.100.91 as permitted sender) smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 16:49:05 payment-gateway app[transfers]: Wire transfer requested by 'accounts' for $175,000 to account 555667788 (Continental Bank). Awaiting approval.",
+        "email_account_activity_log": [
+          "Jun 19 16:30:02 mailserver imapd[5634]: login: user=ceo@company.com ip=10.10.10.5 method=PLAIN",
+          "Jun 19 16:47:59 mailserver postfix/smtpd[7810]: connect from compromised-host.net[198.51.100.91]",
+          "Jun 19 16:48:33 mailserver postfix/smtpd[7810]: warning: compromised-host.net[198.51.100.91]: SPF check failed",
+          "Jun 19 16:48:33 mailserver postfix/smtpd[7810]: disconnect from compromised-host.net[198.51.100.91] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.91",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-host.net",
+        "unusual_smtp_client": "compromised-host.net[198.51.100.91]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "203.0.113.77",
+        "registration_age_days": 4,
+        "registrant_email": "fraudster@dodgydomains.net"
+      },
+      "detection_method": "Email gateway identifies SPF/DKIM/DMARC failures and flags email. SIEM correlates new domain registration with suspicious email source IP and flags high-value wire transfer requests without multi-factor authentication. UEBA detects anomaly in email origin IP and unusual sending time. Finance team initiates manual verification before payment processing.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_8",
+      "generation_timestamp": 1749308140.526509
+    },
+    {
+      "scenario": "Finance department employee accesses and shares quarterly financial report with executive team via corporate email",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.smith@company.com",
+        "source_ip": "192.168.10.45",
+        "authentication": {
+          "method": "SAML SSO",
+          "result": "success",
+          "mfa_used": true
+        },
+        "email_activity": {
+          "email_id": "msg-20240615-092345-001",
+          "recipients": [
+            "ceo@company.com",
+            "cfo@company.com",
+            "finance-team@company.com"
+          ],
+          "subject": "Q2 Financial Report",
+          "attachments": [
+            {
+              "filename": "Q2_Financials.pdf",
+              "file_size_bytes": 245760,
+              "hash_sha256": "a3f5d7e8b4c1f2d3a9e0b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7"
+            }
+          ],
+          "sent_from_ip": "192.168.10.45",
+          "sent_time": "2024-06-15T09:25:01Z"
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "mail.company.com",
+          "port": 443,
+          "bytes_sent": 350000,
+          "bytes_received": 1500
+        }
+      },
+      "indicators": [
+        "User authenticated successfully with MFA",
+        "Email sent within normal business hours",
+        "Recipients include verified executive and finance team addresses",
+        "Document attachment hash matches known corporate report hashes",
+        "Network traffic consistent with corporate email usage patterns"
+      ],
+      "activity_type": "Legitimate email communication and document sharing",
+      "business_justification": "Sharing quarterly financial reports with executive leadership is a standard business process critical for financial oversight and decision making.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_19",
+      "generation_timestamp": 1749308199.0975735
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Account Sending Wire Transfer Request with Mismatched SPF and Suspicious IP",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from suspicious-host.net (unknown [198.51.100.120])\r\n\tby mail.company.com (Postfix) with ESMTP id 7C2B8F3A12\r\n\tfor <accounting@company.com>; Mon, 19 Jun 2023 16:45:33 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of company.com does not designate 198.51.100.120 as permitted sender) client-ip=198.51.100.120;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAJm9tXz7Mf@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounting@company.com\r\nSubject: Immediate Wire Transfer Required\r\nDate: Mon, 19 Jun 2023 16:45:32 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.120]",
+        "email_body": "Hello Team,\n\nPlease initiate a wire transfer of $175,000 to the following account as soon as possible. This is a confidential transaction related to the upcoming acquisition.\n\nBank Name: International Bank Corp\nAccount Number: 5566778899\nRouting Number: 021000021\nBeneficiary: Strategic Partners Ltd\n\nConfirm once the transfer is complete.\n\nBest,\nAlice",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO suspicious-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@company.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounting@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounting@company.com\r\nSubject: Immediate Wire Transfer Required\r\n\r\nPlease initiate wire transfer...\r\n.\r\n250 2.0.0 Ok: queued as 7C2B8F3A12",
+        "dns_whois": {
+          "DomainName": "suspicious-host.net",
+          "Registrar": "Shady Domains LLC",
+          "CreationDate": "2023-06-15T10:10:10Z",
+          "ExpirationDate": "2024-06-15T10:10:10Z",
+          "NameServers": [
+            "ns1.shadydomains.net",
+            "ns2.shadydomains.net"
+          ],
+          "RegistrantEmail": "fraudster@darkmail.com"
+        },
+        "spf_record": "v=spf1 include:_spf.company.com -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc@company.com; ruf=mailto:forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (company.com: domain of company.com does not designate 198.51.100.120 as permitted sender) smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 16:46:05 accounting-server app[payments]: Wire transfer request by user 'accounting' for $175,000 to account 5566778899 (International Bank Corp). Pending supervisor approval.",
+        "email_account_activity_log": [
+          "Jun 19 16:30:12 mailserver imapd[5124]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 16:44:58 mailserver postfix/smtpd[7341]: connect from suspicious-host.net[198.51.100.120]",
+          "Jun 19 16:45:33 mailserver postfix/smtpd[7341]: warning: suspicious-host.net[198.51.100.120]: SPF check failed",
+          "Jun 19 16:45:33 mailserver postfix/smtpd[7341]: disconnect from suspicious-host.net[198.51.100.120] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.120",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "suspicious-host.net",
+        "unusual_smtp_client": "suspicious-host.net[198.51.100.120]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "198.51.100.120",
+        "registration_age_days": 4,
+        "registrant_email": "fraudster@darkmail.com"
+      },
+      "detection_method": "Email gateway detects SPF fail and DMARC quarantine triggering suspicion. SIEM correlates suspicious domain registration and unusual outgoing IP with high-value wire transfer request. UEBA flags email origin from unknown IP for executive account. Manual finance team verification required for transactions over $100k.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_9",
+      "generation_timestamp": 1749308148.4686508
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email with Urgent Invoice Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from mail.company.com (mail.company.com [172.16.5.10])\r\n\tby mx.external.net (Postfix) with ESMTP id 2A3B4C5D6E\r\n\tfor <accounts.payable@company.com>; Mon, 19 Jun 2023 11:05:45 +0000 (UTC)\r\nAuthentication-Results: mx.external.net; spf=pass smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAEj23kLp@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required: Invoice #45982\r\nDate: Mon, 19 Jun 2023 11:05:44 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.85]",
+        "email_body": "Dear Accounts Payable,\n\nPlease process an immediate payment of $85,750 to the vendor below for Invoice #45982. This is urgent and requires priority handling.\n\nBank: International Bank Corp\nAccount Number: 456789123\nRouting Number: 021000021\nBeneficiary: Zenith Solutions Ltd\n\nKindly confirm once payment is executed.\n\nBest,\nAlice Johnson",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO compromised-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10485760\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@company.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required: Invoice #45982\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 2A3B4C5D6E",
+        "dns_whois": {
+          "DomainName": "compromised-host.net",
+          "Registrar": "NetSecure Registrations",
+          "CreationDate": "2023-06-12T09:15:30Z",
+          "ExpirationDate": "2024-06-12T09:15:30Z",
+          "NameServers": [
+            "ns1.netsecure.com",
+            "ns2.netsecure.com"
+          ],
+          "RegistrantEmail": "hacker@stealthmail.org"
+        },
+        "spf_record": "v=spf1 include:company.com -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc@company.com",
+        "email_authentication_results": "spf=pass (company.com: domain of company.com designates 172.16.5.10 as permitted sender) smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:06:20 payments-server app[wire]: Wire transfer request initiated by user 'accounts.payable' for $85,750 to account 456789123 (International Bank Corp). Transaction pending approval.",
+        "email_account_activity_log": [
+          "Jun 19 10:50:15 mailserver imapd[10234]: login: user=ceo@company.com ip=203.0.113.90 method=PLAIN",
+          "Jun 19 11:04:59 mailserver postfix/smtpd[11220]: connect from compromised-host.net[172.16.5.10]",
+          "Jun 19 11:05:45 mailserver postfix/smtpd[11220]: warning: compromised-host.net[172.16.5.10]: unusual sending pattern detected",
+          "Jun 19 11:05:45 mailserver postfix/smtpd[11220]: disconnect from compromised-host.net[172.16.5.10] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "172.16.5.10",
+        "failed_spf_dkim_dmarc": false,
+        "suspicious_domain": "compromised-host.net",
+        "unusual_smtp_client": "compromised-host.net[172.16.5.10]",
+        "wire_transfer_amount": 85750,
+        "unusual_email_origin_ip": "198.51.100.85",
+        "registration_age_days": 7,
+        "registrant_email": "hacker@stealthmail.org"
+      },
+      "detection_method": "Anomaly detection flags SMTP connection from unusual internal IP range not normally associated with executive email. Correlation with recent new domain registration used to send email. Wire transfer request triggers multi-factor authentication alerts due to amount exceeding threshold. Manual finance review uncovers mismatch in payment details. Incident response initiates mailbox audit and password reset.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing",
+        "T1078.001 - Valid Accounts: Local Accounts"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_10",
+      "generation_timestamp": 1749308152.5988429
+    },
+    {
+      "scenario": "Business Email Compromise via Executive Account Takeover with Unusual Email Forwarding and Wire Transfer Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from compromised-host.net (compromised-host.net [203.0.114.99])\r\n\tby mail.company.com (Postfix) with ESMTP id 9D5F8E2B4C\r\n\tfor <finance@company.com>; Tue, 20 Jun 2023 16:45:22 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAEF89Xy3@mail.company.com>\r\nFrom: \"Michael Johnson\" <ceo@company.com>\r\nTo: finance@company.com\r\nSubject: Confidential: Wire Transfer Request\r\nDate: Tue, 20 Jun 2023 16:45:21 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Outlook 365\r\nX-Originating-IP: [198.51.100.88]",
+        "email_body": "Team,\n\nPlease urgently transfer $320,000 to the following account. This is a confidential matter and requires immediate action.\n\nBank: National Trust Bank\nAccount Number: 112233445\nRouting Number: 031000053\nBeneficiary: Orion Enterprises\n\nNotify me once done.\n\nMichael",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO compromised-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@compromised-host.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<finance@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Michael Johnson <ceo@company.com>\r\nTo: finance@company.com\r\nSubject: Confidential: Wire Transfer Request\r\n\r\nPlease urgently transfer...\r\n.\r\n250 2.0.0 Ok: queued as 9D5F8E2B4C",
+        "dns_whois": {
+          "DomainName": "compromised-host.net",
+          "Registrar": "Unreliable Domains LLC",
+          "CreationDate": "2023-06-12T09:00:00Z",
+          "ExpirationDate": "2024-06-12T09:00:00Z",
+          "NameServers": [
+            "ns1.unreliable.net",
+            "ns2.unreliable.net"
+          ],
+          "RegistrantEmail": "hacker@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:reports@company.com",
+        "email_authentication_results": "spf=fail (compromised-host.net: domain of compromised-host.net does not designate 203.0.114.99 as permitted sender) smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 16:46:30 finance-db app[transfer]: Wire transfer request for $320,000 initiated by finance user after email request from ceo@company.com, transaction flagged for manual review.",
+        "email_account_activity_log": [
+          "Jun 20 15:00:01 mailserver imapd[4001]: login: user=ceo@company.com ip=192.168.5.10 method=PLAIN",
+          "Jun 20 16:43:50 mailserver imapd[4001]: login: user=ceo@company.com ip=203.0.114.99 method=PLAIN",
+          "Jun 20 16:44:30 mailserver imapd[4001]: added forwarding rule: forward all to external-email@unknown.com",
+          "Jun 20 16:45:22 mailserver postfix/smtpd[6221]: connect from compromised-host.net[203.0.114.99]",
+          "Jun 20 16:45:22 mailserver postfix/smtpd[6221]: warning: compromised-host.net[203.0.114.99]: SPF check failed",
+          "Jun 20 16:45:22 mailserver postfix/smtpd[6221]: disconnect from compromised-host.net[203.0.114.99] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.114.99",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-host.net",
+        "unusual_smtp_client": "compromised-host.net[203.0.114.99]",
+        "wire_transfer_amount": 320000,
+        "unusual_email_origin_ip": "198.51.100.88",
+        "registration_age_days": 8,
+        "registrant_email": "hacker@maliciousmail.com"
+      },
+      "detection_method": "Email security gateway detects SPF/DKIM/DMARC failures and blocks or quarantines message. UEBA flags new login from foreign IP and creation of suspicious forwarding rule. SIEM correlates domain registration data with wire transfer requests outside normal behavior profile. Incident response team conducts mailbox investigation and wire transfer halt until verification.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.001 - Valid Accounts: Local Accounts",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1539 - Steal Web Session Cookie",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_7",
+      "generation_timestamp": 1749308115.5559957
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email and Urgent Invoice Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from compromised-host.net (compromised-host.net [198.51.100.85])\r\n\tby mail.company.com (Postfix) with ESMTP id 9D3B7206A1\r\n\tfor <accounts.payable@company.com>; Mon, 19 Jun 2023 11:45:33 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAHk4Zx=9Yk34@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Overdue Invoice\r\nDate: Mon, 19 Jun 2023 11:45:32 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.113.89]",
+        "email_body": "Dear Accounts Payable,\n\nPlease process the attached invoice payment immediately to avoid service disruption. Payment details below:\n\nBank: Continental Bank\nAccount Number: 554433221\nRouting Number: 123456789\nBeneficiary: Delta Technologies Inc.\nAmount: $175,000\n\nConfirm once the payment is done.\n\nBest,\nAlice Johnson",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO compromised-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@compromised-host.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Overdue Invoice\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 9D3B7206A1",
+        "dns_whois": {
+          "DomainName": "compromised-host.net",
+          "Registrar": "Shady Registrar LLC",
+          "CreationDate": "2023-06-15T10:12:34Z",
+          "ExpirationDate": "2024-06-15T10:12:34Z",
+          "NameServers": [
+            "ns1.shady-registrar.net",
+            "ns2.shady-registrar.net"
+          ],
+          "RegistrantEmail": "hacker@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-aggregate@company.com; ruf=mailto:dmarc-afrf@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromised-host.net: domain of compromised-host.net does not designate 198.51.100.85 as permitted sender) smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:46:05 payments-server app[wiretransfer]: Wire transfer request for $175,000 to account 554433221 (Continental Bank) initiated by user 'accounts.payable'. Pending approval.",
+        "email_account_activity_log": [
+          "Jun 19 09:00:01 mailserver imapd[5732]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 11:44:55 mailserver postfix/smtpd[8720]: connect from compromised-host.net[198.51.100.85]",
+          "Jun 19 11:45:32 mailserver postfix/smtpd[8720]: warning: compromised-host.net[198.51.100.85]: SPF check failed",
+          "Jun 19 11:45:33 mailserver postfix/smtpd[8720]: disconnect from compromised-host.net[198.51.100.85] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.85",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-host.net",
+        "unusual_smtp_client": "compromised-host.net[198.51.100.85]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "203.0.113.89",
+        "registration_age_days": 4,
+        "registrant_email": "hacker@maliciousmail.com"
+      },
+      "detection_method": "Email gateway flags SPF/DKIM/DMARC failures and quarantines email. SIEM correlates new suspicious domain registration with high-value wire transfer request lacking multi-factor approval. UEBA highlights unexpected external SMTP client IP for executive email and unusual login times. Manual payment hold and investigation initiated by finance security team.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_6",
+      "generation_timestamp": 1749308109.1612732
+    },
+    {
+      "scenario": "Business Email Compromise via Phishing-Induced Account Takeover and Fraudulent Invoice Payment",
+      "technical_data": {
+        "email_headers": "Return-Path: <vp.operations@company.com>\r\nReceived: from mail.company.com (mail.company.com [172.16.5.20])\r\n\tby mx.partnerbank.com (Postfix) with ESMTP id 5D6F7A8B9C\r\n\tfor <payments@company.com>; Tue, 21 Jun 2023 07:30:45 +0000 (UTC)\r\nAuthentication-Results: mx.partnerbank.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAKj8Qy=7Zk77@mail.company.com>\r\nFrom: \"Robert Lee\" <vp.operations@company.com>\r\nTo: payments@company.com\r\nSubject: Approved Invoice Payment\r\nDate: Tue, 21 Jun 2023 07:30:44 +0000\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Hi Team,\n\nPlease proceed with the payment of $180,000 to the vendor listed below. This invoice was approved during last week's meeting.\n\nBank: National Trust Bank\nAccount Number: 7744112233\nRouting Number: 122105278\nBeneficiary: Delta Engineering Inc.\n\nKindly confirm once payment is processed.\n\nRegards,\nRobert Lee",
+        "web_proxy_logs": [
+          "2023-06-20T23:50:15Z proxy.company.com GET https://secure-login.company.com/ - 200 - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 - user=vp.operations ip=203.0.113.90",
+          "2023-06-20T23:51:10Z proxy.company.com POST https://secure-login.company.com/authenticate - 200 - application/x-www-form-urlencoded - user=vp.operations ip=203.0.113.90",
+          "2023-06-21T01:05:47Z proxy.company.com POST https://mail.company.com/owa/auth.owa - 200 - user=vp.operations ip=198.51.100.105",
+          "2023-06-21T01:06:15Z proxy.company.com GET https://mail.company.com/owa/inbox - 200 - user=vp.operations ip=198.51.100.105"
+        ],
+        "mailbox_access_logs": [
+          "Jun 21 01:05:50 mailserver imapd[6701]: login: user=vp.operations@company.com ip=198.51.100.105 method=PLAIN",
+          "Jun 21 01:06:10 mailserver imapd[6701]: message deleted: vp.operations@company.com msgid=10981",
+          "Jun 21 01:06:12 mailserver smtpd[6703]: send email from vp.operations@company.com to payments@company.com",
+          "Jun 21 07:30:40 mailserver smtpd[6703]: email sent: id=CAKj8Qy7Zk77"
+        ],
+        "credential_harvested_url": "https://login.secure-company.com.verify-access.info/signin?user=vp.operations",
+        "dns_whois_credential_domain": {
+          "DomainName": "verify-access.info",
+          "Registrar": "DomainKing LLC",
+          "CreationDate": "2023-06-10T09:00:00Z",
+          "ExpirationDate": "2024-06-10T09:00:00Z",
+          "NameServers": [
+            "ns1.domainking.com",
+            "ns2.domainking.com"
+          ],
+          "RegistrantEmail": "phishing@maliciousmail.net"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "198.51.100.105",
+          "previous_login_ip_range": "172.16.0.0/16",
+          "login_time": "01:05 UTC (off-hours access)",
+          "deleted_emails_count": 12,
+          "unusual_forwarding_rules": false
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "198.51.100.105",
+        "phishing_url_domain": "verify-access.info",
+        "credential_harvesting_domain_age_days": 11,
+        "deleted_emails_post_login": 12,
+        "email_sent_time_unusual": "07:30 UTC",
+        "suspicious_web_proxy_url": "https://login.secure-company.com.verify-access.info/signin?user=vp.operations"
+      },
+      "detection_method": "User behavior analytics detects login from unfamiliar IP address during off-hours followed by email deletions and high-value payment request. Email gateway identifies recently created credential phishing domain. DNS threat intel flags domain as malicious. Incident response initiates mailbox forensic investigation and blocks suspicious domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.004 - Valid Accounts: Cloud Accounts",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1110.003 - Brute Force: Password Spraying",
+        "T1539 - Steal Web Session Cookie",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_0",
+      "generation_timestamp": 1749308073.7297688
+    },
+    {
+      "scenario": "Cloud DevOps team performs a scheduled deployment of a new version of the corporate web application, triggering automated monitoring and scaling events.",
+      "technical_data": {
+        "timestamp": "2024-06-16T03:00:00Z",
+        "user": "devops_lead@enterprise.com",
+        "source_ip": "10.10.20.30",
+        "authentication": {
+          "method": "OAuth2 with API token",
+          "status": "success",
+          "timestamp": "2024-06-16T02:59:50Z"
+        },
+        "deployment": {
+          "environment": "production",
+          "application": "CorporateWebApp",
+          "version": "v3.4.2",
+          "deployment_start": "2024-06-16T03:00:05Z",
+          "deployment_end": "2024-06-16T03:12:45Z",
+          "status": "successful"
+        },
+        "cloud_operations": {
+          "autoscaling_event": {
+            "timestamp": "2024-06-16T03:05:00Z",
+            "scale_action": "scale_out",
+            "previous_instances": 5,
+            "new_instances": 7
+          },
+          "monitoring": {
+            "cpu_usage_percent": 65,
+            "memory_usage_percent": 70,
+            "alerts_triggered": 0
+          },
+          "logging": {
+            "log_source": "deployment_pipeline",
+            "log_entries": 120,
+            "log_level": "info"
+          }
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "api.cloudprovider.com",
+          "data_volume_kb": 500,
+          "pattern": "consistent with deployment and scaling operations"
+        }
+      },
+      "indicators": {
+        "authenticated_api_access": true,
+        "deployment_successful": true,
+        "autoscaling_triggered_by_monitoring": true,
+        "no_error_alerts": true,
+        "activity_within_maintenance_window": true
+      },
+      "activity_type": "Scheduled Cloud Deployment and Autoscaling",
+      "business_justification": "Regular software updates and scaling are essential to maintain application performance, reliability, and security in the production environment.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_21",
+      "generation_timestamp": 1749308204.4150672
+    },
+    {
+      "scenario": "Cloud operations team scales up application instances in response to increased traffic during business hours.",
+      "technical_data": {
+        "timestamp": "2024-06-01T14:00:00Z",
+        "system": "Cloud Management Platform",
+        "user": "cloud.ops@example.com",
+        "activity_logs": [
+          {
+            "event": "api_authentication",
+            "api_key_id": "AKIAIOSFODNN7EXAMPLE",
+            "status": "success",
+            "timestamp": "2024-06-01T14:00:01Z"
+          },
+          {
+            "event": "resource_scaling",
+            "resource_type": "EC2 Instances",
+            "previous_instance_count": 5,
+            "new_instance_count": 8,
+            "timestamp": "2024-06-01T14:00:15Z"
+          },
+          {
+            "event": "monitoring_alert",
+            "alert_type": "CPU Utilization High",
+            "threshold": "75%",
+            "current_value": "82%",
+            "timestamp": "2024-06-01T13:59:50Z"
+          }
+        ],
+        "network_traffic": {
+          "api_calls": 3,
+          "data_transferred_bytes": 2048,
+          "destination_service": "autoscaling.amazonaws.com"
+        }
+      },
+      "indicators": [
+        "API authentication succeeded with valid key",
+        "Scaling action matches monitoring alert event",
+        "Resource counts updated incrementally and within expected thresholds",
+        "Activity occurred during business hours and peak usage",
+        "No unusual IP addresses or unauthorized API keys involved"
+      ],
+      "activity_type": "Routine cloud resource management and scaling",
+      "business_justification": "Scaling cloud resources dynamically ensures application performance and availability during increased user demand.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_17",
+      "generation_timestamp": 1749308184.452786
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised HR Email Account Requesting Employee W-2 Tax Forms",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr.manager@company.com>\r\nReceived: from 203.0.113.88 (unknown [203.0.113.88])\r\n\tby mail.company.com (Postfix) with ESMTP id 5D2F4302EF\r\n\tfor <payroll@company.com>; Tue, 20 Jun 2023 16:33:44 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAJm9LfW=4Pq3@mail.company.com>\r\nFrom: \"Michael Lee\" <hr.manager@company.com>\r\nTo: payroll@company.com\r\nSubject: Request for Employee W-2 Forms\r\nDate: Tue, 20 Jun 2023 16:33:44 +0000\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Hi Payroll Team,\n\nPlease send me the W-2 tax forms for all employees for the fiscal year 2022. We have an urgent audit and need to submit these documents by end of week.\n\nThanks,\nMichael Lee\nHR Manager",
+        "web_proxy_logs": [
+          "2023-06-20T15:20:11Z proxy.company.com GET https://hrportal.company.com/login - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/113.0.5672.93 Safari/537.36 - user=hr.manager ip=198.51.100.120",
+          "2023-06-20T15:21:05Z proxy.company.com POST https://hrportal.company.com/login/authenticate - 200 - application/x-www-form-urlencoded - user=hr.manager ip=198.51.100.120",
+          "2023-06-20T15:22:30Z proxy.company.com GET https://hrportal.company.com/documents/w2-2022 - 200 - user=hr.manager ip=198.51.100.120"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 15:22:25 mailserver imapd[5021]: login: user=hr.manager@company.com ip=198.51.100.120 method=PLAIN",
+          "Jun 20 15:23:40 mailserver imapd[5021]: message copied: hr.manager@company.com msgid=7592 folder=Sent",
+          "Jun 20 16:33:40 mailserver smtpd[5023]: send email from hr.manager@company.com to payroll@company.com",
+          "Jun 20 16:33:44 mailserver smtpd[5023]: email sent: id=CAJm9LfW=4Pq3"
+        ],
+        "credential_harvested_url": "https://company-hr-secure.com.login-portal.verify-user.info/auth?user=hr.manager",
+        "dns_whois_credential_domain": {
+          "DomainName": "verify-user.info",
+          "Registrar": "DomainWorld Registrars",
+          "CreationDate": "2023-06-10T14:50:00Z",
+          "ExpirationDate": "2024-06-10T14:50:00Z",
+          "NameServers": [
+            "ns1.domainworld.com",
+            "ns2.domainworld.com"
+          ],
+          "RegistrantEmail": "phishster@maliciousmail.com"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "198.51.100.120",
+          "previous_login_ip_range": "10.30.0.0/16",
+          "login_time": "15:22 UTC (unusual for this user)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "198.51.100.120",
+        "phishing_url_domain": "verify-user.info",
+        "credential_harvesting_domain_age_days": 10,
+        "deleted_emails_post_login": 0,
+        "unusual_forwarding_rules": true,
+        "suspicious_web_proxy_url": "https://company-hr-secure.com.login-portal.verify-user.info/auth?user=hr.manager"
+      },
+      "detection_method": "UEBA detects login from unusual external IP and off-hours with new email forwarding rules in HR mailbox. Email gateway identifies new credential phishing domain through URL scanning. SIEM correlates domain registration and unusual access patterns. Incident response team conducts mailbox audit and resets credentials. Alerts triggered on unusual sensitive data requests outside normal workflows.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.004 - Valid Accounts: Cloud Accounts",
+        "T1537 - Transfer Data to Cloud Account",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_4",
+      "generation_timestamp": 1749308106.7700138
+    },
+    {
+      "scenario": "Business Email Compromise via Spoofed CEO Email with Urgent Vendor Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from mail.fake-vendor.com (mail.fake-vendor.com [198.51.100.99])\r\n\tby mx.company.com (Postfix) with ESMTP id 7A9B2301CD\r\n\tfor <payments@company.com>; Mon, 19 Jun 2023 08:45:12 +0000 (UTC)\r\nReceived-SPF: fail (mx.company.com: domain of fake-vendor.com does not designate 198.51.100.99 as permitted sender) client-ip=198.51.100.99;\r\nAuthentication-Results: mx.company.com; spf=fail (sender IP is 198.51.100.99) smtp.mailfrom=fake-vendor.com; dkim=fail (signature did not verify) header.d=company.com; dmarc=fail action=none header.from=company.com\r\nMessage-ID: <CAJm6JtH=9Jn8@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: payments@company.com\r\nSubject: Immediate Payment Required for Vendor\r\nDate: Mon, 19 Jun 2023 08:45:11 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.114.78]",
+        "email_body": "Hi Team,\n\nPlease process an urgent payment of $175,000 to the vendor account below today. This is critical to maintain our supply chain.\n\nBank: Metropolitan Bank\nAccount Number: 564738291\nRouting Number: 021000021\nBeneficiary: Prime Supplies Inc.\n\nKindly confirm when the transfer is done.\n\nAlice",
+        "smtp_transaction_log": "220 mail.fake-vendor.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.fake-vendor.com\r\n250-PIPELINING\r\n250-SIZE 10485760\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@fake-vendor.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<payments@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: payments@company.com\r\nSubject: Immediate Payment Required for Vendor\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 7A9B2301CD",
+        "dns_whois": {
+          "DomainName": "fake-vendor.com",
+          "Registrar": "Phony Domains LLC",
+          "CreationDate": "2023-06-14T11:10:35Z",
+          "ExpirationDate": "2024-06-14T11:10:35Z",
+          "NameServers": [
+            "ns1.phonydomains.com",
+            "ns2.phonydomains.com"
+          ],
+          "RegistrantEmail": "fraudster@disposablemail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@company.com",
+        "email_authentication_results": "spf=fail (fake-vendor.com: domain of fake-vendor.com does not designate 198.51.100.99 as permitted sender) smtp.mailfrom=fake-vendor.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 08:46:05 payments-server app[wiretransfers]: Wire transfer request initiated by user 'payments' for $175,000 to account 564738291 (Metropolitan Bank). Transaction pending approval.",
+        "email_account_activity_log": [
+          "Jun 19 08:10:12 mailserver imapd[4821]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 08:44:50 mailserver postfix/smtpd[7320]: connect from unknown[198.51.100.99]",
+          "Jun 19 08:45:12 mailserver postfix/smtpd[7320]: warning: unknown[198.51.100.99]: SPF check failed",
+          "Jun 19 08:45:12 mailserver postfix/smtpd[7320]: disconnect from unknown[198.51.100.99] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.99",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "fake-vendor.com",
+        "unusual_smtp_client": "unknown[198.51.100.99]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "203.0.114.78",
+        "registration_age_days": 5,
+        "registrant_email": "fraudster@disposablemail.com"
+      },
+      "detection_method": "Email gateway detects SPF/DKIM/DMARC failures and flags spoofed CEO emails. SIEM correlates new suspicious domain registration with high-value wire transfers. UEBA detects anomalous originating IP and unusual email sending patterns. Finance team manually verifies wire transfer requests above threshold. Incident response initiates domain takedown request.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_4",
+      "generation_timestamp": 1749308106.7680125
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised HR Email Account and Phishing for Payroll Data",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr@company.com>\r\nReceived: from mail.company.com (mail.company.com [10.10.10.15])\r\n\tby smtp.company.com (Postfix) with ESMTP id 7D2C4301A9\r\n\tfor <payroll@company.com>; Tue, 20 Jun 2023 11:30:45 +0000 (UTC)\r\nAuthentication-Results: smtp.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAFb89Y3Xy@mail.company.com>\r\nFrom: \"Linda Perez\" <hr@company.com>\r\nTo: payroll@company.com\r\nSubject: Updated Employee Bank Details\r\nDate: Tue, 20 Jun 2023 11:30:44 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Dear Payroll Team,<br><br>Please update the following employee bank account details immediately for next payroll run:<br><br>Employee: Mark Thompson<br>Bank: National Credit Union<br>Account Number: 3344556677<br>Routing Number: 123456789<br><br>Confirm once updated.<br><br>Thanks,<br>Linda Perez",
+        "web_proxy_logs": [
+          "2023-06-20T10:25:13Z proxy.company.com GET https://mail.company.com/owa/ - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36 - user=hr ip=192.0.2.88",
+          "2023-06-20T10:26:02Z proxy.company.com POST https://mail.company.com/owa/auth.owa - 200 - user=hr ip=192.0.2.88",
+          "2023-06-20T10:28:45Z proxy.company.com GET https://malicious-update-info.com/hr/secure-login - 200 - user=hr ip=192.0.2.88",
+          "2023-06-20T10:29:10Z proxy.company.com POST https://malicious-update-info.com/hr/secure-login - 200 - user=hr ip=192.0.2.88"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 10:25:00 mailserver imapd[5001]: login: user=hr@company.com ip=192.0.2.88 method=PLAIN",
+          "Jun 20 10:29:15 mailserver imapd[5001]: fetch: user=hr@company.com msgid=7755",
+          "Jun 20 11:30:40 mailserver smtpd[5005]: send email from hr@company.com to payroll@company.com",
+          "Jun 20 11:30:45 mailserver smtpd[5005]: email sent: id=CAFb89Y3Xy"
+        ],
+        "credential_harvested_url": "https://malicious-update-info.com/hr/secure-login",
+        "dns_whois_credential_domain": {
+          "DomainName": "malicious-update-info.com",
+          "Registrar": "Shady Domains LLC",
+          "CreationDate": "2023-06-15T09:00:00Z",
+          "ExpirationDate": "2024-06-15T09:00:00Z",
+          "NameServers": [
+            "ns1.shadydomains.net",
+            "ns2.shadydomains.net"
+          ],
+          "RegistrantEmail": "admin@phishingattackers.com"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "192.0.2.88",
+          "previous_login_ip_range": "10.10.0.0/16",
+          "login_time": "10:25 UTC (normal business hours)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "192.0.2.88",
+        "phishing_url_domain": "malicious-update-info.com",
+        "credential_harvesting_domain_age_days": 5,
+        "deleted_emails_post_login": 0,
+        "unusual_forwarding_rules": true,
+        "suspicious_web_proxy_url": "https://malicious-update-info.com/hr/secure-login"
+      },
+      "detection_method": "UEBA detects new email forwarding rules added to HR account. Web proxy logs show visits to known phishing domain newly registered. Incident response initiates mailbox forensic and domain takedown. Payroll team alerted to verify any recent bank detail changes before processing. Email security gateway logs normal DKIM/SPF passes but behavioral analytics trigger alert.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.001 - Valid Accounts: Local Accounts",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1530 - Data from Cloud Storage Object",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_14",
+      "generation_timestamp": 1749308188.0244274
+    },
+    {
+      "scenario": "Business Email Compromise via Lookalike Domain and Urgent Vendor Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <payments@companny.com>\r\nReceived: from mail.companny.com (mail.companny.com [198.51.100.99])\r\n\tby mx.company.com (Postfix) with ESMTP id 9A7B1234CD\r\n\tfor <accounts-payable@company.com>; Mon, 19 Jun 2023 08:45:33 +0000 (UTC)\r\nReceived-SPF: fail (mx.company.com: domain of companny.com does not designate 198.51.100.99 as permitted sender) client-ip=198.51.100.99;\r\nAuthentication-Results: mx.company.com; spf=fail (sender IP is 198.51.100.99) smtp.mailfrom=payments@companny.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAF7x9XyF@mail.companny.com>\r\nFrom: \"Mike Thompson\" <payments@companny.com>\r\nTo: accounts-payable@company.com\r\nSubject: Immediate Payment Required for Invoice #8392\r\nDate: Mon, 19 Jun 2023 08:45:32 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [192.0.2.45]",
+        "email_body": "Dear Accounts Payable Team,\n\nPlease process an urgent payment of $180,000 to the vendor account below for Invoice #8392. This is critical to maintain supply chain continuity.\n\nBank: Capital Finance Bank\nAccount Number: 5647382910\nRouting Number: 123456789\nBeneficiary: Delta Components Inc.\n\nKindly confirm once the transfer is complete.\n\nBest,\nMike Thompson",
+        "smtp_transaction_log": "220 mail.companny.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.companny.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<payments@companny.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts-payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Mike Thompson <payments@companny.com>\r\nTo: accounts-payable@company.com\r\nSubject: Immediate Payment Required for Invoice #8392\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 9A7B1234CD",
+        "dns_whois": {
+          "DomainName": "companny.com",
+          "Registrar": "DomainFakes Ltd.",
+          "CreationDate": "2023-06-12T10:00:00Z",
+          "ExpirationDate": "2024-06-12T10:00:00Z",
+          "NameServers": [
+            "ns1.domainfakes.net",
+            "ns2.domainfakes.net"
+          ],
+          "RegistrantEmail": "fraudster@fakemail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc@company.com",
+        "email_authentication_results": "spf=fail (companny.com: domain of companny.com does not designate 198.51.100.99 as permitted sender) smtp.mailfrom=companny.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 08:46:15 finance-server app[payments]: Wire transfer request initiated by user 'accounts-payable' for $180,000 to account 5647382910 (Capital Finance Bank). Awaiting approval.",
+        "email_account_activity_log": [
+          "Jun 19 08:44:55 mailserver imapd[4555]: login: user=payments@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 08:45:33 mailserver postfix/smtpd[6789]: connect from unknown[198.51.100.99]",
+          "Jun 19 08:45:33 mailserver postfix/smtpd[6789]: warning: unknown[198.51.100.99]: SPF check failed",
+          "Jun 19 08:45:33 mailserver postfix/smtpd[6789]: disconnect from unknown[198.51.100.99] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.99",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "companny.com",
+        "unusual_smtp_client": "unknown[198.51.100.99]",
+        "wire_transfer_amount": 180000,
+        "unusual_email_origin_ip": "192.0.2.45",
+        "registration_age_days": 7,
+        "registrant_email": "fraudster@fakemail.com"
+      },
+      "detection_method": "Email security gateway triggers alerts on SPF/DKIM/DMARC failures for lookalike domain emails. SIEM correlates newly registered suspicious domain with high-value wire transfer requests lacking multi-factor confirmation. UEBA detects anomalous external SMTP client IP and unusual email origin IP. Finance team manually verifies payment requests for vendor invoices exceeding threshold.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_3",
+      "generation_timestamp": 1749308069.747768
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised HR Director Email and Anomalous Wire Transfer",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr.director@company.com>\r\nReceived: from mail.hijacked.com (mail.hijacked.com [203.0.114.99])\r\n\tby mail.company.com (Postfix) with ESMTP id 7D2F4402A1\r\n\tfor <payroll@company.com>; Tue, 20 Jun 2023 15:45:23 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of hijacked.com does not designate 203.0.114.99 as permitted sender) client-ip=203.0.114.99;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=hijacked.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAQp3Yz=7Yk@mail.company.com>\r\nFrom: \"Robert King\" <hr.director@company.com>\r\nTo: payroll@company.com\r\nSubject: Urgent: Payroll Wire Transfer Correction\r\nDate: Tue, 20 Jun 2023 15:45:22 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.33]",
+        "email_body": "Hi Payroll Team,\n\nPlease urgently update the wire transfer for this month\u2019s payroll. Due to a banking system error, please divert $95,000 to the account below immediately:\n\nBank: Citywide Savings Bank\nAccount Number: 6677889900\nRouting Number: 021000021\nBeneficiary: R.K. Consulting Services\n\nThis is approved by me personally. Confirm when completed.\n\nRegards,\nRobert King",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO attacker-mail.com\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<hr.director@hijacked.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<payroll@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Robert King <hr.director@company.com>\r\nTo: payroll@company.com\r\nSubject: Urgent: Payroll Wire Transfer Correction\r\n\r\nPlease update wire transfer...\r\n.\r\n250 2.0.0 Ok: queued as 7D2F4402A1",
+        "dns_whois": {
+          "DomainName": "hijacked.com",
+          "Registrar": "Unverified Domains Corp",
+          "CreationDate": "2023-06-18T11:00:00Z",
+          "ExpirationDate": "2024-06-18T11:00:00Z",
+          "NameServers": [
+            "ns1.unverifieddns.com",
+            "ns2.unverifieddns.com"
+          ],
+          "RegistrantEmail": "scammer@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc-reports@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (hijacked.com: domain of hijacked.com does not designate 203.0.114.99 as permitted sender) smtp.mailfrom=hijacked.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 15:46:05 finance-app app[payments]: Wire transfer request for $95,000 initiated by user 'payroll' to account 6677889900 (Citywide Savings Bank). Pending approval.",
+        "email_account_activity_log": [
+          "Jun 20 15:30:45 mailserver imapd[4800]: login: user=hr.director@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 20 15:45:23 mailserver postfix/smtpd[6800]: connect from unknown[203.0.114.99]",
+          "Jun 20 15:45:23 mailserver postfix/smtpd[6800]: warning: unknown[203.0.114.99]: SPF check failed",
+          "Jun 20 15:45:23 mailserver postfix/smtpd[6800]: disconnect from unknown[203.0.114.99] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.114.99",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "hijacked.com",
+        "unusual_smtp_client": "unknown[203.0.114.99]",
+        "wire_transfer_amount": 95000,
+        "unusual_email_origin_ip": "198.51.100.33",
+        "registration_age_days": 2,
+        "registrant_email": "scammer@maliciousmail.com"
+      },
+      "detection_method": "Email gateway identifies SPF/DKIM/DMARC failures and flags email spoofing attempt. SIEM correlates new suspicious domain registration and unusual sender IP with unauthorized wire transfer request. UEBA notes anomalous SMTP client IP and origin IP inconsistent with legitimate HR director activity. Payroll initiates manual verification before payment processing.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_1",
+      "generation_timestamp": 1749308075.769101
+    },
+    {
+      "scenario": "Finance department employee accesses executive budget report and sends a routine email confirming a scheduled internal meeting",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "finance.employee1@enterprise.com",
+        "source_ip": "192.168.10.45",
+        "login": {
+          "success": true,
+          "method": "corporate_sso",
+          "device": "Windows-10-Laptop",
+          "location": "Headquarters"
+        },
+        "file_access": {
+          "document": "Q3_Executive_Budget_Report.xlsx",
+          "action": "read",
+          "file_server": "fileserver.enterprise.com",
+          "protocol": "SMB",
+          "access_time": "2024-06-15T09:25:10Z"
+        },
+        "email": {
+          "from": "finance.employee1@enterprise.com",
+          "to": [
+            "executive.team@enterprise.com"
+          ],
+          "subject": "Confirmation of Budget Review Meeting",
+          "body_snippet": "Looking forward to our meeting tomorrow at 10 AM to discuss the Q3 budget.",
+          "sent_time": "2024-06-15T09:28:00Z",
+          "message_id": "<20240615092800.finance.employee1.enterprise.com>"
+        },
+        "network_traffic": {
+          "protocols": [
+            "SMB",
+            "SMTP"
+          ],
+          "data_volume_mb": 1.2,
+          "duration_seconds": 180
+        }
+      },
+      "indicators": [
+        "Successful multi-factor authentication via corporate SSO",
+        "Access to internal file server using authorized SMB protocol",
+        "Email sent within normal business hours with corporate email address",
+        "Network traffic consistent with document access and email sending"
+      ],
+      "activity_type": "Normal employee document access and internal communication",
+      "business_justification": "Finance employees routinely review and discuss budget reports and schedule internal meetings to ensure financial planning and coordination.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_16",
+      "generation_timestamp": 1749308183.9575253
+    },
+    {
+      "scenario": "Finance team lead sends a routine internal email requesting invoice approval for a scheduled vendor payment.",
+      "technical_data": {
+        "email_header": {
+          "from": "finance.lead@company.com",
+          "to": "accounts.payable@company.com",
+          "subject": "Invoice Approval Request - Vendor XYZ",
+          "date": "2024-06-05T09:15:12Z",
+          "message_id": "<12345.finance.2024@company.com>",
+          "spf_pass": true,
+          "dkim_pass": true,
+          "dmarc_pass": true
+        },
+        "email_body": "Dear Accounts Payable,\n\nPlease find attached the approved invoice for Vendor XYZ. Kindly process the payment by June 10th as per contract terms.\n\nBest,\nFinance Lead",
+        "email_attachments": [
+          {
+            "filename": "invoice_2024_06_vendorXYZ.pdf",
+            "md5": "a1b2c3d4e5f67890123456789abcdef0"
+          }
+        ],
+        "network_logs": [
+          {
+            "timestamp": "2024-06-05T09:15:10Z",
+            "source_ip": "192.168.10.45",
+            "destination_ip": "172.217.10.78",
+            "protocol": "TLSv1.3",
+            "port": 443,
+            "bytes_sent": 5120,
+            "bytes_received": 2048
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-05T09:00:01Z",
+            "user": "finance.lead",
+            "login_type": "SAML",
+            "source_ip": "192.168.10.45",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": {
+        "valid_email_authentication": true,
+        "known_internal_ip": true,
+        "typical_business_hours": true,
+        "email_domain_matches_sender": true,
+        "attachment_hash_whitelisted": true,
+        "no_malicious_url_detected": true
+      },
+      "activity_type": "Legitimate internal email communication",
+      "business_justification": "Finance team lead regularly sends invoice approval requests to accounts payable as part of scheduled vendor payment processing.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_18",
+      "generation_timestamp": 1749308197.7714293
+    },
+    {
+      "scenario": "Business Email Compromise via Executive Account Takeover and Fake Invoice Submission",
+      "technical_data": {
+        "email_headers": "Return-Path: <vp.operations@company.com>\r\nReceived: from 203.0.114.120 (unknown [203.0.114.120])\r\n\tby mail.company.com (Postfix) with ESMTP id 5A3D5602F9\r\n\tfor <payables@company.com>; Tue, 20 Jun 2023 11:05:44 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAMX5F9L891@mail.company.com>\r\nFrom: \"Robert Lee\" <vp.operations@company.com>\r\nTo: payables@company.com\r\nSubject: Invoice Submission - Payment Request\r\nDate: Tue, 20 Jun 2023 11:05:42 +0000\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Dear Payables Team,\n\nAttached is the invoice for $98,500 from our new supplier. Please process payment by end of week.\n\nBank: National Commerce Bank\nAccount Number: 334455667\nRouting Number: 084309993\nBeneficiary: Zenith Supplies Corp\n\nThank you,\nRobert Lee",
+        "attachment": {
+          "filename": "Invoice_789654.pdf",
+          "content_type": "application/pdf",
+          "md5_hash": "8a7d9c2a4e9e1f9b2b8f7041e3d1f7c1"
+        },
+        "web_proxy_logs": [
+          "2023-06-20T10:58:15Z proxy.company.com GET https://mail.company.com/owa/inbox - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/112.0.5615.49 Safari/537.36 - user=vp.operations ip=203.0.114.120"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 10:58:10 mailserver imapd[6098]: login: user=vp.operations@company.com ip=203.0.114.120 method=PLAIN",
+          "Jun 20 11:04:55 mailserver smtpd[6102]: send email from vp.operations@company.com to payables@company.com",
+          "Jun 20 11:05:44 mailserver smtpd[6102]: email sent: id=CAMX5F9L891"
+        ],
+        "credential_harvested_url": null,
+        "dns_whois_credential_domain": null,
+        "email_account_anomaly": {
+          "last_successful_login_ip": "203.0.114.120",
+          "previous_login_ip_range": "10.0.0.0/8",
+          "login_time": "10:58 UTC (unusual login time)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "203.0.114.120",
+        "email_sent_time_unusual": "11:05 UTC",
+        "attachment_md5_hash": "8a7d9c2a4e9e1f9b2b8f7041e3d1f7c1",
+        "unusual_forwarding_rules": true,
+        "wire_transfer_amount": 98500
+      },
+      "detection_method": "UEBA detects login from external IP outside typical range and unusual sending time. Email security gateway scans attachment and flags unknown new supplier invoice with suspicious hash. Mail server flags new forwarding rules enabling data exfiltration. Payables team notified to validate invoice authenticity before processing payment.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.004 - Valid Accounts: Cloud Accounts",
+        "T1566 - Phishing",
+        "T1114 - Email Collection",
+        "T1537 - Transfer Data to Cloud Account"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_8",
+      "generation_timestamp": 1749308140.5285118
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised VP Email with Fraudulent Invoice Attachment",
+      "technical_data": {
+        "email_headers": "Return-Path: <vp.operations@company.com>\r\nReceived: from mail.company.com (mail.company.com [172.16.5.12])\r\n\tby mx.partnerbank.com (Postfix) with ESMTP id 7C3D8204F1\r\n\tfor <payments@partnerbank.com>; Mon, 19 Jun 2023 11:45:23 +0000 (UTC)\r\nAuthentication-Results: mx.partnerbank.com; spf=pass smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAGv+12zB9v@mail.company.com>\r\nFrom: \"Samantha Lee\" <vp.operations@company.com>\r\nTo: payments@partnerbank.com\r\nSubject: Invoice Payment - Immediate Attention Required\r\nDate: Mon, 19 Jun 2023 11:45:23 +0000\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_12345_67890\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.34]",
+        "email_body": "Dear Accounts,\n\nPlease find attached the invoice #INV-2023-5678 for $175,000 due immediately. Kindly process the payment to the beneficiary account as per the attached details.\n\nThank you,\nSamantha Lee\nVP Operations",
+        "email_attachment": {
+          "filename": "Invoice_INV-2023-5678.pdf",
+          "content_type": "application/pdf",
+          "file_hash_sha256": "d2c6a5b4e9f9a7b8c5e3a1f9b7d8e4f6a1c2b3d4e5f60718293a4b5c6d7e8f90"
+        },
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO mail.partnerbank.com\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 20480000\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<vp.operations@company.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<payments@partnerbank.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Samantha Lee <vp.operations@company.com>\r\nTo: payments@partnerbank.com\r\nSubject: Invoice Payment - Immediate Attention Required\r\n\r\nPlease process invoice payment...\r\n.\r\n250 2.0.0 Ok: queued as 7C3D8204F1",
+        "dns_whois": {
+          "DomainName": "company.com",
+          "Registrar": "Trusted Registrar Ltd.",
+          "CreationDate": "2005-04-12T09:15:00Z",
+          "ExpirationDate": "2025-04-12T09:15:00Z",
+          "NameServers": [
+            "ns1.company.com",
+            "ns2.company.com"
+          ],
+          "RegistrantEmail": "admin@company.com"
+        },
+        "spf_record": "v=spf1 ip4:172.16.0.0/12 include:spf.partnerbank.com -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=pass smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:47:05 payments-server app[transfer]: Wire transfer request logged for $175,000 to account 564738291 (Global Equipment Suppliers). Awaiting approval.",
+        "email_account_activity_log": [
+          "Jun 19 11:30:10 mailserver imapd[5321]: login: user=vp.operations@company.com ip=198.51.100.34 method=PLAIN",
+          "Jun 19 11:44:50 mailserver postfix/smtpd[6912]: connect from mail.partnerbank.com[172.16.5.12]",
+          "Jun 19 11:45:23 mailserver postfix/smtpd[6912]: disconnect from mail.partnerbank.com[172.16.5.12] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "legitimate_sender_ip": "172.16.5.12",
+        "passed_spf_dkim_dmarc": true,
+        "email_origin_ip": "198.51.100.34",
+        "attachment_hash": "d2c6a5b4e9f9a7b8c5e3a1f9b7d8e4f6a1c2b3d4e5f60718293a4b5c6d7e8f90",
+        "wire_transfer_amount": 175000,
+        "email_account_login_ip": "198.51.100.34",
+        "unusual_attachment_sent": true,
+        "email_sent_during_business_hours": true
+      },
+      "detection_method": "Email security gateway confirms SPF/DKIM/DMARC pass but UEBA flags attachment hash as previously unseen for this user and unusual outbound email volume. Wire transfer system flags high-value invoice payment request without prior approval. SOC analysts correlate attachment metadata with known fraudulent invoice templates. Manual verification requested from VP Operations.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1566 - Phishing",
+        "T1496 - Resource Hijacking"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_2",
+      "generation_timestamp": 1749308073.5960224
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email with Urgent Invoice Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from compromised-host.net (compromised-host.net [203.0.113.101])\r\n\tby mail.company.com (Postfix) with ESMTP id 5C3D7204E8\r\n\tfor <accounts.payable@company.com>; Mon, 19 Jun 2023 11:45:30 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of compromised-host.net does not designate 203.0.113.101 as permitted sender) client-ip=203.0.113.101;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAF_8sYRT23@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate: Invoice Payment Authorization\r\nDate: Mon, 19 Jun 2023 11:45:29 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.101]",
+        "email_body": "Dear Accounts Payable,\n\nPlease immediately process a payment of $180,000 to the vendor listed below. This payment is critical to maintain supply chain continuity.\n\nBank: United Bank Corp\nAccount Number: 554433221\nRouting Number: 051000017\nBeneficiary: Delta Industrial Supplies\n\nConfirm once the transaction is complete.\n\nRegards,\nAlice Johnson",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO attacker-server.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@compromised-host.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate: Invoice Payment Authorization\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 5C3D7204E8",
+        "dns_whois": {
+          "DomainName": "compromised-host.net",
+          "Registrar": "Shady Domains LLC",
+          "CreationDate": "2023-06-15T09:45:00Z",
+          "ExpirationDate": "2024-06-15T09:45:00Z",
+          "NameServers": [
+            "ns1.shadydomains.net",
+            "ns2.shadydomains.net"
+          ],
+          "RegistrantEmail": "fraudster@shady-email.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromised-host.net: domain of compromised-host.net does not designate 203.0.113.101 as permitted sender) smtp.mailfrom=compromised-host.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:46:05 payments-server app[wiretransfers]: Wire transfer request for $180,000 initiated by accounts.payable. Transaction flagged for manual verification due to unusual request origin.",
+        "email_account_activity_log": [
+          "Jun 19 11:20:44 mailserver imapd[5621]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 11:45:25 mailserver postfix/smtpd[6789]: connect from compromised-host.net[203.0.113.101]",
+          "Jun 19 11:45:30 mailserver postfix/smtpd[6789]: warning: compromised-host.net[203.0.113.101]: SPF check failed",
+          "Jun 19 11:45:30 mailserver postfix/smtpd[6789]: disconnect from compromised-host.net[203.0.113.101] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.113.101",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-host.net",
+        "unusual_smtp_client": "compromised-host.net[203.0.113.101]",
+        "wire_transfer_amount": 180000,
+        "unusual_email_origin_ip": "198.51.100.101",
+        "registration_age_days": 4,
+        "registrant_email": "fraudster@shady-email.com"
+      },
+      "detection_method": "Email gateway flags SPF/DKIM/DMARC failures and correlates with newly registered suspicious domain. SIEM triggers alert on high-value wire transfer request from untrusted IP. UEBA detects login anomalies and unusual email origination IP. Manual verification requested by accounts payable department for validation of payment.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_12",
+      "generation_timestamp": 1749308171.0656536
+    },
+    {
+      "scenario": "Cloud infrastructure team performs a routine API-driven autoscaling operation in response to increased web traffic during business hours.",
+      "technical_data": {
+        "api_calls": [
+          {
+            "timestamp": "2024-06-05T11:30:00Z",
+            "api_endpoint": "POST /autoscale/scale-out",
+            "auth_method": "OAuth2",
+            "user_agent": "Terraform/1.4.6",
+            "source_ip": "10.0.0.12",
+            "request_id": "req-7890123456",
+            "parameters": {
+              "resource_group": "web-servers",
+              "scale_action": "add",
+              "count": 3
+            },
+            "response_status": 200
+          }
+        ],
+        "cloud_monitoring_logs": [
+          {
+            "timestamp": "2024-06-05T11:29:50Z",
+            "metric": "CPUUtilization",
+            "resource_id": "vm-web-01",
+            "value": 85,
+            "threshold": 80,
+            "alert_triggered": true
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-05T11:31:00Z",
+            "event": "InstanceProvisioned",
+            "instance_id": "vm-web-04",
+            "status": "success"
+          }
+        ]
+      },
+      "indicators": {
+        "valid_oauth_token": true,
+        "request_from_known_ip": true,
+        "request_during_business_hours": true,
+        "response_status_success": true,
+        "monitoring_alert_correlated": true,
+        "consistent_user_agent": true
+      },
+      "activity_type": "Routine cloud autoscaling operation",
+      "business_justification": "Autoscaling ensures web application maintains performance during increased user demand, a standard cloud resource management activity.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_18",
+      "generation_timestamp": 1749308197.7724214
+    },
+    {
+      "scenario": "Business Email Compromise via Fake CEO Email with Domain Lookalike and Urgent Data Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@companny.com>\r\nReceived: from mail.companny.com (mail.companny.com [203.0.113.99])\r\n\tby mail.company.com (Postfix) with ESMTP id 8D7B5301C2\r\n\tfor <hr@company.com>; Tue, 20 Jun 2023 16:30:45 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of companny.com does not designate 203.0.113.99 as permitted sender) client-ip=203.0.113.99;\r\nAuthentication-Results: mail.company.com; spf=fail (companny.com: no SPF record found) smtp.mailfrom=ceo@companny.com; dkim=none; dmarc=fail action=none header.from=companny.com\r\nMessage-ID: <CAM9j9k_2M@mail.companny.com>\r\nFrom: \"Michael Johnson\" <ceo@companny.com>\r\nTo: hr@company.com\r\nSubject: Urgent: Employee Salary Data Needed\r\nDate: Tue, 20 Jun 2023 16:30:43 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Thunderbird 91.0\r\nX-Originating-IP: [203.0.113.99]",
+        "email_body": "Hi,\n\nI need the full salary details of all employees in the finance and IT departments by end of day. This is confidential and critical for an upcoming audit.\n\nPlease send the data to my private email immediately.\n\nThanks,\nMichael",
+        "smtp_transaction_log": "220 mail.companny.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.companny.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@companny.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<hr@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Michael Johnson <ceo@companny.com>\r\nTo: hr@company.com\r\nSubject: Urgent: Employee Salary Data Needed\r\n\r\nPlease send salary data...\r\n.\r\n250 2.0.0 Ok: queued as 8D7B5301C2",
+        "dns_whois": {
+          "DomainName": "companny.com",
+          "Registrar": "Unknown Registrar",
+          "CreationDate": "2023-06-15T10:12:00Z",
+          "ExpirationDate": "2024-06-15T10:12:00Z",
+          "NameServers": [
+            "ns1.fake-ns.com",
+            "ns2.fake-ns.com"
+          ],
+          "RegistrantEmail": "fraudster@maliciousmail.com"
+        },
+        "spf_record": "",
+        "dmarc_record": "v=DMARC1; p=none; rua=mailto:dmarc-aggregate@companny.com",
+        "email_authentication_results": "spf=fail (companny.com: no SPF record) smtp.mailfrom=ceo@companny.com; dkim=none; dmarc=fail header.from=companny.com",
+        "wire_transfer_log_entry": "",
+        "email_account_activity_log": [
+          "Jun 20 16:29:50 mailserver postfix/smtpd[7850]: connect from attacker-host.net[203.0.113.99]",
+          "Jun 20 16:30:43 mailserver postfix/smtpd[7850]: warning: attacker-host.net[203.0.113.99]: SPF check failed",
+          "Jun 20 16:30:45 mailserver postfix/smtpd[7850]: disconnect from attacker-host.net[203.0.113.99] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.113.99",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "companny.com",
+        "unusual_smtp_client": "attacker-host.net[203.0.113.99]",
+        "urgent_sensitive_data_request": true,
+        "domain_registration_age_days": 5,
+        "registrant_email": "fraudster@maliciousmail.com"
+      },
+      "detection_method": "Email gateway flags SPF/DKIM/DMARC failures and unknown sending domain similar to company.com. SIEM correlates domain registration with phishing activity. UEBA detects anomalous email sending IP and unusual sensitive data requests outside normal CEO communication patterns. Security team initiates verification call to CEO and blocks domain at DNS level.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1114 - Email Collection"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_2",
+      "generation_timestamp": 1749308073.598072
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email with Urgent Vendor Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from mail.company.com (mail.company.com [10.10.10.50])\r\n\tby mx.outside.com (Postfix) with ESMTP id 9DF5B203C7\r\n\tfor <accounts.payable@company.com>; Mon, 19 Jun 2023 11:45:30 +0000 (UTC)\r\nReceived-SPF: fail (mx.outside.com: domain of compromised-domain.com does not designate 10.10.10.50 as permitted sender) client-ip=10.10.10.50;\r\nAuthentication-Results: mx.outside.com; spf=fail (sender IP is 10.10.10.50) smtp.mailfrom=compromised-domain.com; dkim=fail (signature did not verify) header.d=company.com; dmarc=fail action=none header.from=company.com\r\nMessage-ID: <CAFs9wqX8J@mail.company.com>\r\nFrom: \"Michael Thompson\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Vendor Invoice\r\nDate: Mon, 19 Jun 2023 11:45:29 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.88]",
+        "email_body": "Hello,\n\nPlease process an immediate payment of $175,000 to the vendor below. This is critical to avoid service disruption.\n\nBank: United Bank Corp\nAccount Number: 554433221\nRouting Number: 021000021\nBeneficiary: Delta Engineering Inc.\n\nConfirm once the transfer is completed.\n\nBest,\nMichael",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@compromised-domain.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Michael Thompson <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Vendor Invoice\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 9DF5B203C7",
+        "dns_whois": {
+          "DomainName": "compromised-domain.com",
+          "Registrar": "ShadyWeb Registrations",
+          "CreationDate": "2023-06-14T09:15:00Z",
+          "ExpirationDate": "2024-06-14T09:15:00Z",
+          "NameServers": [
+            "ns1.shadywebdns.com",
+            "ns2.shadywebdns.com"
+          ],
+          "RegistrantEmail": "badactor@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromised-domain.com: domain of compromised-domain.com does not designate 10.10.10.50 as permitted sender) smtp.mailfrom=compromised-domain.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:46:00 finance-server app[payments]: Wire transfer request initiated by user 'accounts.payable' for $175,000 to account 554433221 (United Bank Corp). Transaction pending approval.",
+        "email_account_activity_log": [
+          "Jun 19 11:30:10 mailserver imapd[5032]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 11:44:55 mailserver postfix/smtpd[7842]: connect from unknown[10.10.10.50]",
+          "Jun 19 11:45:30 mailserver postfix/smtpd[7842]: warning: unknown[10.10.10.50]: SPF check failed",
+          "Jun 19 11:45:30 mailserver postfix/smtpd[7842]: disconnect from unknown[10.10.10.50] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "10.10.10.50",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-domain.com",
+        "unusual_smtp_client": "unknown[10.10.10.50]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "198.51.100.88",
+        "registration_age_days": 5,
+        "registrant_email": "badactor@maliciousmail.com"
+      },
+      "detection_method": "Email security gateway identifies SPF/DKIM/DMARC failures and flags suspicious email. SIEM correlates newly registered suspicious domain with high-value wire transfer request. UEBA detects anomalous sender IP and origin IP outside corporate network. Manual verification initiated by accounts payable team for wire transfer.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_11",
+      "generation_timestamp": 1749308152.8281984
+    },
+    {
+      "scenario": "Finance team lead accesses quarterly financial report and emails summary to executive team for review.",
+      "technical_data": {
+        "timestamp": "2024-06-01T10:15:30Z",
+        "user": "finance.lead@example.com",
+        "activity_logs": [
+          {
+            "event": "login",
+            "source_ip": "192.168.10.45",
+            "auth_method": "MFA",
+            "status": "success",
+            "timestamp": "2024-06-01T10:14:50Z"
+          },
+          {
+            "event": "file_access",
+            "file_path": "/finance/reports/Q2_2024_summary.xlsx",
+            "action": "read",
+            "application": "Microsoft Excel",
+            "timestamp": "2024-06-01T10:15:00Z"
+          },
+          {
+            "event": "email_sent",
+            "recipient_list": [
+              "executive.ceo@example.com",
+              "executive.cfo@example.com"
+            ],
+            "subject": "Q2 2024 Financial Summary",
+            "attachment": "Q2_2024_summary.xlsx",
+            "timestamp": "2024-06-01T10:16:20Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "SMTP",
+          "destination_ip": "10.0.0.12",
+          "destination_port": 587,
+          "bytes_sent": 45000,
+          "connection_duration_seconds": 5
+        }
+      },
+      "indicators": [
+        "MFA successfully used for login",
+        "User accessed files consistent with job role",
+        "Email recipients are known executives",
+        "No abnormal network destinations or volumes",
+        "File access and email timestamps closely aligned"
+      ],
+      "activity_type": "Legitimate business communication and reporting",
+      "business_justification": "Finance team lead routinely reviews and shares financial reports with executives for business decision-making.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_17",
+      "generation_timestamp": 1749308184.4514256
+    },
+    {
+      "scenario": "Cloud operations team performs scheduled auto-scaling event to handle increased web application traffic during business hours.",
+      "technical_data": {
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-10T14:00:05Z",
+            "service": "AWS Auto Scaling",
+            "action": "UpdateAutoScalingGroup",
+            "parameters": {
+              "AutoScalingGroupName": "webapp-production-group",
+              "DesiredCapacity": 10
+            },
+            "auth": {
+              "user": "cloud-ops-bot",
+              "method": "IAM Role",
+              "request_id": "req-abcdef123456"
+            }
+          },
+          {
+            "timestamp": "2024-06-10T14:00:10Z",
+            "service": "AWS EC2",
+            "action": "RunInstances",
+            "parameters": {
+              "ImageId": "ami-0abcd1234efgh5678",
+              "InstanceType": "t3.medium",
+              "MinCount": 2,
+              "MaxCount": 2,
+              "TagSpecifications": [
+                {
+                  "ResourceType": "instance",
+                  "Tags": [
+                    {
+                      "Key": "Environment",
+                      "Value": "Production"
+                    },
+                    {
+                      "Key": "Application",
+                      "Value": "WebApp"
+                    }
+                  ]
+                }
+              ]
+            },
+            "auth": {
+              "user": "cloud-ops-bot",
+              "method": "IAM Role",
+              "request_id": "req-abcdef123457"
+            }
+          }
+        ],
+        "monitoring": {
+          "CloudWatchMetrics": {
+            "MetricName": "CPUUtilization",
+            "Namespace": "AWS/EC2",
+            "Timestamp": "2024-06-10T13:59:00Z",
+            "Value": 78,
+            "Unit": "Percent"
+          },
+          "ScalingTrigger": {
+            "Threshold": 70,
+            "ComparisonOperator": "GreaterThanThreshold",
+            "Duration": "5 minutes"
+          }
+        },
+        "logging": {
+          "CloudTrailEvents": [
+            "UpdateAutoScalingGroup",
+            "RunInstances"
+          ],
+          "LogGroup": "/aws/autoscaling/webapp-production"
+        }
+      },
+      "indicators": [
+        "API calls authenticated with dedicated cloud-ops-bot IAM role with appropriate permissions",
+        "Scaling event triggered by CloudWatch alarm based on high CPU utilization",
+        "Activities executed during normal business hours matching traffic patterns",
+        "No anomalous IP addresses or unauthorized users involved",
+        "CloudTrail logs confirm expected sequence of scaling actions",
+        "Tags and resource names consistent with production environment"
+      ],
+      "activity_type": "Routine cloud infrastructure scaling operation",
+      "business_justification": "Auto-scaling ensures application performance and availability during traffic spikes, a standard operational procedure for cloud-based services.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_20",
+      "generation_timestamp": 1749308203.9623747
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Account and Unauthorized Wire Transfer Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from 203.0.113.77 (unknown [203.0.113.77])\r\n\tby mail.company.com (Postfix) with ESMTP id 7D8E4321AB\r\n\tfor <finance@company.com>; Tue, 20 Jun 2023 15:30:45 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAF910XY@mail.company.com>\r\nFrom: \"Sarah Johnson\" <ceo@company.com>\r\nTo: finance@company.com\r\nSubject: Confidential: Immediate Wire Transfer Request\r\nDate: Tue, 20 Jun 2023 15:30:44 +0000\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Hi Finance Team,\n\nDue to an urgent acquisition, please wire $500,000 immediately to the account below. This is confidential and requires no delay.\n\nBank: International Bank Corp\nAccount Number: 1029384756\nRouting Number: 987654321\nBeneficiary: Omega Partners\n\nConfirm once the transfer is done.\n\nThanks,\nSarah Johnson",
+        "web_proxy_logs": [
+          "2023-06-20T14:58:12Z proxy.company.com POST https://mail.company.com/owa/auth.owa - 200 - user=ceo ip=203.0.113.77",
+          "2023-06-20T15:00:05Z proxy.company.com GET https://mail.company.com/owa/inbox - 200 - user=ceo ip=203.0.113.77",
+          "2023-06-20T15:29:50Z proxy.company.com POST https://mail.company.com/owa/sendmessage - 200 - user=ceo ip=203.0.113.77"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 15:00:00 mailserver imapd[5012]: login: user=ceo@company.com ip=203.0.113.77 method=PLAIN",
+          "Jun 20 15:29:55 mailserver smtpd[5015]: send email from ceo@company.com to finance@company.com",
+          "Jun 20 15:30:40 mailserver smtpd[5015]: email sent: id=CAF910XY"
+        ],
+        "credential_harvested_url": "",
+        "dns_whois_credential_domain": null,
+        "email_account_anomaly": {
+          "last_successful_login_ip": "203.0.113.77",
+          "previous_login_ip_range": "10.10.0.0/16",
+          "login_time": "15:00 UTC (unusual time for CEO, typically logs in 08:00-10:00 UTC)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "203.0.113.77",
+        "no_credential_harvesting_url": true,
+        "email_sent_time_unusual": "15:30 UTC",
+        "unusual_forwarding_rules_set": true,
+        "wire_transfer_amount": 500000
+      },
+      "detection_method": "UEBA detects login from unusual external IP address outside typical working hours with subsequent high-value wire transfer request email. Mail server logs note new forwarding rules indicative of account compromise. Email gateway confirms SPF/DKIM/DMARC pass but alerts on unusual user behavior. Incident response team initiates immediate account lockout and manual verification of transfer.",
+      "relevant_mitre_techniques": [
+        "T1078.001 - Valid Accounts: Local Accounts",
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1539 - Steal Web Session Cookie",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_3",
+      "generation_timestamp": 1749308069.7497344
+    },
+    {
+      "scenario": "Business Email Compromise Using Compromised HR Email Account for Payroll Data Theft",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr@company.com>\r\nReceived: from mail.compromisedisp.com (mail.compromisedisp.com [203.0.113.60])\r\n\tby mail.company.com (Postfix) with ESMTP id 9C8D1234F6\r\n\tfor <it-support@company.com>; Wed, 21 Jun 2023 16:30:45 +0000\r\nReceived-SPF: fail (mail.company.com: domain of compromisedisp.com does not designate 203.0.113.60 as permitted sender) client-ip=203.0.113.60;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=compromisedisp.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAOPx2gT5_L@mail.compromisedisp.com>\r\nFrom: \"HR Team\" <hr@company.com>\r\nTo: it-support@company.com\r\nSubject: Payroll Data Request\r\nDate: Wed, 21 Jun 2023 16:30:44 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Apple Mail (2.3445.5)\r\nX-Originating-IP: [203.0.113.60]",
+        "email_body": "Please urgently provide the full payroll CSV export for June 2023 for auditing purposes. This is confidential and requires immediate handling.\n\nThanks,\nHR Team",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO mail.compromisedisp.com\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-STARTTLS\r\nMAIL FROM:<hr@compromisedisp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<it-support@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: HR Team <hr@company.com>\r\nTo: it-support@company.com\r\nSubject: Payroll Data Request\r\n\r\nPlease urgently provide payroll data...\r\n.\r\n250 2.0.0 Ok: queued as 9C8D1234F6",
+        "dns_whois": {
+          "DomainName": "compromisedisp.com",
+          "Registrar": "FastRegister Corp.",
+          "CreationDate": "2023-06-12T15:20:00Z",
+          "ExpirationDate": "2024-06-12T15:20:00Z",
+          "NameServers": [
+            "ns1.fastregister.com",
+            "ns2.fastregister.com"
+          ],
+          "RegistrantEmail": "attacker@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-rua@company.com; ruf=mailto:dmarc-ruf@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromisedisp.com: domain of compromisedisp.com does not designate 203.0.113.60 as permitted sender) smtp.mailfrom=compromisedisp.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "",
+        "email_account_activity_log": [
+          "Jun 21 15:55:32 mailserver imapd[8123]: login: user=hr@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 21 16:30:40 mailserver postfix/smtpd[9134]: connect from mail.compromisedisp.com[203.0.113.60]",
+          "Jun 21 16:30:44 mailserver postfix/smtpd[9134]: warning: mail.compromisedisp.com[203.0.113.60]: SPF check failed",
+          "Jun 21 16:30:45 mailserver postfix/smtpd[9134]: disconnect from mail.compromisedisp.com[203.0.113.60] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.113.60",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromisedisp.com",
+        "unusual_smtp_client": "mail.compromisedisp.com[203.0.113.60]",
+        "wire_transfer_amount": 0,
+        "unusual_email_origin_ip": "203.0.113.60",
+        "registration_age_days": 9,
+        "registrant_email": "attacker@maliciousmail.com"
+      },
+      "detection_method": "Email gateway detects SPF/DKIM/DMARC failures and flags email as spoofed. SIEM alerts on suspicious domain newly registered and sending sensitive payroll data requests from HR address. UEBA detects SMTP client outside normal IP range and unusual email timing. Incident response initiates mailbox review and data exfiltration checks.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1537 - Transfer Data to Cloud Account",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_13",
+      "generation_timestamp": 1749308182.7718587
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Finance Director Account and Phishing Link Leading to Credential Theft",
+      "technical_data": {
+        "email_headers": "Return-Path: <finance.director@company.com>\r\nReceived: from mail.company.com (mail.company.com [10.10.10.10])\r\n\tby mx.outside.com (Postfix) with ESMTP id 7C2F8307C3\r\n\tfor <payments@company.com>; Tue, 20 Jun 2023 16:30:45 +0000 (UTC)\r\nAuthentication-Results: mx.outside.com; spf=pass smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CABk5Zy=7Yk56@mail.company.com>\r\nFrom: \"Robert Green\" <finance.director@company.com>\r\nTo: payments@company.com\r\nSubject: Urgent: Updated Payment Instructions\r\nDate: Tue, 20 Jun 2023 16:30:44 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "<html><body>Hello,<br><br>Please update the payment instructions for the upcoming wire transfer. Use the new bank details provided at the link below:<br><br><a href=\"https://secure-company-payments.com/update-info\">https://secure-company-payments.com/update-info</a><br><br>Confirm once updated.<br><br>Thanks,<br>Robert Green</body></html>",
+        "web_proxy_logs": [
+          "2023-06-20T16:31:05Z proxy.company.com GET https://secure-company-payments.com/update-info - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/90.0.4430.212 Safari/537.36 - user=payments ip=198.51.100.101",
+          "2023-06-20T16:31:20Z proxy.company.com POST https://secure-company-payments.com/update-info/submit - 200 - application/x-www-form-urlencoded - user=payments ip=198.51.100.101"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 16:29:58 mailserver imapd[9001]: login: user=finance.director@company.com ip=10.10.10.10 method=PLAIN",
+          "Jun 20 16:30:44 mailserver smtpd[9005]: send email from finance.director@company.com to payments@company.com",
+          "Jun 20 16:32:10 mailserver imapd[9001]: logout: user=finance.director@company.com"
+        ],
+        "credential_harvested_url": "https://secure-company-payments.com/update-info",
+        "dns_whois_credential_domain": {
+          "DomainName": "secure-company-payments.com",
+          "Registrar": "Unknown Registrar",
+          "CreationDate": "2023-06-18T09:00:00Z",
+          "ExpirationDate": "2024-06-18T09:00:00Z",
+          "NameServers": [
+            "ns1.fake-dns.com",
+            "ns2.fake-dns.com"
+          ],
+          "RegistrantEmail": "phisher@evilcorp.com"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "10.10.10.10",
+          "previous_login_ip_range": "10.10.0.0/16",
+          "login_time": "16:29 UTC (usual hours)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_usual_ip": "10.10.10.10",
+        "phishing_url_domain": "secure-company-payments.com",
+        "credential_harvesting_domain_age_days": 2,
+        "unusual_forwarding_rules": true,
+        "suspicious_web_proxy_url": "https://secure-company-payments.com/update-info"
+      },
+      "detection_method": "Email security gateway detects link to newly registered suspicious domain; URL analysis flags credential harvesting site. UEBA detects creation of unusual email forwarding rules from compromised finance director account. Proxy logs confirm access to suspicious site shortly after email sent. Incident response initiates mailbox investigation and blocks domain at perimeter.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Phishing: Spearphishing Link",
+        "T1078.001 - Valid Accounts: Local Accounts",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1530 - Data from Information Repositories",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_6",
+      "generation_timestamp": 1749308109.1623058
+    },
+    {
+      "scenario": "Business Email Compromise via Spoofed VP of Sales Email Requesting Sensitive Customer Data",
+      "technical_data": {
+        "email_headers": "Return-Path: <vp.sales@company.com>\r\nReceived: from compromised-host.org (unknown [203.0.113.150])\r\n\tby mail.company.com (Postfix) with ESMTP id 5D3E7C1B9F\r\n\tfor <support@company.com>; Tue, 20 Jun 2023 11:05:45 +0000 (UTC)\r\nReceived-SPF: fail (mail.company.com: domain of compromised-host.org does not designate 203.0.113.150 as permitted sender) client-ip=203.0.113.150;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=compromised-host.org; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAKq2NpH2@mail.company.com>\r\nFrom: \"Robert Lee\" <vp.sales@company.com>\r\nTo: support@company.com\r\nSubject: Request for Customer Data Export\r\nDate: Tue, 20 Jun 2023 11:05:44 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.113.150]",
+        "email_body": "Hi Team,\n\nPlease export the complete customer database including contact details, purchase history, and payment information for an urgent review by our new partner.\n\nEnsure this data transfer is encrypted and send it to my personal email robert.sales.partner@gmail.com.\n\nThis is urgent and confidential.\n\nThanks,\nRobert",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO compromised-host.org\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<vp.sales@compromised-host.org>\r\n250 2.1.0 Ok\r\nRCPT TO:<support@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Robert Lee <vp.sales@company.com>\r\nTo: support@company.com\r\nSubject: Request for Customer Data Export\r\n\r\nPlease export customer data...\r\n.\r\n250 2.0.0 Ok: queued as 5D3E7C1B9F",
+        "dns_whois": {
+          "DomainName": "compromised-host.org",
+          "Registrar": "Unknown Registrar",
+          "CreationDate": "2023-06-12T09:00:00Z",
+          "ExpirationDate": "2024-06-12T09:00:00Z",
+          "NameServers": [
+            "ns1.unknown.org",
+            "ns2.unknown.org"
+          ],
+          "RegistrantEmail": "malicious@darkwebmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc_reports@company.com; ruf=mailto:dmarc_forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (compromised-host.org: domain of compromised-host.org does not designate 203.0.113.150 as permitted sender) smtp.mailfrom=compromised-host.org; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "N/A",
+        "email_account_activity_log": [
+          "Jun 20 10:50:00 mailserver imapd[5200]: login: user=vp.sales@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 20 11:05:40 mailserver postfix/smtpd[8122]: connect from compromised-host.org[203.0.113.150]",
+          "Jun 20 11:05:45 mailserver postfix/smtpd[8122]: warning: compromised-host.org[203.0.113.150]: SPF check failed",
+          "Jun 20 11:05:45 mailserver postfix/smtpd[8122]: disconnect from compromised-host.org[203.0.113.150] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "203.0.113.150",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "compromised-host.org",
+        "unusual_smtp_client": "compromised-host.org[203.0.113.150]",
+        "wire_transfer_amount": 0,
+        "unusual_email_origin_ip": "203.0.113.150",
+        "registration_age_days": 8,
+        "registrant_email": "malicious@darkwebmail.com"
+      },
+      "detection_method": "Email security device detects SPF and DKIM failures and blocks email delivery. SIEM correlates recent suspicious domain registration and alerts on data exfiltration request from spoofed executive account. UEBA flags email origin IP outside corporate network and unusual data request patterns. Incident response team initiates investigation and blocks external data transfers.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1537 - Transfer Data to Cloud Account",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_9",
+      "generation_timestamp": 1749308148.4706469
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email with Invoice Fraud",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from unknown (HELO smtp10.mailhost.com) (198.51.100.101)\r\n  by mail.company.com with SMTP; Mon, 19 Jun 2023 08:33:47 +0000\r\nReceived-SPF: fail (mail.company.com: domain of attacker-domain.com does not designate 198.51.100.101 as permitted sender) client-ip=198.51.100.101;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=attacker-domain.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAJk3Xy98J@mail.company.com>\r\nFrom: \"Alice Brown\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Updated Invoice for Immediate Payment\r\nDate: Mon, 19 Jun 2023 08:33:45 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [203.0.114.22]",
+        "email_body": "Dear Accounts Payable,\n\nPlease find the updated invoice attached for the recent vendor shipment. Kindly process the payment of $175,000 to the bank details below immediately to avoid any delays:\n\nBank: National Commerce Bank\nAccount Number: 5522334455\nRouting Number: 084309993\nBeneficiary: Omega Contractors Ltd\n\nConfirm once the payment is done.\n\nBest,\nAlice Brown",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO attacker-host.com\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@attacker-domain.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Brown <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Updated Invoice for Immediate Payment\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 3E2C4501B7",
+        "dns_whois": {
+          "DomainName": "attacker-domain.com",
+          "Registrar": "Domain Fraud Services",
+          "CreationDate": "2023-06-15T09:12:00Z",
+          "ExpirationDate": "2024-06-15T09:12:00Z",
+          "NameServers": [
+            "ns1.domainfraud.com",
+            "ns2.domainfraud.com"
+          ],
+          "RegistrantEmail": "fraudster@anonymousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc@company.com; ruf=mailto:forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (attacker-domain.com: domain of attacker-domain.com does not designate 198.51.100.101 as permitted sender) smtp.mailfrom=attacker-domain.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 08:35:40 finance-app app[payments]: Payment request logged for $175,000 from user 'accounts.payable' to account 5522334455 (National Commerce Bank). Awaiting approval.",
+        "email_account_activity_log": [
+          "Jun 19 08:20:12 mailserver imapd[4521]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 08:33:46 mailserver postfix/smtpd[6712]: connect from unknown[198.51.100.101]",
+          "Jun 19 08:33:47 mailserver postfix/smtpd[6712]: warning: unknown[198.51.100.101]: SPF check failed",
+          "Jun 19 08:33:47 mailserver postfix/smtpd[6712]: disconnect from unknown[198.51.100.101] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.101",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "attacker-domain.com",
+        "unusual_smtp_client": "unknown[198.51.100.101]",
+        "wire_transfer_amount": 175000,
+        "unusual_email_origin_ip": "203.0.114.22",
+        "registration_age_days": 4,
+        "registrant_email": "fraudster@anonymousmail.com"
+      },
+      "detection_method": "Email security gateway detects SPF/DKIM/DMARC failures and flags email as spoofed. SIEM correlates new suspicious domain registration with unusual high-value payment request. UEBA flags anomalous SMTP client IP and email origin IP outside of usual corporate range. Finance team initiates manual verification for invoice payment.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_1",
+      "generation_timestamp": 1749308075.768083
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email with Urgent Vendor Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from unknown (HELO suspicious-smtp.com) (198.51.100.120)\r\n\tby mail.company.com with SMTP; Mon, 19 Jun 2023 16:50:05 +0000\r\nReceived-SPF: fail (mail.company.com: domain of suspicious-smtp.com does not designate 198.51.100.120 as permitted sender) client-ip=198.51.100.120;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=suspicious-smtp.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAJ9Y8gXrz15@mail.company.com>\r\nFrom: \"Robert King\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Vendor\r\nDate: Mon, 19 Jun 2023 16:50:04 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Apple Mail (2.3445.5)\r\nX-Originating-IP: [203.0.114.32]",
+        "email_body": "Good afternoon,\n\nPlease process an urgent payment of $180,000 to our new vendor as per the details below. This is time-sensitive and confidential. Confirm once done.\n\nBank: Citywide Bank\nAccount Number: 555123789\nRouting Number: 071000013\nBeneficiary: GreenTech Solutions Inc\n\nThank you,\nRobert",
+        "smtp_transaction_log": "220 suspicious-smtp.com ESMTP Postfix\r\nEHLO suspicious-smtp.com\r\n250-suspicious-smtp.com\r\n250-PIPELINING\r\n250-SIZE 10485760\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\nMAIL FROM:<ceo@suspicious-smtp.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Robert King <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Required for Vendor\r\n\r\nPlease process payment...\r\n.\r\n250 2.0.0 Ok: queued as 9C3E1F04B7",
+        "dns_whois": {
+          "DomainName": "suspicious-smtp.com",
+          "Registrar": "Fake Domain Services",
+          "CreationDate": "2023-06-15T11:12:30Z",
+          "ExpirationDate": "2024-06-15T11:12:30Z",
+          "NameServers": [
+            "ns1.fakedns.net",
+            "ns2.fakedns.net"
+          ],
+          "RegistrantEmail": "contact@maliciousdomain.net"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc@company.com; ruf=mailto:dmarc-forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (suspicious-smtp.com: domain of suspicious-smtp.com does not designate 198.51.100.120 as permitted sender) smtp.mailfrom=suspicious-smtp.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 16:51:33 payments-server app[wiretransfer]: Wire transfer request of $180,000 initiated by user 'accounts.payable' to account 555123789 (Citywide Bank). Pending approval.",
+        "email_account_activity_log": [
+          "Jun 19 15:30:12 mailserver imapd[4321]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 16:49:58 mailserver postfix/smtpd[7801]: connect from suspicious-smtp.com[198.51.100.120]",
+          "Jun 19 16:50:05 mailserver postfix/smtpd[7801]: warning: suspicious-smtp.com[198.51.100.120]: SPF check failed",
+          "Jun 19 16:50:05 mailserver postfix/smtpd[7801]: disconnect from suspicious-smtp.com[198.51.100.120] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.120",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "suspicious-smtp.com",
+        "unusual_smtp_client": "suspicious-smtp.com[198.51.100.120]",
+        "wire_transfer_amount": 180000,
+        "unusual_email_origin_ip": "203.0.114.32",
+        "registration_age_days": 4,
+        "registrant_email": "contact@maliciousdomain.net"
+      },
+      "detection_method": "Email security gateway flags SPF/DKIM/DMARC failures and blocks suspicious domain. SIEM correlates new domain registration with high-value payment request. UEBA detects unusual IP and off-hours email origin. Finance team alerted for manual verification of wire transfer. Incident response initiates domain takedown request.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_14",
+      "generation_timestamp": 1749308188.0244274
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised VP Email Sending Invoice Payment Fraud",
+      "technical_data": {
+        "email_headers": "Return-Path: <vp.operations@company.com>\r\nReceived: from smtp-evil.net (smtp-evil.net [45.77.123.98])\r\n\tby mail.company.com (Postfix) with ESMTP id 7A3C2310F2\r\n\tfor <accounts.payable@company.com>; Mon, 19 Jun 2023 11:32:14 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=smtp-evil.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAOqY=4F7r9@mail.company.com>\r\nFrom: \"Lisa Turner\" <vp.operations@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Invoice Payment\r\nDate: Mon, 19 Jun 2023 11:32:13 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Mozilla Thunderbird 78.10.0\r\nX-Originating-IP: [198.51.100.44]",
+        "email_body": "Dear Accounts Payable Team,<br><br>Please process the payment of $180,500 for the attached invoice immediately.<br><br>Beneficiary:<br>Bank: Secure Bank Corp<br>Account Number: 654321987<br>Routing Number: 021000021<br>Company: Global Tech Services Ltd<br><br>Confirm once the payment is completed.<br><br>Regards,<br>Lisa Turner<br>VP Operations",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO smtp-evil.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<vp.operations@smtp-evil.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Lisa Turner <vp.operations@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Invoice Payment\r\n\r\nPlease process the payment...\r\n.\r\n250 2.0.0 Ok: queued as 7A3C2310F2",
+        "dns_whois": {
+          "DomainName": "smtp-evil.net",
+          "Registrar": "Scam Domain Services",
+          "CreationDate": "2023-06-14T10:12:00Z",
+          "ExpirationDate": "2024-06-14T10:12:00Z",
+          "NameServers": [
+            "ns1.scamdns.net",
+            "ns2.scamdns.net"
+          ],
+          "RegistrantEmail": "fraudster@darkmail.org"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:dmarc-rua@company.com",
+        "email_authentication_results": "spf=fail (smtp-evil.net: domain of smtp-evil.net does not designate 45.77.123.98 as permitted sender) smtp.mailfrom=smtp-evil.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 19 11:33:05 payments-server app[wiretransfers]: Wire transfer request logged for $180,500 to account 654321987 (Secure Bank Corp) from user 'accounts.payable'. Awaiting secondary approval.",
+        "email_account_activity_log": [
+          "Jun 19 10:50:12 mailserver imapd[5123]: login: user=vp.operations@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 19 11:31:55 mailserver postfix/smtpd[6210]: connect from smtp-evil.net[45.77.123.98]",
+          "Jun 19 11:32:14 mailserver postfix/smtpd[6210]: warning: smtp-evil.net[45.77.123.98]: SPF check failed",
+          "Jun 19 11:32:14 mailserver postfix/smtpd[6210]: disconnect from smtp-evil.net[45.77.123.98] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "45.77.123.98",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "smtp-evil.net",
+        "unusual_smtp_client": "smtp-evil.net[45.77.123.98]",
+        "wire_transfer_amount": 180500,
+        "unusual_email_origin_ip": "198.51.100.44",
+        "registration_age_days": 5,
+        "registrant_email": "fraudster@darkmail.org"
+      },
+      "detection_method": "Email gateway flags SPF/DKIM/DMARC failures and quarantines email. SIEM correlates suspicious domain registration with wire transfer requests exceeding thresholds without multi-factor authentication. UEBA detects anomalous external SMTP client and origin IP mismatch. Manual finance team verification initiated for high-value invoice payments.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_7",
+      "generation_timestamp": 1749308115.5540009
+    },
+    {
+      "scenario": "Business Email Compromise via Phishing Link Leading to Credential Theft and Unauthorized Wire Transfer",
+      "technical_data": {
+        "email_headers": "Return-Path: <hr.manager@company.com>\r\nReceived: from mail.company.com (mail.company.com [10.10.10.20])\r\n\tby mx.gateway.net (Postfix) with ESMTP id 5A3B120F7D\r\n\tfor <payroll@company.com>; Tue, 21 Jun 2023 08:32:45 +0000 (UTC)\r\nAuthentication-Results: mx.gateway.net; spf=pass smtp.mailfrom=company.com; dkim=pass header.d=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAF5_7xXFE4k@mail.company.com>\r\nFrom: \"Michael Lee\" <hr.manager@company.com>\r\nTo: payroll@company.com\r\nSubject: Updated Payroll Processing Link\r\nDate: Tue, 21 Jun 2023 08:32:45 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "<html><body><p>Dear Payroll Team,</p><p>Please review and update the payroll details using the secure link below before end of day:</p><p><a href=\"https://payroll-update.company-secure.com/login?session=abc123\">https://payroll-update.company-secure.com/login?session=abc123</a></p><p>Thank you,<br>Michael Lee</p></body></html>",
+        "web_proxy_logs": [
+          "2023-06-21T08:35:10Z proxy.company.com GET https://payroll-update.company-secure.com/login?session=abc123 - 200 - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/113.0.5672.93 Safari/537.36 - user=payroll ip=198.51.100.99",
+          "2023-06-21T08:35:45Z proxy.company.com POST https://payroll-update.company-secure.com/login - 200 - application/x-www-form-urlencoded - user=payroll ip=198.51.100.99",
+          "2023-06-21T08:40:12Z proxy.company.com GET https://portal.company.com/payroll - 200 - user=payroll ip=198.51.100.99"
+        ],
+        "mailbox_access_logs": [
+          "Jun 21 08:35:05 mailserver imapd[7021]: login: user=payroll@company.com ip=198.51.100.99 method=PLAIN",
+          "Jun 21 08:40:30 mailserver smtpd[7025]: send email from payroll@company.com to finance@company.com",
+          "Jun 21 08:41:00 mailserver smtpd[7025]: email sent: id=CAF5_7xXFE4k"
+        ],
+        "credential_harvested_url": "https://payroll-update.company-secure.com/login",
+        "dns_whois_credential_domain": {
+          "DomainName": "company-secure.com",
+          "Registrar": "Suspicious Domains Inc.",
+          "CreationDate": "2023-06-10T07:00:00Z",
+          "ExpirationDate": "2024-06-10T07:00:00Z",
+          "NameServers": [
+            "ns1.suspiciousdns.com",
+            "ns2.suspiciousdns.com"
+          ],
+          "RegistrantEmail": "phisher@maliciousmail.com"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "198.51.100.99",
+          "previous_login_ip_range": "10.10.0.0/16",
+          "login_time": "08:35 UTC (normal business hours)",
+          "deleted_emails_count": 0,
+          "unusual_forwarding_rules": true
+        },
+        "wire_transfer_log_entry": "Jun 21 08:42:15 finance-server app[payments]: Wire transfer request initiated by user 'finance' for $180,000 to account 554433221 (Continental Bank). Transaction pending approval.",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO mail.company.com\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<payroll@company.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<finance@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Michael Lee <hr.manager@company.com>\r\nTo: payroll@company.com\r\nSubject: Updated Payroll Processing Link\r\n\r\nPlease update payroll...\r\n.\r\n250 2.0.0 Ok: queued as 5A3B120F7D"
+      },
+      "indicators": {
+        "phishing_url_domain": "company-secure.com",
+        "credential_harvesting_domain_age_days": 11,
+        "login_from_unusual_ip": "198.51.100.99",
+        "unusual_forwarding_rules": true,
+        "wire_transfer_amount": 180000,
+        "email_sent_time": "08:41 UTC",
+        "registrant_email": "phisher@maliciousmail.com"
+      },
+      "detection_method": "Email security gateway detects link to newly registered suspicious domain. UEBA flags new forwarding rules on payroll mailbox and login from external IP outside normal subnet. SIEM correlates wire transfer request shortly after credential harvesting activity. Incident response initiates mailbox and proxy log forensic analysis.",
+      "relevant_mitre_techniques": [
+        "T1566.002 - Phishing: Spearphishing Link",
+        "T1078.001 - Valid Accounts: Local Accounts",
+        "T1539 - Steal Web Session Cookie",
+        "T1586 - Compromise Accounts",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_5",
+      "generation_timestamp": 1749308113.0091348
+    },
+    {
+      "scenario": "Finance department lead sends an internal email requesting approval for a scheduled vendor payment after verifying invoice details.",
+      "technical_data": {
+        "email": {
+          "timestamp": "2024-06-15T09:45:12Z",
+          "from": "finance.lead@enterprise.com",
+          "to": [
+            "accounts.payable@enterprise.com"
+          ],
+          "subject": "Approval Request: Vendor Payment June 2024",
+          "smtp_source_ip": "10.1.2.15",
+          "message_id": "<20240615094512.finance.lead@enterprise.com>",
+          "email_headers": {
+            "Received-SPF": "pass",
+            "DKIM-Signature": "valid",
+            "DMARC-Policy": "quarantine"
+          },
+          "attachments": [
+            "Invoice_12345.pdf"
+          ]
+        },
+        "network_traffic": {
+          "source_ip": "10.1.2.15",
+          "destination_ip": "10.1.4.22",
+          "protocol": "SMTP",
+          "port": 587,
+          "bytes_sent": 2345,
+          "session_duration_seconds": 2
+        },
+        "user_activity": {
+          "login": {
+            "user": "finance.lead",
+            "auth_method": "SAML_SSO",
+            "login_time": "2024-06-15T09:40:00Z",
+            "source_ip": "10.1.2.15",
+            "status": "success"
+          },
+          "document_access": {
+            "user": "finance.lead",
+            "document": "Invoice_12345.pdf",
+            "access_time": "2024-06-15T09:42:00Z",
+            "access_type": "read"
+          }
+        }
+      },
+      "indicators": {
+        "email_authentication": "SPF, DKIM, and DMARC all passed",
+        "internal_ip_range": "10.1.0.0/16",
+        "user_login_pattern": "consistent with prior finance department activity",
+        "email_recipient": "accounts.payable@enterprise.com (internal)",
+        "time_of_day": "business hours",
+        "attachment_type": "PDF invoice, standard for vendor payments"
+      },
+      "activity_type": "Internal financial approval communication",
+      "business_justification": "Regular payment approval process to ensure timely vendor settlement based on verified invoices.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_24",
+      "generation_timestamp": 1749308223.4214005
+    },
+    {
+      "scenario": "Business Email Compromise Using Compromised Executive Email and Fake Invoice Attachment",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from unknown (HELO mail.fakeisp.net) (198.51.100.102)\r\n\tby mail.company.com with SMTP; Tue, 20 Jun 2023 11:47:30 +0000\r\nReceived-SPF: fail (mail.company.com: domain of fakeisp.net does not designate 198.51.100.102 as permitted sender) client-ip=198.51.100.102;\r\nAuthentication-Results: mail.company.com; spf=fail smtp.mailfrom=fakeisp.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAOq=3Wg4Df5@mail.fakeisp.net>\r\nFrom: \"Alice Brown\" <ceo@company.com>\r\nTo: accounting@company.com\r\nSubject: Urgent: Invoice Payment Attached\r\nDate: Tue, 20 Jun 2023 11:47:29 +0000\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"----=_Part_1234_5678\"\r\nX-Mailer: Thunderbird 78.10.1\r\nX-Originating-IP: [198.51.100.102]",
+        "email_body": "Please find attached the invoice for the recent consulting services. Kindly process payment of $180,000 as soon as possible to avoid any delays.\n\nBest,\nAlice",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO mail.fakeisp.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\nMAIL FROM:<ceo@fakeisp.net>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounting@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Brown <ceo@company.com>\r\nTo: accounting@company.com\r\nSubject: Urgent: Invoice Payment Attached\r\n\r\nPlease find attached invoice...\r\n.\r\n250 2.0.0 Ok: queued as 1A2B3C4D5E",
+        "dns_whois": {
+          "DomainName": "fakeisp.net",
+          "Registrar": "Shady Domains Ltd.",
+          "CreationDate": "2023-06-01T09:08:00Z",
+          "ExpirationDate": "2024-06-01T09:08:00Z",
+          "NameServers": [
+            "ns1.shadydns.net",
+            "ns2.shadydns.net"
+          ],
+          "RegistrantEmail": "scammer@shadymail.net"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc-rua@company.com; ruf=mailto:dmarc-ruf@company.com; fo=1",
+        "email_authentication_results": "spf=fail (fakeisp.net: domain of fakeisp.net does not designate 198.51.100.102 as permitted sender) smtp.mailfrom=fakeisp.net; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 11:50:05 payments-server app[transfers]: Wire transfer request initiated by user 'accounting' for $180,000 to account 456789123 (International Bank). Pending approval.",
+        "email_account_activity_log": [
+          "Jun 20 10:30:12 mailserver imapd[5021]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 20 11:47:28 mailserver postfix/smtpd[7123]: connect from mail.fakeisp.net[198.51.100.102]",
+          "Jun 20 11:47:29 mailserver postfix/smtpd[7123]: warning: mail.fakeisp.net[198.51.100.102]: SPF check failed",
+          "Jun 20 11:47:30 mailserver postfix/smtpd[7123]: disconnect from mail.fakeisp.net[198.51.100.102] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "198.51.100.102",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "fakeisp.net",
+        "unusual_smtp_client": "mail.fakeisp.net[198.51.100.102]",
+        "wire_transfer_amount": 180000,
+        "unusual_email_origin_ip": "198.51.100.102",
+        "registration_age_days": 19,
+        "registrant_email": "scammer@shadymail.net"
+      },
+      "detection_method": "Email security gateway detects SPF/DKIM/DMARC failures with domain newly registered outside corporate infrastructure. SIEM correlates suspicious domain registration with high-value wire transfer request from accounting. Manual verification requested due to invoice attachment and executive sender spoof. UEBA flags unusual sending IP and email origin.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1598 - Phishing",
+        "T1566 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_13",
+      "generation_timestamp": 1749308182.7698996
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Finance Executive Account with Phishing Credential Harvesting",
+      "technical_data": {
+        "email_headers": "Return-Path: <finance.director@company.com>\r\nReceived: from 203.0.113.101 (unknown [203.0.113.101])\r\n\tby mail.company.com (Postfix) with ESMTP id 7B1C3108A9\r\n\tfor <payments@company.com>; Tue, 20 Jun 2023 18:07:22 +0000 (UTC)\r\nAuthentication-Results: mail.company.com; dkim=pass header.d=company.com; spf=pass smtp.mailfrom=company.com; dmarc=pass header.from=company.com\r\nMessage-ID: <CAJ8kXyZ4@mail.company.com>\r\nFrom: \"Laura Benson\" <finance.director@company.com>\r\nTo: payments@company.com\r\nSubject: Vendor Payment Approval\r\nDate: Tue, 20 Jun 2023 18:07:21 +0000\r\nX-Mailer: Microsoft Outlook 16.0",
+        "email_body": "Hi Team,\n\nPlease process a payment of $300,000 to the account below. This is approved and urgent.\n\nBank: Continental Bank\nAccount Number: 321654987\nRouting Number: 065403210\nBeneficiary: Omega Services Ltd\n\nAlso, ensure the attached invoice is filed accordingly.\n\nThanks,\nLaura",
+        "web_proxy_logs": [
+          "2023-06-20T17:45:00Z proxy.company.com GET https://secure-login.company.com/ - 200 - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 - user=finance.director ip=198.51.100.120",
+          "2023-06-20T17:46:05Z proxy.company.com POST https://secure-login.company.com.auth.verify-user.net/login - 200 - application/x-www-form-urlencoded - user=finance.director ip=198.51.100.120",
+          "2023-06-20T17:50:15Z proxy.company.com GET https://mail.company.com/owa/inbox - 200 - user=finance.director ip=198.51.100.120"
+        ],
+        "mailbox_access_logs": [
+          "Jun 20 17:50:10 mailserver imapd[9021]: login: user=finance.director@company.com ip=198.51.100.120 method=PLAIN",
+          "Jun 20 17:51:00 mailserver imapd[9021]: message deleted: finance.director@company.com msgid=6734",
+          "Jun 20 18:07:00 mailserver smtpd[9022]: send email from finance.director@company.com to payments@company.com",
+          "Jun 20 18:07:22 mailserver smtpd[9022]: email sent: id=CAJ8kXyZ4"
+        ],
+        "credential_harvested_url": "https://secure-login.company.com.auth.verify-user.net/login?user=finance.director",
+        "dns_whois_credential_domain": {
+          "DomainName": "auth.verify-user.net",
+          "Registrar": "Domain Solutions Ltd.",
+          "CreationDate": "2023-06-01T10:05:20Z",
+          "ExpirationDate": "2024-06-01T10:05:20Z",
+          "NameServers": [
+            "ns1.domainsolutions.net",
+            "ns2.domainsolutions.net"
+          ],
+          "RegistrantEmail": "phisher@badactors.net"
+        },
+        "email_account_anomaly": {
+          "last_successful_login_ip": "198.51.100.120",
+          "previous_login_ip_range": "10.0.0.0/8",
+          "login_time": "17:50 UTC (unusual for this user)",
+          "deleted_emails_count": 10,
+          "unusual_forwarding_rules": true
+        }
+      },
+      "indicators": {
+        "login_from_unusual_ip": "198.51.100.120",
+        "phishing_url_domain": "auth.verify-user.net",
+        "credential_harvesting_domain_age_days": 19,
+        "deleted_emails_post_login": 10,
+        "email_sent_time_unusual": "18:07 UTC",
+        "suspicious_web_proxy_url": "https://secure-login.company.com.auth.verify-user.net/login?user=finance.director"
+      },
+      "detection_method": "UEBA detects login from external IP atypical for finance director with concurrent email deletions and creation of forwarding rules. Email security flags newly registered credential harvesting domain. Proxy logs confirm access to phishing site mimicking corporate login. Incident response initiates mailbox forensics and network block of phishing domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1078.004 - Valid Accounts: Cloud Accounts",
+        "T1110.003 - Brute Force: Password Spraying",
+        "T1539 - Steal Web Session Cookie",
+        "T1566 - Phishing",
+        "T1071.001 - Application Layer Protocol: Web Protocols"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_11",
+      "generation_timestamp": 1749308152.8301587
+    },
+    {
+      "scenario": "Cloud DevOps engineer deploys updated microservice to production environment following standard CI/CD pipeline",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:30Z",
+        "user": "devops.engineer@cloudcorp.com",
+        "source_ip": "172.31.25.102",
+        "authentication": {
+          "method": "OAuth2 token",
+          "token_validity": "3600s",
+          "scope": [
+            "deployment:write",
+            "logs:read"
+          ]
+        },
+        "deployment": {
+          "service_name": "payment-processing",
+          "version": "v2.4.7",
+          "environment": "production",
+          "deployment_tool": "Jenkins",
+          "deployment_status": "success",
+          "start_time": "2024-06-15T14:44:00Z",
+          "end_time": "2024-06-15T14:45:20Z"
+        },
+        "cloud_api_calls": [
+          {
+            "endpoint": "/api/v1/services/payment-processing/deploy",
+            "method": "POST",
+            "response_code": 200,
+            "latency_ms": 450
+          },
+          {
+            "endpoint": "/api/v1/logs?service=payment-processing&level=info",
+            "method": "GET",
+            "response_code": 200,
+            "latency_ms": 120
+          }
+        ],
+        "monitoring": {
+          "alerts_triggered": 0,
+          "post_deployment_health_checks": "passed"
+        },
+        "resource_management": {
+          "cpu_allocation": "4 vCPUs",
+          "memory_allocation": "8 GB",
+          "scaling_events": 0
+        }
+      },
+      "indicators": [
+        "Authentication via OAuth2 token with appropriate deployment scopes",
+        "Deployment completed successfully with no triggered alerts",
+        "API response codes 200 indicating normal operation",
+        "Post-deployment health checks passed confirming service stability"
+      ],
+      "activity_type": "Routine cloud deployment and operational monitoring",
+      "business_justification": "Regular software updates and deployments keep cloud services secure, performant, and up to date with new features and patches.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_16",
+      "generation_timestamp": 1749308183.9575253
+    },
+    {
+      "scenario": "Business Email Compromise via Compromised Executive Email and Urgent Payment Request",
+      "technical_data": {
+        "email_headers": "Return-Path: <ceo@company.com>\r\nReceived: from mail.company.com (mail.company.com [10.10.10.50])\r\n\tby mx.external.com (Postfix) with ESMTP id 1A2B3C4D5E\r\n\tfor <accounts.payable@company.com>; Mon, 20 Jun 2023 16:45:33 +0000 (UTC)\r\nReceived-SPF: fail (mx.external.com: domain of malicious-domain.com does not designate 10.10.10.50 as permitted sender) client-ip=10.10.10.50;\r\nAuthentication-Results: mx.external.com; spf=fail (sender IP is 10.10.10.50) smtp.mailfrom=malicious-domain.com; dkim=fail (signature did not verify) header.d=company.com; dmarc=fail header.from=company.com\r\nMessage-ID: <CAQk2Wz=9Yk43@mail.company.com>\r\nFrom: \"Alice Johnson\" <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Authorization Required\r\nDate: Mon, 20 Jun 2023 16:45:32 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\nX-Mailer: Microsoft Outlook 16.0\r\nX-Originating-IP: [198.51.100.88]",
+        "email_body": "Hello,\n\nPlease urgently process a wire transfer of $350,000 to the account below. Due to confidentiality, do not disclose this request to anyone else.\n\nBank: Continental Bank\nAccount Number: 564738291\nRouting Number: 031000053\nBeneficiary: Omega Tech Solutions\n\nConfirm once the payment is completed.\n\nBest,\nAlice",
+        "smtp_transaction_log": "220 mail.company.com ESMTP Postfix\r\nEHLO attacker-host.net\r\n250-mail.company.com\r\n250-PIPELINING\r\n250-SIZE 10240000\r\n250-ETRN\r\n250-STARTTLS\r\n250-AUTH PLAIN LOGIN\r\n250-ENHANCEDSTATUSCODES\r\n250-8BITMIME\r\n250 DSN\r\nMAIL FROM:<ceo@malicious-domain.com>\r\n250 2.1.0 Ok\r\nRCPT TO:<accounts.payable@company.com>\r\n250 2.1.5 Ok\r\nDATA\r\n354 End data with <CR><LF>.<CR><LF>\r\nFrom: Alice Johnson <ceo@company.com>\r\nTo: accounts.payable@company.com\r\nSubject: Immediate Payment Authorization Required\r\n\r\nPlease process wire transfer...\r\n.\r\n250 2.0.0 Ok: queued as 1A2B3C4D5E",
+        "dns_whois": {
+          "DomainName": "malicious-domain.com",
+          "Registrar": "Shady Registrars Ltd.",
+          "CreationDate": "2023-06-15T10:15:30Z",
+          "ExpirationDate": "2024-06-15T10:15:30Z",
+          "NameServers": [
+            "ns1.shadyregistrars.com",
+            "ns2.shadyregistrars.com"
+          ],
+          "RegistrantEmail": "badactor@maliciousmail.com"
+        },
+        "spf_record": "v=spf1 -all",
+        "dmarc_record": "v=DMARC1; p=reject; rua=mailto:dmarc@company.com; ruf=mailto:forensics@company.com; fo=1",
+        "email_authentication_results": "spf=fail (malicious-domain.com: domain of malicious-domain.com does not designate 10.10.10.50 as permitted sender) smtp.mailfrom=malicious-domain.com; dkim=fail header.d=company.com; dmarc=fail header.from=company.com",
+        "wire_transfer_log_entry": "Jun 20 16:46:05 payment-server app[wire-transfer]: Wire transfer request from user 'accounts.payable' for $350,000 to account 564738291 (Continental Bank). Awaiting approval.",
+        "email_account_activity_log": [
+          "Jun 20 15:30:20 mailserver imapd[4500]: login: user=ceo@company.com ip=[internal-ip] method=PLAIN",
+          "Jun 20 16:44:59 mailserver postfix/smtpd[6700]: connect from unknown[10.10.10.50]",
+          "Jun 20 16:45:33 mailserver postfix/smtpd[6700]: warning: unknown[10.10.10.50]: SPF check failed",
+          "Jun 20 16:45:33 mailserver postfix/smtpd[6700]: disconnect from unknown[10.10.10.50] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5"
+        ]
+      },
+      "indicators": {
+        "spoofed_sender_ip": "10.10.10.50",
+        "failed_spf_dkim_dmarc": true,
+        "suspicious_domain": "malicious-domain.com",
+        "unusual_smtp_client": "unknown[10.10.10.50]",
+        "wire_transfer_amount": 350000,
+        "unusual_email_origin_ip": "198.51.100.88",
+        "registration_age_days": 5,
+        "registrant_email": "badactor@maliciousmail.com"
+      },
+      "detection_method": "Email security gateway detects SPF/DKIM/DMARC failures and flags email as spoofed. SIEM correlates recent suspicious domain registration and flags high-value wire transfer request without proper multi-factor approval. UEBA detects anomalous IP sending email outside normal patterns. Finance team triggers manual verification for large payments.",
+      "relevant_mitre_techniques": [
+        "T1566.001 - Phishing: Spearphishing Attachment",
+        "T1598.002 - Phishing: Spearphishing Link",
+        "T1071.001 - Application Layer Protocol: Web Protocols",
+        "T1589.001 - Gather Victim Identity Information: Email Addresses",
+        "T1598 - Phishing"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "business email compromise_mal_0",
+      "generation_timestamp": 1749308073.72777
+    },
+    {
+      "scenario": "Finance department employee requests approval for a scheduled vendor payment through internal email.",
+      "technical_data": {
+        "email": {
+          "from": "finance.employee@company.com",
+          "to": "finance.manager@company.com",
+          "subject": "Request for Approval: Vendor Payment April 2024",
+          "timestamp": "2024-06-10T09:15:23Z",
+          "message_id": "<12345.finance.2024@company.com>",
+          "headers": {
+            "Received": [
+              "from mail.company.com (10.1.1.23) by mail.company.com (10.1.1.23) with ESMTP id 1234567890",
+              "authenticated sender finance.employee@company.com"
+            ]
+          },
+          "body": "Please approve the scheduled payment of $15,000 to Vendor ABC as per contract terms. Payment is set for 2024-06-12."
+        },
+        "network": {
+          "source_ip": "10.1.10.50",
+          "destination_ip": "10.1.1.23",
+          "protocol": "SMTP",
+          "port": 587,
+          "tls": true,
+          "email_client": "Outlook 365",
+          "auth_method": "OAuth2"
+        },
+        "user_activity": {
+          "login": {
+            "user": "finance.employee",
+            "timestamp": "2024-06-10T09:00:00Z",
+            "source_ip": "10.1.10.50",
+            "authentication": "successful",
+            "method": "password + MFA"
+          },
+          "document_access": {
+            "file": "Vendor_Contracts_2024.xlsx",
+            "access_time": "2024-06-10T08:55:00Z",
+            "access_type": "read",
+            "location": "\\finance\\contracts"
+          }
+        }
+      },
+      "indicators": [
+        "Email originates from verified finance.employee@company.com authenticated with company mail server",
+        "Consistent IP address and user login pattern",
+        "MFA authentication success prior to email sending",
+        "Email headers show no signs of spoofing or external relay",
+        "Corresponds with normal working hours and scheduled business process",
+        "Document accessed matches payment request context"
+      ],
+      "activity_type": "Legitimate internal email communication for payment approval",
+      "business_justification": "Regular finance workflow requires manager approval for vendor payments; email communication is standard practice within the company.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "business email compromise_ben_20",
+      "generation_timestamp": 1749308203.9623747
+    }
+  ],
+  "metadata": {
+    "total_samples": 50,
+    "new_samples_added": 50,
+    "new_malicious_samples": 30,
+    "new_benign_samples": 20,
+    "generation_method": "parallel",
+    "generation_stats": {
+      "total_generated": 50,
+      "duplicates_filtered": 0,
+      "failed_generations": 0,
+      "successful_batches": 25,
+      "total_api_calls": 25,
+      "generation_start_time": 1749308033.7047145,
+      "generation_end_time": 1749308223.427384
+    },
+    "duplicate_detection_stats": {
+      "enabled": true,
+      "total_hashes": 146,
+      "check_fields": [
+        "scenario",
+        "technical_data",
+        "indicators"
+      ]
+    },
+    "generation_timestamp": "2025-06-07 10:57:03",
+    "total_generation_time": 189.72266936302185,
+    "samples_per_minute": 15.812554240735974,
+    "max_workers": 4,
+    "batch_size": 2
+  }
+}

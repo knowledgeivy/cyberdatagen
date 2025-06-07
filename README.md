@@ -98,13 +98,17 @@ python small_dataset.py
 python validate_small.py
 
 # 5. Generate large synthetic datasets with malicious/benign ratios
-python generator.py --count 100 --malicious-ratio 0.3
+# Test with default settings (20 samples, 0.5 ratio, 4 workers, batch size 2)
+python generator.py
 
-# Generate specific counts
-python generator.py --malicious-count 25 --benign-count 75
+# Test with custom settings
+python generator.py --count 50 --malicious-ratio 0.6
 
-# Use configuration file
-python generator.py --count 200 --ratio-config config/ratio_config.json
+# Test with specific problems
+python generator.py --count 30 --problems spear_phishing credential_harvesting
+
+# Test with performance tuning
+python generator.py --count 100 --max-workers 6 --batch-size 3
 
 # 6. Validate large datasets
 python validate_large.py
@@ -125,11 +129,13 @@ Each problem includes:
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 OPENAI_API_KEY=your_openai_api_key
 ```
 
 ### Model Configuration
+
 - **Default Model**: GPT-4.1-mini
 - **Temperature**: 0.7 (generation), 0.0 (validation)
 - **Max Tokens**: 16,384
@@ -154,15 +160,8 @@ The toolkit implements multi-layered quality assurance:
 4. **Update README** with new threat category documentation
 
 ## To-do
-Parallel Generation
-```
-# working
-python parallel_generator.py --count 100 --malicious-ratio 0.6 --max-workers 4 --batch-size 2
 
-# async not working well
-python async_generator.py --count 100 --malicious-ratio 0.6 --concurrent 10
-```
-
+Real-world Data Analyzer
 
 ## 📄 License
 
