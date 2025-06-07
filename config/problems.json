@@ -1,0 +1,34 @@
+{
+  "problems": [
+    {
+      "area": "Phishing Attack",
+      "nature": "credential harvesting",
+      "description": "Attackers send deceptive emails impersonating trusted entities to trick users into submitting their login credentials on fake websites.",
+      "risk_reduction": [
+        "Implement multi-factor authentication (MFA) to reduce impact of stolen credentials",
+        "Use email filtering solutions to detect and block phishing emails",
+        "Conduct regular user training on recognizing phishing attempts"
+      ]
+    },
+    {
+      "area": "Phishing Attack",
+      "nature": "spear phishing",
+      "description": "Highly targeted phishing emails crafted using personal or organizational information to deceive specific individuals into divulging sensitive data or executing malicious actions.",
+      "risk_reduction": [
+        "Perform regular security awareness training focused on spear phishing tactics",
+        "Verify unexpected requests for sensitive information through secondary channels",
+        "Deploy advanced email threat protection with anomaly detection"
+      ]
+    },
+    {
+      "area": "Phishing Attack",
+      "nature": "business email compromise",
+      "description": "Attackers compromise or spoof executive or finance department email accounts to request fraudulent wire transfers or sensitive data from employees.",
+      "risk_reduction": [
+        "Establish strict verification procedures for financial transactions",
+        "Use email authentication protocols like DMARC, DKIM, and SPF",
+        "Monitor email accounts for unusual activity and implement anomaly detection"
+      ]
+    }
+  ]
+}

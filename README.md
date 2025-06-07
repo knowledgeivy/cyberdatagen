@@ -156,9 +156,11 @@ The toolkit implements multi-layered quality assurance:
 ## To-do
 Parallel Generation
 ```
+# working
 python parallel_generator.py --count 100 --malicious-ratio 0.6 --max-workers 4 --batch-size 2
 
-python async_generator.py --count 1000 --malicious-ratio 0.6 --concurrent 15
+# async not working well
+python async_generator.py --count 100 --malicious-ratio 0.6 --concurrent 10
 ```
 
 
