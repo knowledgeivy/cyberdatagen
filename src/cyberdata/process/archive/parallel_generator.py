@@ -1,4 +1,4 @@
-# cyberdata/scripts/parallel_generator_v2.py
+# cyberdata/process/parallel_generator_v2.py
 
 import json
 import os

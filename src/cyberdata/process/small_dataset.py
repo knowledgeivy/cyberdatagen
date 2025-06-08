@@ -1,9 +1,9 @@
-# cyberdata/scripts/small_dataset.py
+# cyberdata/process/small_dataset.py
 
 import json
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -12,11 +12,11 @@ from dotenv import load_dotenv
 CURRENT_DIR = Path(__file__).parent
 sys.path.append(str(CURRENT_DIR.parent))  # Add cyberdata package to path
 
+from cyberdata.utils.config_manager import get_config_manager
 # Import utilities
 from cyberdata.utils.llm_invoke import process_llm_request
 from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_system_prompt, load_user_prompt
-from cyberdata.utils.config_manager import get_config_manager
 
 # Set up logger
 logger = setup_logger("cyberdata.scripts.small_dataset")

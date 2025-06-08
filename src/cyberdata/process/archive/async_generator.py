@@ -1,4 +1,4 @@
-# cyberdata/scripts/async_generator_v2.py
+# cyberdata/process/async_generator_v2.py
 # not working
 
 import asyncio

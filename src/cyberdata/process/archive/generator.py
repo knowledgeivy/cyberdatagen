@@ -1,4 +1,4 @@
-# cyberdata/scripts/generator.py
+# cyberdata/process/generator.py
 
 import json
 import os

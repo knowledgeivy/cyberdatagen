@@ -1,24 +1,25 @@
-# cyberdata/scripts/validate_large.py
+# cyberdata/process/validate_large.py
 
-import os
 import json
+import os
 import random
-from pathlib import Path
-from dotenv import load_dotenv
+import statistics
 import sys
 import time
-from typing import Dict, List, Any, Tuple
-import statistics
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+from dotenv import load_dotenv
 
 # Add parent directory to path for imports
 CURRENT_DIR = Path(__file__).parent
 sys.path.append(str(CURRENT_DIR.parent))  # Add cyberdata package to path
 
+from cyberdata.utils.config_manager import get_config_manager
 # Import utilities
 from cyberdata.utils.llm_invoke import process_llm_request
 from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_prompt
-from cyberdata.utils.config_manager import get_config_manager
 
 # Set up logger
 logger = setup_logger("cyberdata.scripts.validate_large")

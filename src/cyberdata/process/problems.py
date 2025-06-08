@@ -1,4 +1,4 @@
-# cyberdata/scripts/problems.py
+# cyberdata/process/problems.py
 
 import json
 import os
@@ -7,10 +7,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from cyberdata.utils.config_manager import get_config_manager
 from cyberdata.utils.llm_invoke import process_llm_request
 from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_system_prompt, load_user_prompt
-from cyberdata.utils.config_manager import get_config_manager
 
 # Set up logger
 logger = setup_logger("cyberdata.scripts.problems")

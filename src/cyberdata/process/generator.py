@@ -1,18 +1,18 @@
-# cyberdata/scripts/generator.py
+# cyberdata/process/generator.py
 
-import json
-import os
-import sys
-import re
-import random
-import hashlib
 import concurrent.futures
-from pathlib import Path
-from typing import List, Dict, Set, Tuple, Optional
-from dataclasses import dataclass
-import time
-import threading
+import hashlib
+import json
 import logging
+import os
+import random
+import re
+import sys
+import threading
+import time
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
 
 from dotenv import load_dotenv
 
@@ -20,11 +20,11 @@ from dotenv import load_dotenv
 CURRENT_DIR = Path(__file__).parent
 sys.path.append(str(CURRENT_DIR.parent))
 
+from cyberdata.utils.config_manager import get_config_manager
 # Import utilities
 from cyberdata.utils.llm_invoke import process_llm_request
 from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_prompt
-from cyberdata.utils.config_manager import get_config_manager
 
 # Set up logger
 logger = setup_logger("cyberdata.scripts.generator")
