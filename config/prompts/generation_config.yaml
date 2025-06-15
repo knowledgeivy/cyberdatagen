@@ -56,7 +56,7 @@ output:
   include_generation_stats: true
   include_duplicate_stats: true
 
-# Prompts for generation (merged from large_generation_prompts.yaml)
+# Prompts for generation
 prompts:
   # Main generation prompt for malicious samples
   generation:
@@ -65,6 +65,9 @@ prompts:
         You are a cybersecurity synthetic data generator specialized in creating realistic examples. 
         Given a few example samples of a cybersecurity problem, generate additional samples following the same schema. 
         Focus on technical accuracy and realism. Return valid JSON with a 'samples' key containing an array of examples.
+        
+        CRITICAL: Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Return ONLY the JSON object with the structure: {"samples": [...]}.
 
     user:
       template: |
@@ -75,8 +78,23 @@ prompts:
 
         Please generate {count} additional unique examples following the exact same structure as the examples. 
         Each example should include the same fields as the examples provided. 
-        Make sure the examples are realistic and technically accurate for {nature} scenarios. 
-        Return ONLY valid JSON with a 'samples' key containing an array of generated examples.
+        Make sure the examples are realistic and technically accurate for {nature} scenarios.
+        
+        IMPORTANT: Return ONLY valid JSON with a 'samples' key containing an array of generated examples.
+        Do not include any markdown formatting, code blocks, or explanatory text.
+        
+        Expected format:
+        {{
+          "samples": [
+            {{
+              "scenario": "brief description",
+              "technical_data": "detailed technical information",
+              "indicators": ["indicator1", "indicator2"],
+              "detection_method": "how to detect",
+              "relevant_mitre_techniques": ["T1XXX"]
+            }}
+          ]
+        }}
       
       variables:
         - nature
@@ -92,7 +110,9 @@ prompts:
         You are a cybersecurity synthetic data generator specialized in creating realistic benign/legitimate activity examples.
         Generate normal, non-malicious activities that would occur in the specified environment.
         Focus on creating realistic examples of legitimate business operations, normal user behavior, and standard IT activities.
-        Return valid JSON with a 'samples' key containing an array of benign examples.
+        
+        CRITICAL: Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Return ONLY the JSON object with the structure: {"samples": [...]}.
 
     user:
       template: |
@@ -136,7 +156,21 @@ prompts:
         4. "activity_type": Specific type of legitimate activity
         5. "business_justification": Why this activity is normal and expected
 
-        Return ONLY valid JSON with a 'samples' key containing an array of {count} benign examples.
+        IMPORTANT: Return ONLY valid JSON with a 'samples' key containing an array of {count} benign examples.
+        Do not include any markdown formatting, code blocks, or explanatory text.
+        
+        Expected format:
+        {{
+          "samples": [
+            {{
+              "scenario": "brief description of legitimate activity",
+              "technical_data": "detailed normal operation data",
+              "indicators": ["legitimate indicator1", "legitimate indicator2"],
+              "activity_type": "specific legitimate activity type",
+              "business_justification": "why this is normal"
+            }}
+          ]
+        }}
       
       variables:
         - area
@@ -148,7 +182,10 @@ prompts:
     system:
       template: |
         You are a cybersecurity example generator. Create examples 
-        for {nature} attacks in the {area} context. Return valid JSON.
+        for {nature} attacks in the {area} context. 
+        
+        CRITICAL: Return valid JSON only. No markdown, no explanations.
+        Use format: {{"samples": [...]}}
       
       variables:
         - nature
@@ -160,6 +197,19 @@ prompts:
         Description: {description}
         
         Return ONLY a JSON object with a 'samples' array.
+        No markdown formatting or explanatory text.
+        
+        Expected format:
+        {{
+          "samples": [
+            {{
+              "scenario": "attack description",
+              "technical_data": "technical details",
+              "indicators": ["indicator1", "indicator2"],
+              "detection_method": "detection approach"
+            }}
+          ]
+        }}
       
       variables:
         - count

@@ -1,4 +1,4 @@
-# cyberdata/process/generator.py
+# cyberdata/process/synthetic_generator.py
 
 import concurrent.futures
 import hashlib
@@ -21,7 +21,6 @@ CURRENT_DIR = Path(__file__).parent
 sys.path.append(str(CURRENT_DIR.parent))
 
 from cyberdata.utils.config_manager import get_config_manager
-# Import utilities
 from cyberdata.utils.llm_invoke import process_llm_request
 from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_prompt
@@ -74,44 +73,56 @@ class DuplicateDetector:
     
     def _normalize_content(self, content: str) -> str:
         """Normalize content based on configuration"""
-        if self.normalize_lowercase:
-            content = content.lower()
-        
-        if self.normalize_whitespace:
-            content = re.sub(r'\s+', ' ', content.strip())
-        
-        if self.normalize_values:
-            # Replace specific values with placeholders
-            content = re.sub(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', 'IP_ADDR', content)
-            content = re.sub(r'\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b', 'DOMAIN', content)
-            content = re.sub(r'\b[0-9a-fA-F]{8,64}\b', 'HASH', content)
-            content = re.sub(r'\b\d{4}-\d{2}-\d{2}', 'DATE', content)
-        
-        return content
+        try:
+            if self.normalize_lowercase:
+                content = content.lower()
+            
+            if self.normalize_whitespace:
+                content = re.sub(r'\s+', ' ', content.strip())
+            
+            if self.normalize_values:
+                # Replace specific values with placeholders
+                content = re.sub(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', 'IP_ADDR', content)
+                content = re.sub(r'\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b', 'DOMAIN', content)
+                content = re.sub(r'\b[0-9a-fA-F]{8,64}\b', 'HASH', content)
+                content = re.sub(r'\b\d{4}-\d{2}-\d{2}', 'DATE', content)
+            
+            return content
+        except Exception as e:
+            logger.warning(f"Error normalizing content: {e}")
+            return str(content)
     
     def _generate_content_hash(self, sample: Dict) -> str:
         """Generate a hash based on configured fields"""
         if not self.enabled:
             return str(random.random())  # Always unique if disabled
         
-        content_parts = []
-        for field in self.check_fields:
-            if field in sample:
-                content = str(sample[field])
-                normalized_content = self._normalize_content(content)
-                content_parts.append(normalized_content)
-        
-        combined_content = "|".join(content_parts)
-        return hashlib.sha256(combined_content.encode()).hexdigest()
+        try:
+            content_parts = []
+            for field in self.check_fields:
+                if field in sample:
+                    content = str(sample[field])
+                    normalized_content = self._normalize_content(content)
+                    content_parts.append(normalized_content)
+            
+            combined_content = "|".join(content_parts)
+            return hashlib.sha256(combined_content.encode()).hexdigest()
+        except Exception as e:
+            logger.warning(f"Error generating content hash: {e}")
+            return str(random.random())
     
     def is_duplicate(self, sample: Dict) -> bool:
         """Check if sample is a duplicate (thread-safe)"""
-        content_hash = self._generate_content_hash(sample)
-        
-        with self.lock:
-            if content_hash in self.seen_hashes:
-                return True
-            self.seen_hashes.add(content_hash)
+        try:
+            content_hash = self._generate_content_hash(sample)
+            
+            with self.lock:
+                if content_hash in self.seen_hashes:
+                    return True
+                self.seen_hashes.add(content_hash)
+                return False
+        except Exception as e:
+            logger.warning(f"Error checking duplicate: {e}")
             return False
     
     def add_existing_samples(self, samples: List[Dict]):
@@ -119,12 +130,15 @@ class DuplicateDetector:
         if not self.enabled:
             return
         
-        with self.lock:
-            for sample in samples:
-                content_hash = self._generate_content_hash(sample)
-                self.seen_hashes.add(content_hash)
-        
-        logger.debug(f"Added {len(samples)} existing samples to duplicate detector")
+        try:
+            with self.lock:
+                for sample in samples:
+                    content_hash = self._generate_content_hash(sample)
+                    self.seen_hashes.add(content_hash)
+            
+            logger.debug(f"Added {len(samples)} existing samples to duplicate detector")
+        except Exception as e:
+            logger.warning(f"Error adding existing samples: {e}")
     
     def get_stats(self) -> Dict:
         """Get statistics about duplicate detection"""
@@ -179,9 +193,34 @@ class ParallelGenerator:
             config_file = self.config_manager.prompts_dir / "generation_config.yaml"
             
             if not config_file.exists():
-                logger.error(f"Generation config not found: {config_file}")
-                logger.error("Please create config/prompts/generation_config.yaml with the unified configuration")
-                raise FileNotFoundError(f"Required config file not found: {config_file}")
+                logger.warning(f"Generation config not found: {config_file}, using defaults")
+                # Return default configuration
+                default_config = {
+                    'generation': {
+                        'default_count': 20,
+                        'default_malicious_ratio': 0.5,
+                        'max_workers': 4,
+                        'batch_size': 2,
+                        'retry_attempts': 3,
+                        'retry_delay': 2,
+                        'temperature': {
+                            'malicious_generation': 0.7,
+                            'benign_generation': 0.7,
+                            'validation': 0.0
+                        }
+                    },
+                    'duplicate_detection': {
+                        'enabled': True,
+                        'check_fields': ['scenario', 'technical_data']
+                    }
+                }
+                
+                # Apply any runtime overrides
+                if config_override:
+                    logger.info("Applying runtime configuration overrides")
+                    default_config = self._merge_configs(default_config, config_override)
+                
+                return default_config
             
             from cyberdata.utils.prompt_loader import get_prompt_loader
             loader = get_prompt_loader()
@@ -195,8 +234,17 @@ class ParallelGenerator:
             return config
             
         except Exception as e:
-            logger.error(f"Error loading configuration: {e}")
-            raise
+            logger.error(f"Error loading configuration: {e}, using defaults")
+            # Return minimal default configuration
+            return {
+                'generation': {
+                    'default_count': 20,
+                    'default_malicious_ratio': 0.5,
+                    'max_workers': 4,
+                    'batch_size': 2
+                },
+                'duplicate_detection': {'enabled': True}
+            }
     
     def _merge_configs(self, base: Dict, override: Dict) -> Dict:
         """Recursively merge configuration dictionaries"""
@@ -210,14 +258,19 @@ class ParallelGenerator:
     
     def load_problems(self) -> List[Dict]:
         """Load problem definitions"""
-        return self.config_manager.load_problems()
+        try:
+            return self.config_manager.load_problems()
+        except Exception as e:
+            logger.error(f"Error loading problems: {e}")
+            return []
     
     def load_existing_samples(self, problem: Dict) -> List[Dict]:
         """Load existing samples and add them to duplicate detector"""
         try:
             samples_file = self.find_samples_file(problem)
             if samples_file and samples_file.exists():
-                data = json.loads(samples_file.read_text(encoding='utf-8'))
+                with open(samples_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
                 existing_samples = data.get('samples', [])
                 logger.info(f"Loaded {len(existing_samples)} existing samples for {problem['nature']}")
                 
@@ -231,19 +284,23 @@ class ParallelGenerator:
     
     def find_samples_file(self, problem: Dict) -> Optional[Path]:
         """Find samples file for a problem"""
-        area = problem['area']
-        nature = problem['nature']
-        
-        expected_file = self.config_manager.get_large_samples_file(area, nature)
-        if expected_file.exists():
-            return expected_file
-        
-        found_file = self.config_manager.find_existing_file(
-            self.config_manager.large_samples_dir, 
-            nature, 
-            "_large.json"
-        )
-        return found_file
+        try:
+            area = problem['area']
+            nature = problem['nature']
+            
+            expected_file = self.config_manager.get_large_samples_file(area, nature)
+            if expected_file.exists():
+                return expected_file
+            
+            found_file = self.config_manager.find_existing_file(
+                self.config_manager.large_samples_dir, 
+                nature, 
+                "_large.json"
+            )
+            return found_file
+        except Exception as e:
+            logger.warning(f"Error finding samples file: {e}")
+            return None
     
     def load_examples(self, problem: Dict) -> List[Dict]:
         """Load seed examples for malicious generation"""
@@ -253,7 +310,8 @@ class ParallelGenerator:
             
             expected_file = self.config_manager.get_seeds_file(area, nature)
             if expected_file.exists():
-                data = json.loads(expected_file.read_text(encoding='utf-8'))
+                with open(expected_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
                 examples = data.get('examples', [])
                 logger.debug(f"Loaded {len(examples)} examples for {nature}")
                 return examples[:2]  # Limit to avoid token issues
@@ -267,47 +325,52 @@ class ParallelGenerator:
         tasks = []
         task_counter = 0
         
-        # Create malicious generation tasks
-        if malicious_count > 0:
-            examples = self.load_examples(problem)
-            remaining_malicious = malicious_count
+        try:
+            # Create malicious generation tasks
+            if malicious_count > 0:
+                examples = self.load_examples(problem)
+                remaining_malicious = malicious_count
+                
+                while remaining_malicious > 0:
+                    current_batch = min(self.default_batch_size, remaining_malicious)
+                    task = GenerationTask(
+                        problem=problem,
+                        sample_type='malicious',
+                        batch_size=current_batch,
+                        task_id=f"{problem['nature']}_mal_{task_counter}",
+                        examples=examples,
+                        priority=2  # Higher priority for malicious
+                    )
+                    tasks.append(task)
+                    remaining_malicious -= current_batch
+                    task_counter += 1
             
-            while remaining_malicious > 0:
-                current_batch = min(self.default_batch_size, remaining_malicious)
-                task = GenerationTask(
-                    problem=problem,
-                    sample_type='malicious',
-                    batch_size=current_batch,
-                    task_id=f"{problem['nature']}_mal_{task_counter}",
-                    examples=examples,
-                    priority=2  # Higher priority for malicious
-                )
-                tasks.append(task)
-                remaining_malicious -= current_batch
-                task_counter += 1
-        
-        # Create benign generation tasks
-        if benign_count > 0:
-            remaining_benign = benign_count
+            # Create benign generation tasks
+            if benign_count > 0:
+                remaining_benign = benign_count
+                
+                while remaining_benign > 0:
+                    current_batch = min(self.default_batch_size, remaining_benign)
+                    task = GenerationTask(
+                        problem=problem,
+                        sample_type='benign',
+                        batch_size=current_batch,
+                        task_id=f"{problem['nature']}_ben_{task_counter}",
+                        priority=1
+                    )
+                    tasks.append(task)
+                    remaining_benign -= current_batch
+                    task_counter += 1
             
-            while remaining_benign > 0:
-                current_batch = min(self.default_batch_size, remaining_benign)
-                task = GenerationTask(
-                    problem=problem,
-                    sample_type='benign',
-                    batch_size=current_batch,
-                    task_id=f"{problem['nature']}_ben_{task_counter}",
-                    priority=1
-                )
-                tasks.append(task)
-                remaining_benign -= current_batch
-                task_counter += 1
-        
-        # Sort tasks by priority
-        tasks.sort(key=lambda x: x.priority, reverse=True)
-        
-        logger.info(f"Created {len(tasks)} generation tasks for {problem['nature']}")
-        return tasks
+            # Sort tasks by priority
+            tasks.sort(key=lambda x: x.priority, reverse=True)
+            
+            logger.info(f"Created {len(tasks)} generation tasks for {problem['nature']}")
+            return tasks
+            
+        except Exception as e:
+            logger.error(f"Error creating generation tasks: {e}")
+            return []
     
     def execute_generation_task(self, task: GenerationTask) -> GenerationResult:
         """Execute a single generation task with retry logic"""
@@ -323,11 +386,20 @@ class ParallelGenerator:
                 else:
                     samples = self._generate_benign_batch(task)
                 
+                # Validate samples
+                if not isinstance(samples, list):
+                    logger.warning(f"Invalid samples format from task {task.task_id}")
+                    samples = []
+                
                 # Filter duplicates
                 unique_samples = []
                 duplicates_count = 0
                 
                 for sample in samples:
+                    if not isinstance(sample, dict):
+                        logger.warning(f"Invalid sample format: {type(sample)}")
+                        continue
+                        
                     if not self.duplicate_detector.is_duplicate(sample):
                         # Add sample metadata
                         sample['sample_type'] = task.sample_type
@@ -338,12 +410,13 @@ class ParallelGenerator:
                     else:
                         duplicates_count += 1
                 
-                # Update stats
-                self.stats["total_generated"] += len(samples)
-                self.stats["duplicates_filtered"] += duplicates_count
-                self.stats["total_api_calls"] += 1
-                if unique_samples:
-                    self.stats["successful_batches"] += 1
+                # Update stats (thread-safe)
+                with threading.Lock():
+                    self.stats["total_generated"] += len(samples)
+                    self.stats["duplicates_filtered"] += duplicates_count
+                    self.stats["total_api_calls"] += 1
+                    if unique_samples:
+                        self.stats["successful_batches"] += 1
                 
                 generation_time = time.time() - start_time
                 
@@ -363,7 +436,9 @@ class ParallelGenerator:
                 logger.warning(f"Task {task.task_id} attempt {attempt + 1} failed: {e}")
                 if attempt == self.retry_attempts - 1:
                     # Final attempt failed
-                    self.stats["failed_generations"] += 1
+                    with threading.Lock():
+                        self.stats["failed_generations"] += 1
+                    
                     generation_time = time.time() - start_time
                     return GenerationResult(
                         task_id=task.task_id,
@@ -377,90 +452,143 @@ class ParallelGenerator:
                 else:
                     # Wait before retry
                     time.sleep(self.retry_delay * (attempt + 1))
+        
+        # Should never reach here, but just in case
+        return GenerationResult(
+            task_id=task.task_id,
+            samples=[],
+            sample_type=task.sample_type,
+            problem_nature=task.problem['nature'],
+            success=False,
+            error="Max retries exceeded",
+            generation_time=time.time() - start_time
+        )
     
     def _generate_malicious_batch(self, task: GenerationTask) -> List[Dict]:
         """Generate a batch of malicious samples"""
-        gen_config = self.config.get('generation', {})
-        temperature_config = gen_config.get('temperature', {})
-        temperature = temperature_config.get('malicious_generation', 0.7)
-        
-        examples_json = json.dumps(task.examples, indent=2) if task.examples else "[]"
-        
-        system_content = load_prompt(
-            "generation_config",
-            "prompts.generation.system.template"
-        )
-        
-        user_content = load_prompt(
-            "generation_config",
-            "prompts.generation.user.template",
-            nature=task.problem['nature'],
-            area=task.problem['area'],
-            description=task.problem.get('description', ''),
-            examples_json=examples_json,
-            count=task.batch_size
-        )
-        
-        response_content = process_llm_request(
-            system_prompt=system_content,
-            user_prompt=user_content,
-            model_name="gpt-4.1-mini",
-            temperature=temperature
-        )
-        
-        parsed = self._extract_json_from_response(response_content)
-        return parsed.get('samples', [])
+        try:
+            gen_config = self.config.get('generation', {})
+            temperature_config = gen_config.get('temperature', {})
+            temperature = temperature_config.get('malicious_generation', 0.7)
+            
+            examples_json = json.dumps(task.examples, indent=2) if task.examples else "[]"
+            
+            system_content = load_prompt(
+                "generation_config",
+                "prompts.generation.system.template"
+            )
+            
+            user_content = load_prompt(
+                "generation_config",
+                "prompts.generation.user.template",
+                nature=task.problem['nature'],
+                area=task.problem['area'],
+                description=task.problem.get('description', ''),
+                examples_json=examples_json,
+                count=task.batch_size
+            )
+            
+            response_content = process_llm_request(
+                system_prompt=system_content,
+                user_prompt=user_content,
+                model_name="gpt-4.1-mini",
+                temperature=temperature
+            )
+            
+            parsed = self._extract_json_from_response(response_content)
+            return parsed.get('samples', [])
+            
+        except Exception as e:
+            logger.error(f"Error generating malicious batch: {e}")
+            return []
     
     def _generate_benign_batch(self, task: GenerationTask) -> List[Dict]:
         """Generate a batch of benign samples"""
-        gen_config = self.config.get('generation', {})
-        temperature_config = gen_config.get('temperature', {})
-        temperature = temperature_config.get('benign_generation', 0.7)
-        
-        system_content = load_prompt(
-            "generation_config",
-            "prompts.benign_generation.system.template"
-        )
-        
-        user_content = load_prompt(
-            "generation_config",
-            "prompts.benign_generation.user.template",
-            area=task.problem['area'],
-            count=task.batch_size,
-            context=task.problem.get('description', '')
-        )
-        
-        response_content = process_llm_request(
-            system_prompt=system_content,
-            user_prompt=user_content,
-            model_name="gpt-4.1-mini",
-            temperature=temperature
-        )
-        
-        parsed = self._extract_json_from_response(response_content)
-        return parsed.get('samples', [])
+        try:
+            gen_config = self.config.get('generation', {})
+            temperature_config = gen_config.get('temperature', {})
+            temperature = temperature_config.get('benign_generation', 0.7)
+            
+            system_content = load_prompt(
+                "generation_config",
+                "prompts.benign_generation.system.template"
+            )
+            
+            user_content = load_prompt(
+                "generation_config",
+                "prompts.benign_generation.user.template",
+                area=task.problem['area'],
+                count=task.batch_size,
+                context=task.problem.get('description', '')
+            )
+            
+            response_content = process_llm_request(
+                system_prompt=system_content,
+                user_prompt=user_content,
+                model_name="gpt-4.1-mini",
+                temperature=temperature
+            )
+            
+            parsed = self._extract_json_from_response(response_content)
+            return parsed.get('samples', [])
+            
+        except Exception as e:
+            logger.error(f"Error generating benign batch: {e}")
+            return []
     
     def _extract_json_from_response(self, response_content: str) -> Dict:
-        """Extract JSON from LLM response"""
-        if '```' in response_content:
-            pattern = r'```(?:json)?\s*([\s\S]*?)```'
-            matches = re.findall(pattern, response_content)
-            if matches:
-                response_content = matches[0]
+        """Extract JSON from LLM response with robust error handling"""
+        if not response_content:
+            logger.warning("Empty response content")
+            return {"samples": []}
         
         try:
-            return json.loads(response_content)
-        except json.JSONDecodeError:
+            # Clean markdown code blocks
+            if '```' in response_content:
+                pattern = r'```(?:json)?\s*([\s\S]*?)```'
+                matches = re.findall(pattern, response_content)
+                if matches:
+                    response_content = matches[0].strip()
+            
+            # Try direct parsing
             try:
-                # Fix common JSON issues
-                fixed_content = response_content.replace("'", '"')
+                result = json.loads(response_content)
+                if isinstance(result, dict):
+                    return result
+                elif isinstance(result, list):
+                    return {"samples": result}
+                else:
+                    logger.warning(f"Unexpected JSON type: {type(result)}")
+                    return {"samples": []}
+            except json.JSONDecodeError:
+                # Try fixing common JSON issues
+                fixed_content = response_content
+                
+                # Fix single quotes
+                fixed_content = fixed_content.replace("'", '"')
+                
+                # Fix missing commas between objects
                 fixed_content = re.sub(r'}\s*{', '},{', fixed_content)
+                
+                # Fix trailing commas
                 fixed_content = re.sub(r',\s*}', '}', fixed_content)
                 fixed_content = re.sub(r',\s*]', ']', fixed_content)
-                return json.loads(fixed_content)
-            except json.JSONDecodeError:
-                logger.warning("Failed to parse JSON response")
-                return {"samples": []}
+                
+                # Fix unescaped quotes in strings
+                fixed_content = re.sub(r'(?<!\\)"(?=\w)', '\\"', fixed_content)
+                
+                result = json.loads(fixed_content)
+                if isinstance(result, dict):
+                    return result
+                elif isinstance(result, list):
+                    return {"samples": result}
+                else:
+                    return {"samples": []}
+                    
+        except Exception as e:
+            logger.error(f"Failed to parse JSON response: {e}")
+            logger.debug(f"Raw response: {response_content[:500]}...")
+            return {"samples": []}
     
     def generate_parallel(self, problem: Dict, malicious_count: int, benign_count: int) -> List[Dict]:
         """Generate samples for a problem using parallel execution"""
@@ -490,7 +618,7 @@ class ParallelGenerator:
             }
             
             # Process completed tasks
-            for future in concurrent.futures.as_completed(future_to_task):
+            for future in concurrent.futures.as_completed(future_to_task, timeout=300):  # 5 minute timeout
                 task = future_to_task[future]
                 try:
                     result = future.result()
@@ -519,160 +647,168 @@ class ParallelGenerator:
             logger.warning(f"No samples to save for {problem['nature']}")
             return
         
-        area = problem['area']
-        nature = problem['nature']
-        
-        out_file = self.config_manager.get_large_samples_file(area, nature)
-        out_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Combine existing and new samples
-        all_samples = existing_samples + new_samples
-        
-        # Calculate distributions
-        malicious_new = sum(1 for s in new_samples if s.get('sample_type') == 'malicious')
-        benign_new = sum(1 for s in new_samples if s.get('sample_type') == 'benign')
-        
-        # Enhanced metadata
-        generation_time = (self.stats.get("generation_end_time", 0) - 
-                          self.stats.get("generation_start_time", 0))
-        
-        metadata = {
-            'total_samples': len(all_samples),
-            'new_samples_added': len(new_samples),
-            'new_malicious_samples': malicious_new,
-            'new_benign_samples': benign_new,
-            'generation_method': 'parallel',
-            'generation_stats': self.stats.copy(),
-            'duplicate_detection_stats': self.duplicate_detector.get_stats(),
-            'generation_timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'total_generation_time': generation_time,
-            'samples_per_minute': len(new_samples) / (generation_time / 60) if generation_time > 0 else 0,
-            'max_workers': self.max_workers,
-            'batch_size': self.default_batch_size
-        }
-        
-        output_data = {
-            'samples': all_samples,
-            'metadata': metadata
-        }
-        
-        with out_file.open('w', encoding='utf-8') as f:
-            json.dump(output_data, f, indent=2)
-        
-        logger.info(f"Saved {len(new_samples)} new samples to {out_file}")
-        logger.info(f"Total samples in file: {len(all_samples)}")
-        logger.info(f"Generation rate: {metadata['samples_per_minute']:.1f} samples/minute")
+        try:
+            area = problem['area']
+            nature = problem['nature']
+            
+            out_file = self.config_manager.get_large_samples_file(area, nature)
+            out_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Combine existing and new samples
+            all_samples = existing_samples + new_samples
+            
+            # Calculate distributions
+            malicious_new = sum(1 for s in new_samples if s.get('sample_type') == 'malicious')
+            benign_new = sum(1 for s in new_samples if s.get('sample_type') == 'benign')
+            
+            # Enhanced metadata
+            generation_time = (self.stats.get("generation_end_time", 0) - 
+                              self.stats.get("generation_start_time", 0))
+            
+            metadata = {
+                'total_samples': len(all_samples),
+                'new_samples_added': len(new_samples),
+                'new_malicious_samples': malicious_new,
+                'new_benign_samples': benign_new,
+                'generation_method': 'parallel',
+                'generation_stats': self.stats.copy(),
+                'duplicate_detection_stats': self.duplicate_detector.get_stats(),
+                'generation_timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'total_generation_time': generation_time,
+                'samples_per_minute': len(new_samples) / (generation_time / 60) if generation_time > 0 else 0,
+                'max_workers': self.max_workers,
+                'batch_size': self.default_batch_size
+            }
+            
+            output_data = {
+                'samples': all_samples,
+                'metadata': metadata
+            }
+            
+            with out_file.open('w', encoding='utf-8') as f:
+                json.dump(output_data, f, indent=2)
+            
+            logger.info(f"Saved {len(new_samples)} new samples to {out_file}")
+            logger.info(f"Total samples in file: {len(all_samples)}")
+            logger.info(f"Generation rate: {metadata['samples_per_minute']:.1f} samples/minute")
+            
+        except Exception as e:
+            logger.error(f"Error saving samples: {e}")
 
 def main(count: int = None, malicious_ratio: float = None, problem_filter: List[str] = None, 
          config_override: Dict = None):
     """Main function for unified parallel generation"""
     
-    # Initialize generator first to get default values
-    generator = ParallelGenerator(config_override=config_override)
-    
-    # Use defaults from config if not specified
-    if count is None:
-        count = generator.default_count
-    if malicious_ratio is None:
-        malicious_ratio = generator.default_malicious_ratio
-    
-    logger.info(f"Starting generation: count={count}, malicious_ratio={malicious_ratio}")
-    
-    # Validate inputs
-    if not 0.0 <= malicious_ratio <= 1.0:
-        logger.error(f"Invalid malicious ratio: {malicious_ratio}")
-        return
-    
-    # Calculate sample counts
-    malicious_count = int(count * malicious_ratio)
-    benign_count = count - malicious_count
-    
-    logger.info(f"Target distribution: {malicious_count} malicious, {benign_count} benign")
-    
-    # Load problems
-    problems = generator.load_problems()
-    
-    # Filter problems if specified
-    if problem_filter:
-        problems = [p for p in problems if p['nature'] in problem_filter]
-        if not problems:
-            logger.error(f"No matching problems found for {problem_filter}")
+    try:
+        # Initialize generator first to get default values
+        generator = ParallelGenerator(config_override=config_override)
+        
+        # Use defaults from config if not specified
+        if count is None:
+            count = generator.default_count
+        if malicious_ratio is None:
+            malicious_ratio = generator.default_malicious_ratio
+        
+        logger.info(f"Starting generation: count={count}, malicious_ratio={malicious_ratio}")
+        
+        # Validate inputs
+        if not 0.0 <= malicious_ratio <= 1.0:
+            logger.error(f"Invalid malicious ratio: {malicious_ratio}")
             return
-    
-    logger.info(f"Processing {len(problems)} problems")
-    
-    # Track overall statistics
-    overall_stats = {
-        "total_problems": len(problems),
-        "successful_problems": 0,
-        "failed_problems": 0,
-        "total_samples_generated": 0,
-        "total_duplicates_filtered": 0,
-        "total_generation_time": 0
-    }
-    
-    overall_start_time = time.time()
-    
-    # Process each problem
-    for i, problem in enumerate(problems):
+        
+        # Calculate sample counts
+        malicious_count = int(count * malicious_ratio)
+        benign_count = count - malicious_count
+        
+        logger.info(f"Target distribution: {malicious_count} malicious, {benign_count} benign")
+        
+        # Load problems
+        problems = generator.load_problems()
+        
+        # Filter problems if specified
+        if problem_filter:
+            problems = [p for p in problems if p['nature'] in problem_filter]
+            if not problems:
+                logger.error(f"No matching problems found for {problem_filter}")
+                return
+        
+        logger.info(f"Processing {len(problems)} problems")
+        
+        # Track overall statistics
+        overall_stats = {
+            "total_problems": len(problems),
+            "successful_problems": 0,
+            "failed_problems": 0,
+            "total_samples_generated": 0,
+            "total_duplicates_filtered": 0,
+            "total_generation_time": 0
+        }
+        
+        overall_start_time = time.time()
+        
+        # Process each problem
+        for i, problem in enumerate(problems):
+            logger.info(f"\n{'='*60}")
+            logger.info(f"Processing problem {i+1}/{len(problems)}: {problem['area']}/{problem['nature']}")
+            logger.info(f"{'='*60}")
+            
+            try:
+                # Reset generator stats for this problem
+                generator.stats = {
+                    "total_generated": 0,
+                    "duplicates_filtered": 0,
+                    "failed_generations": 0,
+                    "successful_batches": 0,
+                    "total_api_calls": 0,
+                    "generation_start_time": None,
+                    "generation_end_time": None
+                }
+                
+                # Generate samples
+                new_samples = generator.generate_parallel(problem, malicious_count, benign_count)
+                
+                if new_samples:
+                    # Load existing samples for saving
+                    existing_samples = generator.load_existing_samples(problem)
+                    
+                    # Save samples
+                    generator.save_samples(problem, new_samples, existing_samples)
+                    
+                    # Update overall stats
+                    overall_stats["successful_problems"] += 1
+                    overall_stats["total_samples_generated"] += len(new_samples)
+                    overall_stats["total_duplicates_filtered"] += generator.stats["duplicates_filtered"]
+                    
+                    logger.info(f"Successfully generated {len(new_samples)} samples for {problem['nature']}")
+                else:
+                    logger.warning(f"No samples generated for {problem['nature']}")
+                    overall_stats["failed_problems"] += 1
+                
+            except Exception as e:
+                logger.error(f"Error processing {problem['nature']}: {e}", exc_info=True)
+                overall_stats["failed_problems"] += 1
+                continue
+        
+        # Calculate total time
+        overall_stats["total_generation_time"] = time.time() - overall_start_time
+        
+        # Print final statistics
         logger.info(f"\n{'='*60}")
-        logger.info(f"Processing problem {i+1}/{len(problems)}: {problem['area']}/{problem['nature']}")
+        logger.info("GENERATION COMPLETED")
+        logger.info(f"{'='*60}")
+        logger.info(f"Problems processed: {overall_stats['successful_problems']}/{overall_stats['total_problems']}")
+        logger.info(f"Total samples generated: {overall_stats['total_samples_generated']}")
+        logger.info(f"Total duplicates filtered: {overall_stats['total_duplicates_filtered']}")
+        logger.info(f"Total generation time: {overall_stats['total_generation_time']:.2f} seconds")
+        
+        if overall_stats['total_generation_time'] > 0:
+            rate = overall_stats['total_samples_generated'] / (overall_stats['total_generation_time'] / 60)
+            logger.info(f"Overall generation rate: {rate:.1f} samples/minute")
+        
         logger.info(f"{'='*60}")
         
-        try:
-            # Reset generator stats for this problem
-            generator.stats = {
-                "total_generated": 0,
-                "duplicates_filtered": 0,
-                "failed_generations": 0,
-                "successful_batches": 0,
-                "total_api_calls": 0,
-                "generation_start_time": None,
-                "generation_end_time": None
-            }
-            
-            # Generate samples
-            new_samples = generator.generate_parallel(problem, malicious_count, benign_count)
-            
-            if new_samples:
-                # Load existing samples for saving
-                existing_samples = generator.load_existing_samples(problem)
-                
-                # Save samples
-                generator.save_samples(problem, new_samples, existing_samples)
-                
-                # Update overall stats
-                overall_stats["successful_problems"] += 1
-                overall_stats["total_samples_generated"] += len(new_samples)
-                overall_stats["total_duplicates_filtered"] += generator.stats["duplicates_filtered"]
-                
-                logger.info(f"Successfully generated {len(new_samples)} samples for {problem['nature']}")
-            else:
-                logger.warning(f"No samples generated for {problem['nature']}")
-                overall_stats["failed_problems"] += 1
-            
-        except Exception as e:
-            logger.error(f"Error processing {problem['nature']}: {e}", exc_info=True)
-            overall_stats["failed_problems"] += 1
-            continue
-    
-    # Calculate total time
-    overall_stats["total_generation_time"] = time.time() - overall_start_time
-    
-    # Print final statistics
-    logger.info(f"\n{'='*60}")
-    logger.info("GENERATION COMPLETED")
-    logger.info(f"{'='*60}")
-    logger.info(f"Problems processed: {overall_stats['successful_problems']}/{overall_stats['total_problems']}")
-    logger.info(f"Total samples generated: {overall_stats['total_samples_generated']}")
-    logger.info(f"Total duplicates filtered: {overall_stats['total_duplicates_filtered']}")
-    logger.info(f"Total generation time: {overall_stats['total_generation_time']:.2f} seconds")
-    
-    if overall_stats['total_generation_time'] > 0:
-        rate = overall_stats['total_samples_generated'] / (overall_stats['total_generation_time'] / 60)
-        logger.info(f"Overall generation rate: {rate:.1f} samples/minute")
-    
-    logger.info(f"{'='*60}")
+    except Exception as e:
+        logger.error(f"Fatal error in main: {e}", exc_info=True)
 
 if __name__ == '__main__':
     import argparse

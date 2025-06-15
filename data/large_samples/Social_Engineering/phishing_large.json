@@ -1660,36 +1660,3453 @@
       "is_attack": false,
       "generation_task_id": "phishing_ben_5",
       "generation_timestamp": 1750014949.574186
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email to employees requesting a scheduled password reset for security compliance.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.internal",
+          "To": "all@company.internal",
+          "Subject": "Mandatory Password Reset - Security Compliance",
+          "Date": "2024-06-14T08:15:00Z",
+          "Message-ID": "<it-secure-20240614-001@company.internal>"
+        },
+        "email_body": "Dear team, as part of our quarterly security policy, all employees are required to update their passwords by June 20, 2024. Please use the company intranet password management portal at https://intranet.company.internal/password-reset to complete this process.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-14T08:16:12Z",
+            "source_ip": "10.1.10.45",
+            "destination_ip": "10.1.20.2",
+            "protocol": "HTTPS",
+            "url": "https://intranet.company.internal/password-reset",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          },
+          {
+            "timestamp": "2024-06-15T09:30:45Z",
+            "user": "jdoe",
+            "action": "password_change",
+            "result": "success",
+            "source_ip": "10.1.10.45"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:30:30Z",
+            "user": "jdoe",
+            "event": "login",
+            "source_ip": "10.1.10.45",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified internal IT domain",
+        "URL points to company intranet with valid HTTPS certificate",
+        "Password change events correlate with email request timeframe",
+        "User agents and IP addresses consistent with employee workstation usage"
+      ],
+      "activity_type": "Internal IT Security Communication and Credential Update",
+      "business_justification": "Periodic password resets are mandated to comply with company security policies and regulatory standards, ensuring protection of user accounts.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_40",
+      "generation_timestamp": 1750029488.615697
+    },
+    {
+      "scenario": "Employees receive an email impersonating the HR department requesting urgent verification of employee benefits via a provided link.",
+      "technical_data": "The email originates from a spoofed domain resembling the company\u2019s HR domain (e.g., hr-company.com instead of hr.company.com). The embedded link redirects to a credential harvesting page that mimics the company\u2019s internal benefits portal. The phishing page captures entered credentials and sends them to an external server controlled by the attacker.",
+      "indicators": [
+        "Sender email domain mismatch (hr-company.com vs hr.company.com)",
+        "URL contains slight misspellings or uses homograph characters",
+        "Unexpected request for sensitive information via email"
+      ],
+      "detection_method": "Implement email gateway filters to detect domain spoofing and analyze URLs for suspicious patterns. Use DMARC, SPF, and DKIM to validate sender authenticity. Employ sandboxing to inspect linked URLs for phishing content.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_21",
+      "generation_timestamp": 1750029422.0896256
+    },
+    {
+      "scenario": "HR sends an internal memo via email to all employees announcing an upcoming mandatory identity verification process required for system access compliance.",
+      "technical_data": {
+        "email_header": {
+          "from": "hr-department@company.local",
+          "to": "all@company.local",
+          "subject": "Upcoming Mandatory Identity Verification Process",
+          "received_timestamp": "2024-06-10T14:45:00Z",
+          "message_id": "<20240610144500.hr-department@company.local>"
+        },
+        "email_body": "Dear employees, starting July 1st, all users must complete identity verification through the HR portal at https://hr.company.local/verify. This process ensures compliance with updated regulatory requirements and protects employee data.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T14:46:20Z",
+            "source_ip": "10.20.30.55",
+            "destination_ip": "10.50.60.15",
+            "protocol": "HTTPS",
+            "url": "https://hr.company.local/verify",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "action": "GET"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-11T10:05:00Z",
+            "username": "asmith",
+            "authentication_method": "MFA",
+            "status": "success",
+            "source_ip": "10.20.30.55"
+          }
+        ],
+        "system_logs": {
+          "verification_module": {
+            "event": "identity_verification_initiated",
+            "user": "asmith",
+            "timestamp": "2024-06-11T10:06:15Z",
+            "status": "pending"
+          }
+        }
+      },
+      "indicators": [
+        "Email sent from verified HR domain with valid DKIM signature",
+        "User accesses known internal HR portal over HTTPS",
+        "Authentication uses multi-factor authentication mechanism",
+        "System logs show initiation of identity verification tied to user action"
+      ],
+      "activity_type": "Internal HR Communication and Identity Verification",
+      "business_justification": "Regulatory compliance requires periodic identity verification of employees to ensure secure access and protect sensitive information.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_26",
+      "generation_timestamp": 1750029434.3917937
+    },
+    {
+      "scenario": "Staff receive an email purporting to be from the IT Helpdesk stating their email account will be deactivated unless they reset their password using a provided link that leads to a credential harvesting site.",
+      "technical_data": "Email forged to appear from it-support@company.com with a hyperlink directing to a non-corporate domain using HTTPS but with an invalid SSL certificate. The landing page mimics the corporate login interface precisely to capture usernames and passwords.",
+      "indicators": [
+        "Mismatch between displayed sender address and actual email header",
+        "Link domain is unrelated to official company domains",
+        "Invalid or self-signed SSL certificate on login page",
+        "Urgent tone demanding immediate action"
+      ],
+      "detection_method": "Analyze email headers for spoofed senders, validate SSL certificates of linked pages, monitor URL domains for anomalies, and deploy multifactor authentication to mitigate stolen credential risks.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_3",
+      "generation_timestamp": 1750029395.0039356
+    },
+    {
+      "scenario": "IT department sends an internal email to employees reminding them to update their passwords as part of a quarterly security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@enterprise.local",
+          "To": "all-employees@enterprise.local",
+          "Subject": "Quarterly Password Update Reminder",
+          "Date": "2024-06-15T09:00:00-04:00",
+          "Message-ID": "<202406150900.itsecurity@enterprise.local>"
+        },
+        "email_body": "Dear team,\nAs part of our security compliance, please update your login password by June 22nd using the official internal password portal at https://intranet.enterprise.local/password-update.\nDo not reply to this email.\nThank you,\nIT Security Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:00:05-04:00",
+            "source_ip": "192.168.10.5",
+            "destination_ip": "192.168.10.200",
+            "protocol": "SMTP",
+            "action": "email_sent",
+            "user": "it-security"
+          },
+          {
+            "timestamp": "2024-06-15T09:05:30-04:00",
+            "user": "employee01",
+            "action": "login",
+            "authentication_method": "SSO",
+            "result": "success",
+            "source_ip": "192.168.10.101"
+          },
+          {
+            "timestamp": "2024-06-15T09:10:00-04:00",
+            "user": "employee01",
+            "action": "access",
+            "resource": "https://intranet.enterprise.local/password-update",
+            "result": "page_loaded",
+            "source_ip": "192.168.10.101"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T09:15:00-04:00",
+            "service": "password-portal",
+            "event": "password_change_initiated",
+            "user": "employee01",
+            "status": "started"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified internal IT domain",
+        "Access to official corporate intranet URL",
+        "Successful SSO login prior to password update",
+        "No suspicious attachments or external links"
+      ],
+      "activity_type": "Routine IT security communication",
+      "business_justification": "Quarterly password updates are mandatory for compliance with internal security policies and to reduce risk of credential compromise.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_48",
+      "generation_timestamp": 1750029510.7844098
+    },
+    {
+      "scenario": "HR department sends internal memo to employees with instructions for upcoming benefits enrollment period",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.internal",
+          "To": "all-employees@company.internal",
+          "Date": "2024-06-10T13:45:00Z",
+          "Subject": "Upcoming Benefits Enrollment Instructions",
+          "Message-ID": "<202406101345.hr-dept@company.internal>"
+        },
+        "email_body": "Dear Colleagues, the annual benefits enrollment period starts July 1st. Please review the enrollment guide attached and visit https://internal.company.portal/benefits to make your selections. Contact HR support for questions.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T13:45:02Z",
+            "source_ip": "10.10.5.15",
+            "destination_ip": "10.10.5.255",
+            "protocol": "SMTP",
+            "action": "Email broadcast from hr.mailserver.company.internal"
+          }
+        ],
+        "user_activity_logs": [
+          {
+            "user": "m.jones",
+            "timestamp": "2024-06-10T14:05:00Z",
+            "action": "Login",
+            "system": "internal.company.portal",
+            "auth_method": "SSO",
+            "status": "Success"
+          },
+          {
+            "user": "m.jones",
+            "timestamp": "2024-06-10T14:07:30Z",
+            "action": "DocumentAccess",
+            "document_name": "Benefits_Enrollment_Guide_2024.pdf",
+            "system": "internal.company.portal",
+            "status": "Success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified HR department mail server",
+        "Attachments scanned and clean according to antivirus logs",
+        "User accesses official internal portal and downloads related documents",
+        "No signs of phishing domains or external email spoofing"
+      ],
+      "activity_type": "Internal HR communication and employee resource access",
+      "business_justification": "Annual benefits enrollment communications are standard HR practice to ensure employees make timely benefits selections.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_46",
+      "generation_timestamp": 1750029495.1375313
+    },
+    {
+      "scenario": "Staff receive an email appearing to be from the IT helpdesk asking them to reset their VPN credentials by clicking a link that leads to a credential harvesting site.",
+      "technical_data": "The email originates from a compromised third-party marketing service but uses display name 'IT Helpdesk'. The embedded link directs users to a cloned VPN login page hosted on an attacker-controlled domain with SSL certificates obtained via Let's Encrypt, increasing legitimacy. Submitted credentials are sent via POST to a remote server in an anonymized cloud hosting environment.",
+      "indicators": [
+        "Mismatch between sender email and official IT helpdesk domain",
+        "Suspicious URL domain unrelated to company",
+        "SSL certificate issued to unrelated entity",
+        "Unusual outbound POST requests to unknown IP addresses post-click"
+      ],
+      "detection_method": "Implement DMARC and SPF policies to reduce spoofing, inspect outbound traffic for connections to unusual domains, and deploy browser plugins or email gateways that warn users about suspicious links.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_10",
+      "generation_timestamp": 1750029406.8919327
+    },
+    {
+      "scenario": "Employees receive emails supposedly from HR about mandatory policy updates requiring immediate login to an internal portal.",
+      "technical_data": "The phishing email uses a spoofed 'From' address mimicking the HR department and contains a link to a fake internal portal hosted on a domain resembling the company\u2019s official site but with a slight misspelling (typosquatting). The fake portal captures entered credentials and sends them to an external command and control server via POST requests.",
+      "indicators": [
+        "Sender email domain is similar but not identical to official HR domain (e.g. hr.company.com vs hr-company.com)",
+        "URL contains uncommon subdomains or slight typos",
+        "Email content urges urgent action and credential submission"
+      ],
+      "detection_method": "Monitor email gateway for spoofed domains and use URL reputation services to identify typosquatting domains; implement user training to recognize urgent and suspicious credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1598.002"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_9",
+      "generation_timestamp": 1750029406.458346
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email requesting employees to update their passwords as part of a scheduled security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Date": "2024-06-15T08:30:00Z",
+          "Subject": "Mandatory Password Update - Security Policy Compliance",
+          "Message-ID": "<1234567890@company.com>"
+        },
+        "email_body": "Dear team, as part of our quarterly security protocol, please update your network passwords by June 20. Use the official company portal at https://portal.company.com/password-reset. For assistance, contact IT support at it-support@company.com.",
+        "network_activity": [
+          {
+            "timestamp": "2024-06-15T08:30:05Z",
+            "source_ip": "192.168.10.25",
+            "destination_ip": "company-mailserver.company.com",
+            "protocol": "SMTP",
+            "action": "email_sent"
+          },
+          {
+            "timestamp": "2024-06-15T08:35:12Z",
+            "source_ip": "192.168.10.45",
+            "destination_ip": "portal.company.com",
+            "protocol": "HTTPS",
+            "request": "GET /password-reset",
+            "status_code": 200
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T08:35:30Z",
+            "username": "jdoe",
+            "event": "password_change",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified corporate IT domain",
+        "URL links point to official company domains with valid SSL",
+        "Password reset activity logged with successful authentication",
+        "No suspicious IPs or unusual payloads detected"
+      ],
+      "activity_type": "Internal IT security communication and user password update",
+      "business_justification": "Routine security policy enforcement to maintain account integrity and comply with internal cybersecurity standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_43",
+      "generation_timestamp": 1750029489.9954689
+    },
+    {
+      "scenario": "Employees receive an email purportedly from the HR department requesting verification of personal information via a link to a fake intranet site.",
+      "technical_data": "The phishing email originates from a domain similar to the company's domain but with slight misspellings (e.g., company-domain.com vs. companydomian.com). The embedded link directs users to a credential harvesting page mimicking the official HR portal, capturing usernames and passwords upon submission.",
+      "indicators": [
+        "Sender email domain misspelling",
+        "Link URL mismatch with official internal sites",
+        "Urgent language requesting immediate action"
+      ],
+      "detection_method": "Email filtering with domain similarity analysis, URL reputation checks, and user behavior monitoring for access to unusual sites.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_4",
+      "generation_timestamp": 1750029397.6279333
+    },
+    {
+      "scenario": "HR department sends an internal memo to employees with updated guidelines on social engineering awareness and how to report suspicious emails.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Updated Social Engineering Awareness Guidelines",
+          "Date": "2024-06-10T10:15:00Z",
+          "Message-ID": "<202406101015.hr@company.com>"
+        },
+        "email_body": "Dear Colleagues,\n\nPlease review the attached updated guidelines on recognizing and reporting social engineering attempts. Remember to never share your credentials via email and verify all requests through official channels.\n\nFor any suspicious activity, contact the IT Security team immediately.\n\nBest,\nHR Team",
+        "attachment": {
+          "filename": "Social_Engineering_Guidelines_2024.pdf",
+          "hash_sha256": "a3f5d2c8e1b74f9d8e7a5a3bc8f0a1d2e5c6b4a7d8f9e0b1c2d3e4f5a6b7c8d9"
+        },
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T10:15:05Z",
+            "source_ip": "192.168.12.50",
+            "destination_ip": "10.10.10.5",
+            "protocol": "SMTP",
+            "action": "Email sent with attachment"
+          },
+          {
+            "timestamp": "2024-06-10T11:00:23Z",
+            "user": "asmith",
+            "activity": "Downloaded attachment Social_Engineering_Guidelines_2024.pdf",
+            "source_ip": "192.168.12.101",
+            "destination": "employee-laptop.company.com"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified HR department domain",
+        "Attachment hash matches company document repository record",
+        "Recipients access document via secure internal network",
+        "Guidelines align with ongoing employee security training initiatives"
+      ],
+      "activity_type": "Internal communication for security awareness training",
+      "business_justification": "Regular updates and reminders about social engineering risks are part of employee education programs to reduce phishing incidents and enhance security posture.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_39",
+      "generation_timestamp": 1750029463.3742707
+    },
+    {
+      "scenario": "HR department sends an internal memo via email to all employees announcing updated remote work policy and requesting acknowledgment by replying to the sender.",
+      "technical_data": {
+        "email_header": {
+          "from": "hr-dept@companydomain.com",
+          "to": "all-employees@companydomain.com",
+          "subject": "Updated Remote Work Policy - Please Review and Acknowledge",
+          "date": "2024-06-10T14:30:00Z",
+          "message_id": "<20240610143000.hr-dept@companydomain.com>"
+        },
+        "email_body": "Dear colleagues, please review the attached updated remote work policy document. Kindly acknowledge receipt by replying to this email by June 20, 2024.",
+        "attachment": "Remote_Work_Policy_Updated_2024.pdf",
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-10T14:31:22Z",
+            "source_ip": "192.168.12.45",
+            "destination_ip": "192.168.12.200",
+            "protocol": "SMTPS",
+            "email_size_bytes": 34567,
+            "attachment_present": true
+          }
+        ],
+        "email_replies": [
+          {
+            "timestamp": "2024-06-11T09:15:43Z",
+            "from_user": "a.smith@companydomain.com",
+            "to": "hr-dept@companydomain.com",
+            "subject": "Re: Updated Remote Work Policy - Please Review and Acknowledge",
+            "body": "Acknowledged. Thank you."
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-10T14:30:05Z",
+            "event_type": "email_sent",
+            "user": "hr-dept",
+            "status": "success",
+            "email_subject": "Updated Remote Work Policy - Please Review and Acknowledge"
+          }
+        ]
+      },
+      "indicators": [
+        "Sender email matches HR department official domain",
+        "Message includes official company policy attachment",
+        "Responses received from multiple employees confirming acknowledgment",
+        "Email transmission logged with success and no phishing indicators"
+      ],
+      "activity_type": "legitimate internal HR communication and policy distribution",
+      "business_justification": "HR regularly updates internal policies and requires employee acknowledgment to ensure compliance and clarity on company procedures.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_45",
+      "generation_timestamp": 1750029501.2444363
+    },
+    {
+      "scenario": "Employees receive emails appearing to be from HR requesting urgent verification of personal information via a provided link, which leads to a fake login page designed to steal credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling the HR department's official email domain but with subtle misspellings. The email contains a hyperlink with a domain closely mimicking the corporate domain (e.g., hr-verification-secure.com). The landing page is a cloned company login portal capturing entered credentials and transmitting them to an attacker-controlled server over HTTPS with a valid but self-signed certificate.",
+      "indicators": [
+        "Sender email domain misspelled (e.g., hr@corporatehr-secure.com)",
+        "Hyperlink points to a non-corporate domain",
+        "Urgent language prompting immediate action",
+        "SSL certificate is self-signed or from an untrusted CA"
+      ],
+      "detection_method": "Implement email filtering rules to detect domain spoofing and suspicious URLs; monitor for SSL certificate anomalies on login portals; use user training to identify urgent language and unexpected requests; employ web proxy logs to detect access to non-approved domains mimicking corporate resources.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_12",
+      "generation_timestamp": 1750029409.8352008
+    },
+    {
+      "scenario": "Internal IT team sends an email to employees reminding them to update their network passwords as part of the quarterly security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Quarterly Password Update Reminder",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<1234567890.it-security.company.com>"
+        },
+        "email_body": "Dear team, As part of our routine security policy, please update your network password by June 20th using the company password portal at https://password.company.com. This helps us maintain account security. If you have any questions, contact IT support.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:00Z",
+            "source_ip": "10.1.2.45",
+            "destination_ip": "192.168.10.5",
+            "protocol": "HTTPS",
+            "url": "https://password.company.com",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:06:30Z",
+            "username": "jdoe",
+            "event": "PasswordChangeInitiated",
+            "source_ip": "10.1.2.45",
+            "result": "Success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain with proper DKIM and SPF records",
+        "Password update link points to official company portal with valid SSL certificate",
+        "User authentication logs show successful login to password portal from internal IP",
+        "Activity timestamp matches normal business hours and quarterly policy schedule"
+      ],
+      "activity_type": "Routine internal IT security communication",
+      "business_justification": "Quarterly password updates are part of standard security compliance to reduce risk of compromised credentials.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_25",
+      "generation_timestamp": 1750029434.727792
+    },
+    {
+      "scenario": "HR department sends an internal memo to all employees announcing upcoming identity verification requirements for remote system access.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@enterprise.local",
+          "To": "all-employees@enterprise.local",
+          "Subject": "Upcoming Identity Verification for Remote Access",
+          "Date": "2024-06-20T08:30:00-04:00",
+          "Message-ID": "<202406200830.hr@enterprise.local>"
+        },
+        "email_body": "Dear colleagues,\nStarting July 1st, all remote access to company systems will require multi-factor authentication (MFA) verification. Please review the updated remote access policy available on the intranet.\nFor assistance, contact the IT helpdesk.\nBest,\nHR Department",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-20T08:30:10-04:00",
+            "source_ip": "192.168.10.8",
+            "destination_ip": "192.168.10.210",
+            "protocol": "SMTP",
+            "action": "email_sent",
+            "user": "hr-dept"
+          },
+          {
+            "timestamp": "2024-06-20T09:00:00-04:00",
+            "user": "employee45",
+            "action": "login_attempt",
+            "authentication_method": "password",
+            "result": "success",
+            "source_ip": "203.0.113.45"
+          },
+          {
+            "timestamp": "2024-06-20T09:00:05-04:00",
+            "user": "employee45",
+            "action": "mfa_challenge",
+            "method": "push_notification",
+            "result": "pending",
+            "source_ip": "203.0.113.45"
+          },
+          {
+            "timestamp": "2024-06-20T09:00:15-04:00",
+            "user": "employee45",
+            "action": "mfa_challenge",
+            "method": "push_notification",
+            "result": "success",
+            "source_ip": "203.0.113.45"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-20T08:45:00-04:00",
+            "service": "policy-management",
+            "event": "policy_update_published",
+            "policy_id": "remote-access-mfa-2024",
+            "author": "hr-dept",
+            "status": "active"
+          }
+        ]
+      },
+      "indicators": [
+        "Email from verified HR internal domain",
+        "No suspicious attachments or links",
+        "Policy update recorded in system logs",
+        "MFA challenge and successful verification during login"
+      ],
+      "activity_type": "Routine administrative communication and authentication process",
+      "business_justification": "Communicating policy changes and enforcing MFA for remote access enhances security and ensures compliance with updated access control standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_48",
+      "generation_timestamp": 1750029510.7854145
+    },
+    {
+      "scenario": "Employees receive emails purportedly from HR requesting immediate verification of personal information through a provided link to avoid account suspension.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@company.com and includes a URL with a domain similar to the legitimate HR portal but with subtle typos (e.g., hr-company-secure.com). The linked page mimics the company's login page and captures credentials upon submission.",
+      "indicators": [
+        "Sender address is hr@company-secure.com instead of hr@company.com",
+        "URL contains slight misspellings or added words",
+        "Urgent language pressuring immediate action"
+      ],
+      "detection_method": "Email filtering systems can flag emails with domain spoofing and analyze URLs for similarity to corporate domains; user reports of suspicious emails can also trigger investigation.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_15",
+      "generation_timestamp": 1750029412.0712233
+    },
+    {
+      "scenario": "Employees receive emails that appear to be from the HR department requesting urgent verification of personal information via a provided link.",
+      "technical_data": "The phishing emails use spoofed sender addresses mimicking hr@company.com and contain links to a fake login page hosted on a domain similar to the corporate domain but with subtle misspellings (e.g., company-secure.com). The fake page captures entered credentials and sends them to an attacker-controlled server. The emails also include generic greetings and urgent language to prompt quick action.",
+      "indicators": [
+        "Sender email address uses slight misspellings or spoofed domain",
+        "Links redirect to non-corporate domains with similar names",
+        "Generic salutations instead of personalized greetings",
+        "Urgent language prompting immediate action",
+        "Mismatch between link text and actual URL"
+      ],
+      "detection_method": "Email gateway filters that check for domain spoofing and URL reputation, user training to recognize phishing language, and sandboxing links to detect redirection to malicious sites.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_5",
+      "generation_timestamp": 1750029401.1905208
+    },
+    {
+      "scenario": "HR sends a company-wide email reminder about the annual employee benefits enrollment period with links to the legitimate HR portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-department@company.internal",
+          "To": "employees@company.internal",
+          "Subject": "Annual Benefits Enrollment Period Now Open",
+          "Date": "2024-06-10T07:45:00Z",
+          "Message-ID": "<hr-enroll-20240610-002@company.internal>"
+        },
+        "email_body": "Dear employees, the annual benefits enrollment period has started. Please visit https://hrportal.company.internal/enrollment to review and select your benefits options. Enrollment closes on July 1, 2024.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-11T08:00:01Z",
+            "source_ip": "10.1.11.33",
+            "destination_ip": "10.1.30.5",
+            "protocol": "HTTPS",
+            "url": "https://hrportal.company.internal/enrollment",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+          },
+          {
+            "timestamp": "2024-06-11T08:05:15Z",
+            "user": "asmith",
+            "action": "form_submission",
+            "form_type": "benefits_enrollment",
+            "result": "success",
+            "source_ip": "10.1.11.33"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-11T07:59:50Z",
+            "user": "asmith",
+            "event": "login",
+            "source_ip": "10.1.11.33",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified HR internal domain",
+        "Link directs to secure company HR portal with valid certificate",
+        "User login and form submission logs correspond with email timing",
+        "User IP addresses and devices are consistent with normal employee access"
+      ],
+      "activity_type": "Legitimate Employee Communication for Benefits Enrollment",
+      "business_justification": "Providing timely information and access to benefits enrollment is a standard HR responsibility to ensure employees can make informed choices during the annual enrollment window.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_40",
+      "generation_timestamp": 1750029488.615697
+    },
+    {
+      "scenario": "HR department sends internal notification about upcoming mandatory employee identity verification for benefits enrollment.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@companydomain.com",
+          "To": "employees@companydomain.com",
+          "Subject": "Mandatory Identity Verification for Benefits Enrollment",
+          "Date": "2024-04-20T14:30:00Z",
+          "Message-ID": "<202404201430.hr@companydomain.com>"
+        },
+        "email_body": "Dear Employees, To ensure compliance with federal regulations, please complete your identity verification by logging into the HR portal at https://hrportal.companydomain.com/verify-identity. This process is secure and mandatory for benefits enrollment.",
+        "network_logs": [
+          {
+            "timestamp": "2024-04-20T14:45:12Z",
+            "source_ip": "192.168.10.45",
+            "dest_ip": "10.20.30.8",
+            "protocol": "HTTPS",
+            "url": "https://hrportal.companydomain.com/verify-identity",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "action": "User accessed HR identity verification page"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-04-20T14:46:30Z",
+            "user": "m.jones",
+            "auth_type": "OAuth2",
+            "status": "Success",
+            "source_ip": "192.168.10.45"
+          }
+        ],
+        "audit_trail": {
+          "verification_submitted": "2024-04-20T14:50:00Z",
+          "verification_status": "Completed",
+          "verified_by": "automated-hr-system"
+        }
+      },
+      "indicators": [
+        "Email sent from official HR department domain",
+        "Link points to secure HR portal with HTTPS and valid certificate",
+        "User authentication uses OAuth2 flow consistent with company standards",
+        "Audit trail confirms successful completion of verification process"
+      ],
+      "activity_type": "Standard employee identity verification communication",
+      "business_justification": "Mandatory identity verification ensures compliance with benefits administration policies and federal regulations for employee eligibility.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_38",
+      "generation_timestamp": 1750029477.1629496
+    },
+    {
+      "scenario": "IT department sends a legitimate email to employees informing them about a scheduled password policy update requiring credential changes.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Upcoming Password Policy Update - Action Required",
+          "Date": "2024-06-10T08:15:00Z",
+          "Message-ID": "<20240610T081500.it-security@company.com>"
+        },
+        "email_body": "Dear Team,\n\nStarting June 15, 2024, our password policy will require all employees to update their passwords to comply with new security standards. Please use the internal self-service portal at https://portal.company.com/password-reset to update your credentials. This portal is only accessible via the company network or VPN.\n\nThank you,\nIT Security Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T08:16:05Z",
+            "source_ip": "192.168.10.23",
+            "destination_ip": "10.0.1.15",
+            "protocol": "HTTPS",
+            "action": "email_sent",
+            "user": "it-security"
+          },
+          {
+            "timestamp": "2024-06-15T09:03:12Z",
+            "source_ip": "192.168.10.150",
+            "destination_ip": "10.0.5.20",
+            "protocol": "HTTPS",
+            "action": "password_reset",
+            "user": "jane.doe"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:02:50Z",
+            "user": "jane.doe",
+            "auth_method": "SSO",
+            "status": "success",
+            "source_ip": "192.168.10.150"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain",
+        "Link directs to official internal portal (portal.company.com)",
+        "User authentication succeeded via corporate SSO",
+        "Activity timestamps align with official password update window"
+      ],
+      "activity_type": "Internal IT communication for credential policy update",
+      "business_justification": "IT regularly communicates credential policies and requires employees to update passwords to maintain security compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_37",
+      "generation_timestamp": 1750029465.2724445
+    },
+    {
+      "scenario": "Employees receive emails purportedly from HR requesting verification of personal information via a provided link to avoid payroll disruption. The link directs to a fake login page that captures their credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@companydomain.com but originates from an external IP. The embedded URL uses a domain similar to the corporate domain with subtle typosquatting (e.g., companyd0main.com). The landing page mimics the corporate intranet login portal and submits entered credentials to a remote server controlled by attackers.",
+      "indicators": [
+        "Sender email domain mismatch",
+        "URL with typosquatting",
+        "Unexpected request for personal data"
+      ],
+      "detection_method": "Email gateway filters detecting domain spoofing and URL reputation checks; user training to spot unusual requests; URL sandbox analysis to identify credential harvesting pages.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_17",
+      "generation_timestamp": 1750029417.4095402
+    },
+    {
+      "scenario": "Staff receive an email claiming to be from IT support about a mandatory password reset due to a security breach, with a link directing to a credential harvesting site.",
+      "technical_data": "Email headers show SPF and DKIM failures; the phishing link redirects through several URL shorteners before landing on a cloned corporate login page hosted on a compromised third-party server. The page captures user credentials and logs IP addresses.",
+      "indicators": [
+        "Failed SPF and DKIM authentication on email",
+        "Link redirects through multiple domains",
+        "Login page URL does not match official IT domain"
+      ],
+      "detection_method": "Implement SPF, DKIM, and DMARC to reduce spoofed emails; sandbox URL analysis to detect multi-step redirects; monitor for anomalous login attempts from suspicious IPs.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_15",
+      "generation_timestamp": 1750029412.0712233
+    },
+    {
+      "scenario": "HR department sends an internal memo to employees requesting updated emergency contact information via the official company HR portal.",
+      "technical_data": {
+        "timestamp": "2024-06-20T14:30:00Z",
+        "email_headers": {
+          "From": "hr@company.com",
+          "To": "employees@company.com",
+          "Subject": "Please Update Your Emergency Contact Information",
+          "Message-ID": "<9876543210@company.com>",
+          "Return-Path": "hr@company.com",
+          "SPF": "pass",
+          "DKIM": "pass",
+          "DMARC": "pass"
+        },
+        "email_body": "Dear Employees, To ensure we have up-to-date emergency contacts, please log into the HR portal at https://hr.company.com and update your information by June 30. For security, use your company credentials to login. Do not respond to this email with sensitive information.",
+        "network_activity": {
+          "user": "john.smith@company.com",
+          "login_sequence": [
+            {
+              "event": "SSO login",
+              "timestamp": "2024-06-20T14:45:00Z",
+              "status": "success"
+            },
+            {
+              "event": "access HR portal contact info page",
+              "timestamp": "2024-06-20T14:46:00Z",
+              "url": "https://hr.company.com/profile/emergency-contact"
+            },
+            {
+              "event": "update emergency contact",
+              "timestamp": "2024-06-20T14:48:00Z",
+              "status": "success"
+            }
+          ],
+          "network_traffic": {
+            "source_ip": "10.20.30.50",
+            "destination_ip": "10.20.30.15",
+            "protocol": "HTTPS",
+            "data_volume_kb": 12,
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15"
+          }
+        }
+      },
+      "indicators": [
+        "Email passes SPF, DKIM, and DMARC validation",
+        "Sender domain matches legitimate HR department address",
+        "Link directs to official HR portal with valid SSL certificate",
+        "User authenticates using company SSO before making changes",
+        "No requests for passwords or sensitive info via email",
+        "Network traffic consistent with typical user browsing behavior"
+      ],
+      "activity_type": "Legitimate internal HR communication and employee data update",
+      "business_justification": "Maintaining current emergency contact information is essential for employee safety and compliance with company policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_28",
+      "generation_timestamp": 1750029436.438819
+    },
+    {
+      "scenario": "Staff receive an email appearing to be from the internal IT helpdesk requesting verification of account details to resolve a ticket. The email contains a link to a credential harvesting site mimicking the corporate VPN login page.",
+      "technical_data": "The attacker used a phishing kit hosted on a subdomain (vpn.company-support.com) registered days before the attack. The email includes a forged 'From' header using a lookalike display name 'IT Helpdesk' but an external email address (it-helpdesk@company-support.com). The phishing page captures credentials and sends them via POST to a server located in a foreign country, bypassing standard geo-blocking rules.",
+      "indicators": [
+        "Mismatch between display name and actual email address",
+        "Link directs to a subdomain not controlled by the company",
+        "Email requests credential verification through links instead of official portals"
+      ],
+      "detection_method": "Implement SPF, DKIM, and DMARC to reduce email spoofing. Monitor DNS registrations for similar subdomains. Use web proxy and URL filtering to block access to known phishing sites. Educate employees on verifying sender email addresses.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_13",
+      "generation_timestamp": 1750029412.3548129
+    },
+    {
+      "scenario": "Employees receive an email purportedly from HR about mandatory benefits enrollment, containing a link that directs to a fake login page designed to steal credentials.",
+      "technical_data": "The email originates from a domain similar to the corporate domain but with subtle typos (e.g., hr-company.com instead of hr.company.com). The link uses URL shortening services to hide the true destination. The fake login page mimics the company's SSO portal and captures credentials via a POST request to an attacker-controlled server.",
+      "indicators": [
+        "typo-squatted sender domain",
+        "URL shortening in the link",
+        "login page URL does not match company domain"
+      ],
+      "detection_method": "Email filtering for domain spoofing and URL reputation, user training to recognize suspicious URLs, inspection of outbound traffic to detect credential submission to unknown hosts.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_1",
+      "generation_timestamp": 1750029392.4941916
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email to employees requesting password updates as part of scheduled security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Mandatory Password Update - Security Policy Compliance",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<20240615090000.it-security@company.com>"
+        },
+        "email_body": "Dear Employees, as part of our quarterly security policy, please update your login credentials by visiting the official company portal at https://portal.company.com/account/update. This link directs to our secured internal site with multi-factor authentication enforced.",
+        "network_traffic": {
+          "source_ip": "192.168.1.10",
+          "destination_ip": "192.168.1.100",
+          "protocol": "HTTPS",
+          "url": "https://portal.company.com/account/update",
+          "response_code": 200,
+          "timestamp": "2024-06-15T09:01:15Z"
+        },
+        "authentication": {
+          "user": "jdoe",
+          "auth_method": "SAML SSO",
+          "status": "success",
+          "timestamp": "2024-06-15T09:02:30Z"
+        },
+        "log_entry": "2024-06-15T09:02:30Z INFO User jdoe authenticated successfully for password update portal."
+      },
+      "indicators": [
+        "Email sent from verified internal IT domain",
+        "Link points to official company portal with valid SSL certificate",
+        "Authentication uses SAML SSO with successful login",
+        "Activity timestamp matches scheduled password update window"
+      ],
+      "activity_type": "Internal IT Security Communication",
+      "business_justification": "Quarterly password updates are mandated by company security policy to maintain account security and compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_44",
+      "generation_timestamp": 1750029493.202726
+    },
+    {
+      "scenario": "IT department sends an internal email requesting employees to update their passwords as part of a quarterly security policy enforcement.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:30:00Z",
+        "email": {
+          "from": "it-security@company.internal",
+          "to": "all-employees@company.internal",
+          "subject": "Quarterly Password Update Reminder",
+          "headers": {
+            "Received-SPF": "pass (company.internal: domain of it-security@company.internal designates 192.168.10.5 as permitted sender)",
+            "DKIM-Signature": "valid",
+            "Message-ID": "<202406150930.it-security@company.internal>"
+          },
+          "body": "Dear employees,\n\nAs part of our quarterly security compliance, please update your network and application passwords by following the company portal link below. This is a legitimate internal communication.\n\nhttps://portal.company.internal/password-update\n\nThank you,\nIT Security Team"
+        },
+        "network_activity": {
+          "source_ip": "192.168.10.5",
+          "destination_ips": [
+            "192.168.20.100",
+            "192.168.20.101",
+            "192.168.20.102"
+          ],
+          "protocol": "SMTP",
+          "port": 587,
+          "encryption": "TLS"
+        },
+        "user_behavior": {
+          "login_events": [
+            {
+              "user": "jdoe",
+              "timestamp": "2024-06-15T09:45:00Z",
+              "action": "logged_in",
+              "location": "office"
+            },
+            {
+              "user": "asmith",
+              "timestamp": "2024-06-15T09:50:00Z",
+              "action": "logged_in",
+              "location": "office"
+            }
+          ],
+          "password_update_events": [
+            {
+              "user": "jdoe",
+              "timestamp": "2024-06-15T10:00:00Z",
+              "action": "password_changed",
+              "method": "self-service portal"
+            },
+            {
+              "user": "asmith",
+              "timestamp": "2024-06-15T10:05:00Z",
+              "action": "password_changed",
+              "method": "self-service portal"
+            }
+          ]
+        }
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain with valid SPF and DKIM",
+        "URL points to internal company portal domain",
+        "Users authenticate via standard corporate SSO before password update",
+        "No abnormal network traffic or external IP connections involved"
+      ],
+      "activity_type": "Internal IT security compliance communication",
+      "business_justification": "Regular security practice to enforce periodic password updates to maintain account security and comply with company policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_36",
+      "generation_timestamp": 1750029465.4802146
+    },
+    {
+      "scenario": "Employees receive an email appearing to be from HR requesting immediate verification of personal information via a provided link, which leads to a fake login portal harvesting credentials.",
+      "technical_data": "Phishing email spoofed to appear from hr@company.com with a URL using a domain similar to the corporate domain but with slight misspelling (e.g., company-hr.com). The link directs users to a cloned login page capturing entered credentials. The email uses urgent language and a generic greeting.",
+      "indicators": [
+        "Sender email domain does not match official HR domain",
+        "URL contains subtle typosquatting",
+        "Generic greeting instead of personalized name",
+        "Unexpected request to verify sensitive personal information"
+      ],
+      "detection_method": "Implement email filtering rules to detect domain spoofing and typosquatting, use URL reputation services to identify malicious links, and employ user awareness training to recognize suspicious requests.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_3",
+      "generation_timestamp": 1750029395.0039356
+    },
+    {
+      "scenario": "Employees receive an email purportedly from the HR department with a subject line about urgent payroll verification. The message includes a link to a fake internal portal designed to capture employee login credentials.",
+      "technical_data": "The phishing email uses a spoofed 'From' address resembling hr@company.com but originates from an external IP address. The embedded URL directs to a domain closely mimicking the company\u2019s legitimate domain, with slight misspellings and an SSL certificate to appear trustworthy. The fake portal mimics the company's login page and sends submitted credentials to a remote C2 server.",
+      "indicators": [
+        "Email sender domain mismatch from legitimate HR domain",
+        "Suspicious URL with slight misspelling and external hosting",
+        "Email contains urgent language prompting immediate action"
+      ],
+      "detection_method": "Email gateway filters flag emails with external IPs claiming to be from internal departments. URL reputation checks and analysis of domain registration details reveal spoofed sites. User training to verify URLs and report unexpected credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_24",
+      "generation_timestamp": 1750029425.7025876
+    },
+    {
+      "scenario": "IT department sends an internal email requesting employees to update their passwords via the official company portal as part of the quarterly security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Quarterly Password Update Required",
+          "Date": "2024-06-15T09:30:00Z",
+          "Message-ID": "<20240615093000.it-security@company.com>"
+        },
+        "email_body": "Dear team, as part of our ongoing security measures, please update your network password by logging into https://portal.company.com/password-reset by June 20, 2024. This link directs to the internal company portal secured with HTTPS and multi-factor authentication.",
+        "network_activity": [
+          {
+            "timestamp": "2024-06-15T09:45:12Z",
+            "source_ip": "192.168.10.15",
+            "destination_ip": "10.0.0.5",
+            "protocol": "HTTPS",
+            "url_accessed": "https://portal.company.com/password-reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "authentication": {
+              "method": "MFA",
+              "status": "Success"
+            }
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T09:46:00Z",
+            "user": "jdoe",
+            "event": "PasswordChange",
+            "status": "Success",
+            "source_ip": "192.168.10.15"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain",
+        "Link points to official company portal with valid SSL certificate",
+        "User authenticated with multi-factor authentication before password change",
+        "Password change event logged successfully in the system",
+        "Email distributed to all employees as part of scheduled security policy"
+      ],
+      "activity_type": "Internal IT security communication and password update",
+      "business_justification": "Routine security compliance to enforce strong password policies and protect company assets from unauthorized access.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_42",
+      "generation_timestamp": 1750029487.2027445
+    },
+    {
+      "scenario": "A phishing email purports to be from the IT department urging employees to update their password immediately due to a security breach, containing an embedded link to a credential harvesting site hosted on a compromised third-party domain.",
+      "technical_data": "The email uses social engineering tactics to create urgency and includes an embedded hyperlink with text resembling a corporate intranet address but actually linking to a compromised external domain (e.g., https://secure-update.company-secure.com/login). The landing page is a cloned version of the company\u2019s SSO portal, capturing usernames and passwords submitted by users. The email\u2019s SPF and DKIM fail due to the external sending source.",
+      "indicators": [
+        "Email SPF and DKIM authentication failures",
+        "Urgent language pressuring immediate action",
+        "Link domain slightly different or hosted externally",
+        "Mismatch between displayed link text and actual URL"
+      ],
+      "detection_method": "Implement strict email authentication checks (SPF, DKIM, DMARC), deploy anti-phishing filters that analyze URL mismatches and domain age, and conduct phishing awareness training focusing on urgent request detection.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_14",
+      "generation_timestamp": 1750029412.2056413
+    },
+    {
+      "scenario": "Staff receive automated-looking emails from 'IT Support' prompting them to verify multi-factor authentication settings via a provided link.",
+      "technical_data": "The emails contain logos and formatting mimicking the IT department\u2019s communications. The embedded links lead to a phishing site designed to harvest MFA backup codes and backup email credentials through form submission.",
+      "indicators": [
+        "Email originates from a free email provider rather than corporate mail server",
+        "Mismatch between displayed sender name and actual email address",
+        "Phishing URLs use HTTPS but have unrelated domain names"
+      ],
+      "detection_method": "Implement SPF, DKIM, and DMARC to identify spoofed emails; user training to recognize unusual MFA verification requests; URL reputation services to flag newly registered or suspicious domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1539"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_11",
+      "generation_timestamp": 1750029407.9569688
+    },
+    {
+      "scenario": "HR department sends a company-wide email announcing updates to the employee remote work policy, including guidelines for secure VPN usage.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Updated Remote Work Policy and VPN Usage Guidelines",
+          "Date": "2024-06-10T14:30:00Z",
+          "Message-ID": "<0987654321.hr.company.com>"
+        },
+        "email_body": "Dear employees, Please review the attached updated remote work policy effective July 1st. For your security, ensure you connect via the company VPN using the approved client. Contact IT if you need assistance.",
+        "attachment": "Remote_Work_Policy_June2024.pdf",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T14:35:00Z",
+            "source_ip": "10.2.3.56",
+            "destination_ip": "192.168.15.10",
+            "protocol": "SMTP",
+            "email_size_bytes": 245678,
+            "user_agent": "Microsoft Outlook 365"
+          }
+        ],
+        "vpn_authentication_logs": [
+          {
+            "timestamp": "2024-06-10T14:45:12Z",
+            "username": "asmith",
+            "vpn_server": "vpn-01.company.com",
+            "source_ip": "203.0.113.45",
+            "event": "VPNLogin",
+            "result": "Success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from official HR domain with valid SPF and DMARC policies",
+        "Attachment is a signed PDF from company document management system",
+        "VPN login events correspond to policy update timeframe and originate from known employee IP addresses",
+        "Communications align with standard policy update periodic schedule"
+      ],
+      "activity_type": "Routine HR policy communication",
+      "business_justification": "Regular policy updates are necessary to maintain compliance and inform employees about secure remote work practices.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_25",
+      "generation_timestamp": 1750029434.727792
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email reminder prompting employees to update their passwords as part of scheduled security maintenance.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Mandatory Password Update Reminder - Q2",
+          "Date": "2024-06-12T08:30:00Z",
+          "Message-ID": "<202406120830.itsecurity@company.com>"
+        },
+        "email_body": "Dear Team, As part of our quarterly security policy, please update your company network password by June 20th. Visit the official portal at https://portal.company.com/password-reset to complete this process. If you have questions, contact IT Support.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-12T08:35:10Z",
+            "source_ip": "192.168.10.25",
+            "destination_ip": "10.1.5.20",
+            "protocol": "HTTPS",
+            "url": "https://portal.company.com/password-reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-12T09:00:05Z",
+            "username": "j.smith",
+            "event": "PasswordChangeSuccess",
+            "source_ip": "192.168.10.25",
+            "method": "WebPortal"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain with proper DKIM and SPF records",
+        "URL domain matches official company portal with valid SSL certificate",
+        "User successfully completes password change without error",
+        "Activity occurs during normal business hours"
+      ],
+      "activity_type": "Internal IT Security Communication and User Credential Update",
+      "business_justification": "Routine security policy enforcement to maintain account security and comply with internal IT governance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_47",
+      "generation_timestamp": 1750029495.8138251
+    },
+    {
+      "scenario": "Employees receive an email purportedly from the HR department requesting immediate verification of personal information via a provided link, which leads to a fake login page capturing credentials.",
+      "technical_data": "The phishing email uses the domain hr-updates.example.com, which closely resembles the legitimate hr.example.com domain. The email header shows SPF fail, and the malicious link redirects through multiple shortened URLs before landing on a credential harvesting page mimicking the corporate login portal.",
+      "indicators": [
+        "Sender email domain mimics legitimate HR domain but is different",
+        "SPF authentication fails for sender domain",
+        "Links redirect through URL shorteners to suspicious domains",
+        "Urgent language requesting immediate action"
+      ],
+      "detection_method": "Monitor email gateway for SPF/DKIM failures, analyze URLs for redirection chains, and use URL reputation services to flag suspicious domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_20",
+      "generation_timestamp": 1750029419.9519417
+    },
+    {
+      "scenario": "Staff receive urgent emails claiming their corporate mailbox storage is full and must be upgraded by clicking a provided link, which leads to a credential harvesting page.",
+      "technical_data": "The phishing message leverages urgency language and mimics the company\u2019s IT support style. The sender address uses a compromised third-party email account with a display name matching IT support. The link redirects through multiple URL shorteners to obfuscate the final destination, which hosts a fake Office 365 login page capturing credentials. The phishing page uses a valid SSL certificate obtained via free certificate authorities to evade suspicion.",
+      "indicators": [
+        "Urgent tone requesting immediate action",
+        "Sender address inconsistent with official IT support",
+        "Multiple redirects in the URL chain",
+        "Valid but recently issued SSL certificate for suspicious domain",
+        "Mismatch between link text and actual URL"
+      ],
+      "detection_method": "Analyze email headers for sender anomalies; inspect URLs for multiple redirects; verify SSL certificate issuance date and domain ownership; implement user awareness training about urgent credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1586.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_22",
+      "generation_timestamp": 1750029423.6752653
+    },
+    {
+      "scenario": "Employees receive urgent emails purportedly from HR claiming mandatory password resets due to a security breach. The email includes a link to a fake internal portal designed to capture user credentials.",
+      "technical_data": "The phishing email spoofed the HR department's address using a lookalike domain (hr-company-secure.com). The embedded link points to a URL hosted on a compromised third-party server with SSL to appear legitimate (https://hr-company-secure.com/login). The fake login page mimics the company's single sign-on interface and sends entered credentials to a remote attacker-controlled endpoint via POST requests.",
+      "indicators": [
+        "Sender domain does not match official company domains",
+        "URL uses a similar but not exact domain name",
+        "Unexpected requests for credential updates outside official communication channels"
+      ],
+      "detection_method": "Email gateway filters can detect domain spoofing and suspicious URLs. Endpoint security can flag unusual outbound POST requests to unknown domains. User training to recognize unexpected credential requests is critical.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_13",
+      "generation_timestamp": 1750029412.3548129
+    },
+    {
+      "scenario": "HR department sends a legitimate internal memo to employees reminding about updated remote work policy and links to the official intranet page.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.internal",
+          "To": "all-employees@company.internal",
+          "Subject": "Updated Remote Work Policy - Effective July 1st",
+          "Date": "2024-06-10T14:30:00Z",
+          "Message-ID": "<msg-20240610-143000@company.internal>"
+        },
+        "email_body": "Dear Colleagues,\nPlease review the updated remote work policy available at https://intranet.company.internal/hr/remote-work-policy. The policy update includes new guidelines for home office setup and cybersecurity best practices.\nRegards,\nHR Department",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T14:32:15Z",
+            "source_ip": "10.2.3.45",
+            "destination_ip": "10.2.1.10",
+            "protocol": "HTTPS",
+            "url": "https://intranet.company.internal/hr/remote-work-policy",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "status_code": 200
+          }
+        ],
+        "access_logs": [
+          {
+            "timestamp": "2024-06-10T14:32:20Z",
+            "user": "asmith",
+            "resource_accessed": "https://intranet.company.internal/hr/remote-work-policy",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from HR department verified internal domain",
+        "Link directs to official intranet site with valid HTTPS",
+        "Access logs show successful retrieval of policy page by multiple users",
+        "Communication timestamp aligns with standard business hours"
+      ],
+      "activity_type": "Internal business communication of policy update",
+      "business_justification": "HR routinely updates employees on policy changes to ensure compliance and awareness of company guidelines, supporting operational continuity and regulatory adherence.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_41",
+      "generation_timestamp": 1750029480.5462766
+    },
+    {
+      "scenario": "Internal IT sends an email to employees requesting password reset due to scheduled security policy update",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "employee@company.com",
+          "Subject": "Mandatory Password Reset - Security Policy Update",
+          "Date": "2024-06-12T09:15:00Z",
+          "Message-ID": "<ITSEC-20240612-0915@company.com>"
+        },
+        "email_body": "Dear Employee, As part of our quarterly security policy update, please reset your network password by following the secured internal link: https://intranet.company.com/password-reset. This link directs to our internal portal secured via HTTPS and requires multi-factor authentication.",
+        "network_activity": [
+          {
+            "timestamp": "2024-06-12T09:16:10Z",
+            "source_ip": "10.12.45.230",
+            "destination": "intranet.company.com",
+            "protocol": "HTTPS",
+            "action": "GET /password-reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          },
+          {
+            "timestamp": "2024-06-12T09:17:05Z",
+            "source_ip": "10.12.45.230",
+            "destination": "auth.company.com",
+            "protocol": "HTTPS",
+            "action": "POST /mfa-verify",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-12T09:17:00Z",
+            "username": "employee",
+            "event": "Password_Reset_Initiated",
+            "status": "Success",
+            "source_ip": "10.12.45.230"
+          },
+          {
+            "timestamp": "2024-06-12T09:18:00Z",
+            "username": "employee",
+            "event": "Password_Reset_Completed",
+            "status": "Success",
+            "source_ip": "10.12.45.230"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from legitimate internal IT domain",
+        "Link directs to company intranet with HTTPS",
+        "Multi-factor authentication required for password reset",
+        "Authentication logs show successful password reset without errors"
+      ],
+      "activity_type": "Legitimate IT Security Policy Enforcement",
+      "business_justification": "Periodic password resets are mandated to comply with company security policies and regulatory requirements, ensuring account integrity.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_29",
+      "generation_timestamp": 1750029448.8168166
+    },
+    {
+      "scenario": "Employees receive emails purportedly from HR department offering a new benefits portal login, containing links to a fake website designed to capture employee credentials.",
+      "technical_data": "The phishing email uses a spoofed display name 'HR Benefits Team' with a domain similar to the company's legitimate domain but with subtle typos (e.g., hr-company.com instead of hr.company.com). The email includes an embedded hyperlink pointing to a URL hosted on a newly registered domain with no legitimate SSL certificate. The fake portal mimics the company's actual benefits login page and captures credentials via a POST request to an external server controlled by attackers.",
+      "indicators": [
+        "Sender email domain mismatches official HR domain",
+        "URL contains typosquatting domain",
+        "Newly registered domain with low reputation",
+        "Unusual SSL certificate details",
+        "Unsolicited request for credential input"
+      ],
+      "detection_method": "Email filtering systems can detect domain spoofing and check URL reputation; endpoint security can monitor for connections to suspicious domains; user training can identify unexpected credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1586.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_22",
+      "generation_timestamp": 1750029423.6752653
+    },
+    {
+      "scenario": "Staff receive an urgent email from purported IT support warning of a security breach and instructing them to reset their passwords via a provided link. The link leads to a credential harvesting site mimicking the company's login page.",
+      "technical_data": "The phishing message uses urgent language and a spoofed email address it-support@company.com. The embedded hyperlink directs to a domain registered recently with SSL certificate but unrelated to the company. Submitted credentials are exfiltrated via POST requests to attacker infrastructure.",
+      "indicators": [
+        "Urgent tone requesting immediate password reset",
+        "Email sender address suspicious or fails authentication checks",
+        "Hyperlink domain unrelated or recently registered"
+      ],
+      "detection_method": "Monitor and alert on newly registered domains resembling company domains; use DMARC/DKIM/SPF to verify sender authenticity; implement web proxy solutions to block known phishing URLs.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_23",
+      "generation_timestamp": 1750029424.8829894
+    },
+    {
+      "scenario": "Employees receive an email impersonating the internal IT department announcing a mandatory security update with a link to download a patch, which is actually a credential harvesting page.",
+      "technical_data": "The email originates from an address closely resembling the official IT address but with small character substitutions (e.g., i1t@company.com). The email body includes a convincing company logo and formatting. The embedded link directs to a HTTPS site with a valid SSL certificate but with a domain unrelated to the company. The landing page mimics the corporate login portal and captures credentials upon submission.",
+      "indicators": [
+        "Sender address uses lookalike characters (e.g., '1' instead of 'l')",
+        "Use of HTTPS on non-corporate domains",
+        "Unsolicited request for credential submission",
+        "Mismatch between the sender's domain and the link domain",
+        "Unexpected email content or format deviations"
+      ],
+      "detection_method": "Advanced email filtering to detect homoglyph domains, SSL certificate inspection, URL analysis with domain reputation checks, and employee awareness training.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_5",
+      "generation_timestamp": 1750029401.1905208
+    },
+    {
+      "scenario": "HR department sends an internal memo email to employees reminding them to complete mandatory annual security awareness training",
+      "technical_data": {
+        "email_header": {
+          "from": "hr-dept@company.com",
+          "to": [
+            "all-employees@company.com"
+          ],
+          "subject": "Annual Security Awareness Training Reminder",
+          "date": "2024-06-10T08:30:00Z",
+          "message_id": "<67890.hr-dept.company.com>"
+        },
+        "email_body": "Dear colleagues, please complete the mandatory security awareness training by June 30th to comply with company policies. Access the training module via the Learning Management System at https://lms.company.com/training/security2024. Contact HR with any questions.",
+        "web_server_logs": [
+          {
+            "timestamp": "2024-06-11T14:45:22Z",
+            "user_id": "employee2",
+            "action": "ACCESS_MODULE",
+            "module_name": "security2024",
+            "status": "COMPLETED",
+            "source_ip": "10.1.8.33",
+            "device": "MacBook-Pro-16"
+          }
+        ],
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-11T14:44:59Z",
+            "source_ip": "10.1.8.33",
+            "destination_ip": "10.3.2.5",
+            "protocol": "HTTPS",
+            "destination_port": 443,
+            "bytes_transferred": 102400,
+            "user_agent": "Safari/16.0"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified HR department domain",
+        "Access to LMS over secure HTTPS with valid certificate",
+        "User activity logs show successful training module completion",
+        "No suspicious links or external domains involved"
+      ],
+      "activity_type": "Internal HR communication and employee training compliance",
+      "business_justification": "Ensures all employees receive up-to-date security training as part of organizational risk management and regulatory compliance efforts.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_27",
+      "generation_timestamp": 1750029435.2077923
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees requesting password updates as part of a quarterly security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@companydomain.com",
+          "To": "all-employees@companydomain.com",
+          "Subject": "Quarterly Password Update Reminder",
+          "Date": "2024-04-15T09:00:00Z",
+          "Message-ID": "<202404150900.it@companydomain.com>"
+        },
+        "email_body": "Dear Team, As part of our ongoing commitment to security, please update your network password by April 22nd. Use the official company portal at https://intranet.companydomain.com/password-reset. Do NOT share your credentials with anyone.",
+        "network_logs": [
+          {
+            "timestamp": "2024-04-15T09:05:23Z",
+            "source_ip": "192.168.10.15",
+            "dest_ip": "10.20.30.5",
+            "protocol": "HTTPS",
+            "url": "https://intranet.companydomain.com/password-reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "action": "User accessed password reset portal"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-04-15T09:10:50Z",
+            "user": "j.smith",
+            "auth_type": "SAML",
+            "status": "Success",
+            "source_ip": "192.168.10.15"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain",
+        "URL uses company intranet domain with valid SSL certificate",
+        "User authentication to portal completes successfully with no errors",
+        "No suspicious payload or attachment in email"
+      ],
+      "activity_type": "Routine IT security policy communication",
+      "business_justification": "Quarterly password updates are mandated by company security policy to maintain account security and comply with regulatory requirements.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_38",
+      "generation_timestamp": 1750029477.1619484
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees requesting a scheduled password reset to comply with updated security policies.",
+      "technical_data": {
+        "email_header": {
+          "from": "it-security@company.local",
+          "to": "all@company.local",
+          "subject": "Mandatory Password Reset - Security Policy Update",
+          "received_timestamp": "2024-06-15T08:30:00Z",
+          "message_id": "<20240615083000.it-security@company.local>"
+        },
+        "email_body": "Dear team, as part of our quarterly security update, please reset your network passwords by June 20th using the internal self-service portal at https://password.company.local/reset. This is a legitimate internal URL secured by company authentication mechanisms.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T08:35:10Z",
+            "source_ip": "10.20.30.45",
+            "destination_ip": "10.50.60.10",
+            "protocol": "HTTPS",
+            "url": "https://password.company.local/reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "action": "GET"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-16T09:12:30Z",
+            "username": "jdoe",
+            "authentication_method": "SSO",
+            "status": "success",
+            "source_ip": "10.20.30.45"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from valid internal IT domain",
+        "URL points to internal company resource with HTTPS and valid certificate",
+        "User authentication logs show successful login via corporate SSO",
+        "Activity timestamp aligns with scheduled password reset window"
+      ],
+      "activity_type": "Routine IT Security Communication",
+      "business_justification": "Periodic password resets are mandatory to maintain account security and comply with company information security policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_26",
+      "generation_timestamp": 1750029434.3917937
+    },
+    {
+      "scenario": "Employees receive a phishing email appearing as a security alert from the IT department warning of detected suspicious activity and prompting users to verify their accounts via a provided link.",
+      "technical_data": "Email headers show the sender IP does not match corporate mail servers, and the embedded link points to a phishing site mimicking the company\u2019s single sign-on page. The phishing page uses HTTPS with a valid but fraudulent SSL certificate obtained via a free certificate authority to appear legitimate.",
+      "indicators": [
+        "Sender IP address not in authorized mail server range",
+        "URLs use HTTPS but domain is unrelated to company",
+        "Email subject contains urgent security warning language"
+      ],
+      "detection_method": "Use SPF, DKIM, and DMARC to validate sender authenticity; inspect URLs for domain mismatches and SSL certificate details; educate users on verifying link authenticity before clicking.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1587.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_9",
+      "generation_timestamp": 1750029406.458346
+    },
+    {
+      "scenario": "Employees receive urgent security alert emails purportedly from the Security Operations Center, requesting password reset through a link to prevent account lockout.",
+      "technical_data": "The phishing email header is forged to appear from SOC@company.com, but the originating IP is external. The embedded link leads to a credential harvesting site that logs usernames and passwords. The email content includes company branding and mimics previous legitimate alerts.",
+      "indicators": [
+        "Mismatch between displayed sender name and actual sender email domain",
+        "Links in the email lead to non-corporate IP addresses",
+        "Generic greetings instead of personalized salutations"
+      ],
+      "detection_method": "Implementation of DMARC, DKIM, SPF to prevent sender spoofing; link sandboxing and URL reputation checks; anomaly detection on login patterns",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_19",
+      "generation_timestamp": 1750029417.0215397
+    },
+    {
+      "scenario": "IT department sends an internal email to employees requesting a routine password change as part of a scheduled security policy update.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:00:00Z",
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Mandatory Password Change - June 2024",
+          "Message-ID": "<1234567890@company.com>",
+          "Return-Path": "it-security@company.com",
+          "SPF": "pass",
+          "DKIM": "pass",
+          "DMARC": "pass"
+        },
+        "email_body": "Dear Team, As part of our quarterly security measures, please update your network password by June 20. Use the internal self-service portal at https://intranet.company.com/password-reset. This link is secured with our company SSO. IT will never ask for your password via email. Thank you for your cooperation.",
+        "network_activity": {
+          "user": "jane.doe@company.com",
+          "login_sequence": [
+            {
+              "event": "SSO login",
+              "timestamp": "2024-06-15T09:05:00Z",
+              "status": "success"
+            },
+            {
+              "event": "access password reset portal",
+              "timestamp": "2024-06-15T09:06:00Z",
+              "url": "https://intranet.company.com/password-reset"
+            },
+            {
+              "event": "password update",
+              "timestamp": "2024-06-15T09:07:00Z",
+              "status": "success"
+            }
+          ],
+          "network_traffic": {
+            "source_ip": "10.20.30.40",
+            "destination_ip": "10.20.30.10",
+            "protocol": "HTTPS",
+            "data_volume_kb": 15,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/113.0"
+          }
+        }
+      },
+      "indicators": [
+        "Email SPF, DKIM, DMARC all pass",
+        "Email originates from verified internal IT domain",
+        "Link points to company intranet with valid SSL certificate",
+        "User authenticated via company SSO before password change",
+        "Password update performed within secure portal",
+        "No unusual network traffic or data exfiltration"
+      ],
+      "activity_type": "Routine password update notification and user action",
+      "business_justification": "Quarterly password changes are mandated by company security policy to reduce risk of credential compromise.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_28",
+      "generation_timestamp": 1750029436.438819
+    },
+    {
+      "scenario": "IT department sends an internal email notifying employees to complete a mandatory password update via the corporate identity management portal.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:30:00Z",
+        "email_headers": {
+          "from": "it-security@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Mandatory Password Update Required by June 20",
+          "message_id": "<12345.it-security.company.com>",
+          "authentication_results": "spf=pass; dkim=pass; dmarc=pass"
+        },
+        "email_body": "Dear Employees, as part of our quarterly security policy, please update your login credentials by June 20 using the official identity management portal at https://idm.company.com. Do not share your password with anyone.",
+        "network_activity": [
+          {
+            "source_ip": "192.168.10.25",
+            "destination": "outbound-smtp.company.com",
+            "protocol": "SMTP",
+            "bytes_sent": 5120,
+            "status": "success"
+          },
+          {
+            "source_ip": "10.0.15.100",
+            "destination": "idm.company.com",
+            "protocol": "HTTPS",
+            "request": "POST /update-password",
+            "response_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "auth_flow": {
+              "username": "jsmith",
+              "auth_method": "SAML SSO",
+              "auth_status": "successful",
+              "timestamp": "2024-06-15T10:00:00Z"
+            }
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain with proper SPF, DKIM, and DMARC authentication",
+        "Link points to official company identity management portal (idm.company.com) over HTTPS",
+        "User authentication uses corporate SSO with successful status",
+        "Email sent to all employees simultaneously as part of scheduled policy update"
+      ],
+      "activity_type": "Internal IT security communication and credential update",
+      "business_justification": "Regular security policy enforcement requires users to update passwords quarterly to maintain account security and compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_35",
+      "generation_timestamp": 1750029455.5582016
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees requesting a mandatory password reset through the company\u2019s official portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Mandatory Password Reset - Action Required",
+          "Date": "2024-06-12T09:15:00Z",
+          "Message-ID": "<12345.it-support.company.com>"
+        },
+        "email_body": "Dear Team,\nAs part of our quarterly security policy, please reset your network password by logging into the official company portal at https://portal.company.com/password-reset.\nThis link directs to our secured internal system.\nThank you,\nIT Support Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-12T09:20:10Z",
+            "source_ip": "192.168.10.45",
+            "destination_ip": "10.0.0.5",
+            "protocol": "HTTPS",
+            "url": "https://portal.company.com/password-reset",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "status_code": 200
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-12T09:22:35Z",
+            "username": "jdoe",
+            "event": "password_change",
+            "source_ip": "192.168.10.45",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originated from official IT support domain",
+        "Link directs to company\u2019s secured internal portal",
+        "Successful password change recorded in authentication logs",
+        "Timestamp aligns with company-wide security policy schedule"
+      ],
+      "activity_type": "Internal IT Communication - Password Reset Notification",
+      "business_justification": "Periodic password resets are mandated by company security policy to maintain credential integrity and reduce risk of unauthorized access.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_49",
+      "generation_timestamp": 1750029501.2668874
+    },
+    {
+      "scenario": "Staff receive an urgent email from 'IT support' warning of account suspension due to suspicious activity, urging immediate credential verification through a provided link that leads to a credential phishing site.",
+      "technical_data": "Email headers show the sender IP is external and unrelated to company mail servers. The link domain is newly registered and uses HTTPS with a valid but self-signed certificate. The phishing site captures entered credentials and redirects to the legitimate company portal to avoid suspicion.",
+      "indicators": [
+        "external sender IP not matching company mail servers",
+        "newly registered domain hosting phishing page",
+        "self-signed SSL certificate",
+        "redirect to legitimate site after credential capture"
+      ],
+      "detection_method": "Analyze email headers for sender anomalies, monitor domain registrations for lookalike domains, verify SSL certificate issuers, and detect unusual redirection patterns in web traffic.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_1",
+      "generation_timestamp": 1750029392.4941916
+    },
+    {
+      "scenario": "HR department sends an internal memo requesting employees to verify their personal information in the employee self-service portal ahead of upcoming benefits enrollment.",
+      "technical_data": {
+        "timestamp": "2024-06-10T14:45:00Z",
+        "email_headers": {
+          "from": "hr-dept@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Please Verify Your Personal Information by June 25",
+          "message_id": "<67890.hr-dept.company.com>",
+          "authentication_results": "spf=pass; dkim=pass; dmarc=pass"
+        },
+        "email_body": "Dear Team, to ensure accuracy for the upcoming benefits enrollment period, please log into the employee self-service portal at https://ess.company.com and verify your personal and contact information.",
+        "network_activity": [
+          {
+            "source_ip": "192.168.10.50",
+            "destination": "outbound-smtp.company.com",
+            "protocol": "SMTP",
+            "bytes_sent": 4600,
+            "status": "success"
+          },
+          {
+            "source_ip": "10.0.20.150",
+            "destination": "ess.company.com",
+            "protocol": "HTTPS",
+            "request": "GET /profile/verify",
+            "response_code": 200,
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "auth_flow": {
+              "username": "amartin",
+              "auth_method": "OAuth 2.0",
+              "auth_status": "successful",
+              "timestamp": "2024-06-10T15:05:00Z"
+            }
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal HR domain with SPF, DKIM, and DMARC validation",
+        "URL directs to official employee self-service portal with valid SSL certificate",
+        "Authentication uses OAuth 2.0 with successful login recorded",
+        "Email sent as part of scheduled benefits administration process"
+      ],
+      "activity_type": "Internal HR communication and employee data verification",
+      "business_justification": "Accurate employee information is essential for benefits enrollment and payroll processing, necessitating periodic verification requests.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_35",
+      "generation_timestamp": 1750029455.5591998
+    },
+    {
+      "scenario": "HR sends an internal memo via email requesting employees to confirm their identity details for annual benefits enrollment verification.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Annual Benefits Enrollment - Identity Confirmation Required",
+          "Date": "2024-06-05T14:45:00Z",
+          "Message-ID": "<20240605T144500.hr-dept@company.com>"
+        },
+        "email_body": "Dear Employee,\n\nAs part of our annual benefits enrollment, please verify your identity and personal details through the secure HR portal at https://hr.company.com/verify-identity. This ensures your information is up-to-date and accurate before enrollment begins.\n\nPlease complete this by June 20, 2024.\n\nBest regards,\nHR Department",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-05T14:46:10Z",
+            "source_ip": "192.168.10.50",
+            "destination_ip": "10.0.2.33",
+            "protocol": "HTTPS",
+            "action": "email_sent",
+            "user": "hr-dept"
+          },
+          {
+            "timestamp": "2024-06-10T10:15:22Z",
+            "source_ip": "192.168.10.200",
+            "destination_ip": "10.0.2.33",
+            "protocol": "HTTPS",
+            "action": "identity_verification",
+            "user": "michael.smith"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-10T10:15:00Z",
+            "user": "michael.smith",
+            "auth_method": "MFA",
+            "status": "success",
+            "source_ip": "192.168.10.200"
+          }
+        ],
+        "application_logs": [
+          {
+            "timestamp": "2024-06-10T10:15:25Z",
+            "user": "michael.smith",
+            "operation": "update_personal_info",
+            "status": "completed"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified HR domain",
+        "URL points to official HR internal portal",
+        "User authenticated with multi-factor authentication",
+        "User activity includes successful update of personal details"
+      ],
+      "activity_type": "Internal verification process for benefits enrollment",
+      "business_justification": "HR routinely verifies employee identity details annually to ensure accurate benefits provisioning.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_37",
+      "generation_timestamp": 1750029465.2724445
+    },
+    {
+      "scenario": "Staff receive an email that appears to be from the IT helpdesk notifying them of a security breach and instructing them to reset their passwords via a link, which leads to a cloned internal portal designed to steal credentials.",
+      "technical_data": "The phishing email originates from a compromised third-party service with a similar domain to the company's IT helpdesk. The embedded link points to an IP address hosting a website with a copied login form. The SSL certificate is self-signed and invalid, but this is often overlooked by users.",
+      "indicators": [
+        "Sender domain slightly altered or from third-party compromised service",
+        "Link resolves to IP address instead of domain name",
+        "Invalid or self-signed SSL certificate on login page",
+        "Mismatch between sender display name and email address"
+      ],
+      "detection_method": "Implement email filtering to detect domain impersonation, inspect links for IP addresses, and enforce SSL certificate validation alerts in browsers and security tools.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_20",
+      "generation_timestamp": 1750029419.95295
+    },
+    {
+      "scenario": "Staff receive calendar invites appearing to be from internal IT that include a URL prompting users to authenticate to review urgent system updates, leading to credential harvesting sites.",
+      "technical_data": "Phishing messages are disguised as meeting invites from it-support@company.com with a link to a cloned Microsoft 365 login page hosted on a recently registered domain with SSL certificates to avoid suspicion. The harvested credentials are sent via encrypted POST requests to attacker-controlled infrastructure.",
+      "indicators": [
+        "Unexpected calendar invites from unfamiliar internal addresses",
+        "Login URL domain does not match official corporate domains",
+        "Use of HTTPS on suspicious domains",
+        "Requests for credentials outside normal corporate portals"
+      ],
+      "detection_method": "Monitoring calendar invite sources for anomalies, URL analysis for domain registration data and SSL certificate validity, and correlation with known phishing domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1204.002"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_6",
+      "generation_timestamp": 1750029403.4346337
+    },
+    {
+      "scenario": "IT department sends a scheduled email to all employees reminding them to update their passwords via the official internal portal",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@company.internal",
+          "To": "all-employees@company.internal",
+          "Date": "2024-06-15T09:00:00Z",
+          "Subject": "Reminder: Password Update Required by June 20th",
+          "Message-ID": "<202406150900.it-support@company.internal>"
+        },
+        "email_body": "Dear Team, as part of our quarterly security policy, please update your passwords using the official company portal at https://internal.company.portal/password-update. Do not respond to emails requesting credentials. Regards, IT Security Team.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:00:05Z",
+            "source_ip": "10.10.5.12",
+            "destination_ip": "10.10.5.255",
+            "protocol": "SMTP",
+            "action": "Email sent from mailserver.company.internal"
+          }
+        ],
+        "user_activity_logs": [
+          {
+            "user": "j.smith",
+            "timestamp": "2024-06-15T09:30:00Z",
+            "action": "Login",
+            "system": "internal.company.portal",
+            "auth_method": "SSO",
+            "status": "Success"
+          },
+          {
+            "user": "j.smith",
+            "timestamp": "2024-06-15T09:32:15Z",
+            "action": "PasswordChange",
+            "system": "internal.company.portal",
+            "status": "Success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from internal company mail server with valid DKIM signatures",
+        "Link points to official internal domain with valid SSL certificate",
+        "User login and password change recorded shortly after email received",
+        "No suspicious IP addresses or unauthorized access attempts"
+      ],
+      "activity_type": "Internal IT communication and user credential update",
+      "business_justification": "Regular security protocol requires employees to update passwords quarterly to maintain account security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_46",
+      "generation_timestamp": 1750029495.1375313
+    },
+    {
+      "scenario": "IT department sends an internal email to employees requesting password update as part of scheduled security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.internal",
+          "To": "all-employees@company.internal",
+          "Subject": "Mandatory Password Update - Security Compliance",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<msg-20240615-090000@company.internal>"
+        },
+        "email_body": "Dear Team,\nAs part of our quarterly security compliance, please update your network login password by June 20th. Use the internal portal at https://portal.company.internal/password-change. This link is secured with our company SSO.\nThank you,\nIT Security Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:12Z",
+            "source_ip": "10.1.5.20",
+            "destination_ip": "10.1.1.5",
+            "protocol": "HTTPS",
+            "url": "https://portal.company.internal/password-change",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "status_code": 200
+          },
+          {
+            "timestamp": "2024-06-15T09:06:30Z",
+            "user": "jdoe",
+            "action": "password_change",
+            "result": "success"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:06:00Z",
+            "user": "jdoe",
+            "source_ip": "10.1.5.20",
+            "event": "login_success",
+            "auth_method": "SSO"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT address",
+        "Link uses internal SSO and HTTPS with valid certificate",
+        "Password change logged successfully in authentication logs",
+        "Access from corporate IP range during business hours"
+      ],
+      "activity_type": "Internal security communication and password update",
+      "business_justification": "Routine security compliance requires employees to update passwords quarterly to maintain account security and reduce risk of credential compromise.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_41",
+      "generation_timestamp": 1750029480.545286
+    },
+    {
+      "scenario": "Employees receive emails appearing to be from internal IT support requesting password resets via a hyperlink to a fake internal portal.",
+      "technical_data": "The email headers reveal the message originated from an external IP address with a forged 'From' field to appear internal. The included hyperlink uses a URL shortening service that redirects to a credential harvesting site designed to look identical to the company\u2019s actual password reset page. The phishing site captures credentials and session cookies.",
+      "indicators": [
+        "Discrepancy between 'From' header IP and legitimate internal mail server IPs",
+        "Use of URL shortener in internal IT communication",
+        "Mismatch in TLS certificate domain for the link",
+        "Unusual login attempt patterns following email receipt"
+      ],
+      "detection_method": "Implement SPF, DKIM, and DMARC to prevent spoofing; inspect URLs for shortening services and verify SSL certificates; monitor for anomalous login activities; conduct user awareness training.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_8",
+      "generation_timestamp": 1750029403.401631
+    },
+    {
+      "scenario": "Employees receive an email from 'it-support@company.com' instructing them to verify their account due to suspicious activity, containing a link to a fake login page that captures credentials.",
+      "technical_data": "The phishing email is crafted with a spoofed sender address matching the internal IT domain but sent from an external IP. The email includes a URL that looks like a legitimate company portal (e.g., https://company-portal.verify-it.com/login) but resolves to an attacker-controlled server. The fake login page mimics the company's standard authentication page and sends entered credentials via POST requests to the attacker's backend.",
+      "indicators": [
+        "Sender domain does not match actual company mail servers",
+        "URL contains unusual subdomains and does not resolve to company IP ranges",
+        "Email requests credential verification via a link rather than internal tools"
+      ],
+      "detection_method": "Monitor email gateway for spoofed internal addresses, analyze URLs for suspicious subdomains and domain reputation, and implement URL rewriting to block known malicious links. User training to recognize legitimate credential requests is also essential.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1598"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_14",
+      "generation_timestamp": 1750029412.204681
+    },
+    {
+      "scenario": "Employees receive an internal-looking email from IT Support requesting immediate password resets due to a 'security breach'. The message includes a link to a fake password reset portal designed to capture current credentials.",
+      "technical_data": "The phishing email uses a display name matching the IT Support team but originates from an external email address with a similar but fraudulent domain (e.g., it-support-secure.com). The embedded URL directs users to a phishing site hosted on a compromised web server with a domain resembling the corporate domain via typosquatting. The fake portal mimics the company\u2019s official password reset page, capturing credentials and session tokens.",
+      "indicators": [
+        "Mismatch between display name and sender email domain",
+        "URL contains typosquatting domain names",
+        "Unexpected password reset requests without prior notification",
+        "Phishing site served over HTTP or with invalid SSL certificates"
+      ],
+      "detection_method": "Deploy DMARC, DKIM, and SPF to prevent email spoofing; use URL filtering and DNS inspection to detect typosquatting domains; analyze web traffic for unusual access to password reset pages; educate employees to verify password reset requests through known channels.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1110"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_12",
+      "generation_timestamp": 1750029409.836198
+    },
+    {
+      "scenario": "Employees receive emails purportedly from the HR department requesting immediate verification of payroll information via a provided link. The link directs users to a fake login page mimicking the corporate HR portal to capture credentials.",
+      "technical_data": "Phishing email spoofing HR email address with a subject line 'Urgent Payroll Update Required'. The embedded URL uses a domain similar to the legitimate HR portal but with slight character substitutions (e.g., hr-payro1.com). The fake login page captures submitted usernames and passwords and forwards them to an attacker-controlled server.",
+      "indicators": [
+        "Sender email domain does not exactly match official HR domain",
+        "Suspicious URL with homograph characters",
+        "Unusual urgency and request for credential input via link"
+      ],
+      "detection_method": "Email filtering that checks SPF, DKIM, and DMARC records; URL analysis for homograph or typosquatting domains; user training to recognize spoofed HR communications.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_0",
+      "generation_timestamp": 1750029395.2279332
+    },
+    {
+      "scenario": "Internal IT team sends a scheduled email to employees reminding them to update their passwords via the official company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Password Update Reminder - Action Required",
+          "Date": "2024-06-15T08:30:00Z",
+          "Message-ID": "<202406150830.it-security@company.com>"
+        },
+        "email_body": "Dear Team,\n\nAs part of our quarterly security policy, please update your password by logging into the official company portal at https://portal.company.com.\n\nDo not respond to this email or click on any links that do not originate from this domain.\n\nThank you,\nIT Security Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T08:31:15Z",
+            "source_ip": "192.168.12.45",
+            "destination_ip": "10.10.10.5",
+            "protocol": "SMTP",
+            "action": "Email sent"
+          },
+          {
+            "timestamp": "2024-06-15T08:35:42Z",
+            "user": "jdoe",
+            "authentication_method": "SAML",
+            "authentication_result": "Success",
+            "source_ip": "192.168.12.100",
+            "service": "portal.company.com",
+            "event": "User logged in to password update page"
+          }
+        ],
+        "system_events": [
+          {
+            "timestamp": "2024-06-15T08:40:00Z",
+            "event_type": "Password Change",
+            "user": "jdoe",
+            "result": "Success",
+            "source_ip": "192.168.12.100"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from corporate IT domain",
+        "Link points to official company portal with valid SSL certificate",
+        "User authentication via SAML successful",
+        "Password change event logged and completed successfully"
+      ],
+      "activity_type": "Routine IT security communication and password update",
+      "business_justification": "Quarterly password updates are mandated by company security policy to maintain account security and regulatory compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_39",
+      "generation_timestamp": 1750029463.3742707
+    },
+    {
+      "scenario": "Employees receive an email from a spoofed internal HR address requesting immediate verification of personal information through a provided link.",
+      "technical_data": "The email is crafted to mimic HR communications with a similar domain but uses a lookalike domain with a slight misspelling (e.g., hr-company.com vs hrcompany.com). The embedded link directs users to a credential harvesting page mimicking the company\u2019s employee portal login page. The phishing page captures submitted usernames and passwords and sends them to an attacker-controlled server.",
+      "indicators": [
+        "Sender email domain differs from official HR domain by one character",
+        "Link URL domain does not match company domain",
+        "Urgent language demanding immediate action",
+        "Login page design discrepancies from official portal"
+      ],
+      "detection_method": "Email gateway filters for domain spoofing and URL reputation; user training to recognize urgent phishing attempts; anomaly detection on login portal accesses from unusual IPs or geolocations.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1598"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_8",
+      "generation_timestamp": 1750029403.401631
+    },
+    {
+      "scenario": "Employees receive emails appearing to be from the CFO requesting urgent wire transfer approvals, containing links to fake invoice documents.",
+      "technical_data": "The phishing emails use spoofed sender addresses closely resembling the CFO\u2019s real email, with subject lines like 'Urgent: Wire Transfer Approval Needed'. Links redirect to a cloned corporate portal hosting a JavaScript keylogger to capture credentials.",
+      "indicators": [
+        "Sender email domain mimics corporate domain with slight misspellings",
+        "Urgency and pressure language in the email body",
+        "Links redirect to IP addresses not associated with corporate infrastructure"
+      ],
+      "detection_method": "Email filtering for domain spoofing and anomaly detection on email content; URL analysis for redirection to non-corporate IPs; monitoring for unusual login attempts post-email distribution.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_11",
+      "generation_timestamp": 1750029407.9559715
+    },
+    {
+      "scenario": "HR department shares an internal memo via company email to all employees outlining updated leave policy procedures.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Updated Leave Policy Effective July 1st",
+          "Date": "2024-06-15T14:45:00Z",
+          "Message-ID": "<202406151445.hr@company.com>"
+        },
+        "email_body": "Dear Colleagues, Please review the attached document outlining the revised leave policies effective July 1st. For any questions, contact HR via hr-support@company.com.",
+        "attachment": {
+          "filename": "Leave_Policy_2024.pdf",
+          "hash_sha256": "3a1f9b8c7d2e5a9b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b"
+        },
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T14:47:00Z",
+            "source_ip": "192.168.15.45",
+            "destination_ip": "10.1.5.20",
+            "protocol": "SMTP",
+            "email_size_bytes": 154000,
+            "user_agent": "Microsoft Outlook 365"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified HR department address with valid DKIM signature",
+        "Attachment matches expected document type and size",
+        "Distribution list includes all company employees",
+        "Communication aligns with normal HR policy update schedule"
+      ],
+      "activity_type": "Internal HR Policy Announcement via Email",
+      "business_justification": "Standard internal communication to inform employees of important policy changes ensuring compliance and awareness.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_47",
+      "generation_timestamp": 1750029495.8148293
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees requesting routine password updates with a link to the official company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all@company.com",
+          "Subject": "Mandatory Password Update - Action Required",
+          "Date": "2024-06-12T09:15:00Z",
+          "Message-ID": "<202406120915.it-security@company.com>"
+        },
+        "email_body": "Dear Team, as part of our quarterly security policy, please update your login credentials by July 1st using the company portal at https://portal.company.com/password-reset. This is a legitimate request initiated by IT Security.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-12T09:16:20Z",
+            "source_ip": "10.1.2.45",
+            "destination_ip": "10.1.2.10",
+            "protocol": "SMTP",
+            "action": "email_sent",
+            "user": "it-security@company.com"
+          },
+          {
+            "timestamp": "2024-06-12T09:20:45Z",
+            "source_ip": "10.1.3.22",
+            "destination_domain": "portal.company.com",
+            "protocol": "HTTPS",
+            "action": "page_accessed",
+            "user": "employee123",
+            "status_code": 200
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-12T09:21:00Z",
+            "user": "employee123",
+            "auth_method": "SSO",
+            "result": "success",
+            "source_ip": "10.1.3.22"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from official IT domain",
+        "Link directs to company internal portal with valid SSL certificate",
+        "Employees authenticate successfully via single sign-on",
+        "No suspicious payload or attachments in email",
+        "Activity aligns with scheduled quarterly password update policy"
+      ],
+      "activity_type": "Legitimate internal IT security communication",
+      "business_justification": "Quarterly password updates are standard security practice to maintain account integrity and comply with company policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_33",
+      "generation_timestamp": 1750029450.8665533
+    },
+    {
+      "scenario": "HR department sends an internal announcement email informing employees about the upcoming mandatory security awareness training and includes a link to the official training portal.",
+      "technical_data": {
+        "timestamp": "2024-06-20T14:00:00Z",
+        "email": {
+          "from": "hr@company.internal",
+          "to": "all-employees@company.internal",
+          "subject": "Mandatory Security Awareness Training Enrollment",
+          "headers": {
+            "Received-SPF": "pass (company.internal: domain of hr@company.internal designates 192.168.10.8 as permitted sender)",
+            "DKIM-Signature": "valid",
+            "Message-ID": "<202406201400.hr@company.internal>"
+          },
+          "body": "Dear Team,\n\nPlease register for the mandatory security awareness training scheduled next month. Access the training portal here:\n\nhttps://training.company.internal/security-awareness\n\nBest regards,\nHR Department"
+        },
+        "network_activity": {
+          "source_ip": "192.168.10.8",
+          "destination_ips": [
+            "192.168.20.100",
+            "192.168.20.105"
+          ],
+          "protocol": "SMTP",
+          "port": 587,
+          "encryption": "TLS"
+        },
+        "user_behavior": {
+          "portal_access_events": [
+            {
+              "user": "mbrown",
+              "timestamp": "2024-06-20T14:15:00Z",
+              "action": "accessed_training_portal",
+              "url": "https://training.company.internal/security-awareness"
+            },
+            {
+              "user": "klee",
+              "timestamp": "2024-06-20T14:20:00Z",
+              "action": "accessed_training_portal",
+              "url": "https://training.company.internal/security-awareness"
+            }
+          ],
+          "authentication_events": [
+            {
+              "user": "mbrown",
+              "timestamp": "2024-06-20T14:14:55Z",
+              "method": "corporate SSO",
+              "result": "success"
+            },
+            {
+              "user": "klee",
+              "timestamp": "2024-06-20T14:19:50Z",
+              "method": "corporate SSO",
+              "result": "success"
+            }
+          ]
+        }
+      },
+      "indicators": [
+        "Email sent from authenticated HR internal domain with valid SPF and DKIM",
+        "Training portal URL is hosted on official internal domain with valid SSL certificate",
+        "Users authenticate through corporate single sign-on before accessing portal",
+        "No evidence of phishing or suspicious link redirections"
+      ],
+      "activity_type": "Internal HR communication for employee training enrollment",
+      "business_justification": "Mandatory company-wide security training is scheduled to improve employee awareness and reduce risk of social engineering attacks.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_36",
+      "generation_timestamp": 1750029465.4812155
+    },
+    {
+      "scenario": "Employees receive emails that appear to come from internal HR department requesting verification of personal information via a provided link.",
+      "technical_data": "The phishing email uses a spoofed display name matching the HR department and includes a link to a fake internal portal hosted on a domain similar to the company\u2019s but with a slight typo (e.g., companyname-secure.com). The linked page mimics the corporate login page and captures entered credentials.",
+      "indicators": [
+        "Sender email address uses a domain similar but not identical to official company domain",
+        "URL contains typosquatting or unexpected subdomains",
+        "Email urges immediate action to avoid account suspension"
+      ],
+      "detection_method": "Email filtering to detect domain spoofing and URL analysis for typosquatting; user training to recognize social engineering cues; endpoint monitoring for unusual login attempts",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_19",
+      "generation_timestamp": 1750029417.0215397
+    },
+    {
+      "scenario": "HR department sends an internal memo to employees reminding them to complete annual identity verification through the company intranet portal.",
+      "technical_data": {
+        "timestamp": "2024-06-10T14:30:00Z",
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Annual Identity Verification Reminder",
+          "Message-ID": "<202406101430.hr-dept@company.com>",
+          "Authentication-Results": "spf=pass (sender SPF authorized) smtp.mailfrom=company.com; dkim=pass header.d=company.com"
+        },
+        "email_body": "Hello Team,\n\nPlease complete your annual identity verification by logging into the HR portal at https://intranet.company.com/hr/verify before June 30th. This process ensures compliance with regulatory requirements and maintains accurate personnel records.\n\nBest,\nHR Department",
+        "network_traffic": {
+          "source_ip": "192.168.20.50",
+          "destination_ip": "10.10.10.8",
+          "protocol": "HTTPS",
+          "url": "https://intranet.company.com/hr/verify",
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        },
+        "user_activity_log": {
+          "user": "employee456",
+          "action": "completed_identity_verification",
+          "timestamp": "2024-06-10T15:05:45Z",
+          "source_ip": "192.168.20.50",
+          "status": "completed"
+        }
+      },
+      "indicators": [
+        "Email domain matches company official domain with valid SPF and DKIM",
+        "Link points to internal HR portal secured by HTTPS",
+        "User activity logs confirm successful completion of identity verification",
+        "Communication aligns with annual HR compliance schedule",
+        "No presence of unusual or suspicious URL redirects"
+      ],
+      "activity_type": "routine HR administrative communication",
+      "business_justification": "Annual identity verification is required for compliance and employee record accuracy.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_32",
+      "generation_timestamp": 1750029449.7282157
+    },
+    {
+      "scenario": "Staff receive a message appearing to come from the IT helpdesk about a mandatory software update, containing a link to a fake update portal designed to steal credentials.",
+      "technical_data": "The phishing email includes a spoofed sender address using display name impersonation. The link directs to a HTTPS site with a valid but fraudulent SSL certificate obtained via a free certificate authority. The page requests login credentials to 'authorize' the software update.",
+      "indicators": [
+        "Sender display name matches IT helpdesk but email address is suspicious",
+        "URL uses an uncommon subdomain and domain unrelated to corporate infrastructure",
+        "Unexpected request for credentials to install updates"
+      ],
+      "detection_method": "Implement DMARC/DKIM/ SPF to detect spoofed senders, URL sandboxing to analyze redirect behavior, and user training to recognize unusual update requests.",
+      "relevant_mitre_techniques": [
+        "T1566"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_4",
+      "generation_timestamp": 1750029397.6279333
+    },
+    {
+      "scenario": "Employees receive an email purportedly from HR with a link to a 'mandatory benefits enrollment' portal, which is a fake site designed to capture employee credentials.",
+      "technical_data": "The email originates from a domain similar to the company\u2019s but with slight misspellings (e.g., hr-companyname.com instead of hr.companyname.com). The malicious link redirects users to a phishing site mimicking the official HR portal login page. The phishing site captures entered credentials and sends them to an attacker-controlled server.",
+      "indicators": [
+        "Sender email domain uses slight typosquatting",
+        "URL link redirects to non-company domain",
+        "Urgent language prompting immediate action",
+        "SSL certificate on phishing site is self-signed or invalid"
+      ],
+      "detection_method": "Email filtering solutions analyze sender domain and link URLs for typosquatting and known malicious domains; web proxy logs detect access to suspicious URLs; user reports of unexpected credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_7",
+      "generation_timestamp": 1750029401.6454833
+    },
+    {
+      "scenario": "Employee receives a legitimate internal memo email regarding upcoming changes to remote access VPN configurations",
+      "technical_data": {
+        "email_headers": {
+          "From": "network-admin@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Upcoming VPN Configuration Update Scheduled for June 20",
+          "Date": "2024-06-10T14:00:00Z",
+          "Message-ID": "<NETADMIN-20240610-1400@company.com>"
+        },
+        "email_body": "Attention all employees: The IT department will be updating the VPN client configuration on June 20 to enhance security protocols. No action required on your part. Please ensure your devices are online for automatic updates.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-20T02:00:00Z",
+            "device_id": "employee-laptop-4578",
+            "event": "VPN_Client_Update_Started",
+            "source_ip": "10.12.45.230",
+            "destination": "vpn-update-server.company.com",
+            "protocol": "HTTPS"
+          },
+          {
+            "timestamp": "2024-06-20T02:05:00Z",
+            "device_id": "employee-laptop-4578",
+            "event": "VPN_Client_Update_Completed",
+            "status": "Success"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-20T02:01:00Z",
+            "service": "VPNClient",
+            "message": "Configuration file updated to version 3.2.1"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified network administration address",
+        "Update logs indicate successful deployment without errors",
+        "No unexpected network destinations or suspicious protocols",
+        "Update occurs during scheduled maintenance window"
+      ],
+      "activity_type": "Routine IT Infrastructure Update Communication and Execution",
+      "business_justification": "Regular VPN client updates improve security posture and user connectivity, communicated in advance to avoid user confusion.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_29",
+      "generation_timestamp": 1750029448.8177712
+    },
+    {
+      "scenario": "HR sends an internal memo via email to employees confirming scheduled mandatory security awareness training sessions with login instructions.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Upcoming Security Awareness Training - Please Register",
+          "Date": "2024-06-15T14:00:00Z",
+          "Message-ID": "<67890.hr.company.com>"
+        },
+        "email_body": "Dear Colleagues,\nAs part of our ongoing commitment to cybersecurity, all employees are required to complete the Security Awareness Training by June 30, 2024.\nPlease register and log in at https://training.company.com/login using your company credentials.\nThank you for your cooperation.\nHR Department",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T14:05:20Z",
+            "source_ip": "192.168.11.33",
+            "destination_ip": "10.0.1.10",
+            "protocol": "HTTPS",
+            "url": "https://training.company.com/login",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "status_code": 200
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T14:06:05Z",
+            "username": "asmith",
+            "event": "login",
+            "source_ip": "192.168.11.33",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from official HR domain",
+        "Link points to company\u2019s verified training portal",
+        "User login events correspond to training portal access",
+        "Training deadlines align with internal compliance schedule"
+      ],
+      "activity_type": "Internal HR Communication - Security Training Announcement",
+      "business_justification": "Mandatory security training is part of ongoing employee education to enhance awareness and reduce social engineering risks.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_49",
+      "generation_timestamp": 1750029501.2668874
+    },
+    {
+      "scenario": "Staff receive a message appearing to be from the IT helpdesk indicating a critical password reset is required due to a security breach, containing a link to a fake login portal.",
+      "technical_data": "The phishing email uses urgent language and includes a link with a URL that closely resembles the company\u2019s single sign-on portal but is hosted on a separate domain. The fake portal captures credentials and uses JavaScript to prevent users from noticing the URL redirect. The email headers reveal discrepancies between the sender address and the mail server IP.",
+      "indicators": [
+        "Urgent language prompting immediate action",
+        "Link URL differs from legitimate portal domain",
+        "Discrepancies in email header originating IP addresses"
+      ],
+      "detection_method": "Monitor for anomalous email sending sources and verify links via URL reputation services. Use user training to recognize phishing tactics. Employ web proxies to block access to known phishing domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_21",
+      "generation_timestamp": 1750029422.0896256
+    },
+    {
+      "scenario": "Internal IT sends a scheduled email notification to employees about upcoming mandatory credential update procedures with secure links to the official company portal.",
+      "technical_data": {
+        "email_header": {
+          "from": "it-support@company.com",
+          "to": "employee@company.com",
+          "subject": "Mandatory Credential Update Notification - Action Required",
+          "date": "2024-06-15T09:00:00Z",
+          "message_id": "<12345.it-support.company.com>"
+        },
+        "email_body": "Dear Employee, as part of our regular security maintenance, please update your login credentials by June 20th via the secure company portal: https://portal.company.com/credential-update. This link directs to an internal domain with valid TLS certificate.",
+        "network_traffic": {
+          "source_ip": "192.168.10.5",
+          "destination_ip": "10.1.2.15",
+          "protocol": "HTTPS",
+          "port": 443,
+          "tls_certificate": {
+            "issuer": "Company Internal CA",
+            "valid_until": "2025-01-01T00:00:00Z"
+          }
+        },
+        "user_activity": {
+          "user": "employee@company.com",
+          "login_timestamp": "2024-06-15T09:05:00Z",
+          "action": "clicked credential update link",
+          "portal_access": "https://portal.company.com/credential-update",
+          "authentication_method": "SAML SSO",
+          "auth_status": "success"
+        }
+      },
+      "indicators": [
+        "email sent from verified internal IT domain",
+        "link domain matches official company portal",
+        "TLS certificate issued by internal trusted CA",
+        "user authentication via corporate SSO with success",
+        "email timestamp aligns with scheduled security announcements"
+      ],
+      "activity_type": "Legitimate internal IT communication for security compliance",
+      "business_justification": "Periodic credential updates are standard security best practices to maintain account integrity and comply with company IT policy.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_30",
+      "generation_timestamp": 1750029443.3679235
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees reminding them to update their passwords via the official company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Mandatory Password Update Reminder",
+          "Date": "2024-06-10T09:00:00Z",
+          "Message-ID": "<msg-12345@company.com>"
+        },
+        "email_body": "Dear Team, as part of our quarterly security policy, please update your passwords by visiting https://portal.company.com/password-update within the next 7 days. Do not respond to this email with credentials. Thank you, IT Support.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T09:01:15Z",
+            "source_ip": "192.168.1.45",
+            "destination_ip": "10.20.30.40",
+            "protocol": "HTTPS",
+            "bytes_sent": 512,
+            "bytes_received": 1024,
+            "url_accessed": "https://portal.company.com/password-update"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-10T09:05:30Z",
+            "user": "jdoe",
+            "action": "login",
+            "source_ip": "192.168.1.45",
+            "status": "success",
+            "method": "2FA"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT domain",
+        "URL is company official portal with valid SSL certificate",
+        "User login to official portal with multi-factor authentication",
+        "No anomalous network traffic or data exfiltration observed"
+      ],
+      "activity_type": "Internal IT Security Communication",
+      "business_justification": "Periodic password updates are required by company security policies to maintain account security and comply with regulatory standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_34",
+      "generation_timestamp": 1750029456.466138
+    },
+    {
+      "scenario": "HR department sends an official company-wide announcement email reminding employees of the upcoming scheduled downtime for cloud service maintenance.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Scheduled Cloud Service Maintenance Notification",
+          "Date": "2024-06-10T15:00:00Z",
+          "Message-ID": "<20240610150000.hr-dept@company.com>"
+        },
+        "email_body": "Dear colleagues, please be advised that the cloud infrastructure supporting our CRM platform will undergo maintenance on June 18, 2024, between 02:00 and 04:00 UTC. During this time, access to the platform may be temporarily unavailable. Thank you for your understanding.",
+        "cloud_logs": [
+          {
+            "timestamp": "2024-06-10T15:05:00Z",
+            "service": "AWS CloudWatch",
+            "event": "MaintenanceScheduled",
+            "details": {
+              "resource": "crm-platform-instance",
+              "start_time": "2024-06-18T02:00:00Z",
+              "end_time": "2024-06-18T04:00:00Z",
+              "maintenance_type": "Planned"
+            }
+          }
+        ],
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-10T15:00:05Z",
+            "source_ip": "10.1.1.20",
+            "destination_ip": "192.168.10.255",
+            "protocol": "SMTP",
+            "email_size": 1450,
+            "subject": "Scheduled Cloud Service Maintenance Notification"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified HR department domain",
+        "Message-ID consistent with internal mail server policies",
+        "CloudWatch log confirms scheduled maintenance event",
+        "Maintenance window aligns with planned operational procedures",
+        "Email distributed company-wide as part of routine operational communications"
+      ],
+      "activity_type": "Internal operational announcement and cloud service maintenance notification",
+      "business_justification": "Informing employees proactively about planned service interruptions to minimize disruption and maintain transparency.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_42",
+      "generation_timestamp": 1750029487.2037277
+    },
+    {
+      "scenario": "IT department sends an internal email to employees requesting a scheduled password reset to comply with security policies",
+      "technical_data": {
+        "email_header": {
+          "from": "it-security@company.com",
+          "to": [
+            "employee1@company.com",
+            "employee2@company.com",
+            "employee3@company.com"
+          ],
+          "subject": "Mandatory Password Reset - Security Compliance",
+          "date": "2024-06-15T09:00:00Z",
+          "message_id": "<12345.it-security.company.com>"
+        },
+        "email_body": "Dear team, as part of our quarterly security policy update, please reset your network password by end of day June 20th using the official company portal at https://portal.company.com/password-reset. Do not use links from other emails. Regards, IT Security Team.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:00Z",
+            "source_ip": "10.1.5.22",
+            "destination_ip": "10.2.1.10",
+            "protocol": "TCP",
+            "destination_port": 443,
+            "action": "ALLOW",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-16T10:15:00Z",
+            "username": "employee1",
+            "auth_method": "SAML",
+            "status": "SUCCESS",
+            "source_ip": "10.1.5.22",
+            "device": "Windows-10-Laptop"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified internal IT domain",
+        "Link directs to official company portal with valid SSL certificate",
+        "User accesses password reset page via corporate network IP range",
+        "Successful multi-factor authentication logged after password reset"
+      ],
+      "activity_type": "Internal IT security communication and user credential update",
+      "business_justification": "Routine security policy enforcement requiring periodic password changes to maintain account integrity and compliance with corporate cybersecurity standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_27",
+      "generation_timestamp": 1750029435.2067916
+    },
+    {
+      "scenario": "Employees receive emails purportedly from HR requesting immediate verification of payroll details via a provided link, which leads to a fake login page capturing employee credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@company.com and includes a link with a domain similar to the company's official site but with subtle typos (e.g., company-payroll.com). The fake login page mimics the company\u2019s internal HR portal and transmits entered credentials to an external attacker-controlled server via HTTP POST requests.",
+      "indicators": [
+        "Sender email domain mismatch (hr@company-secure.com instead of hr@company.com)",
+        "URL contains misspelled company name and uses HTTP instead of HTTPS",
+        "Urgent language prompting immediate action"
+      ],
+      "detection_method": "Email filtering rules to detect domain spoofing, URL reputation services to identify suspicious domains, and user training to recognize urgent requests with external links.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_10",
+      "generation_timestamp": 1750029406.8919327
+    },
+    {
+      "scenario": "Staff receive an email claiming to be from the internal IT support team about a critical security update, urging them to click a link to verify their credentials on a fake login page.",
+      "technical_data": "The email is sent from a compromised third-party email server but spoofed to appear as internal IT. The malicious link uses URL shortening services to obscure the final destination. The fake login page is hosted on a cloud service with a domain unrelated to the company, designed to harvest usernames and passwords.",
+      "indicators": [
+        "Email headers show discrepancy between sender display name and actual sending domain",
+        "Shortened URL masking the destination",
+        "Unusual login page URL not matching corporate domain",
+        "Generic greeting without personalization"
+      ],
+      "detection_method": "Analyze email header anomalies for spoofing, expand and inspect shortened URLs, use DNS reputation services to evaluate destination domains, and monitor for credential submission to unrecognized endpoints.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_7",
+      "generation_timestamp": 1750029401.6454833
+    },
+    {
+      "scenario": "Employees receive emails purportedly from HR containing urgent requests to verify personal information for benefits enrollment. The emails include links to a fake login portal designed to capture credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@company.com and includes a link to a URL closely mimicking the company's legitimate HR portal (e.g., hr-verify.company.com). The fake login page captures submitted usernames and passwords and sends them to an external server controlled by attackers.",
+      "indicators": [
+        "Sender email domain differs slightly from official HR domain",
+        "URL contains subtle misspellings or additional subdomains",
+        "Unexpected request for personal information via email link"
+      ],
+      "detection_method": "Email filtering solutions flag domain spoofing and mismatched SPF/DKIM records; URL scanning detects suspicious domains; user training on recognizing unexpected credential requests.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_23",
+      "generation_timestamp": 1750029424.8819904
+    },
+    {
+      "scenario": "Staff receive an email claiming to be from the internal IT helpdesk, informing them of a security breach and instructing them to reset their corporate email password via a link provided. The link leads to a credential harvesting site designed to look like the official login portal.",
+      "technical_data": "The phishing email originates from a compromised external domain using display name 'IT Helpdesk'. The embedded hyperlink uses a URL shortening service that redirects to a cloned login page hosted on a suspicious IP address. The credentials submitted are logged and exfiltrated to a remote attacker server.",
+      "indicators": [
+        "Email sender address differs from official IT helpdesk domain",
+        "Use of URL shortening masking the final destination",
+        "Login page certificate mismatch and unusual domain registration details"
+      ],
+      "detection_method": "Monitor for unusual email sender patterns, analyze URLs behind shorteners for known malicious destinations, validate SSL certificates on login pages, and educate employees about verifying URL authenticity.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_0",
+      "generation_timestamp": 1750029395.2279332
+    },
+    {
+      "scenario": "Staff receive an email allegedly from IT support stating that their mailbox storage is over quota and instructing them to log in through a provided link to increase their storage limit. The link directs to a credential harvesting site designed to capture corporate login details.",
+      "technical_data": "The phishing email features an official-looking template with logos and contact details but contains mismatched URLs where the displayed link points to a legitimate internal portal, but the actual hyperlink redirects to an attacker-controlled domain (e.g., it-support-secure.com). The fake site is hosted on a compromised server with a valid SSL certificate to appear trustworthy.",
+      "indicators": [
+        "Discrepancy between displayed link and actual URL",
+        "Use of SSL on suspicious external domains",
+        "Unexpected mailbox quota warnings"
+      ],
+      "detection_method": "URL hyperlink analysis in email clients, monitoring for anomalous external domains using valid SSL certificates, and endpoint detection systems analyzing network traffic for connections to known phishing domains.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_18",
+      "generation_timestamp": 1750029419.7832685
+    },
+    {
+      "scenario": "Staff receive calendar invites from a spoofed internal address labeled as IT Security Team, containing a link to review updated security policies. The link leads to a credential harvesting site that mimics the corporate Single Sign-On portal.",
+      "technical_data": "The calendar invite originates from an external email server but uses display names and addresses resembling internal IT staff. The included link is a shortened URL redirecting to a HTTPS site with a SSL certificate issued by a free certificate authority but with a domain unrelated to the company. The phishing page captures usernames and passwords on submission and sends them to an attacker-controlled endpoint.",
+      "indicators": [
+        "Unexpected calendar invite from external source",
+        "Shortened URL with suspicious redirects",
+        "SSL certificate domain mismatch"
+      ],
+      "detection_method": "Monitoring for calendar invites from non-corporate sources; URL analysis tools to expand and verify shortened links; SSL certificate validation systems; employee awareness training.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1110"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_17",
+      "generation_timestamp": 1750029417.4095402
+    },
+    {
+      "scenario": "Employees receive emails impersonating HR department requesting immediate verification of payroll information via a provided link that leads to a fake login page designed to capture credentials.",
+      "technical_data": "The phishing email uses a spoofed 'From' address resembling hr@company.com with subtle character substitutions. The embedded URL directs to a domain similar to the corporate site but with a misspelled subdomain (e.g., payroll-updates.company-secure.com). The fake login page mimics the corporate portal's design and submits credentials to an external server controlled by attackers.",
+      "indicators": [
+        "Email sender address contains subtle typos",
+        "URL domain does not match official corporate domains",
+        "Urgent language prompting immediate action",
+        "Login page URL uses non-standard SSL certificate or none"
+      ],
+      "detection_method": "Implement email filtering rules checking for sender address anomalies and domain mismatches; use URL reputation services to flag suspicious links; monitor for unusual login attempts from external IPs; deploy user training to recognize urgent phishing emails.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_2",
+      "generation_timestamp": 1750029395.7529345
+    },
+    {
+      "scenario": "HR department sends an internal memo via email to employees announcing an upcoming mandatory identity verification process for access to secure HR systems.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Upcoming Mandatory Identity Verification for HR Portal Access",
+          "Date": "2024-06-20T14:30:00Z",
+          "Message-ID": "<20240620143000.hr-dept@company.com>"
+        },
+        "email_body": "Dear Team, to ensure continued compliance with data privacy regulations, all employees are required to complete an identity verification process via the official HR portal at https://hrportal.company.com/verify by June 30, 2024.",
+        "network_traffic": {
+          "source_ip": "10.10.20.5",
+          "destination_ip": "10.10.20.100",
+          "protocol": "HTTPS",
+          "url": "https://hrportal.company.com/verify",
+          "response_code": 200,
+          "timestamp": "2024-06-20T14:35:45Z"
+        },
+        "authentication": {
+          "user": "asmith",
+          "auth_method": "OAuth 2.0 with MFA",
+          "status": "success",
+          "timestamp": "2024-06-20T14:36:10Z"
+        },
+        "log_entry": "2024-06-20T14:36:10Z INFO User asmith completed identity verification step on HR portal."
+      },
+      "indicators": [
+        "Email originates from verified HR department domain",
+        "Link directs to official HR portal with valid SSL certificate",
+        "Authentication includes multi-factor authentication",
+        "Activity timestamp aligns with announced deadline for verification"
+      ],
+      "activity_type": "Internal HR Communication and Identity Verification",
+      "business_justification": "The identity verification process is required to comply with data protection laws and to secure sensitive employee information accessed via the HR systems.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_44",
+      "generation_timestamp": 1750029493.202726
+    },
+    {
+      "scenario": "Employees receive emails impersonating the HR department requesting urgent verification of personal details for payroll processing. The email contains a link to a fake internal portal that captures employee credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@company.com and includes a hyperlink with a domain similar to the company\u2019s legitimate URL but with subtle typosquatting (e.g., company-payroll.com instead of company.com). The link leads to a cloned login page designed to harvest credentials. The email headers show SPF and DKIM failures indicating forgery.",
+      "indicators": [
+        "Spoofed sender address hr@company.com with SPF/DKIM failures",
+        "Link to a typosquatted domain company-payroll.com",
+        "Urgent request for personal information verification"
+      ],
+      "detection_method": "Email security gateways inspecting SPF/DKIM authentication failures, URL reputation checks identifying typosquatting domains, and user awareness training to recognize unusual requests for sensitive data.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1598"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_18",
+      "generation_timestamp": 1750029419.7832685
+    },
+    {
+      "scenario": "Internal IT team sends an email to employees requesting routine password reset due to a scheduled security policy update.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:00:00Z",
+        "email_headers": {
+          "From": "it-security@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Scheduled Password Reset - Action Required",
+          "Message-ID": "<202406150900.it-security@company.com>",
+          "Authentication-Results": "spf=pass (sender SPF authorized) smtp.mailfrom=company.com; dkim=pass header.d=company.com"
+        },
+        "email_body": "Dear Team,\n\nAs part of our quarterly security policy update, all employees are required to reset their network passwords by June 20th. Please use the official internal portal link at https://intranet.company.com/password-reset to update your credentials.\n\nThank you,\nIT Security Team",
+        "network_traffic": {
+          "source_ip": "192.168.20.45",
+          "destination_ip": "10.10.10.5",
+          "protocol": "HTTPS",
+          "url": "https://intranet.company.com/password-reset",
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        },
+        "authentication_log": {
+          "user": "employee123",
+          "action": "password_change",
+          "timestamp": "2024-06-15T09:15:32Z",
+          "source_ip": "192.168.20.45",
+          "status": "success"
+        }
+      },
+      "indicators": [
+        "Email originates from verified company domain with valid SPF and DKIM",
+        "Link directs to official internal company portal",
+        "User authentication logs show successful password update",
+        "Email sent during normal business hours",
+        "No reports of phishing or suspicious activity associated with this email"
+      ],
+      "activity_type": "routine IT security communication",
+      "business_justification": "Periodic password resets are mandatory for security compliance and protecting company resources.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_32",
+      "generation_timestamp": 1750029449.7282157
+    },
+    {
+      "scenario": "Staff receive an email appearing to be from the IT department offering a 'mandatory security update' with an attachment that installs a credential harvesting malware.",
+      "technical_data": "The email contains a ZIP attachment with a malicious macro-enabled Word document. When opened, the macro runs a script that captures Windows credentials and sends them to an attacker-controlled server. The sender address mimics internal IT, and the subject uses familiar IT jargon to lower suspicion.",
+      "indicators": [
+        "Unexpected email with an attachment from internal IT",
+        "Attachment is a macro-enabled document (.docm)",
+        "Unusual network connections to external IP addresses after opening attachment",
+        "Mismatch in DKIM signature or SPF records for the sender domain"
+      ],
+      "detection_method": "Endpoint security tools can detect execution of macros and suspicious processes. Email filters can quarantine attachments with macros. Network monitoring for anomalous outbound traffic also aids detection.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1204.002"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_16",
+      "generation_timestamp": 1750029414.5827332
+    },
+    {
+      "scenario": "Employees receive emails allegedly from the HR department requesting urgent verification of personal information via a provided link, which leads to a fake login page designed to capture corporate credentials.",
+      "technical_data": "The phishing email uses a spoofed sender address resembling hr@company.com and includes a link with a domain similar to the company\u2019s official site but with subtle typos (e.g., company-secure.com). The landing page mimics the internal HR portal login page and transmits entered credentials to an external command and control server via HTTPS POST requests.",
+      "indicators": [
+        "Sender email domain differs slightly from official HR domain",
+        "URL contains typosquatting and unusual subdomains",
+        "Email urges immediate action with threatening language",
+        "Link redirects to an external non-corporate domain"
+      ],
+      "detection_method": "Email filtering rules identifying domain spoofing and typosquatting, URL reputation checks, and user behavior analytics flagging unusual login attempts from phishing page IPs.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_6",
+      "generation_timestamp": 1750029403.4346337
+    },
+    {
+      "scenario": "HR sends an internal announcement email to employees with updated guidelines on remote work policy and contact information for support.",
+      "technical_data": {
+        "email_header": {
+          "from": "hr@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Updated Remote Work Policy and Support Contacts",
+          "date": "2024-06-10T14:00:00Z",
+          "message_id": "<202406101400.hr@company.com>"
+        },
+        "email_body": "Dear team, please review the updated remote work guidelines attached. For questions, contact hr-support@company.com or call extension 1234.",
+        "attachment": {
+          "filename": "Remote_Work_Policy_2024.pdf",
+          "hash": "sha256:9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"
+        },
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T14:01:15Z",
+            "source_ip": "192.168.10.35",
+            "destination_ip": "192.168.10.50",
+            "protocol": "SMTP",
+            "action": "Internal mail transfer"
+          }
+        ],
+        "email_client_logs": [
+          {
+            "timestamp": "2024-06-10T14:02:00Z",
+            "user": "asmith",
+            "action": "opened_email",
+            "email_subject": "Updated Remote Work Policy and Support Contacts",
+            "device": "Windows 10 - Outlook 365"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified HR domain with proper email authentication",
+        "Attachment is a known approved document with verified hash",
+        "Recipients are internal users only",
+        "No suspicious URLs or external links in the email content"
+      ],
+      "activity_type": "Routine internal HR communication for policy update",
+      "business_justification": "Regular updates to work policies are essential to keep employees informed of company standards and support resources.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_31",
+      "generation_timestamp": 1750029444.2349167
+    },
+    {
+      "scenario": "Employees receive emails impersonating HR requesting immediate verification of payroll information via a link.",
+      "technical_data": "The email is crafted to mimic the internal HR department's style and uses a spoofed sender address closely resembling the legitimate domain. The embedded link directs to a fake login portal designed to capture employee credentials. The phishing site uses HTTPS with a self-signed certificate to appear legitimate.",
+      "indicators": [
+        "Sender email domain differs slightly from official HR domain (e.g., hr-company.com vs. hr-company.co)",
+        "Urgent language prompting immediate action",
+        "Link URL does not match official payroll portal",
+        "Presence of misspellings and grammar errors in the email body"
+      ],
+      "detection_method": "Email security gateways can detect domain spoofing and analyze URLs against known phishing databases. User training to recognize social engineering cues and URL inspection tools help in detection.",
+      "relevant_mitre_techniques": [
+        "T1566.001"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_16",
+      "generation_timestamp": 1750029414.5827332
+    },
+    {
+      "scenario": "HR department sends a legitimate internal memo requesting employees to verify their emergency contact details via the secure HR portal ahead of annual data audit.",
+      "technical_data": {
+        "email_header": {
+          "from": "hr-dept@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Annual Emergency Contact Verification Request",
+          "date": "2024-06-10T14:30:00Z",
+          "message_id": "<67890.hr.company.com>"
+        },
+        "email_body": "Please log in to the HR portal at https://hr.company.com/contact-verification to review and update your emergency contact information by June 25th. This is part of the annual compliance audit.",
+        "network_traffic": {
+          "source_ip": "192.168.20.3",
+          "destination_ip": "10.2.3.10",
+          "protocol": "HTTPS",
+          "port": 443,
+          "tls_certificate": {
+            "issuer": "Company Internal CA",
+            "valid_until": "2025-01-01T00:00:00Z"
+          }
+        },
+        "user_activity": {
+          "user": "employee@company.com",
+          "login_timestamp": "2024-06-11T08:45:00Z",
+          "action": "accessed HR portal",
+          "portal_url": "https://hr.company.com/contact-verification",
+          "authentication_method": "OAuth2 corporate credentials",
+          "auth_status": "success",
+          "form_submission": {
+            "emergency_contact_name": "Jane Smith",
+            "relationship": "Spouse",
+            "phone": "+1234567890",
+            "update_timestamp": "2024-06-11T08:50:00Z"
+          }
+        }
+      },
+      "indicators": [
+        "memo sent from verified HR internal domain",
+        "secure portal URL with valid TLS from trusted CA",
+        "user authenticated successfully with corporate OAuth2 credentials",
+        "action timestamp consistent with business hours",
+        "form data matches expected fields for emergency contact update"
+      ],
+      "activity_type": "Legitimate internal HR communication and data verification",
+      "business_justification": "Updating emergency contacts is a routine HR procedure to ensure employee safety and compliance with company policies during audits.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_30",
+      "generation_timestamp": 1750029443.3688877
+    },
+    {
+      "scenario": "Internal IT department sends a scheduled notification email to employees reminding them to update their passwords in accordance with company security policy.",
+      "technical_data": {
+        "email_header": {
+          "from": "it-security@companydomain.com",
+          "to": "all-employees@companydomain.com",
+          "subject": "Password Update Reminder - Mandatory Security Policy Compliance",
+          "date": "2024-06-15T09:00:00Z",
+          "message_id": "<20240615090000.it-security@companydomain.com>"
+        },
+        "email_body": "Dear Team, as part of our quarterly security compliance, please update your network credentials by logging into the official company portal at https://portal.companydomain.com/password-update before June 30, 2024. This link directs to the internal secured site with multi-factor authentication enabled.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:12Z",
+            "source_ip": "192.168.10.15",
+            "destination_ip": "10.0.0.15",
+            "protocol": "HTTPS",
+            "url_accessed": "https://portal.companydomain.com/password-update",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "authentication": {
+              "method": "MFA",
+              "status": "success",
+              "user": "j.doe"
+            }
+          }
+        ],
+        "system_logs": [
+          {
+            "event_time": "2024-06-15T09:07:00Z",
+            "event_type": "password_change",
+            "user": "j.doe",
+            "status": "completed",
+            "source": "internal-portal"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal IT email domain",
+        "URL is company internal portal with valid SSL certificate",
+        "Multi-factor authentication used for credential update",
+        "Password change event logged successfully in system logs"
+      ],
+      "activity_type": "legitimate IT security communication and credential update",
+      "business_justification": "Periodic password updates are mandated by company policy to maintain account security and comply with regulatory requirements.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_45",
+      "generation_timestamp": 1750029501.2444363
+    },
+    {
+      "scenario": "Employees receive a calendar invite via email from a seemingly internal address requesting attendance at a security update meeting. The invite contains a link to a document requiring login, which leads to a credential harvesting page.",
+      "technical_data": "The calendar invite originates from a compromised internal account, increasing its legitimacy. The embedded link redirects through a URL shortening service to obfuscate the final destination. The landing page is a clone of the company\u2019s Microsoft 365 login portal capturing credentials via POST requests to an attacker-controlled server.",
+      "indicators": [
+        "Unexpected calendar invite with embedded external shortened URL",
+        "Redirect chain to domains not associated with the company",
+        "Login page requesting credentials without multi-factor authentication prompt"
+      ],
+      "detection_method": "Monitoring for unusual calendar event creation by user accounts, especially those with no prior history of sending invites. URL analysis for redirection chains and domain reputation. Alerts on login attempts from suspicious URLs.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1078",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_24",
+      "generation_timestamp": 1750029425.70363
+    },
+    {
+      "scenario": "HR sends an internal memo via company email system to employees requesting verification of personal information for annual benefits enrollment.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-department@company.com",
+          "To": "employees@company.com",
+          "Subject": "Annual Benefits Enrollment - Personal Information Verification",
+          "Date": "2024-06-15T14:30:00Z",
+          "Message-ID": "<msg-67890@company.com>"
+        },
+        "email_body": "Dear Employee, please verify your personal information by logging into the HR portal at https://hrportal.company.com/verify-info before June 25th to ensure accurate benefits enrollment.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T14:35:10Z",
+            "source_ip": "192.168.1.50",
+            "destination_ip": "10.20.40.50",
+            "protocol": "HTTPS",
+            "bytes_sent": 700,
+            "bytes_received": 1200,
+            "url_accessed": "https://hrportal.company.com/verify-info"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T14:36:00Z",
+            "user": "asmith",
+            "action": "login",
+            "source_ip": "192.168.1.50",
+            "status": "success",
+            "method": "password + security question"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from official HR department domain",
+        "Secure connection to verified HR portal",
+        "User authentication uses standard company login process",
+        "No suspicious activity or unauthorized access detected"
+      ],
+      "activity_type": "Employee Information Verification Request",
+      "business_justification": "Annual verification of personal data is necessary to ensure correct benefits enrollment and compliance with HR policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_34",
+      "generation_timestamp": 1750029456.4671264
+    },
+    {
+      "scenario": "Employees receive calendar invites from an internal 'IT Helpdesk' contact asking them to join a meeting to discuss 'mandatory security updates', containing a link that leads to a credential harvesting site.",
+      "technical_data": "The calendar invite originates from a compromised internal account or a lookalike address. The invite description includes a hyperlink that points to a non-corporate domain with a URL path mimicking the IT support portal. The phishing page requests users to enter their username and password to access 'meeting materials'.",
+      "indicators": [
+        "Unexpected calendar invites from internal but unfamiliar contacts",
+        "Link redirects to domains outside of corporate control",
+        "Requests for credentials via web forms linked in calendar invites",
+        "Mismatch between the invite sender's email and display name"
+      ],
+      "detection_method": "Enable calendar invite filtering and monitoring for anomalous invite patterns; verify URLs in calendar invites through automated URL analysis; educate employees to verify unexpected meeting requests; monitor for suspicious credential submission endpoints.",
+      "relevant_mitre_techniques": [
+        "T1566.001",
+        "T1192"
+      ],
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_2",
+      "generation_timestamp": 1750029395.7529345
+    },
+    {
+      "scenario": "HR sends an internal email to all employees announcing mandatory annual identity verification for payroll compliance.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@company.com",
+          "To": "all-employees@company.com",
+          "Date": "2024-06-10T09:00:00Z",
+          "Subject": "Annual Identity Verification for Payroll Compliance",
+          "Message-ID": "<0987654321@company.com>"
+        },
+        "email_body": "Dear colleagues, please complete your identity verification in the secure HR portal by June 25 to ensure timely payroll processing. Access the portal at https://hrportal.company.com/verify-identity. For questions, contact hr-support@company.com.",
+        "network_activity": [
+          {
+            "timestamp": "2024-06-10T09:00:10Z",
+            "source_ip": "192.168.10.30",
+            "destination_ip": "company-mailserver.company.com",
+            "protocol": "SMTP",
+            "action": "email_sent"
+          },
+          {
+            "timestamp": "2024-06-12T14:22:05Z",
+            "source_ip": "192.168.10.65",
+            "destination_ip": "hrportal.company.com",
+            "protocol": "HTTPS",
+            "request": "POST /verify-identity",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "application_logs": [
+          {
+            "timestamp": "2024-06-12T14:22:06Z",
+            "user_id": "mwhite",
+            "action": "identity_verification_submitted",
+            "result": "success"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from legitimate HR department address",
+        "Link directs to official HR portal with valid HTTPS",
+        "Successful POST requests logged with legitimate user agents",
+        "User identity verification recorded in application logs"
+      ],
+      "activity_type": "Internal HR communication and employee identity verification",
+      "business_justification": "Required annual process to confirm employee identities for regulatory payroll compliance and prevent errors.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_43",
+      "generation_timestamp": 1750029489.9964683
+    },
+    {
+      "scenario": "HR department sends a legitimate internal memo to employees reminding them to complete mandatory annual compliance training with a link to the official training platform.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Annual Compliance Training Reminder",
+          "Date": "2024-06-15T08:30:00Z",
+          "Message-ID": "<202406150830.hr@company.com>"
+        },
+        "email_body": "Dear Colleagues, please complete your annual compliance training by June 30th. Access the training materials here: https://training.company.com/compliance2024.",
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-15T08:31:10Z",
+            "source_ip": "10.2.1.18",
+            "destination_domain": "training.company.com",
+            "protocol": "HTTPS",
+            "action": "resource_access",
+            "user": "employee456",
+            "response_code": 200
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T08:32:00Z",
+            "user": "employee456",
+            "action": "login",
+            "auth_method": "MFA",
+            "result": "success",
+            "source_ip": "10.2.1.18"
+          },
+          {
+            "timestamp": "2024-06-15T08:45:00Z",
+            "user": "employee456",
+            "action": "training_module_started",
+            "module_id": "compliance2024",
+            "status": "in_progress"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified HR domain with appropriate SPF and DKIM records",
+        "Link directs to secured internal training platform",
+        "User authentication includes multi-factor authentication",
+        "Access logs show normal browsing behavior without unusual data exfiltration",
+        "Training activity corresponds to scheduled annual compliance requirements"
+      ],
+      "activity_type": "Legitimate internal HR communication and training access",
+      "business_justification": "Annual compliance training is required by company policy to ensure all employees understand legal and ethical standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_33",
+      "generation_timestamp": 1750029450.8665533
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees requesting scheduled password updates with a secure link to the official company portal.",
+      "technical_data": {
+        "email_header": {
+          "from": "it-support@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Reminder: Scheduled Password Update - Action Required",
+          "date": "2024-06-15T08:30:00Z",
+          "message_id": "<202406150830.it-support@company.com>"
+        },
+        "email_body": "Please update your password by 2024-06-20 using the secure company portal at https://portal.company.com/update-password. This link uses HTTPS with valid TLS certificates.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T08:31:05Z",
+            "source_ip": "192.168.10.25",
+            "destination_ip": "172.217.10.78",
+            "protocol": "TLSv1.3",
+            "action": "HTTPS connection established to portal.company.com"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T08:32:10Z",
+            "user": "jdoe",
+            "action": "login",
+            "source_ip": "192.168.10.25",
+            "result": "success",
+            "auth_method": "SAML SSO"
+          }
+        ],
+        "web_access_logs": [
+          {
+            "timestamp": "2024-06-15T08:33:30Z",
+            "user": "jdoe",
+            "url": "https://portal.company.com/update-password",
+            "method": "GET",
+            "status_code": 200,
+            "referrer": "https://mail.company.com/inbox"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from verified internal IT domain with valid DKIM and SPF records",
+        "Link points to official company domain with valid HTTPS certificate",
+        "User authentication via corporate SSO before accessing the portal",
+        "No unusual traffic or data exfiltration detected"
+      ],
+      "activity_type": "Legitimate internal IT communication for security compliance",
+      "business_justification": "Periodic password updates are mandated by company security policy to maintain account safety and comply with regulatory requirements.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_31",
+      "generation_timestamp": 1750029444.233918
     }
   ],
   "metadata": {
-    "total_samples": 36,
-    "new_samples_added": 10,
-    "new_malicious_samples": 0,
-    "new_benign_samples": 10,
-    "generation_method": "traditional_parallel",
-    "schema_preserved": false,
+    "total_samples": 136,
+    "new_samples_added": 100,
+    "new_malicious_samples": 50,
+    "new_benign_samples": 50,
+    "generation_method": "parallel",
     "generation_stats": {
-      "total_generated": 20,
-      "duplicates_filtered": 10,
+      "total_generated": 100,
+      "duplicates_filtered": 0,
       "failed_generations": 0,
-      "successful_batches": 5,
-      "total_api_calls": 10,
-      "generation_start_time": 1750014936.006826,
-      "generation_end_time": 1750014966.078779
+      "successful_batches": 50,
+      "total_api_calls": 50,
+      "generation_start_time": 1750029386.8208296,
+      "generation_end_time": 1750029510.789407
     },
     "duplicate_detection_stats": {
       "enabled": true,
-      "total_hashes": 27,
+      "total_hashes": 127,
       "check_fields": [
         "scenario",
         "technical_data",
         "indicators"
       ]
     },
-    "generation_timestamp": "2025-06-15 15:16:06",
-    "total_generation_time": 30.071953058242798,
-    "samples_per_minute": 19.952146069060802,
+    "generation_timestamp": "2025-06-15 19:18:30",
+    "total_generation_time": 123.96857738494873,
+    "samples_per_minute": 48.39936156860724,
     "max_workers": 4,
     "batch_size": 2
   }

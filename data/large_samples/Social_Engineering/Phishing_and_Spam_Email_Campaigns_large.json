@@ -1,0 +1,2641 @@
+{
+  "samples": [
+    {
+      "scenario": "Routine cloud API call to retrieve user account metrics and trigger auto-scaling based on current load",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:00Z",
+        "api_request": {
+          "endpoint": "https://api.cloudprovider.com/v1/metrics/user-accounts",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR...",
+            "Content-Type": "application/json"
+          },
+          "query_parameters": {
+            "time_range": "last_10_minutes",
+            "metrics": [
+              "active_sessions",
+              "login_attempts"
+            ]
+          }
+        },
+        "api_response": {
+          "status_code": 200,
+          "body": {
+            "active_sessions": 345,
+            "login_attempts": 15,
+            "timestamp": "2024-06-15T14:44:59Z"
+          }
+        },
+        "cloud_operations": {
+          "auto_scaling_triggered": true,
+          "new_instances_provisioned": 3,
+          "monitoring_logs": [
+            "Scaling event started at 2024-06-15T14:45:05Z",
+            "Provisioned instance i-0abcd1234efgh5678",
+            "Provisioned instance i-0abcd1234efgh5679",
+            "Provisioned instance i-0abcd1234efgh5680",
+            "Scaling event completed at 2024-06-15T14:47:30Z"
+          ]
+        }
+      },
+      "indicators": [
+        "Successful API response with 200 status code",
+        "Valid bearer token authentication",
+        "Scaling logs consistent with resource usage metrics",
+        "Operations timestamp aligned with monitoring period"
+      ],
+      "activity_type": "Cloud resource monitoring and auto-scaling",
+      "business_justification": "Ensures application performance and availability by dynamically adjusting resources based on user load.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_47",
+      "generation_timestamp": 1750029593.1215117
+    },
+    {
+      "scenario": "Employee sends an internal email with a project status update including a link to the company intranet for detailed reports",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:32:10Z",
+        "email_headers": {
+          "From": "alice.jones@company.com",
+          "To": "project.team@company.com",
+          "Subject": "Weekly Project Status Update",
+          "Message-ID": "<1234567890@company.com>",
+          "Received": [
+            "from mail.company.com (192.168.10.15) by smtp.company.com (192.168.10.20) with ESMTP id XYZ123",
+            "by mail.company.com with ESMTP id ABC456"
+          ]
+        },
+        "email_body": "Dear Team,\n\nPlease find the weekly status report here: https://intranet.company.com/projects/status/weekly-report\n\nLet me know if you have any questions.\n\nBest,\nAlice",
+        "network_traffic": {
+          "source_ip": "10.0.5.23",
+          "destination_ip": "10.0.20.10",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 512,
+          "bytes_received": 2341
+        },
+        "authentication": {
+          "user": "alice.jones",
+          "method": "OAuth2",
+          "status": "Success",
+          "timestamp": "2024-06-15T09:31:55Z"
+        }
+      },
+      "indicators": [
+        "Internal company domain in email addresses",
+        "HTTPS link pointing to company intranet",
+        "Authentication success via internal SSO",
+        "Standard business hours timestamp"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Regular status updates are required to keep project teams informed and aligned on progress.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_47",
+      "generation_timestamp": 1750029593.12056
+    },
+    {
+      "scenario": "Employee sends an internal email requesting IT support for software installation",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "email": {
+          "from": "jane.doe@company.com",
+          "to": "it.support@company.com",
+          "subject": "Request for Adobe Photoshop installation",
+          "body": "Hello IT team, I need Adobe Photoshop installed on my workstation for the upcoming marketing project. Please advise on the timeline. Thanks, Jane.",
+          "headers": {
+            "Received": [
+              "from mail.company.com (mail.company.com [192.168.10.5])",
+              "by smtp.company.com with ESMTPS id 12345",
+              "for <it.support@company.com>; Sat, 15 Jun 2024 09:23:45 +0000 (UTC)"
+            ],
+            "Message-ID": "<20240615092345.jane.doe@company.com>"
+          }
+        },
+        "network": {
+          "source_ip": "192.168.10.23",
+          "destination_ip": "192.168.10.50",
+          "protocol": "SMTP",
+          "port": 587,
+          "payload_size_bytes": 1024
+        },
+        "authentication": {
+          "user": "jane.doe",
+          "method": "OAuth2",
+          "status": "success",
+          "timestamp": "2024-06-15T09:20:00Z",
+          "source_ip": "192.168.10.23"
+        }
+      },
+      "indicators": [
+        "Email sent within corporate domain with valid DKIM and SPF checks",
+        "Authentication succeeded with OAuth2 and no anomalies",
+        "Email content is professional and related to normal business operations",
+        "No embedded URLs or attachments present"
+      ],
+      "activity_type": "Internal business communication via email",
+      "business_justification": "Regular IT support requests are common as employees need software tools provisioned to complete their work tasks.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_28",
+      "generation_timestamp": 1750029550.0248544
+    },
+    {
+      "scenario": "Cloud infrastructure team performs routine scaling and monitoring of web application resources during peak usage hours",
+      "technical_data": {
+        "api_calls": [
+          {
+            "timestamp": "2024-06-15T17:00:05Z",
+            "api_endpoint": "/autoscaling/scaleOut",
+            "requester": "cloudops@company.com",
+            "authentication": {
+              "method": "OAuth2",
+              "token_valid": true
+            },
+            "parameters": {
+              "service": "web-app-prod",
+              "scale_units": 3
+            },
+            "response_status": 200
+          },
+          {
+            "timestamp": "2024-06-15T17:01:10Z",
+            "api_endpoint": "/monitoring/metrics",
+            "requester": "monitoring-service",
+            "authentication": {
+              "method": "API Key",
+              "key_valid": true
+            },
+            "metrics": {
+              "cpu_usage_percent": 78,
+              "memory_usage_percent": 65,
+              "network_in_bytes": 12500000,
+              "network_out_bytes": 11800000
+            },
+            "response_status": 200
+          }
+        ],
+        "cloud_logs": [
+          {
+            "timestamp": "2024-06-15T17:00:10Z",
+            "event": "instance_launch",
+            "instance_id": "i-0a1b2c3d4e5f6g7h8",
+            "service": "web-app-prod",
+            "status": "success"
+          },
+          {
+            "timestamp": "2024-06-15T17:05:00Z",
+            "event": "autoscaling_complete",
+            "service": "web-app-prod",
+            "new_instance_count": 8
+          }
+        ]
+      },
+      "indicators": [
+        "API calls authenticated with valid OAuth2 tokens and API keys",
+        "Scaling events correspond with monitored high CPU usage metrics",
+        "Cloud logs show successful instance launches and autoscaling completion"
+      ],
+      "activity_type": "Routine cloud resource scaling and monitoring",
+      "business_justification": "Automatic scaling of resources during peak traffic maintains application performance and meets user demand.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_34",
+      "generation_timestamp": 1750029561.1398127
+    },
+    {
+      "scenario": "IT administrator performs scheduled backup of cloud-hosted databases and sends notification email to operations team confirming successful completion.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "admin_user": "it.admin@enterprise.com",
+        "source_ip": "192.168.100.25",
+        "backup_task": {
+          "service": "AWS RDS",
+          "database_id": "prod-db-01",
+          "action": "snapshot creation",
+          "status": "completed",
+          "duration_seconds": 1800,
+          "bytes_backed_up": 53687091200
+        },
+        "notification_email": {
+          "to": [
+            "ops-team@enterprise.com"
+          ],
+          "subject": "Daily DB Backup Completed Successfully",
+          "body": "The daily backup of production database prod-db-01 completed without errors at 02:30 UTC.",
+          "timestamp": "2024-06-15T02:31:00Z"
+        },
+        "api_calls": [
+          {
+            "api": "CreateDBSnapshot",
+            "request_id": "req-1234567890",
+            "response_status": 200,
+            "timestamp": "2024-06-15T02:00:05Z"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "192.168.100.25",
+          "destination_ip": "rds.amazonaws.com",
+          "protocol": "HTTPS",
+          "bytes_sent": 1024,
+          "bytes_received": 5120
+        }
+      },
+      "indicators": [
+        "Scheduled backup task with expected duration and size",
+        "API call with successful HTTP 200 response",
+        "Notification email sent to authorized operations group",
+        "No anomalous source IPs or unusual timing"
+      ],
+      "activity_type": "Routine IT backup operation and administrative notification",
+      "business_justification": "Regular backups are essential for disaster recovery and data integrity, with notifications ensuring team awareness.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_33",
+      "generation_timestamp": 1750029562.0862372
+    },
+    {
+      "scenario": "Cloud API call to retrieve user profile data during a customer support session",
+      "technical_data": {
+        "api_request": {
+          "method": "GET",
+          "endpoint": "/api/v1/users/12345/profile",
+          "timestamp": "2024-06-15T14:22:30Z",
+          "headers": {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "Content-Type": "application/json"
+          },
+          "source_ip": "203.0.113.57",
+          "user_agent": "SupportPortal/3.5.1"
+        },
+        "api_response": {
+          "status_code": 200,
+          "response_time_ms": 120,
+          "payload": {
+            "userId": 12345,
+            "fullName": "John Smith",
+            "email": "john.smith@example.com",
+            "accountStatus": "Active",
+            "lastLogin": "2024-06-14T18:45:10Z"
+          }
+        },
+        "cloud_operations": {
+          "resource": "user-profile-db",
+          "operation": "read",
+          "latency_ms": 110,
+          "timestamp": "2024-06-15T14:22:30Z"
+        },
+        "authentication_flow": {
+          "user": "support.agent01",
+          "auth_method": "MFA",
+          "login_timestamp": "2024-06-15T13:58:00Z",
+          "session_id": "sess-78910abcdef"
+        }
+      },
+      "indicators": [
+        "API request authenticated with valid bearer token and MFA login",
+        "Response status 200 with expected user profile schema",
+        "Source IP matches known support office range",
+        "Request timing aligns with active support session logs"
+      ],
+      "activity_type": "Customer support data retrieval via cloud API",
+      "business_justification": "Support agents need to access user profiles to assist customers effectively and resolve issues.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_39",
+      "generation_timestamp": 1750029575.6800768
+    },
+    {
+      "scenario": "Cloud infrastructure team performs a scheduled deployment of a new application version with health monitoring",
+      "technical_data": {
+        "deployment_logs": [
+          {
+            "timestamp": "2024-06-15T02:00:00Z",
+            "service": "Kubernetes",
+            "action": "Rolling update initiated",
+            "application": "CustomerPortal",
+            "version_from": "v2.3.1",
+            "version_to": "v2.4.0",
+            "nodes_updated": 5,
+            "status": "in_progress"
+          },
+          {
+            "timestamp": "2024-06-15T02:15:30Z",
+            "service": "Kubernetes",
+            "action": "Rolling update completed",
+            "application": "CustomerPortal",
+            "version": "v2.4.0",
+            "status": "success"
+          }
+        ],
+        "monitoring_metrics": {
+          "timestamp": "2024-06-15T02:16:00Z",
+          "application": "CustomerPortal",
+          "cpu_usage_percent": 35,
+          "memory_usage_mb": 512,
+          "response_time_ms": 180,
+          "error_rate_percent": 0.02,
+          "traffic_requests_per_minute": 1200
+        },
+        "api_calls": [
+          {
+            "timestamp": "2024-06-15T02:00:05Z",
+            "api_endpoint": "/deployments/start",
+            "user": "devops-engineer",
+            "authentication": "oauth2",
+            "request_id": "req-789456123"
+          },
+          {
+            "timestamp": "2024-06-15T02:15:45Z",
+            "api_endpoint": "/deployments/status",
+            "user": "devops-engineer",
+            "authentication": "oauth2",
+            "request_id": "req-789456124",
+            "status": "success"
+          }
+        ],
+        "audit_trail": {
+          "performed_by": "devops-engineer",
+          "change_description": "Deployed CustomerPortal v2.4.0 with performance improvements",
+          "approval_id": "APR-20240610-045"
+        }
+      },
+      "indicators": [
+        "Deployment initiated and completed with success status",
+        "API calls authenticated via OAuth2",
+        "Resource usage metrics within normal operational range",
+        "Change approved and logged in audit trail",
+        "No spike in error rates post deployment"
+      ],
+      "activity_type": "Scheduled application deployment and monitoring",
+      "business_justification": "Regular software updates are necessary to improve functionality and security of cloud-hosted applications.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_48",
+      "generation_timestamp": 1750029603.141683
+    },
+    {
+      "scenario": "Employee accesses internal HR portal to download updated benefits policy document and sends an informational email to team",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:34:22Z",
+        "user": "jane.doe@company.com",
+        "event": "Document Access",
+        "resource": "https://intranet.company.com/hr/benefits_policy_2024.pdf",
+        "network": {
+          "source_ip": "10.1.23.45",
+          "destination_ip": "10.1.23.12",
+          "protocol": "HTTPS",
+          "bytes_transferred": 245000
+        },
+        "email": {
+          "from": "jane.doe@company.com",
+          "to": [
+            "team@company.com"
+          ],
+          "subject": "Updated Benefits Policy for 2024",
+          "body": "Please review the attached updated benefits policy effective July 1, 2024.",
+          "links": []
+        },
+        "authentication": {
+          "method": "SSO",
+          "status": "success",
+          "mfa_used": true
+        }
+      },
+      "indicators": [
+        "Accessed internal corporate URL with valid SSO and MFA authentication",
+        "Email sent from corporate domain to internal distribution list without external links",
+        "No suspicious attachments or embedded URLs",
+        "Usage during regular business hours"
+      ],
+      "activity_type": "Internal Document Sharing and Communication",
+      "business_justification": "Employees routinely access and distribute updated policy documents to ensure team compliance and awareness.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_49",
+      "generation_timestamp": 1750029599.562099
+    },
+    {
+      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version to the production environment.",
+      "technical_data": {
+        "deployment_logs": {
+          "deployment_id": "deploy-20240610-091500",
+          "timestamp_start": "2024-06-10T09:15:00Z",
+          "timestamp_end": "2024-06-10T09:22:35Z",
+          "service_name": "payment-processor",
+          "version_deployed": "v3.4.1",
+          "status": "success",
+          "initiated_by": "devops.user@company.com"
+        },
+        "api_calls": [
+          {
+            "endpoint": "/api/v1/services/payment-processor/deploy",
+            "method": "POST",
+            "status_code": 200,
+            "request_body": {
+              "version": "v3.4.1",
+              "environment": "production"
+            },
+            "timestamp": "2024-06-10T09:15:02Z",
+            "authentication": {
+              "user": "devops.user",
+              "method": "API key",
+              "status": "success"
+            }
+          }
+        ],
+        "resource_logs": {
+          "scaling_event": {
+            "service": "payment-processor",
+            "timestamp": "2024-06-10T09:20:00Z",
+            "action": "scale_out",
+            "old_instances": 3,
+            "new_instances": 5,
+            "reason": "Increased load post-deployment"
+          }
+        },
+        "monitoring_metrics": {
+          "cpu_usage_percent": [
+            35,
+            42,
+            48,
+            40
+          ],
+          "memory_usage_mb": [
+            512,
+            530,
+            560,
+            540
+          ],
+          "network_in_kbps": [
+            120,
+            130,
+            125,
+            128
+          ],
+          "timestamps": [
+            "2024-06-10T09:16:00Z",
+            "2024-06-10T09:18:00Z",
+            "2024-06-10T09:20:00Z",
+            "2024-06-10T09:22:00Z"
+          ]
+        }
+      },
+      "indicators": [
+        "Deployment initiated by authorized DevOps user",
+        "API calls authenticated with valid API key",
+        "Deployment completed with success status",
+        "Scaling event corresponds with expected post-deployment load",
+        "Monitoring metrics remain within normal operational ranges"
+      ],
+      "activity_type": "Scheduled cloud service deployment and scaling",
+      "business_justification": "Regular application updates and environment scaling to maintain performance and reliability.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_45",
+      "generation_timestamp": 1750029589.952456
+    },
+    {
+      "scenario": "Employee accesses internal HR portal to review updated company leave policies",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "source_ip": "10.12.34.56",
+        "destination_url": "https://intranet.enterprise.com/hr/policies/leave",
+        "http_method": "GET",
+        "response_code": 200,
+        "session_id": "abc123xyz789",
+        "authentication": {
+          "method": "SAML SSO",
+          "status": "success",
+          "timestamp": "2024-06-15T09:23:40Z"
+        },
+        "network_traffic": {
+          "bytes_sent": 5120,
+          "bytes_received": 20480,
+          "protocol": "HTTPS",
+          "port": 443
+        },
+        "activity_log": [
+          "User jane.doe authenticated via SSO",
+          "Accessed URL /hr/policies/leave",
+          "Downloaded PDF document: Leave_Policy_2024.pdf"
+        ]
+      },
+      "indicators": [
+        "Successful SAML single sign-on authentication",
+        "Access to internal corporate domain with valid user credentials",
+        "HTTP 200 OK response with encrypted HTTPS traffic",
+        "Consistent user IP address within enterprise network range"
+      ],
+      "activity_type": "Employee internal portal access",
+      "business_justification": "Employees routinely access HR resources to stay informed on updated policies necessary for compliance and personal planning.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_40",
+      "generation_timestamp": 1750029577.629722
+    },
+    {
+      "scenario": "Cloud DevOps team performs a scheduled deployment of a microservice update with standard logging and monitoring.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:50:12Z",
+        "user": "devops_engineer@company.com",
+        "api_calls": [
+          {
+            "endpoint": "/api/v1/deployments",
+            "method": "POST",
+            "status_code": 201,
+            "request_body": {
+              "service": "user-authentication",
+              "version": "1.4.2",
+              "environment": "production"
+            },
+            "response_time_ms": 350
+          },
+          {
+            "endpoint": "/api/v1/monitoring/logs",
+            "method": "GET",
+            "status_code": 200,
+            "query_params": {
+              "service": "user-authentication",
+              "since": "2024-06-15T14:45:00Z"
+            },
+            "response_time_ms": 120
+          }
+        ],
+        "cloud_operations": {
+          "resource_provisioning": false,
+          "scaling_event": false,
+          "deployment_status": "successful",
+          "rollback": false
+        },
+        "network_activity": {
+          "source_ip": "10.0.5.22",
+          "destination_ip": "10.0.7.15",
+          "protocol": "HTTPS",
+          "port": 443,
+          "data_transfer_mb": 15.3
+        }
+      },
+      "indicators": [
+        "API calls use valid authentication tokens with correct scopes",
+        "Deployment returns HTTP 201 Created status with no errors",
+        "Monitoring logs show normal latency and no error spikes post-deployment"
+      ],
+      "activity_type": "Scheduled microservice deployment and monitoring",
+      "business_justification": "Routine service updates and monitoring are essential for maintaining application performance and security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_36",
+      "generation_timestamp": 1750029568.6946414
+    },
+    {
+      "scenario": "Cloud DevOps engineer performs a scheduled deployment of a new application version with monitoring enabled and logs the successful rollout without errors.",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:05:12Z",
+        "user_id": "devops_eng_01",
+        "api_calls": [
+          {
+            "endpoint": "/api/v1/deployments",
+            "method": "POST",
+            "request_body": {
+              "app_version": "2.3.1",
+              "environment": "production",
+              "rollback_enabled": true
+            },
+            "response_code": 201,
+            "response_body": {
+              "deployment_id": "deploy-7890",
+              "status": "starting"
+            }
+          },
+          {
+            "endpoint": "/api/v1/monitoring/alerts",
+            "method": "GET",
+            "response_code": 200,
+            "response_body": {
+              "alerts": [],
+              "status": "healthy"
+            }
+          }
+        ],
+        "cloud_logs": [
+          "2024-06-15T14:06:00Z - Deployment deploy-7890 started by devops_eng_01",
+          "2024-06-15T14:10:30Z - Deployment deploy-7890 completed successfully",
+          "2024-06-15T14:11:00Z - No alerts detected post deployment"
+        ],
+        "network_traffic": {
+          "source_ip": "10.12.34.56",
+          "destination_ip": "35.189.45.67",
+          "tls_encrypted": true,
+          "normal_api_rate": true
+        }
+      },
+      "indicators": [
+        "Authenticated API calls with valid tokens",
+        "Deployment status transitions from starting to successful",
+        "Monitoring reports no alerts or anomalies",
+        "Consistent timestamps and no error codes",
+        "API request patterns match scheduled deployment window"
+      ],
+      "activity_type": "Scheduled cloud application deployment with monitoring",
+      "business_justification": "Periodic deployments and monitoring are essential to maintain and improve application features and stability in production.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_25",
+      "generation_timestamp": 1750029544.4001298
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment and monitoring of microservices",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:02Z",
+        "user": "devops@cloud.company.com",
+        "api_calls": [
+          {
+            "endpoint": "POST /deployments",
+            "service": "microservice-payment",
+            "status_code": 202,
+            "request_id": "req-789456123",
+            "payload": {
+              "version": "v2.3.1",
+              "environment": "production"
+            }
+          },
+          {
+            "endpoint": "GET /monitoring/metrics",
+            "service": "microservice-payment",
+            "status_code": 200,
+            "metrics": {
+              "cpu_usage_percent": 45,
+              "memory_usage_mb": 512,
+              "request_rate_rps": 120
+            }
+          },
+          {
+            "endpoint": "POST /scaling",
+            "service": "microservice-payment",
+            "status_code": 200,
+            "scaling_action": "scale_out",
+            "instances_before": 3,
+            "instances_after": 5
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "10.12.34.56",
+          "destination_ip": "10.23.45.67",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 10240,
+          "bytes_received": 20480
+        }
+      },
+      "indicators": [
+        "API calls authenticated with valid OAuth token",
+        "Deployment request accepted with HTTP 202 status",
+        "Monitoring metrics within normal operational thresholds",
+        "Scaling event triggered by automated monitoring system"
+      ],
+      "activity_type": "Routine Cloud Deployment and Monitoring",
+      "business_justification": "DevOps teams continuously deploy updates and monitor cloud services to ensure application reliability and scalability.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_46",
+      "generation_timestamp": 1750029591.3507931
+    },
+    {
+      "scenario": "Employee sends a routine internal email updating team on project status and schedules a follow-up meeting.",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:32Z",
+        "sender": "jane.doe@corporate.com",
+        "recipient": [
+          "team.project@corporate.com"
+        ],
+        "subject": "Weekly Project Update and Next Steps",
+        "body": "Hi Team,\n\nPlease find attached the latest project progress report. Let's meet tomorrow at 10:00 AM to review milestones.\n\nBest,\nJane",
+        "attachments": [
+          "Progress_Report_Q2.pdf"
+        ],
+        "email_headers": {
+          "Received": [
+            "from mail.corporate.com (10.15.20.5)",
+            "by mail.corporate.com"
+          ],
+          "Authentication-Results": "spf=pass (corporate.com: domain of jane.doe@corporate.com designates 10.15.20.5 as permitted sender)",
+          "Message-ID": "<20240610091532.JD1234@corporate.com>"
+        },
+        "network_activity": {
+          "smtp_connection": {
+            "source_ip": "10.15.20.5",
+            "destination_ip": "10.15.20.10",
+            "port": 25,
+            "bytes_sent": 4523
+          },
+          "dns_queries": [
+            "corporate.com MX lookup"
+          ]
+        }
+      },
+      "indicators": [
+        "Valid corporate email domain with SPF pass",
+        "Internal recipient list consistent with project team",
+        "Attachment type and naming consistent with reporting",
+        "Email sent during business hours",
+        "No embedded URLs or external links"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Regular project updates and scheduling meetings are standard communication practices within teams to ensure alignment and progress tracking.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_35",
+      "generation_timestamp": 1750029565.8716593
+    },
+    {
+      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:10Z",
+        "user": "devops_lead@cloudenterprise.com",
+        "api_calls": [
+          {
+            "endpoint": "POST /api/v1/deployments",
+            "request_payload": {
+              "service_name": "payment-processor",
+              "version": "v2.3.0",
+              "environment": "production"
+            },
+            "response_status": 202,
+            "response_body": {
+              "deployment_id": "deploy-7890",
+              "status": "in_progress"
+            },
+            "timestamp": "2024-06-15T14:45:10Z"
+          },
+          {
+            "endpoint": "GET /api/v1/deployments/deploy-7890/status",
+            "response_status": 200,
+            "response_body": {
+              "deployment_id": "deploy-7890",
+              "status": "success",
+              "completed_at": "2024-06-15T14:48:05Z"
+            },
+            "timestamp": "2024-06-15T14:48:06Z"
+          }
+        ],
+        "cloud_resources": {
+          "container_instances": {
+            "previous_version": "v2.2.7",
+            "new_version": "v2.3.0",
+            "count": 5
+          },
+          "cpu_utilization": "45%",
+          "memory_utilization": "60%"
+        },
+        "logging": [
+          "Deployment initiated by user devops_lead",
+          "Version v2.3.0 rollout started",
+          "Health checks passed on all container instances",
+          "Deployment completed successfully"
+        ]
+      },
+      "indicators": [
+        "Authenticated API calls from authorized DevOps user",
+        "Use of official cloud management endpoints with valid payloads",
+        "Deployment status transitions from in_progress to success",
+        "Logging entries confirm standard deployment workflow"
+      ],
+      "activity_type": "Cloud service deployment",
+      "business_justification": "Regular software updates are required to improve service features, fix bugs, and maintain security compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_40",
+      "generation_timestamp": 1750029577.629722
+    },
+    {
+      "scenario": "Internal IT team performs routine software update deployment and system backup",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:30:00Z",
+        "user": "it_admin",
+        "actions": [
+          {
+            "type": "login",
+            "source_ip": "10.1.5.20",
+            "authentication_method": "mfa",
+            "status": "success"
+          },
+          {
+            "type": "software_update",
+            "target_system": "employee_workstations",
+            "update_version": "v3.2.1",
+            "methods": [
+              "wsus",
+              "group_policy"
+            ],
+            "outcome": "success"
+          },
+          {
+            "type": "backup",
+            "target_data": "user_profiles",
+            "backup_storage": "nas_backup_server_01",
+            "duration_minutes": 45,
+            "status": "completed"
+          }
+        ],
+        "network_traffic": {
+          "protocols": [
+            "HTTP",
+            "SMB"
+          ],
+          "data_volume_mb": 120,
+          "destinations": [
+            "192.168.10.5",
+            "192.168.10.6"
+          ]
+        }
+      },
+      "indicators": [
+        "Multi-factor authentication used for login",
+        "Update version matches scheduled patch management release",
+        "Backup completed with no errors",
+        "Network traffic consistent with patch and backup operations"
+      ],
+      "activity_type": "Routine IT maintenance and backup",
+      "business_justification": "Regular software updates and backups are essential to maintain system security and data integrity.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_43",
+      "generation_timestamp": 1750029583.0183804
+    },
+    {
+      "scenario": "Employee submits weekly sales report via internal email with attachment",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "email": {
+          "from": "jane.doe@company.com",
+          "to": "sales.manager@company.com",
+          "subject": "Weekly Sales Report - Week 24",
+          "attachments": [
+            "week24_sales_report.xlsx"
+          ],
+          "body": "Dear Team,\nPlease find attached the sales report for week 24.\nBest regards,\nJane Doe",
+          "message_id": "<1234567890@company.com>",
+          "smtp_server": "smtp.company.com",
+          "email_headers": {
+            "Received": [
+              "from mail.company.com by smtp.company.com",
+              "spf=pass (sender IP authorized)"
+            ],
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          }
+        },
+        "network": {
+          "source_ip": "192.168.10.24",
+          "destination_ip": "10.10.0.5",
+          "protocol": "SMTP",
+          "port": 587,
+          "bytes_sent": 25432
+        },
+        "user_activity": {
+          "login_user": "jane.doe",
+          "login_time": "2024-06-15T08:55:12Z",
+          "workstation": "WS-10-24",
+          "application": "Outlook 2021",
+          "file_accessed": "C:\\Users\\jane.doe\\Documents\\Reports\\week24_sales_report.xlsx",
+          "file_save_time": "2024-06-15T09:20:33Z"
+        }
+      },
+      "indicators": [
+        "Email sent from authorized internal domain",
+        "SPF pass on email headers",
+        "Attachment is a standard Excel report",
+        "User logged in during normal business hours",
+        "No suspicious URLs or embedded scripts"
+      ],
+      "activity_type": "Internal business communication - report submission",
+      "business_justification": "Weekly sales reports are routinely compiled and shared with management for performance tracking.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_41",
+      "generation_timestamp": 1750029583.2853804
+    },
+    {
+      "scenario": "Employee accesses internal HR portal to review updated vacation policy and sends an internal memo to their team summarizing key points.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "source_ip": "10.12.45.67",
+        "access_method": "HTTPS",
+        "url_accessed": "https://hr.enterprise.com/policies/vacation_update",
+        "email_sent": {
+          "to": [
+            "team@enterprise.com"
+          ],
+          "subject": "Summary of Updated Vacation Policy",
+          "body": "Please review the new vacation limits effective July 1st. Let me know if you have questions.",
+          "timestamp": "2024-06-15T09:30:12Z"
+        },
+        "auth_flow": {
+          "method": "SAML with MFA",
+          "status": "success"
+        },
+        "network_traffic": {
+          "bytes_sent": 2048,
+          "bytes_received": 8192,
+          "destination_ip": "10.12.45.10",
+          "protocol": "TLS 1.2"
+        }
+      },
+      "indicators": [
+        "Accessed known internal HR portal URL",
+        "Successful multi-factor authentication",
+        "Email sent within corporate domain without external links",
+        "No suspicious patterns or phishing indicators in email content"
+      ],
+      "activity_type": "Legitimate employee information access and internal communication",
+      "business_justification": "Employees routinely review policy updates and communicate them internally to ensure awareness and compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_33",
+      "generation_timestamp": 1750029562.0862372
+    },
+    {
+      "scenario": "Routine internal email communication regarding upcoming team meeting and project updates",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@company.com",
+          "To": "team@company.com",
+          "Subject": "Weekly Team Sync - Agenda and Updates",
+          "Date": "2024-06-15T09:03:12Z",
+          "Message-ID": "<1234567890@example.com>"
+        },
+        "email_body": "Dear Team,\n\nPlease be reminded of our weekly sync scheduled for Friday at 10:00 AM. We will discuss project milestones and deliverable timelines. Kindly review the attached progress report before the meeting.\n\nBest,\nJane",
+        "attachments": [
+          {
+            "filename": "project_progress_report_June.pdf",
+            "size_bytes": 245678,
+            "hash_sha256": "a3f1c9b7e258b5db3f8f3d1a9e6e2c8f4b7d9c1a0e3f5b6d7c8a9e0f1b2c3d4e"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "192.168.1.45",
+          "dest_ip": "192.168.1.100",
+          "protocol": "SMTP",
+          "port": 587,
+          "bytes_sent": 15320,
+          "timestamp": "2024-06-15T09:03:12Z"
+        },
+        "authentication": {
+          "user": "jane.doe",
+          "auth_method": "OAuth2",
+          "login_timestamp": "2024-06-15T08:59:45Z",
+          "status": "success"
+        }
+      },
+      "indicators": [
+        "Email sent from internal corporate domain with valid DKIM signature",
+        "No embedded URLs or suspicious attachments",
+        "Consistent login and email sending timestamps",
+        "Attachment hash matches known company document repository"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Regular team updates and meeting coordination are essential for project management and team collaboration.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_39",
+      "generation_timestamp": 1750029575.679077
+    },
+    {
+      "scenario": "Employee accessing internal HR portal to download payslip and send a leave request email",
+      "technical_data": {
+        "timestamp": "2024-06-10T09:15:23Z",
+        "user": "jane.doe@company.com",
+        "login_event": {
+          "source_ip": "192.168.12.45",
+          "auth_method": "SAML SSO",
+          "status": "success"
+        },
+        "web_access": {
+          "url": "https://hr.company.com/payslips/2024/05",
+          "http_method": "GET",
+          "response_code": 200,
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        },
+        "email_event": {
+          "recipient": "hr@company.com",
+          "subject": "Leave Request for July 15-19",
+          "body_snippet": "I would like to request annual leave for the dates mentioned above due to personal reasons.",
+          "attachments": [],
+          "message_id": "<1234567890@company.com>",
+          "smtp_status": "250 OK"
+        },
+        "network_traffic": {
+          "dns_queries": [
+            "hr.company.com"
+          ],
+          "ssl_tls": {
+            "version": "TLS 1.3",
+            "cipher_suite": "TLS_AES_256_GCM_SHA384"
+          }
+        }
+      },
+      "indicators": [
+        "Successful SSO authentication from internal corporate IP",
+        "Access to corporate HR portal over HTTPS with valid session cookie",
+        "Email sent to official HR mailbox with no suspicious links or attachments",
+        "User agent string matches known corporate standard browser"
+      ],
+      "activity_type": "Employee routine portal access and internal email communication",
+      "business_justification": "Employees routinely access HR systems to retrieve payslips and submit leave requests as part of normal HR operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_29",
+      "generation_timestamp": 1750029555.360221
+    },
+    {
+      "scenario": "Internal company-wide email announcing updated data privacy policy",
+      "technical_data": {
+        "email_headers": {
+          "From": "compliance@enterprise.com",
+          "To": "all@enterprise.com",
+          "Subject": "Updated Data Privacy Policy Effective July 2024",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<20240615090000.compliance@enterprise.com>"
+        },
+        "email_body": "Dear Team,\n\nPlease review the updated Data Privacy Policy attached. This update reflects new regulatory requirements. Your compliance is mandatory.\n\nBest,\nCompliance Department",
+        "attachment": {
+          "filename": "Data_Privacy_Policy_July2024.pdf",
+          "hash_sha256": "3a5f1d8b7c9e2f4d6b8a1c7e4f8d2a3b9c0e6f7d8a1b2c3d4e5f6a7b8c9d0e1f"
+        },
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:00:05Z",
+            "source_ip": "10.12.34.56",
+            "destination_ip": "10.12.34.255",
+            "protocol": "SMTP",
+            "action": "email_sent",
+            "email_size_bytes": 24567
+          }
+        ],
+        "user_activity": {
+          "recipient_count": 350,
+          "average_open_time_seconds": 45,
+          "clicks_on_attachment": 0
+        }
+      },
+      "indicators": [
+        "Email sent from verified corporate compliance domain",
+        "No embedded links or suspicious URLs",
+        "Attachment hash matches known corporate document",
+        "Recipients are internal employees only",
+        "No requests for credentials or sensitive info"
+      ],
+      "activity_type": "Legitimate company-wide policy communication",
+      "business_justification": "Regular updates to policies are required to ensure compliance with legal standards and inform employees.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_44",
+      "generation_timestamp": 1750029595.114577
+    },
+    {
+      "scenario": "Cloud infrastructure autoscaling triggered by increased web application load during business hours",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:08:12Z",
+        "cloud_provider": "AWS",
+        "service": "EC2 Auto Scaling",
+        "scaling_action": "scale_out",
+        "trigger_metric": "CPUUtilization",
+        "metric_value": 78.5,
+        "threshold": 75,
+        "instances_before": 4,
+        "instances_after": 6,
+        "api_calls": [
+          {
+            "api": "DescribeAutoScalingGroups",
+            "status": "200 OK",
+            "request_time": "2024-06-15T14:07:59Z"
+          },
+          {
+            "api": "SetDesiredCapacity",
+            "parameters": {
+              "AutoScalingGroupName": "webapp-group",
+              "DesiredCapacity": 6
+            },
+            "status": "200 OK",
+            "request_time": "2024-06-15T14:08:10Z"
+          }
+        ],
+        "system_logs": [
+          {
+            "event": "autoscaling_activity",
+            "description": "Launching a new EC2 instance: i-0abcd1234ef567890",
+            "timestamp": "2024-06-15T14:08:12Z"
+          }
+        ],
+        "network_traffic": {
+          "new_instance_id": "i-0abcd1234ef567890",
+          "inbound_traffic_rate": "500 Mbps",
+          "outbound_traffic_rate": "480 Mbps",
+          "protocols": [
+            "HTTP",
+            "HTTPS"
+          ]
+        }
+      },
+      "indicators": [
+        "Scaling triggered by legitimate CPU utilization metric",
+        "API calls authenticated with valid IAM role",
+        "Consistent increase in inbound traffic matching business hours",
+        "No anomalous IP addresses or payloads detected"
+      ],
+      "activity_type": "Cloud Resource Management - Autoscaling",
+      "business_justification": "To maintain application performance and availability during periods of increased demand, automated scaling is configured and expected to trigger based on monitored metrics.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_38",
+      "generation_timestamp": 1750029572.2647324
+    },
+    {
+      "scenario": "Employee logs into corporate email and sends a routine internal memo about upcoming quarterly review meeting.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@company.com",
+        "source_ip": "192.168.1.45",
+        "authentication": {
+          "method": "OAuth2",
+          "status": "success",
+          "device": "Windows 10 laptop",
+          "location": "Headquarters, New York"
+        },
+        "email": {
+          "from": "jane.doe@company.com",
+          "to": [
+            "team@company.com"
+          ],
+          "subject": "Q3 Quarterly Review Meeting Schedule",
+          "body": "Dear Team, Please be reminded that the Q3 review meeting is scheduled for July 10th at 10:00 AM in Conference Room B. Kindly prepare your department reports accordingly.",
+          "attachments": [],
+          "urls": []
+        },
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 1024,
+          "bytes_received": 2048
+        }
+      },
+      "indicators": [
+        "Successful OAuth2 authentication from corporate IP range",
+        "Email sent internally without any attachments or external URLs",
+        "Standard business communication language without urgency or promotional content"
+      ],
+      "activity_type": "Legitimate internal email communication",
+      "business_justification": "Regular internal memos to coordinate team meetings are common and necessary for business operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_36",
+      "generation_timestamp": 1750029568.6946414
+    },
+    {
+      "scenario": "Employee sends an internal email requesting feedback on the Q2 sales report draft.",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@company.com",
+          "To": "sales.team@company.com",
+          "Subject": "Request for Feedback: Q2 Sales Report Draft",
+          "Date": "2024-06-10T09:15:32Z",
+          "Message-ID": "<12345abcde@company.com>"
+        },
+        "email_body": "Dear Team,\n\nPlease review the attached draft of the Q2 sales report and provide your feedback by end of day Friday.\n\nBest,\nJane",
+        "attachments": [
+          {
+            "filename": "Q2_Sales_Report_Draft_v1.docx",
+            "filetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "filesize_bytes": 245760
+          }
+        ],
+        "network_logs": {
+          "source_ip": "10.1.23.45",
+          "destination_ip": "10.1.23.100",
+          "protocol": "SMTP",
+          "port": 587,
+          "timestamp": "2024-06-10T09:15:30Z",
+          "tls": true
+        },
+        "authentication": {
+          "user": "jane.doe",
+          "method": "OAuth2",
+          "timestamp": "2024-06-10T09:10:00Z",
+          "status": "success"
+        }
+      },
+      "indicators": [
+        "Email sent from internal corporate domain",
+        "TLS encryption used for email transmission",
+        "No suspicious URLs or attachments",
+        "Attachment matches expected document type and size",
+        "Authentication successful with company SSO"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Routine collaboration and review process for quarterly sales reporting among team members.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_45",
+      "generation_timestamp": 1750029589.9514134
+    },
+    {
+      "scenario": "Employee accesses internal HR portal to review updated company leave policies and downloads the latest PDF document.",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "user": "jane.doe@examplecorp.com",
+        "source_ip": "192.168.10.24",
+        "destination_ip": "10.5.3.12",
+        "protocol": "HTTPS",
+        "url": "https://hr.examplecorp.com/policies/leave_policy_2024.pdf",
+        "http_status": 200,
+        "authentication": {
+          "method": "OAuth2",
+          "token_valid": true,
+          "session_duration_seconds": 3600
+        },
+        "device": "Windows 10, Chrome 114",
+        "activity_log": [
+          "User login successful",
+          "Accessed /policies/leave_policy_2024.pdf",
+          "File download completed",
+          "Session logout"
+        ]
+      },
+      "indicators": [
+        "HTTPS connection with valid SSL certificate",
+        "OAuth2 token validated and active session",
+        "Access to internal corporate domain",
+        "File download matches known policy document path"
+      ],
+      "activity_type": "Document Access and Review",
+      "business_justification": "Employees routinely access HR portals to stay informed about company policies which ensures compliance and awareness.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_30",
+      "generation_timestamp": 1750029551.4276004
+    },
+    {
+      "scenario": "Employee sending a routine internal email requesting project status update",
+      "technical_data": {
+        "timestamp": "2024-06-15T10:23:45Z",
+        "source_ip": "192.168.10.45",
+        "destination_ip": "192.168.10.12",
+        "email_headers": {
+          "from": "alice.jones@company.com",
+          "to": "project.team@company.com",
+          "subject": "Weekly Project Status Update",
+          "message_id": "<msg12345@company.com>",
+          "received": [
+            "from mail.company.com (192.168.10.1) by mail.company.com with ESMTP id abc123",
+            "by internal-router.company.com"
+          ]
+        },
+        "email_body": "Hi Team,\n\nPlease provide your current status updates on the Alpha project by end of day.\n\nThanks,\nAlice",
+        "network_activity": {
+          "smtp_session": {
+            "authentication": "OAuth2",
+            "encryption": "TLS 1.3",
+            "bytes_sent": 1024,
+            "bytes_received": 512
+          }
+        },
+        "user_login": {
+          "username": "alice.jones",
+          "login_time": "2024-06-15T09:55:12Z",
+          "auth_method": "SSO",
+          "device": "Windows-10-PC",
+          "location": "Headquarters"
+        }
+      },
+      "indicators": [
+        "Email originates from internal corporate domain with valid DKIM and SPF signatures",
+        "Message contains no suspicious URLs or attachments",
+        "Authentication via corporate SSO and OAuth2 tokens",
+        "Communication follows normal working hours and established project communication patterns"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Routine project coordination requires frequent status update emails among team members to ensure timely delivery and collaboration.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_32",
+      "generation_timestamp": 1750029562.009322
+    },
+    {
+      "scenario": "Employee accesses internal HR portal and sends a routine email about upcoming team meeting",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@company.com",
+        "activity": [
+          {
+            "type": "login",
+            "source_ip": "192.168.10.45",
+            "method": "SSO",
+            "status": "success"
+          },
+          {
+            "type": "web_access",
+            "url": "https://hrportal.company.com/employee-directory",
+            "response_code": 200,
+            "duration_ms": 1200
+          },
+          {
+            "type": "email_sent",
+            "to": [
+              "team@company.com"
+            ],
+            "subject": "Reminder: Weekly Team Meeting on June 16",
+            "body_snippet": "Please join the video call at 10am. Agenda: project updates and Q2 planning.",
+            "smtp_server": "smtp.company.com",
+            "message_id": "<12345@mail.company.com>"
+          }
+        ],
+        "network": {
+          "dns_queries": [
+            "hrportal.company.com"
+          ],
+          "outbound_connections": [
+            "smtp.company.com:587"
+          ]
+        }
+      },
+      "indicators": [
+        "Successful SSO login from internal IP range",
+        "Access to corporate HR portal with valid session token",
+        "Email sent via corporate SMTP server with valid DKIM signature"
+      ],
+      "activity_type": "Normal Employee Communication and Portal Access",
+      "business_justification": "Employees regularly access internal systems and communicate team activities via email for operational coordination.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_46",
+      "generation_timestamp": 1750029591.3507931
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of an application update with authentication and logging.",
+      "technical_data": {
+        "timestamp": "2024-06-10T22:00:00Z",
+        "user": "devops.engineer@cloudcorp.com",
+        "api_calls": [
+          {
+            "endpoint": "POST /deployments",
+            "authentication": {
+              "method": "OAuth2",
+              "token_valid": true,
+              "user_id": "devops.engineer"
+            },
+            "request_body": {
+              "application": "customer-portal",
+              "version": "v2.4.1",
+              "environment": "production"
+            },
+            "response_code": 202,
+            "response_time_ms": 350
+          },
+          {
+            "endpoint": "GET /deployments/status",
+            "authentication": {
+              "method": "OAuth2",
+              "token_valid": true,
+              "user_id": "devops.engineer"
+            },
+            "response_body": {
+              "status": "in_progress",
+              "deployment_id": "dep-7890"
+            },
+            "response_code": 200,
+            "response_time_ms": 120
+          }
+        ],
+        "cloud_logs": [
+          {
+            "log_level": "INFO",
+            "message": "Starting deployment v2.4.1 for customer-portal in production",
+            "timestamp": "2024-06-10T22:00:01Z"
+          },
+          {
+            "log_level": "INFO",
+            "message": "Deployment dep-7890 successfully completed",
+            "timestamp": "2024-06-10T22:07:45Z"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "192.168.100.12",
+          "destination_ip": "api.cloudprovider.com",
+          "port": 443,
+          "protocol": "HTTPS",
+          "bytes_sent": 10240,
+          "bytes_received": 15360
+        }
+      },
+      "indicators": [
+        "Successful OAuth2 authentication with valid token",
+        "API response codes 200 and 202 indicating accepted and successful operations",
+        "Info-level logs documenting deployment start and completion",
+        "Network traffic consistent with HTTPS encrypted API calls",
+        "Deployment performed during scheduled maintenance window"
+      ],
+      "activity_type": "Scheduled cloud application deployment",
+      "business_justification": "Routine updates and deployments are necessary to maintain and improve application functionality and security in production environments.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_35",
+      "generation_timestamp": 1750029565.8726947
+    },
+    {
+      "scenario": "Employee receives an internal HR email outlining upcoming policy changes and schedules a virtual meeting for Q2 planning.",
+      "technical_data": {
+        "email": {
+          "from": "hr-department@company.com",
+          "to": "all-employees@company.com",
+          "subject": "Q2 Policy Updates and Planning Meeting Invitation",
+          "date": "2024-06-12T09:15:00Z",
+          "content": "Dear Team, Please review the attached Q2 policy update document. We will hold a virtual meeting on 2024-06-15 at 10:00 AM UTC. Join via the official company Zoom link: https://zoom.company.com/meeting/1234567890",
+          "attachments": [
+            "Q2_Policy_Update.pdf"
+          ],
+          "links": [
+            "https://zoom.company.com/meeting/1234567890"
+          ]
+        },
+        "network_traffic": {
+          "source_ip": "192.168.10.25",
+          "destination_ip": "52.95.110.1",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 8420,
+          "bytes_received": 15000,
+          "timestamp": "2024-06-12T09:15:02Z"
+        },
+        "system_logs": [
+          {
+            "user": "jdoe",
+            "action": "opened_email",
+            "email_id": "msg-20240612-hr-001",
+            "timestamp": "2024-06-12T09:16:10Z"
+          },
+          {
+            "user": "jdoe",
+            "action": "joined_meeting",
+            "meeting_id": "1234567890",
+            "timestamp": "2024-06-15T10:00:05Z"
+          }
+        ]
+      },
+      "indicators": [
+        "Email domain matches corporate domain hr-department@company.com",
+        "Meeting URL is hosted on official company Zoom subdomain",
+        "No embedded suspicious attachments or links",
+        "User accesses email and meeting within business hours"
+      ],
+      "activity_type": "Internal communication and meeting scheduling",
+      "business_justification": "Routine dissemination of policy updates and coordination of team meetings to ensure compliance and operational alignment.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_37",
+      "generation_timestamp": 1750029573.9049842
+    },
+    {
+      "scenario": "Employee completes routine password reset and accesses internal HR portal",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user": "jane.doe@enterprise.com",
+        "event_sequence": [
+          {
+            "event": "password_reset_request",
+            "source_ip": "192.168.10.45",
+            "auth_method": "multi-factor authentication",
+            "status": "success"
+          },
+          {
+            "event": "login",
+            "application": "HR Portal",
+            "source_ip": "192.168.10.45",
+            "session_id": "abc123xyz",
+            "status": "success"
+          },
+          {
+            "event": "data_access",
+            "resource": "/hr/employee_records/jane.doe",
+            "access_type": "read",
+            "timestamp": "2024-06-15T09:25:12Z"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "hr.enterprise.com",
+          "port": 443,
+          "bytes_sent": 10240,
+          "bytes_received": 20480
+        }
+      },
+      "indicators": [
+        "Successful MFA during password reset",
+        "Access to authorized internal resource (HR Portal)",
+        "Consistent source IP within corporate network range",
+        "Encrypted HTTPS traffic with valid certificates"
+      ],
+      "activity_type": "User authentication and authorized portal access",
+      "business_justification": "Employees routinely reset passwords and access internal HR systems to view/update personal information as part of normal operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_27",
+      "generation_timestamp": 1750029548.00121
+    },
+    {
+      "scenario": "Cloud system performs scheduled backup and logs successful completion",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "cloud_backup": {
+          "service": "AWS Backup",
+          "resource_id": "vol-0abcd1234efgh5678",
+          "backup_job_id": "backup-job-20240615-020000",
+          "status": "COMPLETED",
+          "duration_seconds": 180,
+          "data_size_gb": 15.4
+        },
+        "logging": {
+          "log_group": "aws-backup-logs",
+          "log_stream": "backup-job-20240615-020000",
+          "entries": [
+            {
+              "timestamp": "2024-06-15T02:00:00Z",
+              "message": "Backup job started for volume vol-0abcd1234efgh5678"
+            },
+            {
+              "timestamp": "2024-06-15T02:03:00Z",
+              "message": "Backup job completed successfully, data size 15.4 GB"
+            }
+          ]
+        },
+        "monitoring": {
+          "metrics": {
+            "backup_success_count": 1,
+            "backup_failure_count": 0
+          }
+        }
+      },
+      "indicators": [
+        "Backup job completed within expected time window",
+        "No error or failure messages in logs",
+        "Regularly scheduled backup task as per IT policy",
+        "Monitoring metrics show zero failures"
+      ],
+      "activity_type": "Routine cloud backup operation",
+      "business_justification": "Scheduled backups are essential for data protection and disaster recovery in cloud environments.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_42",
+      "generation_timestamp": 1750029578.7906547
+    },
+    {
+      "scenario": "Employee sends an internal email to request approval for updated remote work policy",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@company.com",
+          "To": "hr.manager@company.com",
+          "Subject": "Request for Approval: Updated Remote Work Policy",
+          "Date": "2024-06-15T09:45:00Z",
+          "Message-ID": "<202406150945.jd1234@company.com>"
+        },
+        "email_body": "Dear HR Team,\n\nPlease find attached the updated remote work policy document reflecting recent management decisions. Kindly review and approve at your earliest convenience.\n\nBest regards,\nJane Doe\nOperations Manager",
+        "attachments": [
+          {
+            "filename": "Remote_Work_Policy_2024.pdf",
+            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "filetype": "pdf",
+            "size_bytes": 254321
+          }
+        ],
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:44:58Z",
+            "src_ip": "10.12.45.67",
+            "dest_ip": "10.12.50.22",
+            "protocol": "SMTP",
+            "action": "email_send",
+            "status": "success"
+          }
+        ],
+        "authentication": {
+          "user": "jane.doe",
+          "login_time": "2024-06-15T09:30:00Z",
+          "method": "SSO",
+          "status": "success"
+        }
+      },
+      "indicators": [
+        "Email sent from corporate domain with valid SPF/DKIM signatures",
+        "Attachment hash matches known corporate document repository",
+        "User authenticated via secure SSO before sending email",
+        "No external or suspicious links present in email body"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Routine communication between employees and HR to update and approve company policies as part of standard governance",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_31",
+      "generation_timestamp": 1750029559.9160295
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of application update",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "deployment": {
+          "environment": "production",
+          "application": "CustomerPortal",
+          "version": "v3.2.1",
+          "initiated_by": "devops.user",
+          "deployment_id": "deploy-20240615020000",
+          "steps": [
+            "Pull latest code from git repo",
+            "Run automated tests - all passed",
+            "Build Docker image tagged v3.2.1",
+            "Push image to container registry",
+            "Update Kubernetes deployment with new image",
+            "Health checks passed",
+            "Deployment marked successful"
+          ]
+        },
+        "cloud_logs": {
+          "api_calls": [
+            {
+              "timestamp": "2024-06-15T02:00:05Z",
+              "api": "kubernetes.apps/v1/Deployment/patch",
+              "status_code": 200,
+              "user": "devops.user",
+              "source_ip": "10.1.5.10"
+            },
+            {
+              "timestamp": "2024-06-15T02:05:10Z",
+              "api": "container.registry/v2/images/push",
+              "status_code": 201,
+              "user": "devops.user",
+              "source_ip": "10.1.5.10"
+            }
+          ]
+        },
+        "network": {
+          "source_ip": "10.1.5.10",
+          "destination_ip": "10.2.3.15",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_transferred": 10485760
+        }
+      },
+      "indicators": [
+        "API calls authenticated with valid tokens and originate from known DevOps IP range",
+        "Deployment steps follow standard CI/CD pipeline without errors",
+        "No suspicious URLs or unexpected file changes detected",
+        "Successful health check results post-deployment"
+      ],
+      "activity_type": "Scheduled cloud application deployment",
+      "business_justification": "Routine application updates are necessary to deliver new features, fix bugs, and maintain security compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_28",
+      "generation_timestamp": 1750029550.0248544
+    },
+    {
+      "scenario": "Employee sends a scheduled internal update email regarding quarterly sales performance to the sales team.",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@salescorp.com",
+          "To": "sales-team@salescorp.com",
+          "Subject": "Q2 Sales Performance Update",
+          "Date": "2024-06-15T09:15:30Z",
+          "Message-ID": "<12345@salescorp.com>"
+        },
+        "email_body": "Dear Team,\n\nPlease find attached the Q2 sales report showing a 12% increase compared to Q1. Keep up the great work!\n\nBest,\nJane",
+        "attachments": [
+          "Q2_Sales_Report.pdf"
+        ],
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:15:29Z",
+            "source_ip": "10.12.45.23",
+            "destination_ip": "192.168.5.12",
+            "protocol": "SMTP",
+            "action": "sent email"
+          }
+        ],
+        "authentication": {
+          "user": "jane.doe",
+          "method": "password",
+          "status": "success",
+          "timestamp": "2024-06-15T09:14:55Z",
+          "source_ip": "10.12.45.23"
+        }
+      },
+      "indicators": [
+        "email sent from internal corporate domain",
+        "no embedded links or suspicious attachments",
+        "attachment is a standard PDF report",
+        "authentication successful from known internal IP"
+      ],
+      "activity_type": "legitimate internal email communication",
+      "business_justification": "Routine sharing of sales performance reports to keep the team informed and aligned on targets.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_26",
+      "generation_timestamp": 1750029544.8286293
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment and monitoring of application update",
+      "technical_data": {
+        "deployment_logs": {
+          "timestamp_start": "2024-06-15T02:00:00Z",
+          "timestamp_end": "2024-06-15T02:15:00Z",
+          "user": "devops.lead@company.com",
+          "actions": [
+            "pulled latest container image version v2.3.1 from registry",
+            "rolled out update to 3 application instances in us-east-1",
+            "triggered health checks post-deployment"
+          ],
+          "status": "successful"
+        },
+        "monitoring_data": {
+          "timestamp": "2024-06-15T02:16:00Z",
+          "metrics": {
+            "cpu_usage_percent": 45,
+            "memory_usage_mb": 512,
+            "response_time_ms": 120,
+            "error_rate_percent": 0.01
+          },
+          "alerts": []
+        },
+        "api_calls": [
+          {
+            "timestamp": "2024-06-15T02:01:00Z",
+            "service": "kubernetes-api",
+            "action": "scale",
+            "parameters": {
+              "replicas": 3
+            },
+            "status": "success"
+          }
+        ],
+        "authentication": {
+          "user": "devops.lead",
+          "method": "MFA",
+          "timestamp": "2024-06-15T01:59:45Z",
+          "status": "success"
+        }
+      },
+      "indicators": [
+        "Deployment initiated by authenticated DevOps user with MFA",
+        "No error alerts generated post deployment",
+        "API calls consistent with documented scaling and update procedures",
+        "Monitored metrics within normal operational thresholds"
+      ],
+      "activity_type": "Cloud deployment and monitoring",
+      "business_justification": "Scheduled application update deployment to ensure software is up-to-date and secure, maintaining service availability and performance",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_31",
+      "generation_timestamp": 1750029559.9160295
+    },
+    {
+      "scenario": "IT administrator performs scheduled backup of user data on cloud storage and confirms successful completion via monitoring logs.",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "admin_user": "it.admin@examplecorp.com",
+        "source_ip": "172.16.5.10",
+        "cloud_service": "AWS S3",
+        "backup_job_id": "backup-20240615-0200",
+        "operation": "incremental backup",
+        "files_processed": 12450,
+        "data_volume_gb": 58.3,
+        "backup_status": "Success",
+        "monitoring_logs": [
+          "Backup job initiated",
+          "Files scanned: 12450",
+          "Data uploaded to s3://examplecorp-backups/2024/06/15/",
+          "Backup job completed successfully",
+          "No errors detected"
+        ],
+        "notifications": {
+          "email_sent_to": "it-team@examplecorp.com",
+          "message": "Scheduled backup completed successfully at 2024-06-15T02:15:00Z"
+        }
+      },
+      "indicators": [
+        "Backup job ID corresponds to scheduled task",
+        "Incremental backup matching previous snapshot timestamps",
+        "Successful status with zero errors in logs",
+        "Notification email sent to IT team"
+      ],
+      "activity_type": "Routine IT Backup Operation",
+      "business_justification": "Regular backups are essential for data integrity and disaster recovery, performed automatically by IT staff during off-hours.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_30",
+      "generation_timestamp": 1750029551.4286046
+    },
+    {
+      "scenario": "Customer support team processes legitimate password reset requests via secure internal portal",
+      "technical_data": {
+        "timestamp": "2024-06-15T14:45:12Z",
+        "user": "support_agent_07",
+        "requests": [
+          {
+            "request_id": "PR-20240615-1032",
+            "customer_id": "cust_459823",
+            "action": "password_reset",
+            "verification_method": "email_confirmation",
+            "status": "completed"
+          },
+          {
+            "request_id": "PR-20240615-1033",
+            "customer_id": "cust_459824",
+            "action": "password_reset",
+            "verification_method": "sms_code",
+            "status": "completed"
+          }
+        ],
+        "network_logs": {
+          "api_calls": [
+            {
+              "endpoint": "/api/v1/auth/reset_password",
+              "method": "POST",
+              "response_code": 200,
+              "latency_ms": 120
+            }
+          ],
+          "source_ips": [
+            "172.16.30.45"
+          ],
+          "user_agents": [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          ]
+        }
+      },
+      "indicators": [
+        "Requests follow standard verification protocols",
+        "API response codes indicate successful operations",
+        "Support agent authenticated correctly",
+        "User agents and IPs consistent with corporate support environment"
+      ],
+      "activity_type": "Customer support password reset processing",
+      "business_justification": "Handling password resets securely is a routine support function to ensure customer account access while maintaining security standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_43",
+      "generation_timestamp": 1750029583.0193791
+    },
+    {
+      "scenario": "Cloud infrastructure performing scheduled backup and health check of database instances",
+      "technical_data": {
+        "timestamp": "2024-06-15T02:00:00Z",
+        "cloud_provider": "AWS",
+        "service": "RDS",
+        "operation_log": {
+          "event": "Automated snapshot creation",
+          "db_instance_id": "prod-db-instance-01",
+          "snapshot_id": "rds-prod-db-instance-01-20240615-0200",
+          "start_time": "2024-06-15T02:00:00Z",
+          "end_time": "2024-06-15T02:15:30Z",
+          "status": "Success",
+          "backup_size_gb": 120,
+          "encryption": "AES-256",
+          "retention_period_days": 7
+        },
+        "health_check": {
+          "cpu_utilization_percent": 15,
+          "disk_space_free_gb": 200,
+          "connections_active": 45,
+          "latency_ms": 10,
+          "monitoring_alerts": "None"
+        },
+        "network_activity": {
+          "api_calls": [
+            {
+              "api": "CreateDBSnapshot",
+              "status_code": 200,
+              "request_id": "req-abcdef123456",
+              "caller_identity": "arn:aws:iam::123456789012:role/BackupServiceRole"
+            },
+            {
+              "api": "DescribeDBInstances",
+              "status_code": 200,
+              "request_id": "req-ghijkl789012",
+              "caller_identity": "arn:aws:iam::123456789012:role/MonitoringServiceRole"
+            }
+          ]
+        }
+      },
+      "indicators": [
+        "Backup snapshot creation initiated by authorized IAM role",
+        "All operations completed successfully without errors",
+        "Health checks report normal metrics within expected thresholds",
+        "Scheduled during off-peak hours to minimize impact on performance"
+      ],
+      "activity_type": "Routine cloud backup and monitoring",
+      "business_justification": "Regular backups and health monitoring ensure data integrity and availability for business continuity and disaster recovery compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_32",
+      "generation_timestamp": 1750029562.009322
+    },
+    {
+      "scenario": "Employee submits a routine request to IT for password reset following standard authentication procedures",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user_id": "jdoe@company.com",
+        "request_type": "password_reset",
+        "authentication_method": "multi-factor authentication",
+        "request_source_ip": "192.168.1.45",
+        "email_subject": "Password Reset Request",
+        "email_body": "Hello IT Team, I am unable to access my account and would like to reset my password. My employee ID is 45879. Thank you.",
+        "email_headers": {
+          "From": "jdoe@company.com",
+          "To": "it-support@company.com",
+          "Message-ID": "<1234567890@mail.company.com>",
+          "Received": [
+            "from mail.company.com (192.168.1.10) by mx.company.com"
+          ]
+        },
+        "system_logs": [
+          {
+            "event": "password_reset_initiated",
+            "user": "jdoe",
+            "time": "2024-06-15T09:24:02Z",
+            "status": "pending_mfa"
+          },
+          {
+            "event": "mfa_completed",
+            "user": "jdoe",
+            "time": "2024-06-15T09:24:30Z",
+            "method": "sms_code",
+            "status": "success"
+          },
+          {
+            "event": "password_reset_completed",
+            "user": "jdoe",
+            "time": "2024-06-15T09:25:10Z",
+            "status": "success"
+          }
+        ],
+        "network_traffic": {
+          "protocol": "HTTPS",
+          "destination": "auth.company.com",
+          "port": 443,
+          "data_volume_bytes": 1024,
+          "session_duration_sec": 45
+        }
+      },
+      "indicators": [
+        "MFA used before password reset completion",
+        "Request originated from internal IP range",
+        "Email headers consistent with corporate mail server",
+        "No suspicious URLs or attachments present"
+      ],
+      "activity_type": "User Account Management - Password Reset",
+      "business_justification": "Employees periodically require password resets due to access issues; this process follows secure, authenticated procedures to maintain account security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_38",
+      "generation_timestamp": 1750029572.2647324
+    },
+    {
+      "scenario": "IT administrator performing scheduled backup verification and sending policy update email to staff",
+      "technical_data": {
+        "timestamp": "2024-06-10T02:30:00Z",
+        "user": "it.admin@company.com",
+        "system_event": {
+          "backup_job_id": "backup_20240610_0230",
+          "backup_status": "success",
+          "backup_size_mb": 5120,
+          "storage_location": "s3://company-backups/daily/",
+          "duration_seconds": 1800,
+          "checksum_verified": true
+        },
+        "email_event": {
+          "recipient_list": [
+            "all-staff@company.com"
+          ],
+          "subject": "Updated IT Security Policy Effective July 1",
+          "body_snippet": "Please review the attached updated IT security policy document. Mandatory compliance starts next month.",
+          "attachments": [
+            "IT_Security_Policy_2024.pdf"
+          ],
+          "message_id": "<policyupdate20240610@company.com>",
+          "smtp_status": "250 OK"
+        },
+        "network_traffic": {
+          "api_calls": [
+            {
+              "service": "CloudBackupService",
+              "endpoint": "/validateBackup",
+              "method": "POST",
+              "response_code": 200
+            }
+          ],
+          "logging": {
+            "event_id": "evt-987654321",
+            "level": "INFO",
+            "message": "Backup verification completed successfully"
+          }
+        }
+      },
+      "indicators": [
+        "Backup job completed without errors and checksum verified",
+        "Email sent from authorized IT admin account to official distribution list",
+        "No suspicious URLs or unexpected attachments in the email",
+        "API calls to known cloud backup validation endpoint with 200 response"
+      ],
+      "activity_type": "Routine IT backup verification and internal policy communication",
+      "business_justification": "IT administrators regularly verify backups to ensure data integrity and communicate policy updates to maintain security compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_29",
+      "generation_timestamp": 1750029555.360221
+    },
+    {
+      "scenario": "IT team performs scheduled software update and system backup on cloud infrastructure",
+      "technical_data": {
+        "timestamp": "2024-06-18T02:00:00Z",
+        "cloud_provider": "AWS",
+        "region": "us-east-1",
+        "operations": [
+          {
+            "operation": "instance_update",
+            "instance_id": "i-0abcdef1234567890",
+            "update_version": "Ubuntu 22.04 LTS patch 2024.06",
+            "status": "completed",
+            "duration_seconds": 120
+          },
+          {
+            "operation": "snapshot_backup",
+            "resource": "EBS volume vol-0123456789abcdef0",
+            "snapshot_id": "snap-0a1b2c3d4e5f67890",
+            "status": "success",
+            "timestamp": "2024-06-18T02:15:30Z"
+          },
+          {
+            "operation": "monitoring_log",
+            "service": "CloudWatch",
+            "metrics_collected": [
+              "CPUUtilization",
+              "DiskReadOps"
+            ],
+            "alerts_triggered": 0
+          }
+        ],
+        "api_calls": [
+          {
+            "api": "DescribeInstances",
+            "caller": "it-admin",
+            "status_code": 200,
+            "request_id": "req-1234abcd"
+          },
+          {
+            "api": "CreateSnapshot",
+            "caller": "it-admin",
+            "status_code": 200,
+            "request_id": "req-5678efgh"
+          }
+        ]
+      },
+      "indicators": [
+        "API calls authenticated with valid IAM role",
+        "No error codes or failed operations",
+        "Scheduled window for updates and backups",
+        "No alerts triggered in monitoring logs"
+      ],
+      "activity_type": "Scheduled cloud infrastructure maintenance",
+      "business_justification": "Routine patching and backups ensure system security, stability, and data durability as part of standard IT operational procedures.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_27",
+      "generation_timestamp": 1750029548.002215
+    },
+    {
+      "scenario": "Employee sends a routine internal email requesting project status update",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:32:45Z",
+        "email": {
+          "from": "jane.doe@enterprise.com",
+          "to": [
+            "project.team@enterprise.com"
+          ],
+          "subject": "Weekly Project Status Update",
+          "body": "Hi team,\nPlease share your progress on the current sprint by EOD tomorrow.\nThanks,\nJane",
+          "headers": {
+            "Received": [
+              "from mail.enterprise.com (10.0.0.5) by mail.enterprise.com (10.0.0.5) with ESMTP id abc123"
+            ],
+            "Message-ID": "<20240615093245.jane.doe@enterprise.com>"
+          }
+        },
+        "network": {
+          "source_ip": "192.168.10.34",
+          "destination_ip": "10.0.0.5",
+          "protocol": "SMTP",
+          "port": 587,
+          "tls": true
+        },
+        "authentication": {
+          "method": "OAuth2",
+          "status": "Success",
+          "user": "jane.doe"
+        }
+      },
+      "indicators": [
+        "Email sent from corporate domain with valid DKIM and SPF checks",
+        "No embedded URLs or suspicious attachments",
+        "Authenticated user session with multi-factor authentication",
+        "Email content is professional and matches internal communication style"
+      ],
+      "activity_type": "Internal business communication",
+      "business_justification": "Regular project management requires routine status update requests via email to coordinate team efforts.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_42",
+      "generation_timestamp": 1750029578.7906547
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of application update",
+      "technical_data": {
+        "timestamp": "2024-06-16T02:00:00Z",
+        "cloud_activity": {
+          "user": "devops.engineer@company.com",
+          "action": "deploy_application",
+          "application": "customer-portal-api",
+          "version": "v2.3.1",
+          "environment": "production",
+          "deployment_id": "deploy-789345",
+          "api_calls": [
+            {
+              "method": "POST",
+              "endpoint": "/deployments",
+              "status_code": 201,
+              "request_payload": {
+                "version": "v2.3.1",
+                "environment": "production",
+                "rollback": false
+              },
+              "response_time_ms": 512
+            },
+            {
+              "method": "GET",
+              "endpoint": "/deployments/deploy-789345/status",
+              "status_code": 200,
+              "response_payload": {
+                "status": "success",
+                "start_time": "2024-06-16T02:00:10Z",
+                "end_time": "2024-06-16T02:02:45Z"
+              },
+              "response_time_ms": 120
+            }
+          ]
+        },
+        "system_logs": [
+          {
+            "time": "2024-06-16T02:00:05Z",
+            "message": "Starting deployment of customer-portal-api v2.3.1"
+          },
+          {
+            "time": "2024-06-16T02:02:50Z",
+            "message": "Deployment completed successfully with no errors"
+          }
+        ],
+        "network": {
+          "source_ip": "10.20.30.40",
+          "destination_ip": "cloudprovider.api.endpoint",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 1024,
+          "bytes_received": 2048
+        },
+        "authentication": {
+          "method": "OAuth 2.0",
+          "token_issued": "2024-06-16T01:59:59Z",
+          "token_expiry": "2024-06-16T03:59:59Z",
+          "scopes": [
+            "deployments:write",
+            "deployments:read"
+          ]
+        }
+      },
+      "indicators": [
+        "Deployment initiated by authorized DevOps engineer",
+        "OAuth token valid with appropriate scopes",
+        "HTTPS communication over standard port 443",
+        "Deployment logs show successful completion without errors",
+        "Activity occurs during scheduled maintenance window"
+      ],
+      "activity_type": "Scheduled cloud application deployment",
+      "business_justification": "Regular updates and patches are deployed to maintain application security and performance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_41",
+      "generation_timestamp": 1750029583.2863877
+    },
+    {
+      "scenario": "Employee submits a routine request for IT support to reset a forgotten password",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@company.com",
+          "To": "it.support@company.com",
+          "Subject": "Password Reset Request",
+          "Date": "2024-06-15T09:23:44Z",
+          "Message-ID": "<1234567890@company.com>"
+        },
+        "email_body": "Hello IT Team,\n\nI am unable to access my account after multiple attempts to sign in. Please assist with resetting my password.\n\nThank you,\nJane Doe",
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T09:25:01Z",
+            "event": "Password reset request received",
+            "user": "jane.doe",
+            "service": "IT Support Ticket System",
+            "ticket_id": "TKT-20240615-00123"
+          },
+          {
+            "timestamp": "2024-06-15T09:30:05Z",
+            "event": "Password reset performed",
+            "user": "jane.doe",
+            "performed_by": "it.admin1",
+            "service": "Active Directory"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "192.168.10.45",
+          "destination_ip": "10.1.5.20",
+          "protocol": "HTTPS",
+          "port": 443,
+          "request": "POST /reset-password HTTP/1.1",
+          "response_code": 200,
+          "response_time_ms": 150
+        },
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:33:10Z",
+            "user": "jane.doe",
+            "auth_method": "password",
+            "status": "success",
+            "source_ip": "192.168.10.45"
+          }
+        ]
+      },
+      "indicators": [
+        "Email sent from internal company domain",
+        "Support ticket created and tracked in IT system",
+        "Password reset performed by authorized IT personnel",
+        "Successful login after password reset",
+        "Network traffic consistent with secure HTTPS protocol"
+      ],
+      "activity_type": "Routine IT support and password reset",
+      "business_justification": "Employees occasionally forget passwords and require IT assistance to maintain secure access to corporate systems.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_48",
+      "generation_timestamp": 1750029603.141683
+    },
+    {
+      "scenario": "Employee accesses company HR portal to review benefits information and sends an internal email to HR with a question about health insurance coverage.",
+      "technical_data": {
+        "timestamp": "2024-06-15T09:23:45Z",
+        "user_id": "employee123",
+        "source_ip": "192.168.10.45",
+        "login_event": {
+          "event_type": "login_success",
+          "auth_method": "SAML SSO",
+          "device": "Windows 10 workstation",
+          "location": "New York Office"
+        },
+        "web_access": {
+          "url": "https://hr.company.com/benefits/2024",
+          "http_method": "GET",
+          "response_code": 200,
+          "session_duration_seconds": 420
+        },
+        "email_sent": {
+          "recipient": "hr@company.com",
+          "subject": "Question regarding health insurance coverage",
+          "body_snippet": "Could you please clarify if dental is included in the standard plan?",
+          "email_protocol": "SMTP",
+          "message_id": "<1001.abc@company.com>"
+        },
+        "network_traffic": {
+          "dns_queries": [
+            "hr.company.com"
+          ],
+          "tls_handshake": true,
+          "no_malicious_indicators": true
+        }
+      },
+      "indicators": [
+        "Successful SSO login from corporate IP",
+        "Access to internal HR portal over HTTPS with valid session",
+        "Internal email sent within corporate domain",
+        "No suspicious URLs or attachments",
+        "Normal session timing and user behavior"
+      ],
+      "activity_type": "Employee legitimate portal access and internal communication",
+      "business_justification": "Employees regularly review benefits info and communicate with HR for clarifications as part of normal business operations.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_25",
+      "generation_timestamp": 1750029544.4001298
+    },
+    {
+      "scenario": "Customer support team responding to user password reset request via official ticketing system",
+      "technical_data": {
+        "support_ticket": {
+          "ticket_id": "TCKT-20240614-4578",
+          "created_at": "2024-06-14T14:23:10Z",
+          "updated_at": "2024-06-14T14:45:00Z",
+          "request_type": "Password Reset",
+          "customer_id": "cust_839201",
+          "communication_channel": "Secure Support Portal"
+        },
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-14T14:44:00Z",
+            "user_id": "support_agent_12",
+            "action": "authenticated",
+            "auth_method": "MFA",
+            "source_ip": "192.168.10.22"
+          },
+          {
+            "timestamp": "2024-06-14T14:44:30Z",
+            "user_id": "cust_839201",
+            "action": "password_reset",
+            "method": "temporary_link_sent",
+            "source_ip": "203.0.113.45"
+          }
+        ],
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-14T14:44:35Z",
+            "source_ip": "192.168.10.22",
+            "destination_ip": "10.0.0.15",
+            "protocol": "HTTPS",
+            "action": "API_call",
+            "endpoint": "/user/reset-password",
+            "status_code": 200
+          }
+        ]
+      },
+      "indicators": [
+        "Support agent authenticated with MFA",
+        "Password reset initiated via secure portal",
+        "Temporary reset link used within standard expiration time",
+        "No suspicious IP addresses involved",
+        "Ticketing system logs match user request and response"
+      ],
+      "activity_type": "Customer support password reset process",
+      "business_justification": "Password resets are a routine and necessary support activity to maintain user account access and security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_44",
+      "generation_timestamp": 1750029595.114577
+    },
+    {
+      "scenario": "Employee receives and replies to an internal email request for document review ahead of quarterly meeting",
+      "technical_data": {
+        "email_headers": {
+          "From": "jane.doe@company.com",
+          "To": "team@company.com",
+          "Subject": "Q2 Financial Report Draft Review",
+          "Date": "2024-06-15T09:23:45Z",
+          "Message-ID": "<12345.67890@company.com>"
+        },
+        "email_body": "Dear Team,\nPlease review the attached Q2 financial report draft and provide feedback by EOD Wednesday.\nBest regards,\nJane Doe",
+        "attachments": [
+          "Q2_Financial_Report_Draft_v3.xlsx"
+        ],
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:23:46Z",
+            "source_ip": "192.168.10.45",
+            "destination_ip": "10.10.10.5",
+            "protocol": "SMTP",
+            "action": "sent_email"
+          },
+          {
+            "timestamp": "2024-06-15T09:25:10Z",
+            "user": "jane.doe",
+            "action": "login",
+            "auth_method": "Kerberos",
+            "source_ip": "192.168.10.45",
+            "status": "success"
+          },
+          {
+            "timestamp": "2024-06-15T09:30:00Z",
+            "user": "john.smith",
+            "action": "document_open",
+            "document_name": "Q2_Financial_Report_Draft_v3.xlsx",
+            "application": "Microsoft Excel",
+            "device_id": "COMP-1001"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originated from internal company domain with valid DKIM signature",
+        "User login authenticated successfully via corporate SSO",
+        "Document accessed using standard office application on corporate device"
+      ],
+      "activity_type": "Internal business email communication and document review",
+      "business_justification": "Routine preparation and review of financial reports before scheduled quarterly meetings is standard business practice.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_34",
+      "generation_timestamp": 1750029561.1387806
+    },
+    {
+      "scenario": "Cloud DevOps team performs scheduled deployment of application update and monitors system logs for errors",
+      "technical_data": {
+        "timestamp": "2024-06-15T22:10:03Z",
+        "user": "devops_bot@company.com",
+        "event": "Application Deployment",
+        "cloud_provider": "AWS",
+        "api_calls": [
+          {
+            "service": "ECS",
+            "action": "UpdateService",
+            "parameters": {
+              "cluster": "prod-cluster",
+              "service": "web-app",
+              "taskDefinition": "web-app:42"
+            },
+            "response_status": 200
+          },
+          {
+            "service": "CloudWatch",
+            "action": "GetLogEvents",
+            "parameters": {
+              "logGroupName": "/aws/ecs/prod-web-app",
+              "limit": 50
+            },
+            "response_status": 200
+          }
+        ],
+        "network": {
+          "source_ip": "35.168.55.77",
+          "destination_ip": "ecs.amazonaws.com",
+          "protocol": "HTTPS"
+        },
+        "monitoring": {
+          "errors_detected": 0,
+          "response_time_ms": 150
+        }
+      },
+      "indicators": [
+        "API requests authenticated with valid IAM role permissions",
+        "Deployment triggered during scheduled maintenance window",
+        "No error logs reported post deployment",
+        "Use of official cloud provider endpoints and standard SDK calls"
+      ],
+      "activity_type": "Scheduled DevOps Deployment and Monitoring",
+      "business_justification": "Regular application updates and monitoring ensure system stability and feature enhancements.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_49",
+      "generation_timestamp": 1750029599.5631444
+    },
+    {
+      "scenario": "Cloud infrastructure team performs a scheduled auto-scaling event to handle increased web traffic during a product launch.",
+      "technical_data": {
+        "cloud_events": [
+          {
+            "timestamp": "2024-06-20T14:00:00Z",
+            "event_type": "AutoScaling:ScaleOut",
+            "resource_id": "web-server-group-01",
+            "details": {
+              "previous_instance_count": 5,
+              "new_instance_count": 8,
+              "trigger_metric": "CPUUtilization",
+              "trigger_value": 75
+            }
+          }
+        ],
+        "api_calls": [
+          {
+            "timestamp": "2024-06-20T14:00:01Z",
+            "user_identity": "cloud-admin",
+            "api": "DescribeAutoScalingGroups",
+            "request_id": "req-789xyz",
+            "status": "200 OK"
+          }
+        ],
+        "monitoring_logs": [
+          {
+            "timestamp": "2024-06-20T14:00:05Z",
+            "metric": "CPUUtilization",
+            "value": 78,
+            "resource": "web-server-group-01"
+          }
+        ],
+        "network_activity": [
+          {
+            "timestamp": "2024-06-20T14:00:10Z",
+            "source_ip": "10.20.30.40",
+            "destination_ip": "10.20.30.41",
+            "protocol": "HTTPS",
+            "action": "health check"
+          }
+        ]
+      },
+      "indicators": [
+        "scale out triggered by monitored CPU usage thresholds",
+        "API calls authenticated by authorized cloud admin",
+        "health checks confirming new instance availability",
+        "timestamps consistent with scheduled load increase"
+      ],
+      "activity_type": "legitimate cloud auto-scaling operation",
+      "business_justification": "Ensures the web application maintains performance and availability during anticipated high traffic from product launch.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_26",
+      "generation_timestamp": 1750029544.8286293
+    },
+    {
+      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version with monitoring enabled and logs verified post-deployment.",
+      "technical_data": {
+        "deployment": {
+          "service_name": "payment-processing-api",
+          "version": "v2.3.0",
+          "timestamp_start": "2024-06-13T22:00:00Z",
+          "timestamp_end": "2024-06-13T22:15:00Z",
+          "deployed_by": "devops-automation",
+          "status": "success"
+        },
+        "cloud_api_calls": [
+          {
+            "method": "POST",
+            "endpoint": "/api/deployments",
+            "authentication": "OAuth2",
+            "user": "devops-automation",
+            "timestamp": "2024-06-13T22:00:01Z",
+            "response_code": 201
+          },
+          {
+            "method": "GET",
+            "endpoint": "/api/monitoring/metrics",
+            "user": "devops-automation",
+            "timestamp": "2024-06-13T22:16:00Z",
+            "response_code": 200
+          }
+        ],
+        "logs": {
+          "deployment_logs": [
+            "2024-06-13T22:02:00Z - Pulling image payment-processing-api:v2.3.0",
+            "2024-06-13T22:07:30Z - Deployment started on cluster node-15",
+            "2024-06-13T22:14:50Z - Health checks passed successfully",
+            "2024-06-13T22:15:00Z - Deployment completed"
+          ],
+          "monitoring_logs": [
+            "2024-06-13T22:16:10Z - CPU usage normal at 45%",
+            "2024-06-13T22:16:10Z - Memory consumption stable at 512MB"
+          ]
+        }
+      },
+      "indicators": [
+        "Deployment initiated by authorized DevOps automation account",
+        "OAuth2 authentication successfully validated",
+        "Health checks passed with no errors",
+        "Post-deployment monitoring shows normal resource usage"
+      ],
+      "activity_type": "Scheduled cloud service deployment and monitoring",
+      "business_justification": "Routine software update to improve service functionality and security, following standard DevOps best practices.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "Phishing and Spam Email Campaigns_ben_37",
+      "generation_timestamp": 1750029573.9049842
+    }
+  ],
+  "metadata": {
+    "total_samples": 50,
+    "new_samples_added": 50,
+    "new_malicious_samples": 0,
+    "new_benign_samples": 50,
+    "generation_method": "parallel",
+    "generation_stats": {
+      "total_generated": 100,
+      "duplicates_filtered": 50,
+      "failed_generations": 0,
+      "successful_batches": 25,
+      "total_api_calls": 50,
+      "generation_start_time": 1750029510.8225937,
+      "generation_end_time": 1750029603.145682
+    },
+    "duplicate_detection_stats": {
+      "enabled": true,
+      "total_hashes": 177,
+      "check_fields": [
+        "scenario",
+        "technical_data",
+        "indicators"
+      ]
+    },
+    "generation_timestamp": "2025-06-15 19:20:03",
+    "total_generation_time": 92.32308840751648,
+    "samples_per_minute": 32.4945801938289,
+    "max_workers": 4,
+    "batch_size": 2
+  }
+}
