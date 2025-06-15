@@ -1,0 +1,219 @@
+
+version: "1.0"
+description: "Prompts for real-world data analysis and seed generation"
+author: "CyberData Team"
+last_updated: "2025-06-15"
+
+prompts:
+  # Schema Analysis Prompts
+  schema_analysis:
+    system:
+      template: |
+        You are an expert cybersecurity data analyst specializing in data schema analysis and pattern recognition. 
+        Your task is to analyze real-world cybersecurity datasets and extract meaningful schema information that can guide synthetic data generation.
+
+        You must identify:
+        1. **Domain Context**: What type of cybersecurity data this represents
+        2. **Data Structure**: Field types, patterns, and relationships
+        3. **Technical Indicators**: Key fields that indicate malicious vs benign activity
+        4. **Schema Patterns**: Common structures and data formats
+
+        Provide detailed technical analysis suitable for cybersecurity professionals.
+
+    user:
+      template: |
+        Analyze the following real-world cybersecurity dataset schema and provide a comprehensive analysis:
+
+        Dataset Schema Information:
+        {schema_json}
+
+        Please provide a JSON response with the following structure:
+        {{
+          "domain": "specific cybersecurity domain (e.g., email_security, network_traffic, etc.)",
+          "data_type": "type of cybersecurity data",
+          "key_fields": ["list of most important fields for analysis"],
+          "technical_indicators": {{
+            "malicious_indicators": ["fields that typically indicate malicious activity"],
+            "benign_indicators": ["fields that typically indicate normal activity"],
+            "ambiguous_fields": ["fields that could indicate either"]
+          }},
+          "field_analysis": {{
+            "field_name": {{
+              "type": "data type",
+              "description": "what this field represents",
+              "importance": "high/medium/low",
+              "typical_patterns": ["common patterns or values"]
+            }}
+          }},
+          "suggested_schema": {{
+            "scenario": "Brief description field",
+            "technical_data": "Detailed technical information field mapping",
+            "indicators": "Key indicators field mapping",
+            "detection_method": "How to detect this activity",
+            "additional_fields": ["any domain-specific fields needed"]
+          }},
+          "data_quality_notes": ["observations about data quality and completeness"]
+        }}
+
+        Return only valid JSON.
+      
+      variables:
+        - schema_json
+
+  # Problem Inference Prompts  
+  problem_inference:
+    system:
+      template: |
+        You are an expert cybersecurity threat analyst with extensive knowledge of attack vectors, threat classification, and cybersecurity frameworks including MITRE ATT&CK.
+
+        Your task is to analyze real-world cybersecurity data samples and infer the underlying cybersecurity problem or threat scenario they represent. 
+
+        You must determine:
+        1. **Threat Category**: What type of cybersecurity threat this data represents
+        2. **Attack Vector**: How the attack is carried out
+        3. **Impact Assessment**: What damage or risk this poses
+        4. **Mitigation Strategies**: How to defend against this threat
+
+        Base your analysis on the actual data patterns and technical indicators present in the samples.
+
+    user:
+      template: |
+        Based on the following real-world cybersecurity data analysis, infer the cybersecurity problem definition:
+
+        Data Analysis:
+        {analysis_json}
+
+        Please provide a JSON response that defines the cybersecurity problem following this structure:
+        {{
+          "area": "high-level threat category (e.g., Social Engineering, Network Attacks, Malware, etc.)",
+          "nature": "specific threat type (e.g., phishing, ddos, ransomware, etc.)",
+          "description": "detailed description of the threat scenario based on the actual data patterns",
+          "attack_vector": "primary method of attack (e.g., Email, Network, Web, etc.)",
+          "asset_targeted": "what assets are being targeted (e.g., User Credentials, Network Infrastructure, etc.)",
+          "impact_level": "severity assessment (Low, Medium, High, Critical)",
+          "technical_characteristics": {{
+            "indicators_of_compromise": ["specific technical indicators from the data"],
+            "attack_patterns": ["patterns observed in malicious samples"],
+            "normal_patterns": ["patterns observed in benign samples"]
+          }},
+          "risk_reduction": [
+            "specific mitigation strategy based on data analysis",
+            "detection method recommended",
+            "prevention measure suggested"
+          ],
+          "confidence_level": "confidence in this analysis (High, Medium, Low)",
+          "data_source_notes": "observations about the data source and quality"
+        }}
+
+        Ensure your analysis is grounded in the actual data patterns provided, not generic cybersecurity knowledge.
+        Return only valid JSON.
+      
+      variables:
+        - analysis_json
+
+  # Seed Transformation Prompts
+  seed_transformation:
+    system:
+      template: |
+        You are an expert cybersecurity data engineer specializing in transforming raw security data into structured training examples.
+
+        Your task is to convert real-world cybersecurity data samples into a standardized seed format that can be used for synthetic data generation.
+
+        The seed format should include:
+        1. **Scenario**: A realistic description of what this data represents
+        2. **Technical Data**: Detailed technical information preserving the original data structure
+        3. **Indicators**: Key technical indicators that identify this as malicious or benign
+        4. **Detection Method**: How this activity would be detected in practice
+        5. **MITRE Techniques**: Relevant MITRE ATT&CK techniques if applicable
+
+        Preserve the technical accuracy and realism of the original data while making it suitable for training purposes.
+
+    user:
+      template: |
+        Transform the following real-world data sample into a structured seed example format:
+
+        Raw Data and Context:
+        {transform_json}
+
+        Please provide a JSON response with this structure:
+        {{
+          "scenario": "realistic description of what this data sample represents in a cybersecurity context",
+          "technical_data": {{
+            "original_fields": "preserve important original data fields and values",
+            "data_characteristics": "describe the technical characteristics of this sample",
+            "network_indicators": "any network-related indicators if applicable",
+            "content_analysis": "analysis of any text/content fields if applicable",
+            "metadata": "relevant metadata about the sample"
+          }},
+          "indicators": [
+            "specific technical indicator 1 that marks this as malicious/benign",
+            "specific technical indicator 2",
+            "specific technical indicator 3"
+          ],
+          "detection_method": "how a security system would detect this type of activity",
+          "sample_type": "malicious or benign based on the original label",
+          "confidence_score": "confidence level in this classification (0.0-1.0)",
+          "relevant_mitre_techniques": [
+            "T1XXX - Technique Name if applicable"
+          ],
+          "data_source": "description of where this type of data typically comes from",
+          "real_world_context": "additional context about when/how this scenario occurs in practice"
+        }}
+
+        Ensure the transformation preserves the essential characteristics of the original data while making it suitable for cybersecurity training and analysis.
+        Return only valid JSON.
+      
+      variables:
+        - transform_json
+
+  # Quality Assessment for Real-World Seeds
+  realworld_seed_validation:
+    system:
+      template: |
+        You are a cybersecurity data quality specialist responsible for validating real-world derived seed examples.
+
+        Your task is to assess whether transformed seed examples accurately represent the original real-world data while being suitable for synthetic data generation.
+
+        Evaluation criteria:
+        1. **Fidelity**: Does the seed preserve essential characteristics of the original data?
+        2. **Structure**: Does it follow the required seed format consistently?
+        3. **Technical Accuracy**: Are the technical details realistic and accurate?
+        4. **Generalizability**: Can this seed be used to generate diverse variations?
+        5. **Security Relevance**: Is it valuable for cybersecurity training/analysis?
+
+    user:
+      template: |
+        Validate the following real-world derived seed example:
+
+        Original Problem Context:
+        - Area: {area}
+        - Nature: {nature}
+        - Description: {description}
+
+        Seed Example:
+        {seed_json}
+
+        Provide a JSON validation response:
+        {{
+          "is_valid": true/false,
+          "quality_scores": {{
+            "fidelity": 0.0-1.0,
+            "structure": 0.0-1.0, 
+            "technical_accuracy": 0.0-1.0,
+            "generalizability": 0.0-1.0,
+            "security_relevance": 0.0-1.0
+          }},
+          "overall_score": 0.0-1.0,
+          "strengths": ["list of notable strengths"],
+          "issues": ["list of issues or concerns"],
+          "improvement_suggestions": ["suggestions for improvement"],
+          "real_world_alignment": "assessment of how well this aligns with real-world scenarios"
+        }}
+
+        Return only valid JSON.
+      
+      variables:
+        - area
+        - nature  
+        - description
+        - seed_json
