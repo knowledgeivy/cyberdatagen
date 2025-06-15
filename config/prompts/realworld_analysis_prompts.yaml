@@ -1,60 +1,76 @@
-
 version: "1.0"
 description: "Prompts for real-world data analysis and seed generation"
 author: "CyberData Team"
 last_updated: "2025-06-15"
 
 prompts:
-  # Schema Analysis Prompts
-  schema_analysis:
+  # Schema Preservation Analysis Prompts
+  schema_preservation:
     system:
       template: |
-        You are an expert cybersecurity data analyst specializing in data schema analysis and pattern recognition. 
-        Your task is to analyze real-world cybersecurity datasets and extract meaningful schema information that can guide synthetic data generation.
+        You are an expert data engineer specializing in maintaining data schema consistency for machine learning pipelines. 
+        Your task is to analyze real-world datasets and provide detailed instructions for generating synthetic data that preserves the EXACT same schema, column names, data types, and value patterns.
 
         You must identify:
-        1. **Domain Context**: What type of cybersecurity data this represents
-        2. **Data Structure**: Field types, patterns, and relationships
-        3. **Technical Indicators**: Key fields that indicate malicious vs benign activity
-        4. **Schema Patterns**: Common structures and data formats
+        1. **Exact Column Structure**: All column names and their precise data types
+        2. **Value Patterns**: Typical ranges, formats, and constraints for each column
+        3. **Label Encoding**: Exact mapping between labels and their numeric values
+        4. **Data Relationships**: Correlations and dependencies between columns
+        5. **Generation Rules**: Specific instructions for maintaining schema consistency
 
-        Provide detailed technical analysis suitable for cybersecurity professionals.
+        Focus on preserving the original data structure completely for downstream ML compatibility.
 
     user:
       template: |
-        Analyze the following real-world cybersecurity dataset schema and provide a comprehensive analysis:
+        Analyze the following dataset for schema preservation and provide generation instructions:
 
         Dataset Schema Information:
         {schema_json}
 
         Please provide a JSON response with the following structure:
         {{
-          "domain": "specific cybersecurity domain (e.g., email_security, network_traffic, etc.)",
-          "data_type": "type of cybersecurity data",
-          "key_fields": ["list of most important fields for analysis"],
-          "technical_indicators": {{
-            "malicious_indicators": ["fields that typically indicate malicious activity"],
-            "benign_indicators": ["fields that typically indicate normal activity"],
-            "ambiguous_fields": ["fields that could indicate either"]
+          "schema_preservation_analysis": {{
+            "original_columns": ["exact list of column names in order"],
+            "column_dtypes": {{"column_name": "exact_dtype"}},
+            "label_column": "name of the label column",
+            "label_encoding": {{"label_value": numeric_code}},
+            "preserve_exact_schema": true
           }},
-          "field_analysis": {{
-            "field_name": {{
-              "type": "data type",
-              "description": "what this field represents",
-              "importance": "high/medium/low",
-              "typical_patterns": ["common patterns or values"]
+          "column_analysis": {{
+            "column_name": {{
+              "dtype": "exact data type to preserve",
+              "value_patterns": ["common patterns or formats"],
+              "constraints": {{
+                "min_value": "if numeric",
+                "max_value": "if numeric", 
+                "allowed_values": ["if categorical"],
+                "format_pattern": "if string with specific format"
+              }},
+              "generation_instructions": "how to generate realistic values for this column",
+              "relationship_to_label": "how this column correlates with malicious/benign classification"
             }}
           }},
-          "suggested_schema": {{
-            "scenario": "Brief description field",
-            "technical_data": "Detailed technical information field mapping",
-            "indicators": "Key indicators field mapping",
-            "detection_method": "How to detect this activity",
-            "additional_fields": ["any domain-specific fields needed"]
+          "generation_guidelines": {{
+            "maintain_column_order": true,
+            "preserve_data_types": true,
+            "maintain_label_encoding": true,
+            "value_generation_strategy": {{
+              "malicious_samples": "strategy for generating malicious data with realistic column values",
+              "benign_samples": "strategy for generating benign data with realistic column values"
+            }},
+            "statistical_preservation": {{
+              "maintain_distributions": true,
+              "preserve_correlations": true,
+              "keep_value_ranges": true
+            }}
           }},
-          "data_quality_notes": ["observations about data quality and completeness"]
+          "quality_checks": [
+            "checks to ensure generated data matches original schema",
+            "validation rules for maintaining data consistency"
+          ]
         }}
 
+        CRITICAL: The synthetic data must have identical column names, data types, and label encoding as the original data.
         Return only valid JSON.
       
       variables:

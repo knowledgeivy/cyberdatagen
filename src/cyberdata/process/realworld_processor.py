@@ -1,4 +1,4 @@
-# cyberdata/process/realworld_sampler.py
+# cyberdata/process/realworld_processor.py
 
 import gzip
 import json
@@ -116,48 +116,75 @@ def stratified_sample(df: pd.DataFrame,
     return malicious_samples, benign_samples
 
 
-def analyze_data_schema(df: pd.DataFrame) -> Dict:
+def analyze_data_schema(df: pd.DataFrame, label_column: str = "label") -> Dict:
     """
-    Analyze the data schema and patterns using LLM.
+    Analyze the data schema and patterns using LLM with focus on preserving original structure.
     
     Args:
         df (pd.DataFrame): Input dataframe
+        label_column (str): Name of the label column
         
     Returns:
         Dict: Schema analysis results
     """
-    logger.info("Analyzing data schema with LLM")
+    logger.info("Analyzing data schema with LLM for schema preservation")
     
-    # Prepare data summary for LLM
+    # Prepare comprehensive data summary for LLM
     schema_info = {
         "columns": list(df.columns),
         "dtypes": {col: str(dtype) for col, dtype in df.dtypes.items()},
         "shape": df.shape,
-        "sample_records": df.head(3).to_dict('records')
+        "label_column": label_column,
+        "label_distribution": df[label_column].value_counts().to_dict() if label_column in df.columns else {},
+        "sample_records": {
+            "malicious_examples": df[df[label_column] == 1].head(2).to_dict('records') if label_column in df.columns else [],
+            "benign_examples": df[df[label_column] == 0].head(2).to_dict('records') if label_column in df.columns else []
+        },
+        "column_statistics": {}
     }
     
-    # Convert to JSON for prompt
-    schema_json = json.dumps(schema_info, indent=2)
+    # Add column-level statistics
+    for col in df.columns:
+        col_data = df[col]
+        stats = {
+            "dtype": str(col_data.dtype),
+            "null_count": int(col_data.isnull().sum()),
+            "unique_count": int(col_data.nunique()),
+            "sample_values": col_data.dropna().head(3).tolist()
+        }
+        
+        # Add numeric statistics if applicable
+        if col_data.dtype in ['int64', 'float64', 'int32', 'float32']:
+            stats.update({
+                "min": float(col_data.min()) if not col_data.empty else None,
+                "max": float(col_data.max()) if not col_data.empty else None,
+                "mean": float(col_data.mean()) if not col_data.empty else None
+            })
+        
+        schema_info["column_statistics"][col] = stats
     
-    # Load prompts from XML
+    # Convert to JSON for prompt
+    schema_json = json.dumps(schema_info, indent=2, default=str)
+    
+    # Load prompts from YAML
     system_prompt = load_prompt(
         "realworld_analysis_prompts",
-        "prompts.schema_analysis.system.template"
+        "prompts.schema_preservation.system.template"
     )
     
     user_prompt = load_prompt(
         "realworld_analysis_prompts",
-        "prompts.schema_analysis.user.template",
+        "prompts.schema_preservation.user.template",
         schema_json=schema_json
     )
     
     # Call LLM for schema analysis
-    logger.info("Calling LLM for schema analysis")
+    logger.info("Calling LLM for schema preservation analysis")
     response_content = process_llm_request(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model_name=MODEL_NAME,
-        temperature=0.3
+        temperature=0.1  # Low temperature for consistent schema analysis
     )
     
     try:
@@ -170,18 +197,26 @@ def analyze_data_schema(df: pd.DataFrame) -> Dict:
                     response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
         
         schema_analysis = json.loads(response_content)
-        logger.info("Successfully parsed schema analysis")
+        schema_analysis['original_columns'] = list(df.columns)  # Preserve original column order
+        schema_analysis['label_column'] = label_column
+        logger.info("Successfully parsed schema preservation analysis")
         return schema_analysis
         
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse schema analysis: {str(e)}")
-        # Return basic schema if LLM parsing fails
+        # Return basic schema preserving the original structure
         return {
             "domain": "cybersecurity",
-            "data_type": "unknown",
+            "data_type": "tabular_data",
+            "original_columns": list(df.columns),
+            "label_column": label_column,
+            "preserve_schema": True,
             "key_fields": list(df.columns),
-            "technical_indicators": [],
-            "suggested_schema": {}
+            "generation_instructions": {
+                "maintain_column_names": True,
+                "maintain_data_types": True,
+                "maintain_label_encoding": True
+            }
         }
 
 
@@ -262,7 +297,7 @@ def generate_seed_examples(malicious_samples: pd.DataFrame,
                          problem_definition: Dict,
                          schema_analysis: Dict) -> List[Dict]:
     """
-    Generate seed examples using real-world data and LLM transformation.
+    Generate seed examples that preserve the original data schema.
     
     Args:
         malicious_samples (pd.DataFrame): Malicious data samples
@@ -271,92 +306,131 @@ def generate_seed_examples(malicious_samples: pd.DataFrame,
         schema_analysis (Dict): Schema analysis results
         
     Returns:
-        List[Dict]: Generated seed examples
+        List[Dict]: Generated seed examples maintaining original schema
     """
-    logger.info("Generating seed examples from real-world data")
+    logger.info("Generating schema-preserving seed examples")
     
-    seed_examples = []
+    # Create schema template for synthetic generation
+    all_data = pd.concat([malicious_samples, benign_samples], ignore_index=True)
+    schema_template = extract_schema_template(all_data, schema_analysis)
+    
+    # Create seed examples that include both original samples and generation instructions
+    seed_examples = create_schema_preserving_seeds(
+        malicious_samples, benign_samples, schema_analysis, problem_definition
+    )
+    
+    # Add generation instructions for synthetic data that will maintain schema
+    generation_metadata = {
+        'schema_template': schema_template,
+        'generation_instructions': {
+            'preserve_column_names': True,
+            'preserve_data_types': True,
+            'preserve_label_encoding': True,
+            'maintain_statistical_properties': True,
+            'column_relationships': schema_analysis.get('column_relationships', {}),
+            'value_constraints': schema_analysis.get('value_constraints', {})
+        }
+    }
+    
+    return {
+        'examples': seed_examples,
+        'generation_metadata': generation_metadata
+    }
+
+
+def create_schema_preserving_seeds(malicious_samples: pd.DataFrame,
+                                  benign_samples: pd.DataFrame,
+                                  schema_analysis: Dict,
+                                  problem_definition: Dict) -> List[Dict]:
+    """
+    Create seed examples that preserve the original data schema exactly.
+    
+    Args:
+        malicious_samples (pd.DataFrame): Malicious data samples
+        benign_samples (pd.DataFrame): Benign data samples
+        schema_analysis (Dict): Schema analysis results
+        problem_definition (Dict): Inferred problem definition
+        
+    Returns:
+        List[Dict]: Seed examples maintaining original schema
+    """
+    logger.info("Creating schema-preserving seed examples")
+    
+    all_samples = []
     
     # Process malicious samples
     for idx, row in malicious_samples.iterrows():
-        example_data = {
-            "raw_data": row.to_dict(),
-            "sample_type": "malicious",
-            "problem_definition": problem_definition,
-            "schema_analysis": schema_analysis
+        sample = row.to_dict()
+        # Add metadata while preserving original schema
+        sample['_metadata'] = {
+            'sample_type': 'malicious',
+            'source': 'real_world_data',
+            'original_index': idx
         }
-        
-        seed_example = transform_to_seed_format(example_data)
-        if seed_example:
-            seed_examples.append(seed_example)
+        all_samples.append(sample)
     
-    # Process benign samples  
+    # Process benign samples
     for idx, row in benign_samples.iterrows():
-        example_data = {
-            "raw_data": row.to_dict(),
-            "sample_type": "benign",
-            "problem_definition": problem_definition,
-            "schema_analysis": schema_analysis
+        sample = row.to_dict()
+        # Add metadata while preserving original schema
+        sample['_metadata'] = {
+            'sample_type': 'benign',
+            'source': 'real_world_data',
+            'original_index': idx
         }
-        
-        seed_example = transform_to_seed_format(example_data)
-        if seed_example:
-            seed_examples.append(seed_example)
+        all_samples.append(sample)
     
-    logger.info(f"Generated {len(seed_examples)} seed examples")
-    return seed_examples
+    logger.info(f"Created {len(all_samples)} schema-preserving seed examples")
+    return all_samples
 
 
-def transform_to_seed_format(example_data: Dict) -> Dict:
+def extract_schema_template(df: pd.DataFrame, schema_analysis: Dict) -> Dict:
     """
-    Transform raw data sample to seed format using LLM.
+    Extract a schema template for generating new data with the same structure.
     
     Args:
-        example_data (Dict): Raw data and context
+        df (pd.DataFrame): Original dataframe
+        schema_analysis (Dict): Schema analysis from LLM
         
     Returns:
-        Dict: Transformed seed example
+        Dict: Schema template for generation
     """
-    logger.debug(f"Transforming {example_data['sample_type']} sample to seed format")
+    logger.info("Extracting schema template for synthetic generation")
     
-    # Prepare data for transformation
-    transform_json = json.dumps(example_data, indent=2, default=str)
-    
-    # Load prompts from XML
-    system_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.seed_transformation.system.template"
-    )
-    
-    user_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.seed_transformation.user.template",
-        transform_json=transform_json
-    )
-    
-    # Call LLM for transformation
-    response_content = process_llm_request(
-        system_prompt=system_prompt,
-        user_prompt=user_prompt,
-        model_name=MODEL_NAME,
-        temperature=0.7
-    )
-    
-    try:
-        # Clean up and parse JSON response
-        if response_content.startswith('```'):
-            first_backticks_end = response_content.find('\n', 3)
-            if first_backticks_end != -1:
-                last_backticks_start = response_content.rfind('```')
-                if last_backticks_start > first_backticks_end:
-                    response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
+    # Get column information
+    columns_info = {}
+    for col in df.columns:
+        col_data = df[col]
+        columns_info[col] = {
+            'dtype': str(col_data.dtype),
+            'sample_values': col_data.dropna().head(5).tolist(),
+            'null_count': col_data.isnull().sum(),
+            'unique_count': col_data.nunique(),
+            'is_categorical': col_data.dtype == 'object' or col_data.nunique() < 20
+        }
         
-        seed_example = json.loads(response_content)
-        return seed_example
-        
-    except json.JSONDecodeError as e:
-        logger.warning(f"Failed to parse seed transformation: {str(e)}")
-        return None
+        # Add statistical info for numeric columns
+        if col_data.dtype in ['int64', 'float64']:
+            columns_info[col].update({
+                'min': float(col_data.min()) if not col_data.empty else None,
+                'max': float(col_data.max()) if not col_data.empty else None,
+                'mean': float(col_data.mean()) if not col_data.empty else None,
+                'std': float(col_data.std()) if not col_data.empty else None
+            })
+    
+    schema_template = {
+        'columns': list(df.columns),
+        'column_details': columns_info,
+        'total_records': len(df),
+        'schema_analysis': schema_analysis,
+        'label_column': schema_analysis.get('label_column', 'label'),
+        'label_mapping': {
+            'malicious': 1,
+            'benign': 0
+        }
+    }
+    
+    return schema_template
 
 
 def save_realworld_problem(problem_definition: Dict, schema_analysis: Dict) -> str:
@@ -395,13 +469,13 @@ def save_realworld_problem(problem_definition: Dict, schema_analysis: Dict) -> s
     return nature
 
 
-def save_seed_examples(problem_definition: Dict, seed_examples: List[Dict]):
+def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     """
-    Save seed examples using the existing config manager structure.
+    Save seed examples using the existing config manager structure with schema preservation.
     
     Args:
         problem_definition (Dict): Problem definition
-        seed_examples (List[Dict]): Generated seed examples
+        seed_data (Dict): Generated seed data with examples and metadata
     """
     area = problem_definition.get('area', 'Real-world Data')
     nature = problem_definition.get('nature', 'realworld_data')
@@ -410,22 +484,28 @@ def save_seed_examples(problem_definition: Dict, seed_examples: List[Dict]):
     file_path = config_manager.get_seeds_file(area, nature)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     
-    # Save seed examples
-    seed_data = {
-        'examples': seed_examples,
-        'metadata': {
-            'source': 'real_world_data',
-            'total_examples': len(seed_examples),
-            'malicious_examples': sum(1 for ex in seed_examples if ex.get('sample_type') == 'malicious'),
-            'benign_examples': sum(1 for ex in seed_examples if ex.get('sample_type') == 'benign'),
-            'problem_definition': problem_definition
-        }
+    # Prepare enhanced metadata
+    metadata = {
+        'source': 'real_world_data',
+        'total_examples': len(seed_data['examples']),
+        'malicious_examples': sum(1 for ex in seed_data['examples'] if ex.get('_metadata', {}).get('sample_type') == 'malicious'),
+        'benign_examples': sum(1 for ex in seed_data['examples'] if ex.get('_metadata', {}).get('sample_type') == 'benign'),
+        'problem_definition': problem_definition,
+        'schema_preserved': True,
+        'generation_metadata': seed_data['generation_metadata']
+    }
+    
+    # Save seed examples with schema preservation
+    complete_seed_data = {
+        'examples': seed_data['examples'],
+        'metadata': metadata
     }
     
     with file_path.open('w', encoding='utf-8') as f:
-        json.dump(seed_data, f, indent=2)
+        json.dump(complete_seed_data, f, indent=2, default=str)
     
-    logger.info(f"Saved {len(seed_examples)} seed examples to {file_path}")
+    logger.info(f"Saved {len(seed_data['examples'])} schema-preserving seed examples to {file_path}")
+    logger.info(f"Schema template and generation instructions included for synthetic data generation")
 
 
 def main(csv_file: str = "five_email_phishing.csv.gz", 
@@ -454,24 +534,24 @@ def main(csv_file: str = "five_email_phishing.csv.gz",
             df, label_column, samples_per_class
         )
         
-        # Step 3: Analyze data schema
-        schema_analysis = analyze_data_schema(df)
+        # Step 3: Analyze data schema with preservation focus
+        schema_analysis = analyze_data_schema(df, label_column)
         
         # Step 4: Infer problem definition
         problem_definition = infer_problem_definition(
             malicious_samples, benign_samples, schema_analysis
         )
         
-        # Step 5: Generate seed examples
-        seed_examples = generate_seed_examples(
+        # Step 5: Generate schema-preserving seed examples
+        seed_data = generate_seed_examples(
             malicious_samples, benign_samples, problem_definition, schema_analysis
         )
         
         # Step 6: Save problem definition
         nature = save_realworld_problem(problem_definition, schema_analysis)
         
-        # Step 7: Save seed examples
-        save_seed_examples(problem_definition, seed_examples)
+        # Step 7: Save schema-preserving seed examples
+        save_seed_examples(problem_definition, seed_data)
         
         # Summary
         logger.info("="*60)
@@ -479,7 +559,7 @@ def main(csv_file: str = "five_email_phishing.csv.gz",
         logger.info("="*60)
         logger.info(f"Dataset: {csv_file}")
         logger.info(f"Problem: {problem_definition.get('area', 'Unknown')}/{nature}")
-        logger.info(f"Seed examples generated: {len(seed_examples)}")
+        logger.info(f"Seed examples generated: {len(seed_data['examples'])}")
         logger.info(f"Files updated:")
         logger.info(f"  - problems.json (added real-world problem)")
         logger.info(f"  - seeds/{problem_definition.get('area', 'Unknown')}/{nature}_examples.json")

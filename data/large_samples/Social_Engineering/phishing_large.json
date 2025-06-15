@@ -1,2954 +1,1695 @@
 {
   "samples": [
     {
-      "scenario": "Internal IT department sends a routine email to all employees reminding them to update their passwords via the official company portal.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-support@enterprise.example.com",
-          "To": "all-employees@enterprise.example.com",
-          "Subject": "Reminder: Password Update Required by End of Week",
-          "Date": "2024-06-12T09:00:00Z",
-          "Message-ID": "<202406120900.it@enterprise.example.com>"
-        },
-        "email_body": "Dear Team, as part of our quarterly security policy compliance, please update your network and email passwords by June 16, 2024. Use the official company portal at https://portal.enterprise.example.com/password-reset to complete this action. Do not share your credentials with anyone.",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-12T09:05:12Z",
-            "source_ip": "10.5.23.101",
-            "destination_ip": "192.168.50.10",
-            "protocol": "HTTPS",
-            "request_method": "GET",
-            "url": "https://portal.enterprise.example.com/password-reset",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-          },
-          {
-            "timestamp": "2024-06-12T09:07:45Z",
-            "source_ip": "10.5.23.101",
-            "destination_ip": "192.168.50.10",
-            "protocol": "HTTPS",
-            "request_method": "POST",
-            "url": "https://portal.enterprise.example.com/api/update-password",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "status_code": 200
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-12T09:05:10Z",
-            "username": "jdoe",
-            "source_ip": "10.5.23.101",
-            "authentication_method": "SAML",
-            "result": "Success",
-            "session_id": "sess-1234567890abcdef"
-          }
-        ]
-      },
-      "indicators": [
-        "Email sent from verified IT department domain with valid DKIM and SPF records",
-        "Link directs to official company domain with valid SSL certificate",
-        "Authentication logs show successful login via corporate SSO before password update",
-        "No unusual IP addresses involved; source IPs are within company network",
-        "HTTP status 200 responses indicating successful password change API calls"
-      ],
-      "activity_type": "Routine password update reminder and employee compliance",
-      "business_justification": "Quarterly password updates are a mandated security best practice to reduce risk of credential compromise; the email is a standard IT communication and employees accessing the official portal to update passwords is expected behavior.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_45",
-      "generation_timestamp": 1750010774.301652
-    },
-    {
-      "scenario": "HR department sends a policy update email to employees regarding changes to remote work guidelines.",
-      "technical_data": {
-        "email_headers": {
-          "From": "hr-dept@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Updated Remote Work Policy \u2013 Effective July 1",
-          "Date": "2024-06-10T14:00:00Z",
-          "Message-ID": "<20240610140000.hr-dept@company.com>"
-        },
-        "email_body": "Dear Employees, Please review the updated remote work policy attached. The policy reflects new guidelines effective July 1. For questions, contact hr-support@company.com.",
-        "attachment": {
-          "filename": "Remote_Work_Policy_July2024.pdf",
-          "size_kb": 350,
-          "hash_sha256": "3a7f9d2b8e1cd9f5f4f1a9e9a48b9c5c8e2f1a1b9c5e4d6f7a8b9c0d1e2f3a4b"
-        },
-        "network_activity": [
-          {
-            "timestamp": "2024-06-10T14:01:05Z",
-            "source_ip": "10.20.30.30",
-            "destination_ip": "192.168.1.10",
-            "protocol": "SMTP",
-            "action": "email_sent"
-          },
-          {
-            "timestamp": "2024-06-10T14:02:30Z",
-            "user": "user456",
-            "source_ip": "10.20.30.75",
-            "destination_url": "https://mail.company.com/attachments/Remote_Work_Policy_July2024.pdf",
-            "http_method": "GET",
-            "status_code": 200
-          }
-        ],
-        "system_logs": [
-          {
-            "timestamp": "2024-06-10T14:02:32Z",
-            "username": "user456",
-            "event": "file_download",
-            "filename": "Remote_Work_Policy_July2024.pdf",
-            "source_ip": "10.20.30.75"
-          }
-        ]
-      },
-      "indicators": [
-        "Email sent from verified HR department address with proper authentication headers",
-        "Attachment is a PDF with expected file size and valid hash for integrity",
-        "Employees accessing attachment within normal working hours and from office IP ranges",
-        "No use of shortened URLs or external domains in email body"
-      ],
-      "activity_type": "Internal policy update communication",
-      "business_justification": "HR regularly updates company policies and distributes them to employees to ensure compliance and awareness.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_25",
-      "generation_timestamp": 1750010682.3441558
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees prompting a scheduled password expiration notification and instructions for a secure password update via company portal.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-security@company.internal",
-          "To": "all-employees@company.internal",
-          "Subject": "Password Expiration Notice - Action Required",
-          "Message-ID": "<20240604120000.it@company.internal>",
-          "Received": [
-            "from mail.company.internal (10.1.5.25) by mail.company.internal with ESMTP id abc123xyz",
-            "for <all-employees@company.internal>; Tue, 4 Jun 2024 12:00:00 +0000"
-          ]
-        },
-        "email_body": "Dear Team,\nYour network password will expire in 5 days. Please update your credentials using the secure company portal at https://portal.company.internal/password-reset.\nThis link directs to our internal site protected by our corporate Single Sign-On (SSO) system.\nIf you have questions, contact IT Help Desk.\nRegards, IT Security Team",
-        "network_traffic": [
-          {
-            "timestamp": "2024-06-04T12:01:05Z",
-            "source_ip": "10.1.5.101",
-            "dest_ip": "10.1.5.10",
-            "protocol": "HTTPS",
-            "url": "https://portal.company.internal/password-reset",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-04T12:02:22Z",
-            "username": "jdoe",
-            "event": "User logged into portal.company.internal",
-            "auth_method": "SSO",
-            "status": "Success",
-            "source_ip": "10.1.5.101"
-          }
-        ],
-        "system_logs": [
-          {
-            "timestamp": "2024-06-04T12:03:10Z",
-            "component": "PasswordResetService",
-            "event": "User jdoe successfully updated password",
-            "status": "Completed",
-            "request_id": "abc789"
-          }
-        ]
-      },
-      "indicators": {
-        "email_domain_verified": true,
-        "url_reputation": "internal",
-        "authentication_success": true,
-        "no_external_ip_access": true,
-        "SSO_used": true,
-        "no_malware_detected": true
-      },
-      "activity_type": "Routine IT security notification and password update",
-      "business_justification": "Periodic password expiration enforcement is a standard security policy to reduce risk of credential compromise. The communication and portal usage are part of normal IT operations.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_26",
-      "generation_timestamp": 1750010681.744155
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees requesting password updates as part of a quarterly security compliance policy.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-security@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Quarterly Password Update Reminder",
-          "Date": "2024-06-15T09:30:00Z",
-          "Message-ID": "<20240615093000.it-security.company.com>"
-        },
-        "email_body": "Dear Team,\n\nAs part of our quarterly security compliance, please update your login passwords by June 20th via the official internal portal: https://intranet.company.com/password-reset\n\nThis link is secure and internal only.\n\nThank you,\nIT Security Team",
-        "network_traffic": {
-          "source_ip": "10.1.2.45",
-          "destination_ip": "10.1.2.100",
-          "protocol": "HTTPS",
-          "url": "https://intranet.company.com/password-reset",
-          "timestamp": "2024-06-15T09:31:22Z",
-          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/113.0"
-        },
-        "authentication_logs": {
-          "user": "jdoe",
-          "timestamp": "2024-06-15T10:05:45Z",
-          "action": "Login",
-          "method": "SSO",
-          "result": "Success",
-          "ip_address": "10.1.2.45"
-        },
-        "system_logs": {
-          "service": "PasswordResetService",
-          "event": "Password update requested",
-          "user_id": "jdoe",
-          "timestamp": "2024-06-15T10:06:12Z",
-          "status": "Initiated"
-        }
-      },
-      "indicators": [
-        "Email originates from legitimate internal IT domain",
-        "URL points to internal corporate intranet",
-        "User authentication succeeded via corporate SSO",
-        "Access logs show normal working hours activity",
-        "No unusual network destinations or protocols"
-      ],
-      "activity_type": "Routine IT Security Communication and User Credential Update",
-      "business_justification": "Quarterly password updates are standard security best practice enforced by IT to maintain account security and comply with corporate policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_39",
-      "generation_timestamp": 1750010737.230368
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new application version using automated CI/CD pipelines with normal API authentication and logging.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-15T14:30:00Z",
-            "api_endpoint": "https://api.cloudprovider.com/v1/deployments",
-            "http_method": "POST",
-            "request_headers": {
-              "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-              "Content-Type": "application/json"
-            },
-            "request_body": {
-              "application": "webapp",
-              "version": "2.4.1",
-              "environment": "production"
-            },
-            "response_status": 202,
-            "response_body": {
-              "deployment_id": "deploy-789xyz",
-              "status": "initiated"
-            }
-          },
-          {
-            "timestamp": "2024-06-15T14:35:00Z",
-            "api_endpoint": "https://api.cloudprovider.com/v1/deployments/deploy-789xyz/status",
-            "http_method": "GET",
-            "request_headers": {
-              "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-            },
-            "response_status": 200,
-            "response_body": {
-              "deployment_id": "deploy-789xyz",
-              "status": "successful",
-              "completed_at": "2024-06-15T14:34:50Z"
-            }
-          }
-        ],
-        "cloud_logging": {
-          "log_entries": [
-            {
-              "timestamp": "2024-06-15T14:30:01Z",
-              "level": "INFO",
-              "message": "Deployment initiated for webapp version 2.4.1 in production environment by user devops@company.com"
-            },
-            {
-              "timestamp": "2024-06-15T14:34:55Z",
-              "level": "INFO",
-              "message": "Deployment deploy-789xyz completed successfully"
-            }
-          ]
-        },
-        "resource_management": {
-          "scaling_event": false,
-          "resource_provisioned": "No",
-          "cleanup_performed": "No"
-        }
-      },
-      "indicators": {
-        "authentication_valid": true,
-        "api_response_codes": [
-          202,
-          200
-        ],
-        "deployment_status": "successful",
-        "log_entries_consistent": true,
-        "user_identity_confirmed": "devops@company.com"
-      },
-      "activity_type": "Scheduled DevOps deployment",
-      "business_justification": "Regular application updates are deployed to production environments to deliver new features and security patches as part of continuous integration and continuous delivery practices.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_28",
-      "generation_timestamp": 1750010685.007326
-    },
-    {
-      "scenario": "Cloud DevOps team performs a planned deployment of a new application version, triggering standard API calls and logging normal scaling operations.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-15T14:30:00Z",
-            "user": "devops_engineer_01",
-            "action": "authenticate",
-            "method": "OAuth2",
-            "result": "success",
-            "source_ip": "192.168.1.100"
-          },
-          {
-            "timestamp": "2024-06-15T14:31:10Z",
-            "action": "deploy_application",
-            "parameters": {
-              "app_name": "customer-portal",
-              "version": "v2.3.0",
-              "environment": "production"
-            },
-            "result": "started"
-          },
-          {
-            "timestamp": "2024-06-15T14:32:00Z",
-            "action": "scale_resources",
-            "parameters": {
-              "service": "customer-portal-backend",
-              "scale_to": 5
-            },
-            "result": "success"
-          }
-        ],
-        "cloud_logs": [
-          {
-            "timestamp": "2024-06-15T14:35:00Z",
-            "event": "deployment_complete",
-            "app_name": "customer-portal",
-            "version": "v2.3.0",
-            "status": "success"
-          },
-          {
-            "timestamp": "2024-06-15T14:36:00Z",
-            "event": "resource_scaling",
-            "service": "customer-portal-backend",
-            "old_instance_count": 3,
-            "new_instance_count": 5,
-            "status": "success"
-          }
-        ],
-        "network_traffic": [
-          {
-            "timestamp": "2024-06-15T14:31:10Z",
-            "src_ip": "192.168.1.100",
-            "dst_ip": "10.20.30.40",
-            "protocol": "HTTPS",
-            "bytes_sent": 10240,
-            "bytes_received": 2048
-          }
-        ]
-      },
-      "indicators": [
-        "Authentication uses OAuth2 with valid tokens.",
-        "API calls follow expected patterns for deployment and scaling.",
-        "Deployment and scaling events logged with success status.",
-        "Source IP corresponds to authorized DevOps engineer workstation.",
-        "Network traffic volume consistent with deployment data transfer."
-      ],
-      "activity_type": "Planned cloud application deployment and scaling",
-      "business_justification": "Regular deployment and scaling of cloud resources is essential to maintain application performance and deliver new features to customers.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_32",
-      "generation_timestamp": 1750010705.387446
-    },
-    {
-      "scenario": "Internal IT department sends a routine notification email to all employees reminding them to update their passwords according to company policy.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@company.com",
-          "to": "all_employees@company.com",
-          "subject": "Quarterly Password Update Reminder",
-          "date": "2024-06-15T09:00:00Z",
-          "message_id": "<12345.it-security.company.com>",
-          "email_headers": {
-            "Received": [
-              "from mail.company.com (mail.company.com [10.0.0.10]) by mx.company.com with ESMTPS id abc123",
-              "for <all_employees@company.com>; Sat, 15 Jun 2024 09:00:00 +0000 (UTC)"
-            ],
-            "DKIM-Signature": "v=1; a=rsa-sha256; d=company.com; s=default; h=from:to:subject:date; bh=xyz==; b=abc123=="
-          },
-          "email_body": "Dear Team,\n\nAs part of our security best practices, please update your network and email passwords within the next 7 days using the internal portal: https://intranet.company.com/password-reset\n\nThis is a routine security measure to ensure the safety of our systems.\n\nThank you,\nIT Security Team"
-        },
-        "network_traffic": {
-          "source_ip": "192.168.1.100",
-          "destination_ip": "10.0.0.20",
-          "destination_port": 443,
-          "protocol": "TLS 1.2",
-          "url_accessed": "https://intranet.company.com/password-reset",
-          "timestamp": "2024-06-15T09:15:30Z",
-          "http_method": "GET",
-          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0"
-        },
-        "authentication_logs": {
-          "user_id": "employee123",
-          "login_time": "2024-06-15T09:16:00Z",
-          "auth_method": "SSO",
-          "auth_result": "success",
-          "resource_accessed": "Password Reset Portal"
-        }
-      },
-      "indicators": {
-        "email_dkim_valid": true,
-        "email_spf_pass": true,
-        "url_domain": "intranet.company.com",
-        "user_agent_legitimate": true,
-        "auth_success": true,
-        "network_traffic_encrypted": true,
-        "no_malicious_payloads": true
-      },
-      "activity_type": "Routine IT communication",
-      "business_justification": "Quarterly password update reminders are a standard security practice mandated by enterprise security policy to reduce risk of credential compromise.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_28",
-      "generation_timestamp": 1750010685.007071
-    },
-    {
-      "scenario": "Internal IT department sends a scheduled notification email to employees reminding them to complete the mandatory annual security awareness training.",
+      "scenario": "Internal IT department sends an email informing employees about a scheduled password policy update requiring credential changes within 30 days.",
       "technical_data": {
         "email_headers": {
           "From": "it-security@enterprise.local",
           "To": "all-employees@enterprise.local",
-          "Subject": "Reminder: Complete Your Annual Security Awareness Training",
-          "Date": "2024-06-15T09:00:00Z",
-          "Message-ID": "<12345.it-security.enterprise.local@enterprise.local>"
-        },
-        "email_body": "Dear Team,\n\nAs part of our ongoing commitment to security, please complete the annual security awareness training by June 30th. Access the training portal at https://training.enterprise.local.\n\nThank you,\nIT Security Team",
-        "network_traffic": {
-          "source_ip": "192.168.10.5",
-          "dest_ips": [
-            "192.168.10.101",
-            "192.168.10.102",
-            "192.168.10.103"
-          ],
-          "protocol": "SMTP",
-          "port": 25,
-          "timestamp": "2024-06-15T09:00:02Z",
-          "bytes_sent": 10240
-        },
-        "authentication_logs": [
-          {
-            "user": "it-security@enterprise.local",
-            "auth_method": "Kerberos",
-            "status": "Success",
-            "timestamp": "2024-06-15T08:59:50Z"
-          }
-        ],
-        "endpoint_logs": {
-          "user": "jdoe",
-          "activity": "Clicked link to training portal",
-          "timestamp": "2024-06-15T09:15:10Z",
-          "url": "https://training.enterprise.local",
-          "result": "Access granted"
-        }
-      },
-      "indicators": [
-        "Email originates from authorized internal IT domain",
-        "Email contains legitimate corporate training URL using HTTPS",
-        "Authentication success for IT sender via internal Kerberos",
-        "User behavior consistent with training completion (portal access)",
-        "Network traffic matches normal SMTP email distribution"
-      ],
-      "activity_type": "Routine internal communication - Security awareness notification",
-      "business_justification": "Annual security training reminders are a standard part of corporate compliance and risk reduction efforts to keep employees informed about security best practices.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_41",
-      "generation_timestamp": 1750010752.084512
-    },
-    {
-      "scenario": "Cloud DevOps team performs a routine deployment of a microservice update to the Kubernetes cluster with associated logging and monitoring verification.",
-      "technical_data": {
-        "deployment_action": {
-          "timestamp": "2024-06-15T14:30:00Z",
-          "user": "devops-engineer1",
-          "command": "kubectl apply -f microservice-v2.3.yaml",
-          "cluster": "prod-cluster-01",
-          "namespace": "payments"
-        },
-        "api_calls": [
-          {
-            "method": "POST",
-            "endpoint": "/apis/apps/v1/namespaces/payments/deployments",
-            "user_agent": "kubectl/v1.24.0",
-            "auth_token_valid": true,
-            "timestamp": "2024-06-15T14:30:01Z",
-            "response_code": 200
-          }
-        ],
-        "kubernetes_events": [
-          {
-            "type": "Normal",
-            "reason": "ScalingReplicaSet",
-            "message": "Scaled up replica set payments-microservice-v2-3 to 5",
-            "timestamp": "2024-06-15T14:30:10Z"
-          },
-          {
-            "type": "Normal",
-            "reason": "DeploymentUpdated",
-            "message": "Deployment payments-microservice updated successfully",
-            "timestamp": "2024-06-15T14:30:15Z"
-          }
-        ],
-        "monitoring_logs": {
-          "timestamp": "2024-06-15T14:30:20Z",
-          "service": "payments-microservice",
-          "status": "Healthy",
-          "response_time_ms": 120,
-          "error_rate": 0.0
-        }
-      },
-      "indicators": [
-        "Deployment initiated by authorized DevOps user",
-        "API calls authenticated with valid tokens",
-        "Kubernetes events show normal scaling and update messages",
-        "Monitoring metrics indicate service health with zero errors",
-        "Activity timestamp aligns with scheduled deployment window"
-      ],
-      "activity_type": "Cloud DevOps routine deployment",
-      "business_justification": "Regular microservice updates are necessary to deploy new features, fix bugs, and improve system performance following change management policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_41",
-      "generation_timestamp": 1750010752.084842
-    },
-    {
-      "scenario": "Cloud operations team performs routine scaling of web application instances based on monitored CPU usage metrics to maintain performance during peak usage.",
-      "technical_data": {
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-15T14:30:00Z",
-            "user": "cloud-ops-bot",
-            "action": "DescribeInstances",
-            "resource": "webapp-prod",
-            "response_status": 200,
-            "response_time_ms": 120
-          },
-          {
-            "timestamp": "2024-06-15T14:32:00Z",
-            "user": "cloud-ops-bot",
-            "action": "RunInstances",
-            "parameters": {
-              "instance_type": "t3.medium",
-              "count": 3,
-              "ami_id": "ami-0abcdef1234567890",
-              "security_groups": [
-                "webapp-sg"
-              ]
-            },
-            "resource": "webapp-prod",
-            "response_status": 202,
-            "response_time_ms": 350
-          },
-          {
-            "timestamp": "2024-06-15T14:33:00Z",
-            "user": "cloud-ops-bot",
-            "action": "AttachLoadBalancer",
-            "parameters": {
-              "load_balancer_id": "lb-123456",
-              "instance_ids": [
-                "i-0a1b2c3d4e5f6g7h8",
-                "i-1a2b3c4d5e6f7g8h9",
-                "i-2a3b4c5d6e7f8g9h0"
-              ]
-            },
-            "resource": "webapp-prod",
-            "response_status": 200,
-            "response_time_ms": 180
-          }
-        ],
-        "monitoring": {
-          "metric_name": "CPUUtilization",
-          "namespace": "AWS/EC2",
-          "dimensions": {
-            "AutoScalingGroupName": "webapp-prod-asg"
-          },
-          "timestamp": "2024-06-15T14:25:00Z",
-          "value": 85,
-          "unit": "Percent"
-        },
-        "logging": {
-          "log_group": "/aws/autoscaling/webapp-prod",
-          "events": [
-            {
-              "timestamp": "2024-06-15T14:32:30Z",
-              "message": "Scaling activity initiated: launching 3 new instances"
-            },
-            {
-              "timestamp": "2024-06-15T14:33:30Z",
-              "message": "New instances successfully attached to load balancer"
-            }
-          ]
-        }
-      },
-      "indicators": [
-        "Scaling actions triggered by monitored CPU metrics exceeding threshold",
-        "API calls authenticated with valid bot user credentials and proper authorization",
-        "No error or failure responses in API calls",
-        "Load balancer attachment consistent with standard deployment procedures",
-        "Timestamps consistent and within business hours for cloud operations"
-      ],
-      "activity_type": "Routine cloud resource scaling and maintenance",
-      "business_justification": "Scaling web application instances based on CPU utilization ensures application performance and availability during periods of increased user demand.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_48",
-      "generation_timestamp": 1750010785.754299
-    },
-    {
-      "scenario": "Internal IT department sends a legitimate email to employees reminding them to update their passwords following the company\u2019s scheduled security policy compliance cycle.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@enterprise.local",
-          "to": [
-            "employee1@enterprise.local",
-            "employee2@enterprise.local"
-          ],
-          "subject": "Mandatory Password Update Required by End of Week",
-          "date": "2024-06-12T08:15:30Z",
-          "message_id": "<msg-78901234@enterprise.local>",
-          "content": "Dear team, as part of our quarterly security policy update, please update your network login passwords by Friday, June 14. Use the internal portal at https://intranet.enterprise.local/password-change. For assistance, contact IT support.",
-          "links": [
-            "https://intranet.enterprise.local/password-change"
-          ]
-        },
-        "network_traffic": {
-          "source_ip": "10.1.22.45",
-          "destination_ip": "192.168.10.5",
-          "protocol": "HTTPS",
-          "port": 443,
-          "bytes_sent": 2048,
-          "bytes_received": 1050,
-          "timestamp": "2024-06-12T08:16:00Z"
-        },
-        "authentication_logs": [
-          {
-            "user": "employee1",
-            "event": "login",
-            "timestamp": "2024-06-12T08:20:45Z",
-            "source_ip": "10.1.22.45",
-            "auth_method": "SAML",
-            "status": "success"
-          },
-          {
-            "user": "employee1",
-            "event": "password_change",
-            "timestamp": "2024-06-12T08:25:10Z",
-            "source_ip": "10.1.22.45",
-            "status": "success"
-          }
-        ],
-        "system_events": {
-          "password_policy_enforced": true,
-          "policy_version": "v1.3",
-          "enforcement_timestamp": "2024-06-12T08:00:00Z"
-        }
-      },
-      "indicators": {
-        "email_sender_domain": "enterprise.local",
-        "valid_ssl_certificate": true,
-        "internal_link_domain": "intranet.enterprise.local",
-        "authentication_success": true,
-        "no_malware_detected": true,
-        "link_reputation": "trusted_internal"
-      },
-      "activity_type": "Routine IT security policy communication and password update",
-      "business_justification": "Quarterly password updates are mandated by internal security policies to maintain account security and comply with regulatory standards.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_37",
-      "generation_timestamp": 1750010736.658767
-    },
-    {
-      "scenario": "IT department sends an internal email to employees reminding them to update their passwords through the official company portal without any embedded links.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-support@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Reminder: Password Update Required",
+          "Subject": "Upcoming Password Policy Update - Action Required",
           "Date": "2024-06-15T08:30:00Z",
-          "Message-ID": "<20240615083000.it-support@company.com>"
+          "Message-ID": "<20240615.083000.it-security@enterprise.local>"
         },
-        "email_body": "Dear team, as part of our quarterly security policy, please update your passwords by logging into the company portal at https://portal.company.com/account/security. Do not respond to emails requesting credentials. Contact IT if you need assistance.",
+        "email_body": "Dear Team,\n\nAs part of our ongoing security improvements, the enterprise password policy will be updated on July 15, 2024. All employees are required to update their passwords before this date to comply with new complexity requirements.\n\nPlease use the corporate self-service portal at https://portal.enterprise.local/password-reset to update your credentials.\n\nIf you have any questions, contact the IT helpdesk.\n\nThank you,\nIT Security Team",
         "network_logs": [
           {
-            "timestamp": "2024-06-15T08:31:12Z",
-            "source_ip": "192.168.10.25",
-            "destination_ip": "10.0.0.5",
+            "timestamp": "2024-06-15T08:45:12Z",
+            "source_ip": "10.25.32.101",
+            "destination_ip": "10.25.0.10",
             "protocol": "HTTPS",
-            "url_accessed": "https://portal.company.com/account/security",
+            "url": "https://portal.enterprise.local/password-reset",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/113.0"
           }
         ],
         "authentication_logs": [
           {
-            "timestamp": "2024-06-15T08:32:45Z",
-            "username": "jdoe",
-            "event": "login",
-            "status": "success",
-            "source_ip": "192.168.10.25",
-            "method": "SAML SSO"
-          },
-          {
-            "timestamp": "2024-06-15T08:33:10Z",
-            "username": "jdoe",
-            "event": "password_change",
-            "status": "success",
-            "source_ip": "192.168.10.25"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from verified internal IT domain with valid DKIM signature",
-        "No embedded links; users directed to official company portal URL",
-        "Access to company portal uses HTTPS with valid TLS certificate",
-        "Authentication events show successful SSO login and password change",
-        "IP addresses correspond to internal corporate network"
-      ],
-      "activity_type": "Routine IT security communication and password update",
-      "business_justification": "Quarterly password updates are mandated by company security policies to maintain account security and reduce risk of unauthorized access.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_47",
-      "generation_timestamp": 1750010781.288571
-    },
-    {
-      "scenario": "Cloud operations team performs routine scaling of application instances in response to increased user load, accompanied by monitoring and logging of system performance.",
-      "technical_data": {
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-15T14:00:00Z",
-            "service": "Compute Engine",
-            "api_action": "scale_out",
-            "parameters": {
-              "instance_group": "app-prod-group",
-              "desired_capacity": 10
-            },
-            "request_id": "req-1234567890abcdef"
-          },
-          {
-            "timestamp": "2024-06-15T14:05:00Z",
-            "service": "Monitoring",
-            "metric": "cpu_utilization",
-            "instance_group": "app-prod-group",
-            "value": 75,
-            "unit": "percent"
-          },
-          {
-            "timestamp": "2024-06-15T14:06:00Z",
-            "service": "Logging",
-            "log_type": "system",
-            "entries": [
-              {
-                "instance_id": "app-prod-07",
-                "event": "instance_started",
-                "status": "success"
-              }
-            ]
-          }
-        ],
-        "network_logs": [
-          {
-            "timestamp": "2024-06-15T14:02:30Z",
-            "source_ip": "10.1.2.100",
-            "destination_ip": "10.1.2.101",
-            "protocol": "TCP",
-            "port": 443,
-            "bytes_transferred": 12000,
-            "direction": "outbound"
-          }
-        ],
-        "user_activity": {
-          "username": "cloudops-admin",
-          "actions": [
-            {
-              "time": "2024-06-15T14:00:00Z",
-              "action": "initiated scaling of app-prod-group from 8 to 10 instances"
-            },
-            {
-              "time": "2024-06-15T14:10:00Z",
-              "action": "verified successful deployment and monitored CPU utilization"
-            }
-          ]
-        }
-      },
-      "indicators": [
-        "API calls made with authorized admin credentials",
-        "Scaling events correspond with observed CPU utilization increase",
-        "System logs confirm instances started successfully",
-        "Network traffic consistent with normal intra-cloud communication",
-        "User actions logged and timestamped with no anomalies"
-      ],
-      "activity_type": "Routine cloud resource scaling and monitoring",
-      "business_justification": "Scaling application instances ensures service availability and performance during peak usage periods, a standard practice to maintain customer experience.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_47",
-      "generation_timestamp": 1750010781.2888331
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new version of the internal HR application, involving API calls to update configuration and scaling operations.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-15T14:30:00Z",
-            "method": "POST",
-            "endpoint": "https://api.cloudprovider.com/v1/apps/hr-app/deployments",
-            "request_body": {
-              "version": "2.3.1",
-              "environment": "production"
-            },
-            "response_code": 202,
-            "response_body": {
-              "deployment_id": "deploy-78910",
-              "status": "in_progress"
-            },
-            "auth": {
-              "type": "OAuth2",
-              "token_scopes": [
-                "deployments:write",
-                "apps:read"
-              ]
-            }
-          },
-          {
-            "timestamp": "2024-06-15T14:32:00Z",
-            "method": "PATCH",
-            "endpoint": "https://api.cloudprovider.com/v1/apps/hr-app/config",
-            "request_body": {
-              "autoscale": {
-                "min_instances": 3,
-                "max_instances": 10
-              }
-            },
-            "response_code": 200,
-            "response_body": {
-              "config_status": "updated"
-            }
-          }
-        ],
-        "cloud_logs": [
-          {
-            "timestamp": "2024-06-15T14:31:00Z",
-            "resource": "hr-app-prod",
-            "event": "deployment_started",
-            "details": {
-              "version": "2.3.1",
-              "initiated_by": "devops.hr-team"
-            }
-          },
-          {
-            "timestamp": "2024-06-15T14:33:00Z",
-            "resource": "hr-app-prod",
-            "event": "autoscaling_configuration_updated",
-            "details": {
-              "min_instances": 3,
-              "max_instances": 10
-            }
-          }
-        ],
-        "monitoring_metrics": {
-          "cpu_usage": "45%",
-          "memory_usage": "60%",
-          "instances_running": 4,
-          "network_throughput": "120Mbps"
-        }
-      },
-      "indicators": [
-        "API calls authenticated with valid OAuth2 tokens with appropriate scopes",
-        "Deployment events logged with recognized service accounts",
-        "Configuration changes align with expected scaling parameters",
-        "Monitoring metrics within normal operating thresholds after deployment"
-      ],
-      "activity_type": "Cloud DevOps Deployment and Configuration",
-      "business_justification": "Scheduled deployment and scaling updates ensure the HR application remains performant and up-to-date for enterprise users.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_31",
-      "generation_timestamp": 1750010703.3455439
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees reminding them to update their passwords as part of a quarterly security policy enforcement.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-security@enterprise.local",
-          "To": "all-employees@enterprise.local",
-          "Subject": "Quarterly Password Update Reminder",
-          "Date": "2024-06-10T09:15:00Z",
-          "Message-ID": "<20240610.091500.it-security@enterprise.local>"
-        },
-        "email_body": "Dear employees,\n\nAs part of our quarterly security procedures, please update your network and application passwords by June 15th. Visit https://portal.enterprise.local/password-change to update your credentials.\n\nNo phishing links are included; this is a secure internal site.\n\nThank you,\nIT Security Team",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-10T09:15:05Z",
-            "source_ip": "10.10.5.12",
-            "destination_ip": "10.10.0.8",
-            "protocol": "SMTP",
-            "action": "email_sent",
-            "status": "success"
-          },
-          {
-            "timestamp": "2024-06-11T14:45:30Z",
-            "user": "j.smith@enterprise.local",
-            "action": "login",
+            "timestamp": "2024-06-15T08:46:05Z",
+            "user": "jdoe",
             "authentication_method": "SSO",
-            "result": "success",
-            "source_ip": "10.10.20.33"
+            "status": "success",
+            "source_ip": "10.25.32.101",
+            "service": "corporate-portal"
           },
           {
-            "timestamp": "2024-06-11T14:46:10Z",
-            "user": "j.smith@enterprise.local",
-            "url_accessed": "https://portal.enterprise.local/password-change",
-            "action": "password_update",
-            "status": "completed"
+            "timestamp": "2024-06-15T08:47:20Z",
+            "user": "jdoe",
+            "action": "password_change",
+            "status": "success",
+            "source_ip": "10.25.32.101"
           }
         ],
         "system_logs": {
-          "password_policy_enforcement": {
-            "date": "2024-06-10",
-            "users_notified": 2000,
-            "users_complied_by_date": 1450
+          "password_policy_update": {
+            "timestamp": "2024-06-15T08:00:00Z",
+            "admin_user": "it-admin",
+            "action": "policy_update",
+            "details": {
+              "old_min_length": 8,
+              "new_min_length": 12,
+              "complexity_requirements": "uppercase, lowercase, number, special character"
+            }
           }
         }
       },
       "indicators": {
-        "email_domain_verified": true,
-        "link_domain_internal": true,
-        "authentication_success": true,
-        "no_malware_detected": true,
-        "consistent_ip_ranges": true,
-        "scheduled_policy_enforcement": true
+        "legitimate_email_domain": true,
+        "valid_tls_certificate": true,
+        "corporate_sso_authentication": true,
+        "no known malicious URLs": true,
+        "email sent during business hours": true,
+        "password change performed via official portal": true
       },
-      "activity_type": "Routine Security Policy Communication and Credential Update",
-      "business_justification": "Quarterly password updates are mandatory for maintaining enterprise security compliance and preventing unauthorized access. The IT department regularly notifies employees through authenticated internal email channels.",
+      "activity_type": "Routine IT security notification and credential update",
+      "business_justification": "Periodic password policy updates are standard to enhance security posture and ensure compliance with organizational security standards.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_42",
-      "generation_timestamp": 1750010755.5585148
+      "generation_task_id": "phishing_ben_5",
+      "generation_timestamp": 1750013663.651398
     },
     {
-      "scenario": "Cloud DevOps team performs a routine deployment of a new version of the customer-facing web application including monitoring and logging activities.",
-      "technical_data": {
-        "timestamp": "2024-06-15T14:30:00Z",
-        "deployment_details": {
-          "service": "webapp-prod",
-          "version": "v2.3.1",
-          "deployed_by": "devops_user",
-          "deployment_id": "deploy-20240615-143000",
-          "deployment_method": "CI/CD pipeline via Jenkins",
-          "deployment_duration_seconds": 180
-        },
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-15T14:29:45Z",
-            "api_endpoint": "/deployments/start",
-            "method": "POST",
-            "status_code": 200,
-            "user_agent": "Jenkins-CI/2.319"
-          },
-          {
-            "timestamp": "2024-06-15T14:32:45Z",
-            "api_endpoint": "/deployments/status",
-            "method": "GET",
-            "status_code": 200,
-            "response": {
-              "deployment_status": "success"
-            }
-          },
-          {
-            "timestamp": "2024-06-15T14:33:00Z",
-            "api_endpoint": "/monitoring/logs",
-            "method": "GET",
-            "status_code": 200,
-            "response_size_bytes": 10240
-          }
-        ],
-        "system_logs": [
-          {
-            "time": "2024-06-15T14:30:00Z",
-            "log_level": "INFO",
-            "message": "Starting deployment of webapp-prod v2.3.1",
-            "user": "devops_user"
-          },
-          {
-            "time": "2024-06-15T14:33:00Z",
-            "log_level": "INFO",
-            "message": "Deployment completed successfully",
-            "user": "devops_user"
-          },
-          {
-            "time": "2024-06-15T14:33:15Z",
-            "log_level": "INFO",
-            "message": "Monitoring checks passed, no errors detected"
-          }
-        ],
-        "network_traffic": {
-          "source_ip": "192.168.10.5",
-          "destination_ip": "10.10.100.20",
-          "protocol": "HTTPS",
-          "destination_port": 443,
-          "bytes_sent": 5120,
-          "bytes_received": 20480
-        }
-      },
-      "indicators": [
-        "Deployment initiated by authorized DevOps user via corporate CI/CD pipeline",
-        "API calls authenticated and successful with 200 status codes",
-        "System logs show normal start and completion messages without errors",
-        "Monitoring logs confirm healthy application status post-deployment",
-        "Network traffic consistent with typical deployment and monitoring activity"
-      ],
-      "activity_type": "Cloud DevOps deployment and monitoring",
-      "business_justification": "Regular application updates and monitoring are essential for maintaining secure and reliable customer services.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_38",
-      "generation_timestamp": 1750010742.651305
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees announcing a scheduled password policy update and reminding users to change their passwords via the official company portal.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@company.com",
-          "to": "all-employees@company.com",
-          "subject": "Upcoming Password Policy Update \u2013 Action Required",
-          "timestamp": "2024-06-15T09:00:00Z",
-          "message_id": "<20240615090000.it-security.company.com>",
-          "links": [
-            {
-              "url": "https://portal.company.com/account/change-password",
-              "domain": "portal.company.com",
-              "protocol": "HTTPS"
-            }
-          ],
-          "headers": {
-            "authentication-results": "spf=pass; dkim=pass; dmarc=pass",
-            "received": [
-              "from mail.company.com (mail.company.com [10.10.10.5])",
-              "by mail.company.com with ESMTPS id abc123",
-              "for <all-employees@company.com>; Sat, 15 Jun 2024 09:00:00 +0000 (UTC)"
-            ]
-          }
-        },
-        "network_traffic": {
-          "dns_queries": [
-            {
-              "timestamp": "2024-06-15T09:00:01Z",
-              "query": "portal.company.com",
-              "response_ip": "192.168.50.10"
-            }
-          ],
-          "https_sessions": [
-            {
-              "client_ip": "10.20.30.45",
-              "server_ip": "192.168.50.10",
-              "timestamp_start": "2024-06-15T09:05:00Z",
-              "tls_version": "TLS 1.3",
-              "cipher_suite": "TLS_AES_256_GCM_SHA384"
-            }
-          ]
-        },
-        "authentication_logs": [
-          {
-            "user": "jane.doe@company.com",
-            "timestamp": "2024-06-15T09:06:30Z",
-            "action": "password_change",
-            "status": "success",
-            "source_ip": "10.20.30.45",
-            "method": "web_portal"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from company IT domain with valid SPF, DKIM, and DMARC records.",
-        "Link directs to official company portal over HTTPS with valid certificate.",
-        "User authentication logs show successful password change shortly after email receipt.",
-        "Network traffic is consistent with normal user access patterns within internal subnet."
-      ],
-      "activity_type": "Routine IT communication and user credential update",
-      "business_justification": "Periodic password policy updates and user password changes are standard security practices to ensure account safety and comply with company cybersecurity policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_46",
-      "generation_timestamp": 1750010776.871456
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of application updates with monitoring of API authentication logs and resource provisioning adjustments.",
+      "scenario": "Cloud DevOps team performs a routine deployment of a new version of the internal customer support API with standard monitoring and logging to ensure service stability.",
       "technical_data": {
         "deployment_logs": {
-          "timestamp_start": "2024-06-12T02:00:00Z",
-          "timestamp_end": "2024-06-12T02:15:00Z",
-          "deployment_id": "deploy-78945",
-          "services_updated": [
-            "webapp-api",
-            "auth-service"
-          ],
-          "status": "successful"
+          "timestamp": "2024-06-12T14:05:00Z",
+          "service": "customer-support-api",
+          "version": "v3.4.1",
+          "operation": "blue-green deployment",
+          "status": "Success",
+          "deployed_by": "devops-engineer1"
         },
-        "api_logs": [
+        "api_access_logs": [
           {
-            "timestamp": "2024-06-12T01:58:45Z",
-            "api_endpoint": "/auth/login",
-            "request_id": "req-56789",
-            "user_agent": "CI_CD_Pipeline/1.4",
-            "auth_result": "success",
-            "source_ip": "52.34.112.45"
-          },
-          {
-            "timestamp": "2024-06-12T02:05:10Z",
-            "api_endpoint": "/config/update",
-            "request_id": "req-56799",
-            "user_agent": "CI_CD_Pipeline/1.4",
-            "auth_result": "success",
-            "source_ip": "52.34.112.45"
+            "timestamp": "2024-06-12T14:06:15Z",
+            "client_ip": "192.168.100.45",
+            "api_endpoint": "/tickets/list",
+            "method": "GET",
+            "response_code": 200,
+            "auth_method": "OAuth2",
+            "user_agent": "SupportApp/5.2"
           }
         ],
-        "cloud_resource_logs": {
-          "resource_provisioning": {
-            "timestamp": "2024-06-12T02:10:00Z",
-            "action": "scale_out",
-            "resource_type": "webapp-instances",
-            "previous_count": 5,
-            "new_count": 7,
-            "reason": "increased load during deployment"
-          },
-          "monitoring": {
-            "timestamp": "2024-06-12T02:00:00Z",
-            "cpu_utilization": "30%",
-            "memory_usage": "45%",
-            "network_io": "normal"
-          }
+        "cloud_monitoring": {
+          "cpu_usage_percent": 55,
+          "memory_usage_mb": 1024,
+          "request_latency_ms": 150,
+          "error_rate_percent": 0.1,
+          "timestamp": "2024-06-12T14:10:00Z"
         },
-        "notifications": {
-          "to": "devops-team@enterprise.local",
-          "subject": "Scheduled Deployment Completed Successfully",
-          "date": "2024-06-12T02:16:00Z",
-          "body": "The deployment of webapp-api and auth-service was completed without errors. Resource scaling was adjusted to maintain performance."
+        "resource_management": {
+          "instances_running": 4,
+          "auto_scaling_triggered": false,
+          "provisioned_storage_gb": 50
         }
       },
       "indicators": {
-        "deployment_status": "success",
-        "api_authentication_valid": true,
-        "resource_scaling_reasonable": true,
-        "monitoring_metrics_within_threshold": true,
-        "notification_sent_to_internal_team": true
+        "deployment_status": "Success",
+        "api_response_code": 200,
+        "authentication_method": "OAuth2",
+        "normal_latency": true,
+        "error_rate_within_thresholds": true,
+        "resource_usage_within_limits": true,
+        "consistent_user_agent": true
       },
-      "activity_type": "Scheduled Cloud Application Deployment and Resource Scaling",
-      "business_justification": "Scheduled deployments and resource adjustments are standard DevOps practices to deliver updates and ensure application reliability and performance in a cloud environment.",
+      "activity_type": "Cloud API Deployment and Monitoring",
+      "business_justification": "Routine updates and monitoring of customer support APIs are essential to ensure continuous service availability and incorporate new features or fixes.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_42",
-      "generation_timestamp": 1750010755.559048
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750013680.801034
+    },
+    {
+      "Problem Nature": "phishing (Area: Social Engineering)",
+      "Description": "Staff members receive emails mimicking the HR department, prompting them to verify payroll information via a provided link. The link directs to a fake login page designed to capture employee credentials.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_4",
+      "generation_timestamp": 1750013646.448822
+    },
+    {
+      "Problem Nature": "phishing (Area: Social Engineering)",
+      "Description": "Staff receive an urgent email purportedly from HR requesting verification of personal information via a provided link. The link leads to a fake login page designed to steal employee credentials.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_3",
+      "generation_timestamp": 1750013644.545193
+    },
+    {
+      "Problem Nature": "phishing (Area: Social Engineering)",
+      "Description": "Employees get an email that looks like it's from the finance department asking them to review and approve a new invoice by clicking a link. The link directs to a credential harvesting site mimicking the corporate portal.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_3",
+      "generation_timestamp": 1750013644.545194
     },
     {
       "Problem Nature": "phishing",
       "Area": "Social Engineering",
-      "Description": "Staff receive emails pretending to be from the HR department offering urgent updates on payroll information. The email contains a link to a fake login page that captures employee usernames and passwords.",
+      "Description": "Employees receive urgent emails purportedly from the HR department, stating that payroll information needs verification. The email includes a link to a fake login page designed to capture employee credentials.",
       "sample_type": "malicious",
       "is_attack": true,
       "generation_task_id": "phishing_mal_2",
-      "generation_timestamp": 1750010651.018451
+      "generation_timestamp": 1750013646.480421
     },
     {
-      "scenario": "Internal IT department sends a routine email to employees notifying them of scheduled credential policy updates requiring password resets within 7 days.",
+      "scenario": "IT department sends a scheduled internal email notifying employees about upcoming mandatory password policy updates and provides a secure link to the company intranet for self-service password changes.",
       "technical_data": {
         "email_headers": {
-          "From": "it-security@enterprise.local",
-          "To": "employee@enterprise.local",
-          "Subject": "Upcoming Password Policy Update - Action Required",
-          "Date": "2024-06-10T08:15:00Z",
-          "Message-ID": "<20240610.081500.it-security@enterprise.local>"
+          "From": "it-support@companydomain.com",
+          "To": "all-employees@companydomain.com",
+          "Subject": "Scheduled Password Policy Update - Action Required",
+          "Received": [
+            "from mail.companydomain.com (10.20.30.40) by smtp.companydomain.com with ESMTP id abc123",
+            "for <all-employees@companydomain.com>; Mon, 12 Jun 2024 09:00:00 -0400"
+          ],
+          "Authentication-Results": "spf=pass (companydomain.com: domain of it-support@companydomain.com designates 10.20.30.40 as permitted sender) smtp.mailfrom=it-support@companydomain.com; dkim=pass header.d=companydomain.com"
         },
-        "email_body": "Dear Team,\n\nAs part of our ongoing security improvements, the password expiration policy will be updated on June 17th. You will be required to reset your passwords within 7 days after this date. Please use the company portal (https://portal.enterprise.local/account/reset-password) to securely update your credentials.\n\nThank you,\nIT Security Team",
-        "network_traffic": {
-          "source_ip": "10.10.5.12",
-          "destination_ip": "10.10.5.200",
-          "destination_port": 443,
-          "protocol": "TLS 1.3",
-          "bytes_sent": 2150,
-          "bytes_received": 1024,
-          "connection_duration_seconds": 12
+        "email_body": {
+          "content_type": "text/html",
+          "links": [
+            {
+              "url": "https://intranet.companydomain.com/password-update",
+              "domain": "intranet.companydomain.com",
+              "protocol": "HTTPS"
+            }
+          ],
+          "message": "Dear Employees, starting June 15, 2024, new password requirements will be enforced. Please update your credentials via the secure portal before this date."
         },
-        "authentication_logs": [
+        "user_activity_logs": [
           {
-            "user": "employee",
-            "event": "password_change_initiated",
-            "timestamp": "2024-06-10T09:05:30Z",
-            "source_ip": "10.10.5.12",
-            "method": "web_portal"
+            "user_id": "jdoe",
+            "timestamp": "2024-06-12T09:15:30-04:00",
+            "action": "login",
+            "source_ip": "192.168.10.23",
+            "auth_method": "SSO",
+            "result": "success"
           },
           {
-            "user": "employee",
-            "event": "password_change_success",
-            "timestamp": "2024-06-10T09:07:15Z",
-            "source_ip": "10.10.5.12",
-            "method": "web_portal"
-          }
-        ]
-      },
-      "indicators": {
-        "email_domain_valid": true,
-        "email_dkim_pass": true,
-        "email_spf_pass": true,
-        "secure_https_used": true,
-        "password_change_from_internal_ip": true,
-        "no_unusual_url_redirects": true
-      },
-      "activity_type": "Routine IT Security Communication and Credential Update",
-      "business_justification": "Regular password policy updates and employee credential resets are standard security practices to maintain account integrity and comply with corporate security policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_34",
-      "generation_timestamp": 1750010721.877184
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees announcing a scheduled mandatory password update policy and provides a secure link to the official corporate password management portal.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-security@corporate.local",
-          "To": "all_employees@corporate.local",
-          "Subject": "Mandatory Password Update Policy - Action Required by EOD Friday",
-          "Received": [
-            "from mail.corporate.local (10.10.20.5) by mail.corporate.local with ESMTP id 12345",
-            "authenticated sender: it-security@corporate.local"
-          ],
-          "DKIM-Signature": "v=1; a=rsa-sha256; d=corporate.local; s=selector1; ..."
-        },
-        "email_body": "Dear Team, As part of our quarterly security measures, please update your network login password by Friday 5 PM using the official password portal linked here: https://password.corporate.local/update. This link uses HTTPS and is internally hosted. Do not respond to emails requesting credentials directly.",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-15T08:15:00Z",
-            "source_ip": "10.10.20.100",
-            "destination_ip": "10.10.20.20",
-            "protocol": "HTTPS",
-            "url": "https://password.corporate.local/update",
-            "status_code": 200,
+            "user_id": "jdoe",
+            "timestamp": "2024-06-12T09:17:00-04:00",
+            "action": "access",
+            "resource": "https://intranet.companydomain.com/password-update",
+            "http_method": "GET",
+            "response_code": 200,
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
           }
         ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-15T08:17:05Z",
-            "username": "jdoe",
-            "event": "PasswordChange",
-            "source_ip": "10.10.20.100",
-            "authentication_method": "SSO",
-            "status": "Success"
+        "network_traffic": {
+          "dns_queries": [
+            {
+              "timestamp": "2024-06-12T09:16:55-04:00",
+              "query": "intranet.companydomain.com",
+              "response_ip": "10.50.60.70"
+            }
+          ],
+          "tls_handshake": {
+            "server": "intranet.companydomain.com",
+            "cipher_suite": "TLS_AES_256_GCM_SHA384",
+            "valid_certificate": true
           }
-        ]
+        }
       },
-      "indicators": [
-        "Email originated from authenticated internal IT domain with valid DKIM signature",
-        "Link domain matches internal corporate infrastructure (corporate.local)",
-        "Network connections to internal secure portal over HTTPS",
-        "Successful password change events recorded in authentication logs",
-        "No anomalous IP addresses or repeated failed login attempts"
-      ],
-      "activity_type": "IT Security Policy Communication and Password Update",
-      "business_justification": "Routine quarterly security policy enforcement requiring employees to update passwords to maintain account security and compliance with corporate policy.",
+      "indicators": {
+        "spf_dkim_pass": true,
+        "link_domain_matches_company": true,
+        "access_via_internal_network": true,
+        "normal_login_time": true,
+        "secure_protocol_used": true,
+        "user_agent_consistent": true
+      },
+      "activity_type": "Internal IT Communication - Password Policy Update",
+      "business_justification": "Routine security practice to ensure compliance with updated password policies and maintain account security across the enterprise.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_43",
-      "generation_timestamp": 1750010762.460015
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750013663.6517508
     },
     {
-      "scenario": "Cloud infrastructure team performs a scheduled scaling operation and deployment of updated microservices to support increased application usage.",
+      "Problem Nature": "phishing (Area: Social Engineering)",
+      "Description": "Users get messages appearing to be from the company\u2019s security team warning of suspicious activity and urging them to reset their passwords immediately through an embedded link that leads to a credential-stealing website.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_4",
+      "generation_timestamp": 1750013646.448823
+    },
+    {
+      "Problem Nature": "phishing",
+      "Area": "Social Engineering",
+      "Description": "Staff members are targeted with emails that mimic the company\u2019s HR department, requesting verification of personal information via a linked form. The form is hosted on a fraudulent site designed to capture sensitive data.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_1",
+      "generation_timestamp": 1750013644.551584
+    },
+    {
+      "scenario": "HR department sends an internal memo requesting employees to confirm their personal contact information via a secure internal web form as part of routine data verification.",
       "technical_data": {
-        "cloud_api_calls": [
+        "email_headers": {
+          "From": "hr@enterprise.local",
+          "To": "all-employees@enterprise.local",
+          "Subject": "Please Verify Your Contact Information by June 20",
+          "Date": "2024-06-10T09:15:00Z",
+          "Message-ID": "<20240610.091500.hr@enterprise.local>"
+        },
+        "email_body": "Dear Employees,\n\nAs part of our annual records update, please verify and update your personal contact information using the secure HR portal at https://hr.enterprise.local/contact-verification before June 20, 2024.\n\nThis helps us maintain accurate records for communications and emergency purposes.\n\nThank you for your cooperation.\n\nBest Regards,\nHR Department",
+        "network_logs": [
           {
-            "timestamp": "2024-06-15T14:00:00Z",
-            "user": "cloud-admin",
-            "action": "scale_up",
-            "resource_type": "vm_instance",
-            "resource_id": "vm-app-1234",
-            "parameters": {
-              "desired_capacity": 10,
-              "region": "us-east-1"
-            },
-            "response_status": "success"
-          },
-          {
-            "timestamp": "2024-06-15T14:05:00Z",
-            "user": "devops-bot",
-            "action": "deploy",
-            "service": "customer-api",
-            "version": "v2.3.1",
-            "environment": "production",
-            "response_status": "success"
-          }
-        ],
-        "monitoring_logs": [
-          {
-            "timestamp": "2024-06-15T14:10:00Z",
-            "metric": "cpu_utilization",
-            "resource_id": "vm-app-1234",
-            "value": "45%",
-            "threshold": "80%",
-            "status": "normal"
+            "timestamp": "2024-06-12T10:02:30Z",
+            "source_ip": "10.25.45.78",
+            "destination_ip": "10.25.1.15",
+            "protocol": "HTTPS",
+            "url": "https://hr.enterprise.local/contact-verification",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15"
           }
         ],
         "authentication_logs": [
           {
-            "timestamp": "2024-06-15T13:59:30Z",
-            "username": "cloud-admin",
-            "action": "login",
-            "source_ip": "192.168.10.5",
-            "status": "success"
+            "timestamp": "2024-06-12T10:03:12Z",
+            "user": "asmith",
+            "authentication_method": "SSO",
+            "status": "success",
+            "source_ip": "10.25.45.78",
+            "service": "hr-portal"
           }
         ],
-        "network_traffic": [
-          {
-            "timestamp": "2024-06-15T14:06:00Z",
-            "src_ip": "10.10.5.12",
-            "dst_ip": "10.10.8.20",
-            "protocol": "HTTPS",
-            "port": 443,
-            "bytes_transferred": 1048576
+        "application_logs": {
+          "contact_update": {
+            "timestamp": "2024-06-12T10:05:45Z",
+            "user": "asmith",
+            "action": "contact_info_update",
+            "status": "success",
+            "details": {
+              "phone": "+1-555-123-4567",
+              "address": "123 Maple St, Springfield",
+              "emergency_contact": "Jane Smith +1-555-987-6543"
+            }
           }
-        ]
+        }
       },
-      "indicators": [
-        "API calls authenticated by authorized cloud-admin and devops-bot users",
-        "Scaling parameters within normal operational thresholds",
-        "Deployment versions consistent with release schedule",
-        "Monitoring metrics within normal ranges post-deployment",
-        "Network traffic consistent with internal application communication"
-      ],
-      "activity_type": "Scheduled cloud resource scaling and microservice deployment",
-      "business_justification": "Routine scaling and deployment ensures application availability and performance during periods of increased customer demand.",
+      "indicators": {
+        "internal_email_domain": true,
+        "secure_https_connection": true,
+        "authentication via corporate SSO": true,
+        "no suspicious links or attachments": true,
+        "update performed via official HR portal": true
+      },
+      "activity_type": "Routine employee data verification communication",
+      "business_justification": "Periodic verification of employee personal data is essential for accurate HR records, emergency contact readiness, and compliance with internal policies.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_35",
-      "generation_timestamp": 1750010721.425293
+      "generation_task_id": "phishing_ben_5",
+      "generation_timestamp": 1750013663.651399
     },
     {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version with associated monitoring and logging updates.",
+      "Problem Nature": "phishing",
+      "Area": "Social Engineering",
+      "Description": "Users receive calendar invitations from what appears to be a company executive, containing a link to a shared document. The link leads to a credential harvesting page disguised as a corporate cloud service login.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_1",
+      "generation_timestamp": 1750013644.551584
+    },
+    {
+      "Problem Nature": "phishing",
+      "Area": "Social Engineering",
+      "Description": "Staff members get messages appearing to be from the company CEO requesting immediate review of an attached invoice. The attachment contains macros that, when enabled, download malware to steal credentials and sensitive information.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_2",
+      "generation_timestamp": 1750013646.480421
+    },
+    {
+      "scenario": "Cloud operations team performs a routine deployment of a new version of the customer support API, including scaling the backend instances and monitoring system health during the rollout.",
       "technical_data": {
         "deployment_logs": [
           {
-            "timestamp": "2024-06-15T14:30:00Z",
-            "service": "UserProfileAPI",
-            "version": "v2.3.1",
-            "action": "Deployment Start",
-            "initiated_by": "devops-engineer",
-            "environment": "production"
+            "timestamp": "2024-06-12T14:00:00Z",
+            "service": "customer-support-api",
+            "action": "deployment_started",
+            "version": "v2.5.0",
+            "initiated_by": "devops_lead"
           },
           {
-            "timestamp": "2024-06-15T14:45:00Z",
-            "service": "UserProfileAPI",
-            "version": "v2.3.1",
-            "action": "Deployment Complete",
-            "status": "Success"
-          }
-        ],
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-15T14:30:05Z",
-            "api": "AWS.ECS.UpdateService",
-            "parameters": {
-              "cluster": "prod-cluster",
-              "service": "UserProfileAPI",
-              "forceNewDeployment": true
-            },
-            "response_status": 200,
-            "user_agent": "aws-sdk-go/1.42.0"
+            "timestamp": "2024-06-12T14:05:30Z",
+            "service": "customer-support-api",
+            "action": "scale_up",
+            "previous_instances": 4,
+            "new_instances": 6,
+            "reason": "expected higher load during deployment"
           },
-          {
-            "timestamp": "2024-06-15T14:35:10Z",
-            "api": "AWS.CloudWatch.PutMetricAlarm",
-            "parameters": {
-              "AlarmName": "UserProfileAPI-ErrorRate",
-              "Threshold": 5,
-              "EvaluationPeriods": 3
-            },
-            "response_status": 200
-          }
-        ],
-        "monitoring_logs": [
-          {
-            "timestamp": "2024-06-15T14:46:00Z",
-            "service": "UserProfileAPI",
-            "metric": "CPUUtilization",
-            "value": 45,
-            "unit": "Percent"
-          },
-          {
-            "timestamp": "2024-06-15T14:46:00Z",
-            "service": "UserProfileAPI",
-            "metric": "ErrorRate",
-            "value": 0,
-            "unit": "Count"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-15T14:29:55Z",
-            "user": "devops-engineer",
-            "auth_method": "MFA",
-            "source_ip": "192.168.50.22",
-            "status": "Success"
-          }
-        ]
-      },
-      "indicators": {
-        "api_call_patterns": "consistent with scheduled deployment",
-        "user_authenticated_with_mfa": true,
-        "deployment_status_success": true,
-        "monitoring_metrics_normal_post_deploy": true,
-        "source_ip_internal": true
-      },
-      "activity_type": "Scheduled Cloud Microservice Deployment and Monitoring Update",
-      "business_justification": "Routine releases and monitoring updates ensure the application remains secure, performant, and aligned with business needs.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_44",
-      "generation_timestamp": 1750010765.700311
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees reminding them to update their passwords via the official company portal.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-support@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Reminder: Password Update Required by End of Month",
-          "Date": "2024-06-15T08:30:00Z",
-          "Message-ID": "<20240615083000.it-support@company.com>"
-        },
-        "email_body": "Dear Team, As part of our routine security policy update, please update your passwords by logging into the official company portal at https://portal.company.com/account/security. Do not share your credentials with anyone. For any assistance, contact it-support@company.com.",
-        "network_activity": [
-          {
-            "timestamp": "2024-06-15T08:31:05Z",
-            "source_ip": "10.20.30.40",
-            "destination_ip": "192.168.1.10",
-            "protocol": "SMTP",
-            "action": "email_sent"
-          },
-          {
-            "timestamp": "2024-06-15T08:32:12Z",
-            "user": "user123",
-            "source_ip": "10.20.30.55",
-            "destination_url": "https://portal.company.com/account/security",
-            "http_method": "GET",
-            "status_code": 200
-          }
-        ],
-        "system_logs": [
-          {
-            "timestamp": "2024-06-15T08:32:15Z",
-            "username": "user123",
-            "event": "login_success",
-            "authentication_method": "SAML",
-            "source_ip": "10.20.30.55"
-          },
-          {
-            "timestamp": "2024-06-15T08:33:00Z",
-            "username": "user123",
-            "event": "password_change",
-            "source_ip": "10.20.30.55"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from internal IT domain with valid DKIM and SPF records",
-        "Link directs to official company portal using HTTPS with valid TLS certificate",
-        "User login and password change events correlate with email reminder time",
-        "No anomalous IP addresses or unusual access patterns detected"
-      ],
-      "activity_type": "Internal security policy communication and credential update",
-      "business_justification": "Regular password update reminders are standard IT security practice to maintain account security and comply with company policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_25",
-      "generation_timestamp": 1750010682.3438919
-    },
-    {
-      "scenario": "HR department sends an internal memo via email to all employees announcing the updated remote work policy and providing a link to the internal document repository for detailed information.",
-      "technical_data": {
-        "email_metadata": {
-          "from": "hr-dept@enterprise.local",
-          "to": [
-            "all-employees@enterprise.local"
-          ],
-          "subject": "Updated Remote Work Policy Effective July 1st",
-          "date": "2024-06-12T14:45:00Z",
-          "message_id": "<20240612-144500.hr-dept@enterprise.local>"
-        },
-        "email_content": "Dear Colleagues, please review the updated remote work policy effective from July 1st. The full policy document is available at https://docs.enterprise.local/hr/policies/remote-work.pdf.",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-12T14:46:10Z",
-            "source_ip": "192.168.10.20",
-            "destination_ip": "192.168.10.8",
-            "protocol": "SMTP",
-            "action": "email_sent",
-            "user": "hr-dept"
-          },
-          {
-            "timestamp": "2024-06-12T15:00:05Z",
-            "source_ip": "192.168.10.45",
-            "destination_ip": "192.168.10.8",
-            "protocol": "HTTPS",
-            "url": "https://docs.enterprise.local/hr/policies/remote-work.pdf",
-            "user": "employee27",
-            "action": "file_download"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-12T15:00:00Z",
-            "user": "employee27",
-            "auth_method": "LDAP",
-            "result": "success",
-            "source_ip": "192.168.10.45"
-          }
-        ]
-      },
-      "indicators": {
-        "email_source": "internal hr-dept@enterprise.local",
-        "links": "https://docs.enterprise.local (internal document repository)",
-        "authentication": "Successful LDAP authentication before document access",
-        "user_behavior": "Employees accessing internal policy document after announcement",
-        "timing": "Email sent during regular business hours"
-      },
-      "activity_type": "Internal administrative communication and policy update",
-      "business_justification": "Providing updated HR policies is essential for compliance and employee awareness.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_36",
-      "generation_timestamp": 1750010722.617388
-    },
-    {
-      "scenario": "Internal IT department sends a scheduled email notification to all employees about upcoming mandatory credential update procedures with secure links to the internal portal.",
-      "technical_data": {
-        "timestamp": "2024-06-15T08:00:00Z",
-        "email_headers": {
-          "from": "it-security@enterprise.local",
-          "to": [
-            "employee1@enterprise.local",
-            "employee2@enterprise.local"
-          ],
-          "subject": "Scheduled Password Update Notification - Action Required",
-          "message_id": "<202406150800.itsecurity.enterprise.local>",
-          "dkim_signature": "pass",
-          "spf_result": "pass",
-          "dmarc_result": "pass"
-        },
-        "email_body": "Dear Team, as part of our quarterly security policy, please update your credentials by visiting our official internal portal at https://portal.enterprise.local/change-password. This link is secured with HTTPS and requires your current login for authentication.",
-        "network_traffic": {
-          "source_ip": "10.1.2.15",
-          "destination_ip": "10.1.2.200",
-          "protocol": "HTTPS",
-          "destination_port": 443,
-          "session_duration_seconds": 120,
-          "bytes_sent": 2048,
-          "bytes_received": 4096
-        },
-        "authentication_flow": {
-          "user": "employee1",
-          "auth_method": "SSO via corporate LDAP",
-          "login_timestamp": "2024-06-15T08:05:00Z",
-          "2FA_used": true,
-          "login_result": "success"
-        },
-        "system_log": [
-          {
-            "event_time": "2024-06-15T08:05:02Z",
-            "event_type": "password_change_initiated",
-            "user": "employee1",
-            "source_ip": "10.1.2.15",
-            "status": "started"
-          },
-          {
-            "event_time": "2024-06-15T08:06:30Z",
-            "event_type": "password_change_completed",
-            "user": "employee1",
-            "status": "success"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from verified internal IT domain with valid DKIM, SPF, and DMARC",
-        "Link points to internal HTTPS portal with valid certificate",
-        "User successfully authenticates using corporate SSO with 2FA",
-        "System logs show expected password change start and completion events",
-        "Network traffic consistent with typical user-initiated HTTPS session"
-      ],
-      "activity_type": "Routine IT communication and credential update",
-      "business_justification": "Regular password updates are mandated by corporate security policy to reduce risk of credential compromise.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_38",
-      "generation_timestamp": 1750010742.6506891
-    },
-    {
-      "scenario": "IT department sends an internal email to employees reminding them of the upcoming scheduled password expiration and instructing them to update their credentials via the official company portal.",
-      "technical_data": {
-        "email_metadata": {
-          "from": "it-support@enterprise.local",
-          "to": [
-            "employee1@enterprise.local",
-            "employee2@enterprise.local"
-          ],
-          "subject": "Reminder: Password Expiration and Update Instructions",
-          "date": "2024-06-10T09:15:00Z",
-          "message_id": "<20240610-091500.it-support@enterprise.local>"
-        },
-        "email_content": "Dear team, your password will expire in 5 days. Please update your credentials by logging into the internal portal at https://portal.enterprise.local/account/security. This is a standard security measure to protect your account.",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-10T09:16:05Z",
-            "source_ip": "192.168.10.15",
-            "destination_ip": "192.168.10.5",
-            "protocol": "SMTP",
-            "action": "email_sent",
-            "user": "it-support"
-          },
-          {
-            "timestamp": "2024-06-10T09:17:22Z",
-            "source_ip": "192.168.10.100",
-            "destination_ip": "192.168.10.5",
-            "protocol": "HTTPS",
-            "url": "https://portal.enterprise.local/account/security",
-            "user": "employee1",
-            "action": "page_access"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-10T09:17:30Z",
-            "user": "employee1",
-            "auth_method": "SAML",
-            "result": "success",
-            "source_ip": "192.168.10.100"
-          }
-        ]
-      },
-      "indicators": {
-        "email_source": "internal domain it-support@enterprise.local",
-        "links": "https://portal.enterprise.local (official internal portal)",
-        "authentication": "Successful SAML single sign-on",
-        "timing": "Email sent during regular business hours",
-        "user_behavior": "Employee accesses official portal immediately after email"
-      },
-      "activity_type": "Routine IT communication for credential maintenance",
-      "business_justification": "Periodic password updates are part of company security policy to reduce risk of credential compromise.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_36",
-      "generation_timestamp": 1750010722.617169
-    },
-    {
-      "scenario": "HR department sends a calendar invite to employees for a mandatory compliance training session with an internal link to the official training portal.",
-      "technical_data": {
-        "calendar_invite": {
-          "organizer": "hr@company.com",
-          "attendees": [
-            "jdoe@company.com",
-            "asmith@company.com",
-            "mbrown@company.com"
-          ],
-          "subject": "Mandatory Compliance Training Session",
-          "start_time": "2024-06-20T14:00:00Z",
-          "end_time": "2024-06-20T15:00:00Z",
-          "location": "Virtual - https://training.company.com/session/12345",
-          "sent_timestamp": "2024-06-10T08:00:00Z"
-        },
-        "network_traffic": {
-          "source_ip": "10.1.3.20",
-          "destination_ip": "10.1.3.150",
-          "protocol": "HTTPS",
-          "url": "https://training.company.com/session/12345",
-          "timestamp": "2024-06-20T14:05:00Z",
-          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15"
-        },
-        "authentication_logs": {
-          "user": "mbrown",
-          "timestamp": "2024-06-20T14:03:22Z",
-          "action": "Login",
-          "method": "Corporate SSO",
-          "result": "Success",
-          "ip_address": "10.1.3.20"
-        },
-        "application_logs": {
-          "application": "TrainingPortal",
-          "event": "Session Accessed",
-          "user_id": "mbrown",
-          "timestamp": "2024-06-20T14:05:15Z",
-          "status": "Completed"
-        }
-      },
-      "indicators": [
-        "Email/calendar invite sent from verified HR domain",
-        "URL links to official corporate training portal",
-        "User login successful using corporate SSO",
-        "Access time matches scheduled training session",
-        "No anomalies in network or access patterns"
-      ],
-      "activity_type": "Internal Employee Training Coordination and Access",
-      "business_justification": "Mandatory compliance training is required for all employees annually to ensure understanding of corporate policies and regulatory requirements.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_39",
-      "generation_timestamp": 1750010737.230573
-    },
-    {
-      "scenario": "Internal IT team sends an email to employees notifying about a scheduled credential policy update requiring mandatory password changes.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it-security@enterprise.local",
-          "To": "all-employees@enterprise.local",
-          "Subject": "Mandatory Password Update Policy Reminder",
-          "Date": "2024-06-15T08:00:00Z",
-          "Message-ID": "<20240615080000.it-security@enterprise.local>"
-        },
-        "email_body": "Dear Team, as part of our quarterly security compliance, all employees are required to update their login passwords by June 20, 2024. Please use the official password reset portal at https://portal.enterprise.local/reset-password. No other links should be used to update your credentials. For assistance, contact IT Support.",
-        "network_traffic": [
-          {
-            "timestamp": "2024-06-15T08:05:00Z",
-            "src_ip": "10.0.5.23",
-            "dst_ip": "10.0.1.10",
-            "protocol": "HTTPS",
-            "url": "https://portal.enterprise.local/reset-password",
-            "status_code": 200,
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-16T09:15:30Z",
-            "username": "jdoe",
-            "action": "password_change",
-            "source_ip": "10.0.5.23",
-            "status": "success"
-          }
-        ],
-        "system_logs": [
-          {
-            "timestamp": "2024-06-15T07:59:50Z",
-            "service": "email-server",
-            "event": "sent_bulk_email",
-            "recipients_count": 3500
-          }
-        ]
-      },
-      "indicators": [
-        "Email sent from verified internal IT domain",
-        "Use of official internal password reset portal",
-        "No external or suspicious URLs in email",
-        "Password changes logged successfully with internal IP addresses",
-        "Consistent user agent strings from corporate devices"
-      ],
-      "activity_type": "Legitimate internal security communication and password update",
-      "business_justification": "Quarterly password update is a standard security practice to maintain account integrity and comply with enterprise security policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_35",
-      "generation_timestamp": 1750010721.4249558
-    },
-    {
-      "scenario": "Internal IT team sends a routine notification email reminding employees to complete mandatory quarterly security awareness training with a secure link to the official training portal.",
-      "technical_data": {
-        "email_headers": {
-          "from": "it-security@enterprise.com",
-          "to": "all-employees@enterprise.com",
-          "subject": "Quarterly Security Awareness Training Reminder",
-          "message_id": "<20240610T080000Z.it-security.enterprise.com>",
-          "received": [
-            "from mail.enterprise.com (mail.enterprise.com [10.0.0.5])",
-            "by mx.enterprise.com with ESMTP id abc123",
-            "for <all-employees@enterprise.com>;",
-            "Mon, 10 Jun 2024 08:00:05 +0000"
-          ]
-        },
-        "email_body": "Dear team, Please complete your quarterly security awareness training by June 30. Access the official portal here: https://training.enterprise.com/login. Thank you, IT Security Team",
-        "network_traffic": [
-          {
-            "timestamp": "2024-06-10T08:00:10Z",
-            "source_ip": "10.0.0.5",
-            "destination_ip": "10.0.10.20",
-            "protocol": "HTTPS",
-            "url": "https://training.enterprise.com/login",
-            "http_method": "GET",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-10T08:00:15Z",
-            "user": "jdoe",
-            "event": "User login",
-            "source_ip": "10.0.10.20",
-            "status": "Success",
-            "auth_method": "SAML SSO"
-          }
-        ]
-      },
-      "indicators": [
-        "Email sent from internal IT domain with valid DKIM and SPF signatures",
-        "Link directs to official enterprise training portal with valid TLS certificate",
-        "User login events show successful SSO authentication with no anomalies",
-        "Network traffic patterns consistent with normal user web browsing behavior"
-      ],
-      "activity_type": "Legitimate internal communication for security training",
-      "business_justification": "Quarterly security training is required to maintain compliance and educate employees about security best practices. IT routinely sends reminders with links to internal portals.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_49",
-      "generation_timestamp": 1750010793.910896
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees reminding them to update their passwords as part of a scheduled security policy enforcement.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@enterprise.local",
-          "to": "all-employees@enterprise.local",
-          "subject": "Mandatory Password Update Reminder",
-          "date": "2024-06-15T09:00:00Z",
-          "message_id": "<20240615090000.it-security.enterprise.local>",
-          "body": "Dear Team, As part of our quarterly security policy, please update your network and application passwords by June 20th. No links are provided in this email; please navigate to https://intranet.enterprise.local/password-change to update your credentials. For assistance, contact IT support.",
-          "headers": {
-            "authentication-results": "spf=pass (enterprise.local: domain of it-security@enterprise.local designates 192.168.10.5 as permitted sender) smtp.mailfrom=it-security@enterprise.local",
-            "dkim-signature": "v=1; a=rsa-sha256; d=enterprise.local; s=selector1; bh=xyz...; b=abc..."
-          }
-        },
-        "network": {
-          "source_ip": "192.168.10.5",
-          "destination_ip": "10.20.30.0/24",
-          "protocol": "SMTP",
-          "port": 25,
-          "timestamp": "2024-06-15T09:00:01Z",
-          "email_volume": 5000,
-          "no_malicious_urls_detected": true
-        },
-        "authentication": {
-          "user": "jdoe",
-          "login_time": "2024-06-15T08:55:30Z",
-          "method": "Active Directory",
-          "status": "success"
-        },
-        "system_logs": {
-          "host": "mail.enterprise.local",
-          "event_id": 1001,
-          "event_description": "Internal email dispatched successfully to distribution list all-employees",
-          "timestamp": "2024-06-15T09:00:05Z"
-        }
-      },
-      "indicators": [
-        "Email originates from verified internal IT domain with valid SPF and DKIM signatures",
-        "No URLs in email body; users are directed to internal intranet site via known URL",
-        "Email sent during normal business hours",
-        "Normal login activity observed for users around email dispatch time",
-        "No anomalous network traffic or external connections detected"
-      ],
-      "activity_type": "Routine internal IT communication",
-      "business_justification": "Quarterly password update reminders are part of standard security hygiene and policy enforcement to maintain account security and compliance.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_48",
-      "generation_timestamp": 1750010785.754106
-    },
-    {
-      "scenario": "IT department sends a routine email to employees reminding them to update their passwords via the official company portal.",
-      "technical_data": {
-        "email_headers": {
-          "From": "it.support@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Quarterly Password Update Reminder",
-          "Date": "2024-06-10T08:15:00Z",
-          "Message-ID": "<202406100815.it.support@company.com>"
-        },
-        "email_body": "Dear Team,\n\nAs part of our security policy, please update your network password by logging into the official company portal at https://portal.company.com/password-reset before June 15.\n\nThank you,\nIT Support",
-        "network_traffic": {
-          "source_ip": "192.168.10.15",
-          "destination_ip": "10.10.50.100",
-          "protocol": "HTTPS",
-          "url": "https://portal.company.com/password-reset",
-          "timestamp": "2024-06-10T08:16:12Z",
-          "tls_version": "TLS 1.3"
-        },
-        "authentication_logs": [
-          {
-            "user": "jdoe",
-            "event": "password_change",
-            "timestamp": "2024-06-10T09:02:45Z",
-            "source_ip": "192.168.10.32",
-            "status": "success",
-            "method": "web_portal"
-          },
-          {
-            "user": "asmith",
-            "event": "password_change",
-            "timestamp": "2024-06-10T09:15:22Z",
-            "source_ip": "192.168.10.45",
-            "status": "success",
-            "method": "web_portal"
-          }
-        ]
-      },
-      "indicators": {
-        "valid_sender_domain": true,
-        "link_domain_matches_corporate_portal": true,
-        "ssl_certificate_valid": true,
-        "no_malicious_payloads_detected": true,
-        "authentication_successful": true,
-        "user_behavior_consistent": true
-      },
-      "activity_type": "Routine IT communication and password update",
-      "business_justification": "Regular password update reminders ensure compliance with security policies to protect company assets from unauthorized access.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_29",
-      "generation_timestamp": 1750010698.424233
-    },
-    {
-      "scenario": "HR sends a company-wide email announcing an upcoming mandatory training session with details and registration link to the official LMS.",
-      "technical_data": {
-        "email_headers": {
-          "From": "hr-dept@company.com",
-          "To": "all-employees@company.com",
-          "Subject": "Mandatory Security Awareness Training - Registration Open",
-          "Date": "2024-06-12T14:30:00Z",
-          "Message-ID": "<202406121430.hr-dept@company.com>"
-        },
-        "email_body": "Hello Team,\n\nPlease register for the mandatory Security Awareness Training scheduled for July 1-5. Register via the Learning Management System at https://lms.company.com/courses/security-awareness.\n\nFor questions, contact hr@company.com.\n\nBest regards,\nHR Department",
-        "network_traffic": {
-          "source_ip": "192.168.20.10",
-          "destination_ip": "10.10.60.150",
-          "protocol": "HTTPS",
-          "url": "https://lms.company.com/courses/security-awareness",
-          "timestamp": "2024-06-12T14:31:05Z",
-          "tls_version": "TLS 1.2"
-        },
-        "user_activity": [
-          {
-            "user": "mbrown",
-            "event": "lms_login",
-            "timestamp": "2024-06-12T15:00:12Z",
-            "source_ip": "192.168.20.44",
-            "status": "success",
-            "method": "sso"
-          },
-          {
-            "user": "mbrown",
-            "event": "course_registration",
-            "timestamp": "2024-06-12T15:02:30Z",
-            "course_id": "security-awareness",
-            "status": "completed"
-          }
-        ]
-      },
-      "indicators": {
-        "email_sent_from_hr_domain": true,
-        "link_points_to_official_lms": true,
-        "ssl_certificate_valid": true,
-        "single_sign_on_used": true,
-        "user_registration_logged": true,
-        "no_reported_incidents": true
-      },
-      "activity_type": "Internal HR communication and training registration",
-      "business_justification": "Mandatory training sessions are part of employee development and compliance requirements to enhance security awareness.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_29",
-      "generation_timestamp": 1750010698.4247
-    },
-    {
-      "scenario": "IT department sends an internal email reminding employees to update their passwords as part of the quarterly security policy enforcement.",
-      "technical_data": {
-        "email": {
-          "timestamp": "2024-06-18T09:15:30Z",
-          "from": "it-security@enterprise.com",
-          "to": [
-            "all-employees@enterprise.com"
-          ],
-          "subject": "Quarterly Password Update Reminder",
-          "headers": {
-            "Received": [
-              "from mail.enterprise.com (10.0.0.5) by mail.enterprise.com (10.0.0.5) with ESMTPS id 123456789",
-              "for <all-employees@enterprise.com>; Tue, 18 Jun 2024 09:15:30 +0000"
-            ],
-            "SPF": "pass",
-            "DKIM": "pass",
-            "DMARC": "pass"
-          },
-          "body": "Dear Team, as part of our ongoing commitment to security, please update your network passwords by the end of this week using the official password management portal at https://passwords.enterprise.com. Do not respond to any other emails requesting credentials."
-        },
-        "network": {
-          "client_ip": "10.2.15.124",
-          "server_ip": "10.0.0.5",
-          "protocol": "ESMTPS",
-          "port": 587
-        },
-        "user_activity": {
-          "user": "jdoe",
-          "login_time": "2024-06-18T09:00:00Z",
-          "authentication_method": "LDAP",
-          "password_change_time": "2024-06-18T09:20:15Z",
-          "application_accessed": "passwords.enterprise.com"
-        },
-        "system_logs": [
-          {
-            "timestamp": "2024-06-18T09:20:10Z",
-            "service": "password_management",
-            "event": "password_change_initiated",
-            "user": "jdoe",
-            "status": "success"
-          },
-          {
-            "timestamp": "2024-06-18T09:20:15Z",
-            "service": "password_management",
-            "event": "password_change_completed",
-            "user": "jdoe",
-            "status": "success"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from verified internal IT domain with valid SPF, DKIM, and DMARC signatures",
-        "Password update performed via official enterprise portal over encrypted HTTPS",
-        "User authenticated using corporate LDAP directory before making changes",
-        "System logs confirm successful password update without errors or anomalies",
-        "No suspicious URLs or attachments present in email body"
-      ],
-      "activity_type": "Routine IT Security Communication and Password Update",
-      "business_justification": "Regular password updates are mandated quarterly to maintain enterprise security compliance and reduce risk of credential compromise.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_33",
-      "generation_timestamp": 1750010719.724006
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version, including authentication through API gateway and monitoring of normal traffic patterns after release.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-12T14:05:00Z",
-            "user": "devops_engineer",
-            "api_endpoint": "/deployments/start",
-            "method": "POST",
-            "status_code": 202,
-            "auth_token": "valid_oauth2_token",
-            "source_ip": "172.16.5.22"
-          },
-          {
-            "timestamp": "2024-06-12T14:05:05Z",
-            "api_endpoint": "/services/microservice-x/status",
-            "method": "GET",
-            "status_code": 200,
-            "response_time_ms": 120,
-            "source_ip": "172.16.5.22"
-          }
-        ],
-        "cloud_operations": {
-          "service_name": "microservice-x",
-          "deployment_version": "2.4.0",
-          "deployment_status": "successful",
-          "scaling_events": [
-            {
-              "timestamp": "2024-06-12T14:10:00Z",
-              "action": "scale_out",
-              "instances_before": 3,
-              "instances_after": 5
-            }
-          ],
-          "monitoring_logs": {
-            "cpu_usage_percent": 55,
-            "memory_usage_mb": 1024,
-            "network_in_mb": 120,
-            "network_out_mb": 95,
-            "alerts": []
-          }
-        },
-        "logging": {
-          "log_source": "cloud_deployment_service",
-          "log_level": "INFO",
-          "messages": [
-            "Deployment of microservice-x version 2.4.0 initiated by devops_engineer",
-            "Deployment completed successfully",
-            "Auto-scaling triggered to meet increased load"
-          ],
-          "timestamps": [
-            "2024-06-12T14:05:00Z",
-            "2024-06-12T14:06:30Z",
-            "2024-06-12T14:10:00Z"
-          ]
-        }
-      },
-      "indicators": {
-        "api_authentication_valid": true,
-        "deployment_status_successful": true,
-        "no_error_alerts": true,
-        "scaling_within_thresholds": true,
-        "log_messages_consistent": true
-      },
-      "activity_type": "Scheduled cloud deployment and scaling operation",
-      "business_justification": "Regular deployment of updated microservice versions and scaling to meet demand are part of continuous delivery practices ensuring service reliability and feature updates.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_37",
-      "generation_timestamp": 1750010736.658905
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of updated microservices to production environment, followed by automated health checks and logging of deployment status.",
-      "technical_data": {
-        "deployment_logs": {
-          "timestamp": "2024-06-11T02:00:00Z",
-          "deployment_id": "deploy-7890",
-          "service": "user-auth-service",
-          "version": "v3.2.1",
-          "status": "Success",
-          "deployed_by": "devops-engineer-1",
-          "environment": "production"
-        },
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-11T02:00:01Z",
-            "api_endpoint": "https://api.cloudprovider.com/v1/instances/user-auth-service",
-            "method": "PATCH",
-            "request_payload": {
-              "version": "v3.2.1",
-              "replica_count": 5
-            },
-            "response_status": 200,
-            "auth_token_used": "token-xyz"
-          },
-          {
-            "timestamp": "2024-06-11T02:05:00Z",
-            "api_endpoint": "https://api.monitoring.cloudprovider.com/v1/health/user-auth-service",
-            "method": "GET",
-            "response_status": 200,
-            "response_body": {
-              "status": "healthy",
-              "latency_ms": 120,
-              "error_rate": "0%"
-            }
-          }
-        ],
-        "logging": [
-          {
-            "timestamp": "2024-06-11T02:00:10Z",
-            "log_level": "INFO",
-            "message": "Deployment deploy-7890 completed successfully for user-auth-service v3.2.1"
-          },
-          {
-            "timestamp": "2024-06-11T02:05:05Z",
-            "log_level": "INFO",
-            "message": "Health check passed: user-auth-service is healthy with 0% error rate"
-          }
-        ]
-      },
-      "indicators": [
-        "Deployment logged with successful status and valid user identity",
-        "Cloud API calls authenticated with valid tokens and return 200 OK",
-        "Health checks confirm service stability post-deployment",
-        "Logging entries consistent with normal DevOps deployment procedures"
-      ],
-      "activity_type": "Scheduled cloud microservice deployment and monitoring",
-      "business_justification": "Regular deployments and updates to cloud services are essential to improve features, fix bugs, and maintain system reliability. Monitoring ensures service health after changes.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_49",
-      "generation_timestamp": 1750010793.911165
-    },
-    {
-      "scenario": "Internal IT department sends a scheduled notification email reminding employees to review and acknowledge the updated IT security policy.",
-      "technical_data": {
-        "email_headers": {
-          "from": "it-security@enterprise.local",
-          "to": "all-employees@enterprise.local",
-          "subject": "Mandatory: Updated IT Security Policy Acknowledgement",
-          "date": "2024-06-15T09:00:00Z",
-          "message_id": "<20240615090000.itsec.enterprise.local>"
-        },
-        "email_body": "Dear Team, Please review the updated IT Security Policy available on the intranet portal and acknowledge it by June 20th. No credential updates are required at this time. Regards, IT Security",
-        "network_logs": [
-          {
-            "timestamp": "2024-06-15T09:00:01Z",
-            "src_ip": "10.10.10.5",
-            "dst_ip": "10.10.10.255",
-            "protocol": "SMTP",
-            "bytes_sent": 2048
-          }
-        ],
-        "user_activity": [
-          {
-            "user": "j.doe",
-            "timestamp": "2024-06-15T09:05:12Z",
-            "action": "accessed_document",
-            "document_path": "/intranet/policies/IT_Security_2024.pdf",
-            "access_method": "intranet_portal"
-          },
-          {
-            "user": "j.doe",
-            "timestamp": "2024-06-15T09:07:30Z",
-            "action": "acknowledged_policy",
-            "system": "policy_management_system",
-            "status": "success"
-          }
-        ],
-        "authentication_logs": [
-          {
-            "user": "j.doe",
-            "timestamp": "2024-06-15T09:05:00Z",
-            "auth_method": "SSO",
-            "result": "success"
-          }
-        ]
-      },
-      "indicators": [
-        "Email is sent from official internal IT security domain.",
-        "Email content does not request credentials or contain links.",
-        "User accesses official intranet document repository.",
-        "Policy acknowledgement recorded in secure management system.",
-        "Authentication logs show normal SSO login without errors."
-      ],
-      "activity_type": "Routine internal communication and policy acknowledgement",
-      "business_justification": "Periodic policy reviews and acknowledgements are standard practice to ensure employee awareness of security protocols without involving credential changes.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_32",
-      "generation_timestamp": 1750010705.387188
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new microservice version with monitoring of resource usage and log verification.",
-      "technical_data": {
-        "deployment_event": {
-          "timestamp": "2024-06-10T14:30:00Z",
-          "service": "user-authentication-service",
-          "version": "v3.2.1",
-          "deployed_by": "devops-engineer1",
-          "deployment_tool": "Kubernetes",
-          "namespace": "production",
-          "pod_count_before": 3,
-          "pod_count_after": 3
-        },
-        "api_usage_logs": [
-          {
-            "timestamp": "2024-06-10T14:29:55Z",
-            "method": "GET",
-            "endpoint": "/api/v1/auth/status",
-            "response_code": 200,
-            "latency_ms": 45,
-            "user_agent": "kube-controller"
-          },
-          {
-            "timestamp": "2024-06-10T14:30:05Z",
-            "method": "POST",
-            "endpoint": "/api/v1/deploy",
-            "response_code": 202,
-            "latency_ms": 120,
-            "user_agent": "devops-cli/1.4.2"
-          }
-        ],
-        "monitoring_metrics": {
-          "cpu_usage_percent": {
-            "before_deployment": 55,
-            "after_deployment": 57
-          },
-          "memory_usage_mb": {
-            "before_deployment": 1024,
-            "after_deployment": 1080
-          },
-          "pod_statuses": {
-            "all_running": true,
-            "restarts": 0
-          }
-        },
-        "logging_events": [
-          {
-            "timestamp": "2024-06-10T14:31:00Z",
-            "level": "INFO",
-            "message": "Deployment of user-authentication-service v3.2.1 completed successfully."
-          },
-          {
-            "timestamp": "2024-06-10T14:31:30Z",
-            "level": "INFO",
-            "message": "Health checks passed for all pods in namespace production."
-          }
-        ]
-      },
-      "indicators": {
-        "deployment_initiated_by_authorized_user": true,
-        "api_calls_use_valid_auth_tokens": true,
-        "resource_usage_within_expected_thresholds": true,
-        "log_messages_indicate_success": true,
-        "no_error_or_warning_logs": true
-      },
-      "activity_type": "Scheduled Cloud Deployment and Monitoring",
-      "business_justification": "Deploying updated service versions with proper monitoring is essential for continuous integration and delivery practices, ensuring application stability and performance in the production environment.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_34",
-      "generation_timestamp": 1750010721.8773172
-    },
-    {
-      "scenario": "A cloud DevOps engineer deploys a routine update to the internal HR reporting API service, followed by verification of service health via monitoring logs and metrics.",
-      "technical_data": {
-        "deployment": {
-          "user": "devops.eng@company.com",
-          "timestamp": "2024-06-15T14:30:00Z",
-          "service": "hr-reporting-api",
-          "environment": "production",
-          "deployment_id": "deploy-hrapi-20240615-1430",
-          "actions": [
-            "pulled latest code from git branch 'release/1.5.0'",
-            "built docker image hr-reporting-api:1.5.0",
-            "updated Kubernetes deployment hr-reporting-api-prod"
-          ]
-        },
-        "cloud_logs": {
-          "kubernetes_events": [
-            {
-              "timestamp": "2024-06-15T14:31:00Z",
-              "event_type": "Normal",
-              "reason": "ScalingReplicaSet",
-              "message": "Scaled up replica set hr-reporting-api-xyz to 3"
-            },
-            {
-              "timestamp": "2024-06-15T14:35:00Z",
-              "event_type": "Normal",
-              "reason": "SuccessfulDeployment",
-              "message": "Deployment hr-reporting-api-prod successfully rolled out"
-            }
-          ],
-          "monitoring_metrics": [
-            {
-              "metric": "http_requests_total",
-              "value": 120,
-              "timestamp": "2024-06-15T14:40:00Z",
-              "labels": {
-                "endpoint": "/api/v1/reports",
-                "status_code": "200"
-              }
-            },
-            {
-              "metric": "cpu_usage_seconds_total",
-              "value": 0.25,
-              "timestamp": "2024-06-15T14:40:00Z",
-              "pod": "hr-reporting-api-xyz"
-            }
-          ]
-        },
-        "api_access_logs": [
-          {
-            "timestamp": "2024-06-15T14:42:10Z",
-            "client_ip": "10.30.40.50",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "method": "GET",
-            "endpoint": "/api/v1/reports/daily",
-            "response_code": 200,
-            "response_time_ms": 120
-          }
-        ]
-      },
-      "indicators": [
-        "Deployment performed by authorized DevOps user with valid credentials.",
-        "Kubernetes events indicate normal scaling and successful rollout without errors.",
-        "Monitoring metrics show stable CPU usage and healthy request counts.",
-        "API access logs reflect typical user queries with successful HTTP 200 responses."
-      ],
-      "activity_type": "Routine cloud DevOps deployment and monitoring",
-      "business_justification": "Regular updates and maintenance of internal services ensure reliability and security of business-critical HR reporting systems.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_46",
-      "generation_timestamp": 1750010776.871736
-    },
-    {
-      "scenario": "Cloud operations team performs a routine deployment of application updates to the production environment, including scaling adjustments and health monitoring.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-15T09:00:00Z",
-            "user": "cloudops_team",
-            "action": "Deploy",
-            "resource": "prod-app-cluster",
-            "parameters": {
-              "version": "2.3.1",
-              "replica_count": 5
-            },
-            "status": "Success",
-            "request_id": "abc123xyz"
-          },
-          {
-            "timestamp": "2024-06-15T09:05:00Z",
-            "user": "cloudops_team",
-            "action": "Scale",
-            "resource": "prod-app-cluster",
-            "parameters": {
-              "replica_count": 6
-            },
-            "status": "Success",
-            "request_id": "abc123xyy"
-          }
-        ],
-        "monitoring_logs": [
-          {
-            "timestamp": "2024-06-15T09:10:00Z",
-            "resource": "prod-app-cluster",
-            "metric": "CPUUtilization",
-            "value": 45,
-            "unit": "%",
-            "alert": "None"
-          },
-          {
-            "timestamp": "2024-06-15T09:10:00Z",
-            "resource": "prod-app-cluster",
-            "metric": "ErrorRate",
-            "value": 0.01,
-            "unit": "percent",
-            "alert": "None"
-          }
-        ],
-        "network_traffic": {
-          "timestamp": "2024-06-15T09:12:00Z",
-          "source_ip": "10.20.30.40",
-          "destination_ip": "10.20.30.45",
-          "protocol": "HTTPS",
-          "bytes_sent": 102400,
-          "bytes_received": 204800
-        }
-      },
-      "indicators": [
-        "API calls authenticated with cloudops_team credentials with multi-factor authentication",
-        "Deployment and scaling events logged with success status and valid request IDs",
-        "Health metrics within normal thresholds post-deployment",
-        "Network traffic consistent with normal app operation and inter-service communication"
-      ],
-      "activity_type": "Cloud Application Deployment and Scaling",
-      "business_justification": "Standard operational procedure to deploy application updates and adjust capacity to meet production demand ensuring high availability and performance.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_43",
-      "generation_timestamp": 1750010762.460214
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new application version followed by routine monitoring and logging of performance metrics.",
-      "technical_data": {
-        "deployment": {
-          "timestamp_start": "2024-06-12T14:00:00Z",
-          "timestamp_end": "2024-06-12T14:15:00Z",
-          "service": "api-service",
-          "version_deployed": "v2.4.1",
-          "deployment_user": "devops_user",
-          "deployment_tool": "Jenkins",
-          "cloud_provider": "AWS",
-          "region": "us-east-1",
-          "instances_updated": 5
-        },
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-12T14:00:05Z",
-            "api": "UpdateFunctionConfiguration",
-            "parameters": {
-              "functionName": "api-service-lambda",
-              "runtime": "nodejs18.x",
-              "timeout": 30
-            },
-            "response_status": 200
-          },
-          {
-            "timestamp": "2024-06-12T14:02:00Z",
-            "api": "UpdateAutoScalingGroup",
-            "parameters": {
-              "autoScalingGroupName": "api-service-asg",
-              "desiredCapacity": 5
-            },
-            "response_status": 200
-          }
-        ],
-        "monitoring_logs": [
           {
             "timestamp": "2024-06-12T14:10:00Z",
-            "metric": "CPUUtilization",
-            "value": 45,
-            "unit": "Percent",
-            "resource": "api-service-instance-1"
+            "service": "customer-support-api",
+            "action": "health_check",
+            "result": "passed",
+            "latency_ms": 120,
+            "error_rate": 0.0
           },
           {
-            "timestamp": "2024-06-12T14:12:00Z",
-            "metric": "RequestLatency",
-            "value": 120,
-            "unit": "Milliseconds",
-            "resource": "api-service-instance-3"
+            "timestamp": "2024-06-12T14:15:00Z",
+            "service": "customer-support-api",
+            "action": "deployment_completed",
+            "version": "v2.5.0",
+            "status": "success"
           }
         ],
-        "network_traffic": {
-          "source_ip": "10.10.50.10",
-          "destination_ip": "10.10.50.20",
-          "protocol": "HTTPS",
-          "port": 443,
-          "bytes_sent": 3500,
-          "bytes_received": 9000,
-          "timestamp": "2024-06-12T14:05:30Z"
-        },
-        "authentication": {
-          "user": "devops_user",
-          "method": "MFA",
-          "timestamp": "2024-06-12T13:58:59Z",
-          "success": true,
-          "source_ip": "192.168.50.100"
+        "api_access_logs": [
+          {
+            "timestamp": "2024-06-12T14:12:45Z",
+            "client_ip": "52.24.32.10",
+            "endpoint": "/api/v1/support/tickets",
+            "method": "GET",
+            "response_status": 200,
+            "auth_method": "OAuth2",
+            "user_agent": "SupportWebClient/3.2"
+          }
+        ],
+        "cloud_monitoring": {
+          "cpu_usage_percent": 45,
+          "memory_usage_percent": 60,
+          "network_in_bytes": 1500000,
+          "network_out_bytes": 1400000,
+          "errors": 0,
+          "alerts_triggered": 0
         }
-      },
-      "indicators": [
-        "Deployment initiated by authorized DevOps user with successful MFA authentication.",
-        "API calls to cloud provider services return successful status codes (200).",
-        "Monitoring metrics within normal operating range post deployment.",
-        "Network traffic is encrypted HTTPS within cloud internal network.",
-        "Deployment timestamps match scheduled maintenance window."
-      ],
-      "activity_type": "Scheduled cloud deployment and monitoring by DevOps team",
-      "business_justification": "Regular application updates and performance monitoring are essential to maintain service availability, security, and compliance with SLAs.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_27",
-      "generation_timestamp": 1750010689.074404
-    },
-    {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new application version with associated configuration updates, generating normal API authentication and logging events.",
-      "technical_data": {
-        "api_calls": [
-          {
-            "timestamp": "2024-06-15T22:00:05Z",
-            "api_endpoint": "https://cloudprovider.example.com/api/v1/authenticate",
-            "request_method": "POST",
-            "request_body": "{\"client_id\":\"devops-team\",\"client_secret\":\"[REDACTED]\"}",
-            "response_code": 200,
-            "response_body": "{\"access_token\":\"token_abcdef123456\",\"expires_in\":3600}"
-          },
-          {
-            "timestamp": "2024-06-15T22:00:20Z",
-            "api_endpoint": "https://cloudprovider.example.com/api/v1/deployments",
-            "request_method": "POST",
-            "request_body": "{\"application\":\"webapp\",\"version\":\"2.4.1\",\"environment\":\"production\"}",
-            "response_code": 201,
-            "response_body": "{\"deployment_id\":\"deploy-7890abcd\",\"status\":\"in_progress\"}"
-          },
-          {
-            "timestamp": "2024-06-15T22:00:45Z",
-            "api_endpoint": "https://cloudprovider.example.com/api/v1/configurations/webapp",
-            "request_method": "PUT",
-            "request_body": "{\"max_instances\":5,\"auto_scaling_enabled\":true}",
-            "response_code": 200
-          }
-        ],
-        "cloud_monitoring_logs": [
-          {
-            "timestamp": "2024-06-15T22:01:00Z",
-            "service": "webapp",
-            "metric": "deployment_status",
-            "value": "success",
-            "details": "Version 2.4.1 deployed to production environment"
-          },
-          {
-            "timestamp": "2024-06-15T22:01:05Z",
-            "service": "webapp",
-            "metric": "instances_running",
-            "value": 5
-          }
-        ],
-        "user_activity": {
-          "username": "devops_lead",
-          "ip_address": "198.51.100.42",
-          "login_timestamp": "2024-06-15T21:55:00Z",
-          "mfa_used": true,
-          "session_duration_minutes": 45
-        }
-      },
-      "indicators": [
-        "API authentication uses valid client credentials with successful 200 response",
-        "Deployment API calls use correct application and version identifiers",
-        "Cloud monitoring logs confirm deployment success and resource scaling",
-        "User activity shows authenticated DevOps lead with MFA and normal session times",
-        "No anomalous endpoints or unknown IP addresses involved"
-      ],
-      "activity_type": "Scheduled cloud deployment and configuration update",
-      "business_justification": "Regular application version updates are part of the software development lifecycle; authenticated API requests and associated monitoring logs reflect normal DevOps operational procedures for maintaining and scaling cloud resources.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_45",
-      "generation_timestamp": 1750010774.302024
-    },
-    {
-      "scenario": "Cloud operations team performs scheduled scaling of web application instances based on monitored load metrics and logs the event to the centralized monitoring system.",
-      "technical_data": {
-        "cloud_api_calls": [
-          {
-            "timestamp": "2024-06-04T15:30:00Z",
-            "service": "ComputeService",
-            "operation": "ScaleOut",
-            "parameters": {
-              "application_id": "webapp-prod",
-              "new_instance_count": 10,
-              "region": "us-east-1"
-            },
-            "request_id": "req-456def"
-          }
-        ],
-        "monitoring_logs": [
-          {
-            "timestamp": "2024-06-04T15:30:05Z",
-            "monitoring_service": "CloudWatch",
-            "metric": "CPUUtilization",
-            "value": 75,
-            "threshold": 70,
-            "action": "TriggerScaleOut"
-          }
-        ],
-        "system_logs": [
-          {
-            "timestamp": "2024-06-04T15:30:10Z",
-            "component": "AutoScalingGroup",
-            "event": "Scaled out webapp-prod from 8 to 10 instances",
-            "status": "Success",
-            "user": "cloud-ops"
-          }
-        ],
-        "network_activity": [
-          {
-            "timestamp": "2024-06-04T15:30:12Z",
-            "source_ip": "192.168.10.5",
-            "dest_ip": "10.2.8.12",
-            "protocol": "HTTPS",
-            "port": 443,
-            "description": "Health check on new instance"
-          }
-        ]
       },
       "indicators": {
-        "api_calls_authenticated": true,
-        "scale_out_triggered_by_metric": true,
-        "no_errors_reported": true,
-        "performed_by_authorized_user": true,
-        "consistent_with_monitoring_data": true
+        "deployment_version_incremented": true,
+        "scaling_reason_documented": true,
+        "health_checks_passed": true,
+        "authentication_valid_on_api_calls": true,
+        "no_error_alerts": true,
+        "normal_user_agent_and_ip": true
       },
-      "activity_type": "Routine cloud resource scaling",
-      "business_justification": "Maintaining application performance during traffic peaks is necessary to ensure user experience. Automatic scaling based on metrics is a normal cloud operations procedure.",
+      "activity_type": "Cloud Deployment and Scaling - Customer Support API",
+      "business_justification": "Routine update and scaling to improve support API features and handle increased user load without service disruption.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_26",
-      "generation_timestamp": 1750010681.744315
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750013663.651752
     },
     {
-      "scenario": "Internal IT department sends an email reminder to employees to update their passwords due to routine security policy enforcement.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@enterprise.local",
-          "to": "employee@enterprise.local",
-          "subject": "Mandatory Password Update Reminder",
-          "date": "2024-06-15T09:00:00Z",
-          "message_id": "<12345.it-security.enterprise.local>",
-          "headers": {
-            "received": [
-              "from mail.enterprise.local (10.0.0.10) by mx.enterprise.local (10.0.0.5) with ESMTP id abc123",
-              "from internal-mail.enterprise.local (10.0.0.9) by mail.enterprise.local (10.0.0.10) with ESMTP id def456"
-            ],
-            "spf": "pass",
-            "dkim": "pass",
-            "dmarc": "pass"
-          },
-          "body": "Dear Team, as per our quarterly security compliance, please update your passwords by June 20th using the internal password management portal: https://portal.enterprise.local/password-update. This is a legitimate request issued by IT Security."
-        },
-        "network_logs": [
-          {
-            "timestamp": "2024-06-15T09:01:15Z",
-            "source_ip": "10.1.45.32",
-            "dest_ip": "10.0.0.10",
-            "protocol": "HTTPS",
-            "dest_port": 443,
-            "action": "allow",
-            "bytes_sent": 1024,
-            "bytes_received": 2048
-          }
-        ],
-        "authentication_logs": [
-          {
-            "timestamp": "2024-06-15T09:15:00Z",
-            "user": "employee1",
-            "source_ip": "10.1.45.32",
-            "auth_type": "SSO",
-            "result": "success",
-            "service": "password-management-portal"
-          }
-        ]
-      },
-      "indicators": [
-        "Email originates from authorized IT domain with valid SPF, DKIM, and DMARC passing",
-        "Link directs to internal portal with valid SSL certificate",
-        "Authentication logs show successful login to legitimate internal portal",
-        "Network traffic consistent with normal HTTPS access to enterprise resources"
-      ],
-      "activity_type": "Routine IT Security Communication",
-      "business_justification": "Quarterly password update reminders are standard practice to maintain account security and comply with corporate security policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_31",
-      "generation_timestamp": 1750010703.345283
+      "Problem Nature": "phishing",
+      "Area": "Social Engineering",
+      "Description": "Users are targeted with emails claiming to be from the HR team announcing a mandatory benefits enrollment update. The email contains an attachment that, when opened, directs users to a phishing website to steal login information.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_0",
+      "generation_timestamp": 1750013644.5431418
     },
     {
-      "scenario": "Cloud DevOps team performs a scheduled deployment of a new version of the internal HR portal application using automated CI/CD pipelines.",
-      "technical_data": {
-        "deployment": {
-          "timestamp": "2024-06-18T02:45:00Z",
-          "pipeline_id": "ci-cd-hr-portal-v3",
-          "triggered_by": "automation-scheduler",
-          "git_commit": "a1b2c3d4e5f6g7h8i9j0",
-          "components_updated": [
-            "frontend",
-            "backend",
-            "database-migrations"
-          ],
-          "cloud_provider": "AWS",
-          "region": "us-east-1",
-          "services": {
-            "ecs_cluster": "hr-portal-prod",
-            "ecs_service": "hr-portal-web",
-            "lambda_functions": [
-              "hr-portal-auth",
-              "hr-portal-notifications"
-            ]
-          }
-        },
-        "logs": [
-          {
-            "timestamp": "2024-06-18T02:45:05Z",
-            "log_level": "INFO",
-            "message": "Starting deployment of hr-portal version 3.2.0 to ECS cluster hr-portal-prod"
-          },
-          {
-            "timestamp": "2024-06-18T02:48:30Z",
-            "log_level": "INFO",
-            "message": "Database migrations completed successfully"
-          },
-          {
-            "timestamp": "2024-06-18T02:50:10Z",
-            "log_level": "INFO",
-            "message": "Frontend and backend containers updated and running"
-          },
-          {
-            "timestamp": "2024-06-18T02:52:00Z",
-            "log_level": "INFO",
-            "message": "Deployment pipeline finished without errors"
-          }
-        ],
-        "cloud_metrics": {
-          "cpu_usage_percent": 35,
-          "memory_usage_mb": 2048,
-          "network_in_mb": 150,
-          "network_out_mb": 140,
-          "scaling_events": 0
-        },
-        "api_calls": [
-          {
-            "timestamp": "2024-06-18T02:45:02Z",
-            "api": "ecs.UpdateService",
-            "parameters": {
-              "cluster": "hr-portal-prod",
-              "service": "hr-portal-web",
-              "forceNewDeployment": true
-            },
-            "response_code": 200
-          },
-          {
-            "timestamp": "2024-06-18T02:48:00Z",
-            "api": "rds.ExecuteStatement",
-            "parameters": {
-              "database": "hr-portal-db",
-              "sql": "ALTER TABLE employees ADD COLUMN last_login TIMESTAMP;"
-            },
-            "response_code": 200
-          }
-        ]
-      },
-      "indicators": [
-        "Deployment triggered by authorized automation scheduler during planned maintenance window",
-        "API calls authenticated with valid IAM roles and tokens",
-        "No errors or rollbacks reported in deployment logs",
-        "Resource usage metrics remain stable post-deployment",
-        "Database schema changes are part of release notes and approved change requests"
-      ],
-      "activity_type": "Scheduled Cloud Application Deployment",
-      "business_justification": "Periodic updates deliver new features and security patches to the HR portal ensuring business continuity and compliance with internal change management policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_33",
-      "generation_timestamp": 1750010719.724451
-    },
-    {
-      "scenario": "An internal IT department sends a scheduled email reminder to employees to update their passwords as part of a routine security policy enforcement.",
-      "technical_data": {
-        "email": {
-          "from": "it-security@enterprise.com",
-          "to": [
-            "employee1@enterprise.com",
-            "employee2@enterprise.com",
-            "employee3@enterprise.com"
-          ],
-          "subject": "Quarterly Password Update Reminder",
-          "timestamp": "2024-06-12T09:00:00Z",
-          "message_id": "<12345.it-security.enterprise.com>",
-          "headers": {
-            "Received-SPF": "pass (enterprise.com: domain of it-security@enterprise.com designates 192.168.10.5 as permitted sender)",
-            "DKIM-Signature": "v=1; a=rsa-sha256; d=enterprise.com; s=selector1; c=relaxed/relaxed; h=from:to:subject:date; bh=abc123def456...",
-            "Content-Type": "text/plain; charset=UTF-8"
-          },
-          "body": "Dear Employees,\n\nAs part of our ongoing commitment to security, please update your network passwords by the end of this week using the official internal portal at https://portal.enterprise.com/password-update.\n\nThis is a routine security measure to protect your accounts.\n\nThank you,\nIT Security Team"
-        },
-        "network_traffic": {
-          "source_ip": "192.168.10.5",
-          "destination_ips": [
-            "10.20.30.40",
-            "10.20.30.41",
-            "10.20.30.42"
-          ],
-          "protocol": "SMTP",
-          "port": 587,
-          "tls": true,
-          "timestamp": "2024-06-12T09:00:01Z"
-        },
-        "user_activity": {
-          "user": "employee1",
-          "login": {
-            "timestamp": "2024-06-12T08:50:00Z",
-            "method": "SSO",
-            "source_ip": "10.20.30.40",
-            "success": true
-          },
-          "email_access": {
-            "timestamp": "2024-06-12T09:05:00Z",
-            "action": "opened_email",
-            "email_subject": "Quarterly Password Update Reminder"
-          },
-          "url_access": {
-            "url": "https://portal.enterprise.com/password-update",
-            "timestamp": "2024-06-12T09:07:30Z",
-            "method": "GET",
-            "status_code": 200,
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-          }
-        }
-      },
-      "indicators": [
-        "Email sent from verified internal IT domain with valid SPF and DKIM signatures.",
-        "No suspicious attachments or links to external untrusted domains.",
-        "User accessed the official internal password update portal over HTTPS.",
-        "Login and email access timestamps consistent with working hours.",
-        "Network traffic shows encrypted SMTP and HTTPS connections within corporate network."
-      ],
-      "activity_type": "Legitimate internal IT communication and user credential update process",
-      "business_justification": "Periodic password update reminders are standard security best practices to reduce risk of credential compromise and comply with enterprise security policies.",
-      "sample_type": "benign",
-      "is_attack": false,
-      "generation_task_id": "phishing_ben_27",
-      "generation_timestamp": 1750010689.0739279
-    },
-    {
-      "scenario": "IT department sends an internal email to all employees reminding them to update their passwords via the official company portal.",
+      "scenario": "IT department sends an internal email to employees announcing a scheduled password policy update and requesting users to verify their current credentials via the corporate intranet portal.",
       "technical_data": {
         "email_headers": {
-          "From": "it-security@company.com",
-          "To": "all@company.com",
-          "Subject": "Reminder: Password Update Required by End of Month",
-          "Date": "2024-06-15T09:00:00Z",
-          "Message-ID": "<202406150900.it-security@company.com>"
+          "From": "it-support@corporate.local",
+          "To": "employee@corporate.local",
+          "Subject": "Scheduled Password Policy Update - Action Required",
+          "Date": "2024-06-10T09:15:00Z",
+          "Message-ID": "<1234567890@corporate.local>"
         },
-        "email_body": "Dear Team,\n\nAs part of our quarterly security policy, please update your password by logging into the company portal at https://portal.company.com/security/password-change. This link directs you to our secure internal system.\n\nThank you,\nIT Security Team",
+        "email_body": "Dear Team,\n\nAs part of our routine security maintenance, the password complexity requirements will be updated on June 15th, 2024. Please log into the corporate intranet portal to verify your current credentials and update your password if prompted.\n\nAccess the portal here: https://intranet.corporate.local/password-update\n\nBest regards,\nIT Support Team",
         "network_logs": [
           {
-            "timestamp": "2024-06-15T09:05:12Z",
-            "source_ip": "10.10.20.105",
-            "destination_ip": "52.85.12.34",
+            "timestamp": "2024-06-10T09:16:23Z",
+            "source_ip": "10.0.5.23",
+            "destination_ip": "10.0.1.10",
             "protocol": "HTTPS",
-            "url": "https://portal.company.com/security/password-change",
-            "response_code": 200,
+            "url": "https://intranet.corporate.local/password-update",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/113.0"
           }
         ],
         "authentication_logs": [
           {
-            "timestamp": "2024-06-15T09:06:01Z",
-            "user": "jdoe",
-            "auth_method": "SAML",
-            "source_ip": "10.10.20.105",
-            "status": "Success",
-            "action": "Password Change Portal Login"
+            "timestamp": "2024-06-10T09:16:30Z",
+            "username": "employee",
+            "source_ip": "10.0.5.23",
+            "auth_method": "SAML SSO",
+            "status": "Success"
+          }
+        ],
+        "system_activity": [
+          {
+            "timestamp": "2024-06-10T09:17:00Z",
+            "action": "Password verification page accessed",
+            "user": "employee",
+            "system": "corporate-intranet-portal"
+          }
+        ]
+      },
+      "indicators": {
+        "email_domain": "corporate.local",
+        "URL_domain": "intranet.corporate.local",
+        "TLS_encryption": true,
+        "authentication_success": true,
+        "user_agent_consistency": true,
+        "no_malicious_payload": true,
+        "normal_business_hours": true
+      },
+      "activity_type": "Internal Security Communication and User Credential Verification",
+      "business_justification": "Regular password policy updates and user verification are required to maintain enterprise security compliance and protect user accounts from unauthorized access.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750013680.801033
+    },
+    {
+      "scenario": "Cloud DevOps team performs a routine deployment of a new application version, including scaling up instances and monitoring system health.",
+      "technical_data": {
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-01T14:05:00Z",
+            "service": "ComputeEngine",
+            "operation": "ScaleUpInstances",
+            "parameters": {
+              "cluster_id": "prod-app-cluster-1",
+              "instances_added": 3
+            },
+            "response_code": 200
+          },
+          {
+            "timestamp": "2024-06-01T14:06:30Z",
+            "service": "DeploymentManager",
+            "operation": "DeployNewVersion",
+            "parameters": {
+              "application": "CustomerPortal",
+              "version": "v3.2.1",
+              "strategy": "rolling_update"
+            },
+            "response_code": 202
+          },
+          {
+            "timestamp": "2024-06-01T14:10:00Z",
+            "service": "Monitoring",
+            "operation": "CheckHealthMetrics",
+            "parameters": {
+              "cluster_id": "prod-app-cluster-1",
+              "metrics": [
+                "CPUUsage",
+                "MemoryUsage",
+                "ResponseTime"
+              ]
+            },
+            "metrics_data": {
+              "CPUUsage": "45%",
+              "MemoryUsage": "60%",
+              "ResponseTime": "120ms"
+            },
+            "response_code": 200
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "172.16.5.10",
+          "destination_ip": "172.16.5.20",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_transferred": 15200,
+          "session_duration_seconds": 180
+        },
+        "logs": [
+          {
+            "timestamp": "2024-06-01T14:05:00Z",
+            "log_level": "INFO",
+            "message": "Scaled up 3 instances in prod-app-cluster-1 successfully."
+          },
+          {
+            "timestamp": "2024-06-01T14:06:35Z",
+            "log_level": "INFO",
+            "message": "Deployment of CustomerPortal v3.2.1 initiated with rolling update strategy."
+          },
+          {
+            "timestamp": "2024-06-01T14:10:05Z",
+            "log_level": "INFO",
+            "message": "Health metrics checked: CPU 45%, Memory 60%, Response Time 120ms."
+          }
+        ]
+      },
+      "indicators": {
+        "api_response_codes": [
+          200,
+          202
+        ],
+        "operations_match_scheduled_maintenance": true,
+        "no_error_logs_detected": true,
+        "network_traffic_encrypted": true,
+        "activity_within_business_hours": true,
+        "change_management_ticket": "CM-20240601-1543"
+      },
+      "activity_type": "Routine cloud deployment and scaling operation",
+      "business_justification": "Regular software updates and scaling activities ensure application performance, reliability, and availability for business users and customers.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750013666.8235898
+    },
+    {
+      "Problem Nature": "phishing",
+      "Area": "Social Engineering",
+      "Description": "Staff receive emails impersonating the finance department, requesting verification of bank account details for payroll purposes. The email includes a link to a fake internal portal designed to capture employee credentials.",
+      "sample_type": "malicious",
+      "is_attack": true,
+      "generation_task_id": "phishing_mal_0",
+      "generation_timestamp": 1750013644.5431402
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email to employees announcing scheduled password policy updates and requesting voluntary password resets.",
+      "technical_data": {
+        "email": {
+          "from": "it-support@enterprise.local",
+          "to": [
+            "employee1@enterprise.local",
+            "employee2@enterprise.local",
+            "employee3@enterprise.local"
+          ],
+          "subject": "Upcoming Password Policy Update \u2013 Action Recommended",
+          "date": "2024-06-01T09:15:00Z",
+          "message_id": "<20240601091500.it-support@enterprise.local>",
+          "body": "Dear Team, As part of our continuous security improvement, the password complexity requirements will be updated on June 15th. We encourage all employees to update their passwords before this date via the official internal portal at https://intranet.enterprise.local/password-reset. No action is mandatory at this time. Regards, IT Support"
+        },
+        "network_logs": [
+          {
+            "timestamp": "2024-06-01T09:15:01Z",
+            "source_ip": "10.20.30.40",
+            "destination_ip": "10.20.30.70",
+            "protocol": "SMTP",
+            "bytes_sent": 3450,
+            "status": "200 OK"
+          },
+          {
+            "timestamp": "2024-06-01T09:16:30Z",
+            "user": "employee1",
+            "activity": "login",
+            "source_ip": "192.168.100.25",
+            "result": "success",
+            "authentication_method": "Kerberos",
+            "timestamp_login": "2024-06-01T09:16:30Z"
+          },
+          {
+            "timestamp": "2024-06-01T09:17:10Z",
+            "user": "employee2",
+            "activity": "access",
+            "resource": "/intranet/password-reset",
+            "method": "GET",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ]
+      },
+      "indicators": {
+        "sender_domain": "enterprise.local",
+        "email_dkim_pass": true,
+        "email_spf_pass": true,
+        "email_dmarc_pass": true,
+        "url_https": true,
+        "user_login_success": true,
+        "no_malicious_payload_detected": true,
+        "email_content_consistent_with_policy": true
+      },
+      "activity_type": "Routine IT communication for security policy update",
+      "business_justification": "Regular password policy updates and employee notifications are standard security practices to maintain enterprise cybersecurity hygiene and ensure compliance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750013666.823589
+    },
+    {
+      "scenario": "Cloud operations team performs a scheduled automated backup of critical databases and sends an internal status report email summarizing the backup success.",
+      "technical_data": {
+        "backup_job": {
+          "job_id": "backup-20240615-0200",
+          "start_time": "2024-06-15T02:00:00Z",
+          "end_time": "2024-06-15T02:15:00Z",
+          "database": "prod_customer_db",
+          "size_gb": 150,
+          "status": "Completed",
+          "storage_location": "s3://enterprise-backups/prod_customer_db/2024-06-15/"
+        },
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-15T02:00:01Z",
+            "api_endpoint": "POST /startBackup",
+            "service": "DatabaseBackupService",
+            "response_code": 202,
+            "requester": "cloud-ops@enterprise.com"
+          },
+          {
+            "timestamp": "2024-06-15T02:15:02Z",
+            "api_endpoint": "GET /backupStatus",
+            "service": "DatabaseBackupService",
+            "response_code": 200,
+            "status": "Completed"
+          }
+        ],
+        "email_headers": {
+          "From": "cloud-ops@enterprise.com",
+          "To": "it-management@enterprise.com",
+          "Subject": "Scheduled Backup Completed Successfully - prod_customer_db",
+          "Date": "2024-06-15T02:20:00Z"
+        },
+        "email_body": "Hello Team,\n\nThe scheduled backup job for the 'prod_customer_db' database completed successfully at 02:15 UTC.\nBackup size: 150GB\nStorage location: s3://enterprise-backups/prod_customer_db/2024-06-15/\n\nNo errors were detected during the process.\n\nRegards,\nCloud Operations"
+      },
+      "indicators": {
+        "backup_status": "Successful with no errors",
+        "api_calls": "Valid authenticated API requests with expected response codes",
+        "email_sender": "Recognized cloud operations team email",
+        "storage_location": "Enterprise controlled S3 bucket with proper access controls",
+        "timing": "Consistent with scheduled maintenance windows"
+      },
+      "activity_type": "Routine cloud backup and reporting",
+      "business_justification": "Regular backups ensure data availability and recovery capability in accordance with enterprise disaster recovery policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750014521.768302
+    },
+    {
+      "scenario": "Internal IT department sends an email to employees announcing a scheduled password policy update and requesting users to validate their existing credentials via the corporate intranet portal.",
+      "technical_data": {
+        "email": {
+          "from": "it-security@corporate.local",
+          "to": [
+            "employee1@corporate.local",
+            "employee2@corporate.local",
+            "..."
+          ],
+          "subject": "Upcoming Password Policy Update - Action Required",
+          "timestamp": "2024-06-15T09:00:00Z",
+          "message_id": "<20240615090000.it-security@corporate.local>",
+          "headers": {
+            "DKIM-Status": "pass",
+            "SPF-Result": "pass",
+            "DMARC-Result": "pass"
+          }
+        },
+        "network": {
+          "source_ip": "10.1.2.5",
+          "destination_ip": "10.1.2.100",
+          "protocol": "HTTPS",
+          "url_accessed": "https://intranet.corporate.local/account/validate-credentials",
+          "timestamp": "2024-06-15T09:15:23Z",
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        },
+        "authentication": {
+          "user": "employee1",
+          "auth_method": "SSO",
+          "auth_result": "success",
+          "login_time": "2024-06-15T09:15:20Z",
+          "session_id": "ABC123DEF456"
+        },
+        "system_logs": [
+          {
+            "component": "intranet-webserver",
+            "event": "credential-validation-page-access",
+            "user": "employee1",
+            "timestamp": "2024-06-15T09:15:22Z",
+            "status": "200 OK"
+          }
+        ]
+      },
+      "indicators": {
+        "email_authentication_passed": true,
+        "internal_ip_source": true,
+        "valid_ssl_certificate": true,
+        "SSO_authentication_success": true,
+        "no_malicious_payloads_detected": true,
+        "consistent_user_agent_and_timestamp": true
+      },
+      "activity_type": "Internal IT Security Communication and Credential Validation",
+      "business_justification": "Periodic password policy updates are standard security practice to maintain compliance and protect enterprise systems. The IT department communicates these updates internally and requests users to verify credentials securely through the corporate intranet.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_7",
+      "generation_timestamp": 1750014510.7910552
+    },
+    {
+      "scenario": "Cloud DevOps team performs a routine deployment of a new microservice version, followed by automated health checks and monitoring log analysis to ensure service stability.",
+      "technical_data": {
+        "deployment": {
+          "timestamp": "2024-06-15T14:30:00Z",
+          "service": "user-authentication-api",
+          "version": "v2.3.1",
+          "initiated_by": "devops_engineer1",
+          "deployment_method": "CI/CD pipeline",
+          "status": "success"
+        },
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-15T14:29:55Z",
+            "api": "Authenticate",
+            "parameters": {
+              "user": "devops_engineer1",
+              "token": "eyJhbGciOiJIUzI1NiIsIn..."
+            },
+            "response_code": 200
+          },
+          {
+            "timestamp": "2024-06-15T14:30:10Z",
+            "api": "UpdateService",
+            "service_name": "user-authentication-api",
+            "new_version": "v2.3.1",
+            "response_code": 202
+          },
+          {
+            "timestamp": "2024-06-15T14:31:00Z",
+            "api": "GetServiceStatus",
+            "service_name": "user-authentication-api",
+            "response_status": "running",
+            "response_code": 200
+          }
+        ],
+        "monitoring_logs": [
+          {
+            "timestamp": "2024-06-15T14:35:00Z",
+            "metric": "cpu_usage_percent",
+            "value": 23.5,
+            "service": "user-authentication-api"
+          },
+          {
+            "timestamp": "2024-06-15T14:35:00Z",
+            "metric": "error_rate",
+            "value": 0,
+            "service": "user-authentication-api"
+          }
+        ],
+        "network_traffic": {
+          "source_ip": "192.168.50.10",
+          "destination_ip": "192.168.50.50",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes_sent": 2048,
+          "bytes_received": 4096,
+          "timestamp": "2024-06-15T14:30:15Z"
+        }
+      },
+      "indicators": {
+        "successful_ci_cd_pipeline": true,
+        "authorized_user_deployment": true,
+        "health_metrics_within_threshold": true,
+        "no_error_logs_detected": true,
+        "valid_authentication_tokens_used": true,
+        "standard_cloud_api_usage_patterns": true
+      },
+      "activity_type": "Cloud DevOps Deployment and Monitoring",
+      "business_justification": "Routine microservice deployments and health monitoring are part of standard continuous delivery processes to provide updated features and maintain stable cloud services used by employees and customers.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_7",
+      "generation_timestamp": 1750014510.791379
+    },
+    {
+      "scenario": "Internal IT department sends an official email to all employees announcing a scheduled password update policy change requiring credential resets.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@enterprise.local",
+          "To": "all@enterprise.local",
+          "Subject": "Mandatory Password Reset Policy Update - Action Required",
+          "Date": "2024-06-01T09:00:00Z",
+          "Message-ID": "<202406010900.itsecurity.enterprise.local>"
+        },
+        "email_body": "Dear employees, as part of our quarterly security policy update, all users are required to reset their passwords by 2024-06-10. Please use the internal password management portal at https://password.enterprise.local to complete this action.",
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-01T09:01:30Z",
+            "source_ip": "10.10.10.5",
+            "destination_ip": "10.10.10.100",
+            "protocol": "SMTP",
+            "port": 587,
+            "bytes_sent": 2048
+          },
+          {
+            "timestamp": "2024-06-01T09:02:00Z",
+            "source_ip": "10.10.10.200",
+            "destination_ip": "10.10.10.20",
+            "protocol": "HTTPS",
+            "port": 443,
+            "url": "https://password.enterprise.local/login",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "status_code": 200
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-02T10:15:00Z",
+            "username": "jdoe",
+            "authentication_method": "SAML",
+            "source_ip": "10.10.10.20",
+            "success": true,
+            "event": "User logged into internal password portal"
           }
         ],
         "system_logs": [
           {
-            "timestamp": "2024-06-15T09:07:45Z",
-            "system": "PasswordManagementService",
+            "timestamp": "2024-06-01T09:00:05Z",
+            "service": "EmailServer",
+            "event": "Bulk internal email broadcast initiated"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from verified internal domain it-security@enterprise.local",
+        "Secure HTTPS connection to internal password portal with valid TLS certificate",
+        "Authentication logs show successful logins using enterprise SSO (SAML)",
+        "No unusual network ports or external IPs involved",
+        "Scheduled and documented password update in company security policy"
+      ],
+      "activity_type": "Routine internal security policy communication",
+      "business_justification": "Quarterly password resets are a standard security practice to protect company assets and comply with internal IT security policies.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750014510.396245
+    },
+    {
+      "scenario": "IT department sends an internal email requesting employees to update their password as part of a scheduled security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@enterprise.com",
+          "To": "employee@enterprise.com",
+          "Subject": "Mandatory Password Update - Security Policy Compliance",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<202406150900.it-security.enterprise.com>"
+        },
+        "email_body": "Dear Employee, as part of our quarterly security policy enforcement, please update your network password within the next 7 days using the official internal portal at https://intranet.enterprise.com/password-change. This is a mandatory update to ensure account security.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:23Z",
+            "source_ip": "10.12.34.56",
+            "destination": "intranet.enterprise.com",
+            "protocol": "HTTPS",
+            "action": "CONNECT",
+            "bytes_transferred": 1024
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:06:00Z",
+            "user": "employee",
+            "auth_method": "SAML",
+            "result": "SUCCESS",
+            "source_ip": "10.12.34.56"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T09:10:12Z",
+            "component": "PasswordManagementService",
             "event": "PasswordChangeInitiated",
+            "user": "employee"
+          },
+          {
+            "timestamp": "2024-06-15T09:12:45Z",
+            "component": "PasswordManagementService",
+            "event": "PasswordChangeCompleted",
+            "user": "employee"
+          }
+        ]
+      },
+      "indicators": {
+        "email_origin": "internal it-security@enterprise.com domain",
+        "link_destination": "official intranet.enterprise.com domain (HTTPS with valid certificate)",
+        "authentication_success": "SAML authentication succeeded from employee's known IP",
+        "no_abnormal_network_activity": "No connection attempts to external suspicious sites",
+        "password_change_events": "Proper logging of password change initiation and completion"
+      },
+      "activity_type": "Routine IT Security Policy Enforcement",
+      "business_justification": "Regular password updates are mandated by company security policy to reduce risk of credential compromise.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750014508.0404758
+    },
+    {
+      "scenario": "IT department sends a legitimate internal email requesting employees to update their passwords as part of a scheduled security policy enforcement.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@enterprise.com",
+          "To": "all-employees@enterprise.com",
+          "Subject": "Mandatory Password Update - Security Policy Compliance",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<20240615090000.it-security@enterprise.com>"
+        },
+        "email_body": "Dear Team,\n\nAs part of our quarterly security policy, all employees are required to update their network passwords by June 20, 2024. Please use the company portal at https://portal.enterprise.com/account/update-password to complete this update.\n\nThis link directs to our secure internal system.\n\nThank you for your cooperation.\n\nBest regards,\nEnterprise IT Security Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:12Z",
+            "source_ip": "10.12.45.200",
+            "destination_ip": "10.20.30.50",
+            "protocol": "HTTPS",
+            "url": "https://portal.enterprise.com/account/update-password",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:05:15Z",
+            "username": "jdoe",
+            "source_ip": "10.12.45.200",
+            "authentication_method": "SAML",
+            "result": "Success",
+            "event": "User logged in to portal.enterprise.com"
+          }
+        ]
+      },
+      "indicators": {
+        "email_origin": "Internal verified IT domain",
+        "link_destination": "Corporate internal portal with valid SSL certificate",
+        "authentication": "Successful SSO login via enterprise identity provider",
+        "traffic_pattern": "HTTPS traffic to known corporate IP ranges",
+        "no_malware_detected": true
+      },
+      "activity_type": "Routine security policy enforcement communication",
+      "business_justification": "Periodic password updates are mandated by company security policies to maintain account security and comply with regulatory standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750014521.768029
+    },
+    {
+      "scenario": "Cloud DevOps team performs a routine deployment of a new microservice version with related scaling and monitoring adjustments in the production environment.",
+      "technical_data": {
+        "deployment_logs": [
+          {
+            "timestamp": "2024-06-03T14:30:00Z",
+            "service_name": "auth-service",
+            "old_version": "v1.3.2",
+            "new_version": "v1.4.0",
+            "deployment_status": "success",
+            "deployed_by": "devops_user_01"
+          }
+        ],
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-03T14:31:00Z",
+            "api_endpoint": "/autoscaling/groups/auth-service",
+            "method": "PATCH",
+            "request_body": {
+              "min_instances": 3,
+              "max_instances": 10,
+              "desired_instances": 5
+            },
+            "response_code": 200,
+            "user_agent": "DevOps-CI/1.0"
+          },
+          {
+            "timestamp": "2024-06-03T14:32:00Z",
+            "api_endpoint": "/monitoring/alerts",
+            "method": "POST",
+            "request_body": {
+              "alert_name": "auth-service-error-rate",
+              "threshold": "5%",
+              "enabled": true
+            },
+            "response_code": 201
+          }
+        ],
+        "system_metrics": {
+          "cpu_utilization": "35%",
+          "memory_usage": "60%",
+          "network_in": "120Mbps",
+          "network_out": "95Mbps"
+        },
+        "user_activity": [
+          {
+            "timestamp": "2024-06-03T14:35:00Z",
+            "username": "devops_user_01",
+            "action": "Accessed cloud management console",
+            "ip_address": "192.168.100.20"
+          }
+        ]
+      },
+      "indicators": [
+        "Deployment logs indicate version upgrade with success status and no errors",
+        "Cloud API requests authenticated with valid DevOps user credentials",
+        "Scaling adjustments within expected operational parameters",
+        "Monitoring alert creation matches new service deployment",
+        "User activity from known IPs and authorized personnel"
+      ],
+      "activity_type": "Routine cloud deployment and scaling operation",
+      "business_justification": "Regular updates and scaling of microservices ensure system reliability, performance optimization, and timely feature delivery to end users.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750014510.396543
+    },
+    {
+      "scenario": "Cloud operations team performs a scheduled deployment of a new microservice version with monitoring and logging enabled to ensure system stability.",
+      "technical_data": {
+        "deployment_logs": {
+          "timestamp_start": "2024-06-15T02:00:00Z",
+          "timestamp_end": "2024-06-15T02:15:00Z",
+          "service": "user-profile-service",
+          "version_deployed": "v3.2.1",
+          "deployment_method": "rolling update",
+          "status": "SUCCESS"
+        },
+        "api_access_logs": [
+          {
+            "timestamp": "2024-06-15T02:16:00Z",
+            "api_endpoint": "/user/profile/get",
+            "request_method": "GET",
+            "status_code": 200,
+            "response_time_ms": 120,
+            "auth_method": "OAuth2",
+            "client_id": "internal-dashboard"
+          }
+        ],
+        "cloud_monitoring": {
+          "cpu_utilization_percent": 35,
+          "memory_usage_mb": 512,
+          "error_rate_percent": 0.01,
+          "scaling_events": [
+            {
+              "timestamp": "2024-06-15T02:05:00Z",
+              "action": "scale_out",
+              "instances_before": 3,
+              "instances_after": 4
+            }
+          ]
+        },
+        "logging": {
+          "log_aggregation_service": "enabled",
+          "log_entries": [
+            {
+              "timestamp": "2024-06-15T02:12:30Z",
+              "level": "INFO",
+              "message": "New version v3.2.1 deployed successfully to instance i-0abcdef12345"
+            }
+          ]
+        }
+      },
+      "indicators": {
+        "deployment_status": "success with no rollback",
+        "monitoring_metrics": "within expected operational thresholds",
+        "api_authentication": "OAuth2 tokens valid and issued to internal clients",
+        "scaling_events": "triggered by legitimate load patterns",
+        "logging": "consistent info-level logs confirming deployment"
+      },
+      "activity_type": "Scheduled Cloud Microservice Deployment and Monitoring",
+      "business_justification": "Continuous integration and deployment practices require regular updates to microservices with proper monitoring to maintain service availability and performance.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750014508.04069
+    },
+    {
+      "scenario": "HR sends an internal memo via enterprise chat requesting employees to complete the annual mandatory compliance training through the official learning management system (LMS).",
+      "technical_data": {
+        "chat_message": {
+          "sender": "hr-dept@company.com",
+          "channel": "all-employees",
+          "timestamp": "2024-06-10T14:30:00Z",
+          "message": "Please complete your annual compliance training by June 30th. Access the LMS here: https://lms.company.com/login"
+        },
+        "network_activity": [
+          {
+            "timestamp": "2024-06-10T14:35:12Z",
+            "source_ip": "192.168.11.45",
+            "destination_ip": "10.10.20.15",
+            "protocol": "HTTPS",
+            "destination_port": 443,
+            "action": "ALLOW"
+          }
+        ],
+        "authentication": [
+          {
+            "timestamp": "2024-06-11T08:15:45Z",
+            "user": "asmith",
+            "auth_method": "SAML SSO",
+            "result": "SUCCESS",
+            "source_ip": "192.168.11.45"
+          }
+        ],
+        "application_logs": [
+          {
+            "timestamp": "2024-06-11T08:16:10Z",
+            "user": "asmith",
+            "action": "Started compliance training module 1",
+            "status": "In Progress"
+          }
+        ],
+        "system_monitoring": {
+          "cpu_usage": "moderate",
+          "memory_usage": "normal",
+          "lms_response_time_ms": 120
+        }
+      },
+      "indicators": [
+        "Message sent via authenticated internal chat system from verified HR account.",
+        "Accessed LMS URL is company-owned with valid SSL and matches expected domain.",
+        "Authentication via corporate SSO with successful login recorded.",
+        "Training activity logged by LMS with expected timing and user behavior.",
+        "System metrics within normal operational thresholds."
+      ],
+      "activity_type": "Internal compliance training communication and user engagement",
+      "business_justification": "Mandatory compliance training ensures employees stay informed about company policies and regulatory requirements.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750014950.60915
+    },
+    {
+      "scenario": "Internal IT team sends a scheduled email notification to employees reminding them to update their passwords via the official company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Quarterly Password Update Reminder",
+          "Date": "2024-06-12T09:00:00Z",
+          "Message-ID": "<20240612T090000.it@company.com>"
+        },
+        "email_body": "Dear Team, as part of our security policy, please update your password by logging into the company portal at https://portal.company.com/account/settings before June 20th.",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-12T09:00:05Z",
+            "source_ip": "192.168.1.10",
+            "destination_ip": "192.168.1.100",
+            "protocol": "SMTP",
+            "port": 587,
+            "action": "email_sent"
+          }
+        ],
+        "user_activity_logs": [
+          {
             "user": "jdoe",
-            "status": "Started"
+            "timestamp": "2024-06-12T09:15:00Z",
+            "action": "login",
+            "source_ip": "192.168.1.150",
+            "authentication_method": "SSO",
+            "result": "success"
+          },
+          {
+            "user": "jdoe",
+            "timestamp": "2024-06-12T09:16:00Z",
+            "action": "password_change",
+            "target_system": "https://portal.company.com",
+            "result": "success"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-12T09:00:00Z",
+            "component": "Email Server",
+            "event": "Scheduled email batch dispatched",
+            "status": "success"
+          }
+        ]
+      },
+      "indicators": {
+        "sender_domain_matches_internal": true,
+        "email_links_point_to_company_domain": true,
+        "user_logged_in_before_password_change": true,
+        "no_malicious_payload_detected": true,
+        "email_signed_with_valid_dkim": true
+      },
+      "activity_type": "Internal IT Communication",
+      "business_justification": "Routine security practice to ensure employee credentials are updated regularly to maintain account security.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_7",
+      "generation_timestamp": 1750014950.482316
+    },
+    {
+      "scenario": "IT department sends a scheduled internal email reminder for employees to update their passwords through the official corporate portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@enterprise.local",
+          "To": "all-employees@enterprise.local",
+          "Subject": "Mandatory Password Update Reminder",
+          "Date": "2024-06-10T08:15:00Z",
+          "Message-ID": "<12345.67890.it-support@enterprise.local>"
+        },
+        "email_body": "Dear Team,\n\nAs part of our quarterly security policy, please update your network password by logging into the corporate portal at https://portal.enterprise.local/password-reset.\n\nDo not respond to emails requesting passwords directly. This is an automated reminder from IT.\n\nThank you,\nIT Support Team",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-10T08:16:12Z",
+            "source_ip": "10.10.10.5",
+            "destination_ip": "10.10.10.20",
+            "protocol": "HTTPS",
+            "url": "https://portal.enterprise.local/password-reset",
+            "action": "GET",
+            "response_code": 200,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-10T08:17:05Z",
+            "username": "jdoe",
+            "event": "Password Change",
+            "source_ip": "10.10.10.5",
+            "status": "Success"
+          }
+        ]
+      },
+      "indicators": {
+        "email_source_verified": true,
+        "email_dkim_pass": true,
+        "url_matches_corporate_domain": true,
+        "ssl_certificate_valid": true,
+        "authentication_successful": true,
+        "no_malicious_payload_detected": true
+      },
+      "activity_type": "Routine IT Security Communication",
+      "business_justification": "Quarterly password updates are required by corporate security policy to maintain account security and compliance with industry standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_5",
+      "generation_timestamp": 1750014949.573964
+    },
+    {
+      "scenario": "IT department sends an internal email informing employees about a scheduled credential update process with secure links to the official company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@company.com",
+          "To": "all-employees@company.com",
+          "Subject": "Scheduled Credential Update - Action Required",
+          "Date": "2024-06-15T09:00:00Z",
+          "Message-ID": "<20240615090000.it-support@company.com>"
+        },
+        "email_body": "Dear team, as part of our quarterly security policy, please update your login credentials by accessing the secure company portal at https://portal.company.com/credential-update before June 20th. This link is HTTPS secured and monitored.",
+        "network_traffic": [
+          {
+            "timestamp": "2024-06-15T09:05:23Z",
+            "source_ip": "192.168.10.23",
+            "destination_ip": "10.10.10.5",
+            "protocol": "TCP",
+            "destination_port": 443,
+            "action": "ALLOW"
+          },
+          {
+            "timestamp": "2024-06-15T09:06:10Z",
+            "source_ip": "192.168.10.23",
+            "destination_ip": "10.10.10.5",
+            "protocol": "TLSv1.3",
+            "destination_port": 443,
+            "action": "ALLOW"
+          }
+        ],
+        "authentication_logs": [
+          {
+            "timestamp": "2024-06-15T09:06:15Z",
+            "user": "jdoe",
+            "auth_method": "web-portal",
+            "result": "SUCCESS",
+            "source_ip": "192.168.10.23"
+          }
+        ],
+        "system_logs": [
+          {
+            "timestamp": "2024-06-15T09:07:00Z",
+            "service": "credential_update_service",
+            "event": "User jdoe submitted updated credentials",
+            "status": "Completed"
+          }
+        ]
+      },
+      "indicators": [
+        "Email originates from valid internal domain with proper SPF and DKIM signatures.",
+        "HTTPS connection to company-controlled portal with valid SSL certificate.",
+        "Authentication logs confirm successful login from internal IP range.",
+        "No unusual outbound connections or data exfiltration detected.",
+        "Credential update service logs show normal completion status."
+      ],
+      "activity_type": "Routine IT security update communication",
+      "business_justification": "Quarterly credential updates are mandated by IT security policy to maintain account security and comply with regulatory standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_6",
+      "generation_timestamp": 1750014950.609032
+    },
+    {
+      "scenario": "Cloud DevOps team performs a routine deployment update to the internal customer support API service with no downtime during business hours.",
+      "technical_data": {
+        "deployment_logs": {
+          "timestamp_start": "2024-06-15T14:00:00Z",
+          "timestamp_end": "2024-06-15T14:10:00Z",
+          "service": "customer-support-api",
+          "version_deployed": "v2.4.1",
+          "deployment_type": "rolling_update",
+          "nodes_updated": 5,
+          "status": "success"
+        },
+        "cloud_api_calls": [
+          {
+            "timestamp": "2024-06-15T14:00:05Z",
+            "user": "devops.user",
+            "action": "authenticate",
+            "auth_method": "OAuth2",
+            "token_expiry": "2024-06-15T16:00:00Z",
+            "source_ip": "203.0.113.42"
+          },
+          {
+            "timestamp": "2024-06-15T14:02:00Z",
+            "user": "devops.user",
+            "action": "update_service_configuration",
+            "details": {
+              "service_name": "customer-support-api",
+              "new_version": "v2.4.1",
+              "scaling_policy": "auto-scale-enabled"
+            }
+          }
+        ],
+        "monitoring_logs": {
+          "timestamp_range": "2024-06-15T13:50:00Z - 2024-06-15T14:15:00Z",
+          "cpu_usage": "normal",
+          "error_rate": "0.0%",
+          "response_time_ms": "120",
+          "alerts_generated": 0
+        },
+        "network_traffic": {
+          "source_ip": "203.0.113.42",
+          "destination_ip": "198.51.100.23",
+          "protocol": "HTTPS",
+          "port": 443,
+          "data_volume_bytes": 204800,
+          "timestamp": "2024-06-15T14:05:00Z"
+        }
+      },
+      "indicators": {
+        "authenticated_user": "devops.user",
+        "use_of_secure_protocols": true,
+        "rolling_update_method": true,
+        "no_error_alerts": true,
+        "consistent_ip_and_token_usage": true,
+        "no_unusual_data_exfiltration": true
+      },
+      "activity_type": "Cloud DevOps deployment update",
+      "business_justification": "Regular software updates and maintenance deployments ensure the availability and security of cloud-hosted customer support services.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750014955.44348
+    },
+    {
+      "scenario": "IT department sends an internal email to all employees announcing scheduled mandatory password change policy update with instructions and deadline.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-security@company.internal",
+          "To": "all-employees@company.internal",
+          "Subject": "Mandatory Password Update Policy - Action Required",
+          "Date": "2024-06-15T08:30:00Z",
+          "Message-ID": "<12345.it-security.company.internal>"
+        },
+        "email_body": "Dear Colleagues, As part of our ongoing security enhancements, all employees are required to update their network passwords by June 22, 2024. Please use the company portal at https://portal.company.internal/change-password to complete the update. This is a legitimate site requiring secure login. If you have any questions, contact IT support at it-support@company.internal.",
+        "network_traffic": {
+          "source_ip": "10.10.5.12",
+          "destination_ip": "10.10.5.255",
+          "protocol": "SMTP",
+          "port": 25,
+          "timestamp": "2024-06-15T08:30:05Z"
+        },
+        "authentication_logs": [
+          {
+            "user": "j.smith",
+            "timestamp": "2024-06-15T09:00:00Z",
+            "action": "password_change",
+            "status": "success",
+            "source_ip": "192.168.1.45",
+            "method": "web_portal"
+          }
+        ],
+        "system_logs": {
+          "server": "auth-server-01",
+          "event": "password_policy_update_notification_sent",
+          "timestamp": "2024-06-15T08:29:59Z",
+          "details": "Policy version 3.2 announced to all users"
+        }
+      },
+      "indicators": {
+        "email_domain": "company.internal",
+        "link_domain": "portal.company.internal",
+        "no_obfuscation": true,
+        "TLS_enforced": true,
+        "authentication_success": true,
+        "consistent_ip_range": true,
+        "no_malicious_payload": true
+      },
+      "activity_type": "Routine IT communication - password policy notification",
+      "business_justification": "Regular password update policies are essential for maintaining enterprise security hygiene and compliance with internal security standards.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_8",
+      "generation_timestamp": 1750014955.443122
+    },
+    {
+      "scenario": "Cloud DevOps team performs a routine deployment of updated authentication microservice and sends an internal status update email.",
+      "technical_data": {
+        "deployment_logs": {
+          "deployment_id": "deploy-67890",
+          "service": "auth-microservice",
+          "start_time": "2024-06-16T14:00:00Z",
+          "end_time": "2024-06-16T14:05:30Z",
+          "result": "Success",
+          "version": "v2.3.1",
+          "cloud_provider": "AWS",
+          "region": "us-east-1",
+          "api_calls": [
+            {
+              "action": "UpdateService",
+              "timestamp": "2024-06-16T14:00:05Z",
+              "status": "200 OK"
+            },
+            {
+              "action": "HealthCheck",
+              "timestamp": "2024-06-16T14:05:25Z",
+              "status": "200 OK"
+            }
+          ]
+        },
+        "email_notification": {
+          "from": "devops@enterprise.com",
+          "to": "team@enterprise.com",
+          "subject": "Auth Microservice Deployment Completed Successfully",
+          "date": "2024-06-16T14:06:00Z",
+          "body": "The deployment of auth-microservice version v2.3.1 in us-east-1 completed without issues. All health checks passed. Please report any anomalies.\n\nRegards,\nDevOps Team"
+        },
+        "network_traffic": {
+          "src_ip": "10.10.5.20",
+          "dst_ip": "10.10.5.21",
+          "protocol": "HTTPS",
+          "port": 443,
+          "bytes": 2048,
+          "timestamp": "2024-06-16T14:05:30Z"
+        },
+        "authentication_events": [
+          {
+            "user": "devops",
+            "action": "aws-cli login",
+            "timestamp": "2024-06-16T13:59:50Z",
+            "result": "Success",
+            "source_ip": "10.10.5.20"
+          }
+        ]
+      },
+      "indicators": {
+        "authenticated_deployer": true,
+        "successful_health_checks": true,
+        "internal_sender_domain": true,
+        "no suspicious URLs": true,
+        "expected_deployment_timeframe": true,
+        "consistent_network_traffic": true
+      },
+      "activity_type": "Cloud DevOps Deployment and Internal Communication",
+      "business_justification": "Regular microservice updates improve system security and feature sets; internal notifications keep the team informed of operational status.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750014966.078458
+    },
+    {
+      "scenario": "Internal IT team sends a legitimate notification email to employees about scheduled maintenance requiring password policy updates.",
+      "technical_data": {
+        "email_headers": {
+          "From": "it-support@enterprise.com",
+          "To": "employee@enterprise.com",
+          "Subject": "Upcoming Password Policy Update and Scheduled Maintenance",
+          "Date": "2024-06-15T08:30:00Z",
+          "Message-ID": "<msgid-12345@enterprise.com>"
+        },
+        "email_body": "Dear Team,\n\nAs part of our ongoing security improvements, we will be updating the password policy on June 20th. Please ensure your passwords comply with the new requirements by that date. No action required immediately.\n\nScheduled system maintenance will occur from 10 PM to 2 AM UTC on June 20th.\n\nThank you,\nIT Support",
+        "email_traffic": {
+          "source_ip": "10.1.2.15",
+          "destination_ip": "10.1.2.200",
+          "protocol": "SMTP",
+          "port": 25,
+          "size_bytes": 1024,
+          "timestamp": "2024-06-15T08:30:01Z"
+        },
+        "authentication_logs": [
+          {
+            "user": "it-support",
+            "method": "SMTP Auth",
+            "result": "Success",
+            "timestamp": "2024-06-15T08:29:59Z",
+            "source_ip": "10.1.2.15"
+          }
+        ],
+        "network_traffic": [
+          {
+            "src_ip": "10.1.2.15",
+            "dst_ip": "10.1.2.200",
+            "protocol": "SMTP",
+            "dst_port": 25,
+            "bytes_transferred": 1024,
+            "timestamp": "2024-06-15T08:30:01Z"
+          }
+        ]
+      },
+      "indicators": {
+        "valid_internal_sender": true,
+        "consistent_sender_domain": true,
+        "no_url_links": true,
+        "email_signature": "IT Support Team, Enterprise",
+        "timely_announcement": true,
+        "authentication_success": true,
+        "traffic_pattern_consistent": true
+      },
+      "activity_type": "Internal IT Communication - Policy Notification",
+      "business_justification": "IT regularly informs employees about upcoming maintenance and policy changes to ensure compliance and minimize operational disruption.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_9",
+      "generation_timestamp": 1750014966.0783439
+    },
+    {
+      "scenario": "Cloud operations team performs scheduled scaling of web application instances based on monitored CPU utilization metrics to maintain performance during peak hours.",
+      "technical_data": {
+        "timestamp": "2024-06-12T14:30:00Z",
+        "cloud_provider": "AWS",
+        "region": "us-east-1",
+        "api_calls": [
+          {
+            "api": "AutoScaling:DescribeScalingActivities",
+            "request_id": "req-1234567890abcdef",
+            "parameters": {},
+            "response_status": 200,
+            "timestamp": "2024-06-12T14:29:58Z"
+          },
+          {
+            "api": "AutoScaling:SetDesiredCapacity",
+            "request_id": "req-abcdef1234567890",
+            "parameters": {
+              "AutoScalingGroupName": "webapp-prod-group",
+              "DesiredCapacity": 10
+            },
+            "response_status": 200,
+            "timestamp": "2024-06-12T14:30:00Z"
+          }
+        ],
+        "monitoring_data": {
+          "cpu_utilization_percent": 78,
+          "network_in_bytes": 120000000,
+          "network_out_bytes": 115000000,
+          "timestamp": "2024-06-12T14:29:00Z"
+        },
+        "system_logs": [
+          {
+            "timestamp": "2024-06-12T14:30:05Z",
+            "service": "AutoScaling",
+            "event": "Desired capacity updated from 8 to 10 instances",
+            "status": "success"
+          }
+        ],
+        "user_activity": {
+          "user": "cloudops-admin",
+          "action": "API call",
+          "source_ip": "54.240.12.34",
+          "authentication_method": "IAM Role",
+          "result": "success",
+          "timestamp": "2024-06-12T14:30:00Z"
+        }
+      },
+      "indicators": {
+        "api_calls_use_valid_authentication": true,
+        "actions_align_with_monitoring_metrics": true,
+        "no_error_responses_in_logs": true,
+        "actions_occur_within_business_hours": true,
+        "source_ip_matches_known_admin_range": true
+      },
+      "activity_type": "Cloud Resource Management",
+      "business_justification": "Scaling web application instances ensures optimal performance and user experience during peak traffic periods.",
+      "sample_type": "benign",
+      "is_attack": false,
+      "generation_task_id": "phishing_ben_7",
+      "generation_timestamp": 1750014950.4825249
+    },
+    {
+      "scenario": "HR department sends an internal memo to all employees with instructions for submitting timesheets via the approved company portal.",
+      "technical_data": {
+        "email_headers": {
+          "From": "hr-dept@enterprise.local",
+          "To": "all-employees@enterprise.local",
+          "Subject": "Timesheet Submission Instructions",
+          "Date": "2024-06-11T13:45:00Z",
+          "Message-ID": "<67890.12345.hr-dept@enterprise.local>"
+        },
+        "email_body": "Hello Team,\n\nPlease submit your weekly timesheets by Friday 5 PM using the official portal at https://timesheets.enterprise.local.\n\nIf you experience any issues, contact support@enterprise.local.\n\nBest regards,\nHR Department",
+        "network_logs": [
+          {
+            "timestamp": "2024-06-11T13:46:30Z",
+            "source_ip": "10.10.10.15",
+            "destination_ip": "10.10.10.25",
+            "protocol": "HTTPS",
+            "url": "https://timesheets.enterprise.local/login",
+            "action": "POST",
+            "response_code": 200,
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+          }
+        ],
+        "application_logs": [
+          {
+            "timestamp": "2024-06-11T13:47:10Z",
+            "username": "asmith",
+            "event": "Timesheet Submission",
+            "source_ip": "10.10.10.15",
+            "status": "Success",
+            "timesheet_week": "2024-W23"
           }
         ]
       },
       "indicators": {
         "email_authenticated": true,
-        "dkim_pass": true,
-        "spf_pass": true,
-        "dmarc_pass": true,
-        "url_domain": "portal.company.com",
-        "url_ssl_valid": true,
-        "user_behavior_consistent": true,
-        "no_malware_detected": true,
-        "login_ip_in_office_range": true
+        "email_spf_pass": true,
+        "url_in_corporate_whitelist": true,
+        "application_response_200": true,
+        "user_action_expected": true,
+        "no_anomalous_behavior_detected": true
       },
-      "activity_type": "Internal Security Communication and Password Update",
-      "business_justification": "Quarterly password updates are mandated by company security policies to reduce risk of credential compromise.",
+      "activity_type": "Internal Business Communication",
+      "business_justification": "Timesheet submission is a regular administrative process for payroll and project tracking, requiring communication of instructions to all employees.",
       "sample_type": "benign",
       "is_attack": false,
-      "generation_task_id": "phishing_ben_44",
-      "generation_timestamp": 1750010765.699988
+      "generation_task_id": "phishing_ben_5",
+      "generation_timestamp": 1750014949.574186
     }
   ],
   "metadata": {
-    "total_samples": 47,
-    "new_samples_added": 47,
-    "new_malicious_samples": 1,
-    "new_benign_samples": 46,
-    "generation_method": "parallel",
+    "total_samples": 36,
+    "new_samples_added": 10,
+    "new_malicious_samples": 0,
+    "new_benign_samples": 10,
+    "generation_method": "traditional_parallel",
+    "schema_preserved": false,
     "generation_stats": {
-      "total_generated": 96,
-      "duplicates_filtered": 49,
+      "total_generated": 20,
+      "duplicates_filtered": 10,
       "failed_generations": 0,
-      "successful_batches": 24,
-      "total_api_calls": 50,
-      "generation_start_time": 1750010648.849737,
-      "generation_end_time": 1750010793.9126148
+      "successful_batches": 5,
+      "total_api_calls": 10,
+      "generation_start_time": 1750014936.006826,
+      "generation_end_time": 1750014966.078779
     },
     "duplicate_detection_stats": {
       "enabled": true,
-      "total_hashes": 47,
+      "total_hashes": 27,
       "check_fields": [
         "scenario",
         "technical_data",
         "indicators"
       ]
     },
-    "generation_timestamp": "2025-06-15 14:06:33",
-    "total_generation_time": 145.06287789344788,
-    "samples_per_minute": 19.43984595474079,
+    "generation_timestamp": "2025-06-15 15:16:06",
+    "total_generation_time": 30.071953058242798,
+    "samples_per_minute": 19.952146069060802,
     "max_workers": 4,
     "batch_size": 2
   }
