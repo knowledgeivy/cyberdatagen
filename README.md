@@ -18,7 +18,7 @@ CyberData walks you through a systematic approach to synthetic cybersecurity dat
 ```
 cyberdata/
 ├── src/cyberdata/
-│   ├── scripts/                     # Core pipeline scripts
+│   ├── process/                     # Core pipeline scripts
 │   │   ├── problems.py              # Generate cybersecurity problems
 │   │   ├── extend_problems.py       # Evaluate & enhance taxonomy
 │   │   ├── small_dataset.py         # Create seed examples with technical data
