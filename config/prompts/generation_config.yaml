@@ -58,126 +58,143 @@ output:
 
 # Prompts for generation
 prompts:
-  # Main generation prompt for malicious samples
+  # Main generation prompt for malicious samples from seed examples
   generation:
     system:
       template: |
         You are a cybersecurity synthetic data generator specialized in creating realistic examples. 
-        Given a few example samples of a cybersecurity problem, generate additional samples following the same schema. 
-        Focus on technical accuracy and realism. Return valid JSON with a 'samples' key containing an array of examples.
+        Given seed examples from a cybersecurity dataset, generate additional samples following the exact same schema and structure.
         
-        CRITICAL: Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        CRITICAL SCHEMA REQUIREMENTS:
+        - Preserve the EXACT column names and data types from the seed examples
+        - Maintain the same field structure and value patterns
+        - Generate data that matches the original dataset's schema perfectly
+        - Do not add metadata fields like "sample_type", "nature", "description" unless they exist in the seeds
+        
+        Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
         Return ONLY the JSON object with the structure: {"samples": [...]}.
 
     user:
       template: |
-        Problem Nature: {nature} (Area: {area})
-        Description: {description}
+        Generate {count} additional samples that follow the EXACT same schema as these seed examples:
+
         Seed Examples:
         {examples_json}
 
-        Please generate {count} additional unique examples following the exact same structure as the examples. 
-        Each example should include the same fields as the examples provided. 
-        Make sure the examples are realistic and technically accurate for {nature} scenarios.
+        Requirements:
+        1. Use the SAME field names as shown in the seed examples
+        2. Generate realistic values that match the data types and patterns
+        3. Maintain any existing label encoding (e.g., 1 for malicious, 0 for benign)
+        4. Do not add any additional fields beyond what's in the seed examples
+        5. Ensure technical accuracy for cybersecurity scenarios
         
-        IMPORTANT: Return ONLY valid JSON with a 'samples' key containing an array of generated examples.
-        Do not include any markdown formatting, code blocks, or explanatory text.
-        
-        Expected format:
+        Return ONLY valid JSON with this exact format:
         {{
           "samples": [
-            {{
-              "scenario": "brief description",
-              "technical_data": "detailed technical information",
-              "indicators": ["indicator1", "indicator2"],
-              "detection_method": "how to detect",
-              "relevant_mitre_techniques": ["T1XXX"]
-            }}
+            // {count} samples with the same structure as seed examples
           ]
         }}
       
       variables:
-        - nature
-        - area
-        - description
         - examples_json
         - count
 
-  # Prompt for generating benign/legitimate samples
+  # Enhanced generation prompt for schema-preserving real-world data
+  schema_preserving_generation:
+    system:
+      template: |
+        You are an expert cybersecurity data generator that specializes in creating synthetic data that perfectly matches real-world dataset schemas.
+        
+        Your task is to generate synthetic samples that:
+        1. Use the EXACT same column names as the original data
+        2. Maintain the same data types and value patterns
+        3. Preserve the original label encoding
+        4. Follow the statistical distributions of the original data
+        5. Generate realistic cybersecurity scenarios within the schema constraints
+        
+        CRITICAL: Do not add any additional fields or metadata. Only use the columns present in the original schema.
+        
+        Return valid JSON only. No markdown, no explanations.
+
+    user:
+      template: |
+        Original Schema Information:
+        {schema_info}
+
+        Seed Examples:
+        {examples_json}
+
+        Generate {count} new samples that:
+        - Use the exact same column names: {column_names}
+        - Maintain the label encoding: {label_mapping}
+        - Follow the same data patterns as the seed examples
+        - Are realistic for cybersecurity scenarios
+
+        Return ONLY valid JSON:
+        {{
+          "samples": [
+            // {count} samples with identical schema to seeds
+          ]
+        }}
+      
+      variables:
+        - schema_info
+        - examples_json
+        - count
+        - column_names
+        - label_mapping
+
+  # Prompt for generating benign/legitimate samples with schema preservation
   benign_generation:
     system:
       template: |
         You are a cybersecurity synthetic data generator specialized in creating realistic benign/legitimate activity examples.
-        Generate normal, non-malicious activities that would occur in the specified environment.
+        Generate normal, non-malicious activities that follow the exact schema of the provided examples.
+        
+        CRITICAL SCHEMA REQUIREMENTS:
+        - Use the EXACT same field names and structure as the seed examples
+        - Maintain the same data types and value patterns
+        - Set the label field to indicate benign/legitimate activity
+        - Do not add any additional metadata fields
+        
         Focus on creating realistic examples of legitimate business operations, normal user behavior, and standard IT activities.
         
-        CRITICAL: Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
         Return ONLY the JSON object with the structure: {"samples": [...]}.
 
     user:
       template: |
-        Environment: {area}
-        Context: {context}
+        Generate {count} benign/legitimate activity samples using the same schema as these examples:
 
-        Please generate {count} examples of legitimate, benign activities for the {area} environment.
-        
-        For each example, create realistic scenarios that include:
-        
-        For Enterprise environments:
-        - Normal employee activities (document access, email communications, system logins)
-        - Routine IT operations (software updates, backup processes, monitoring)
-        - Standard business processes (report generation, data analysis, meetings)
-        - Legitimate administrative actions (user account management, policy updates)
-        
-        For Cloud environments:
-        - Normal API usage patterns (authentication, data retrieval, configuration)
-        - Routine cloud operations (scaling, monitoring, logging)
-        - Standard DevOps activities (deployments, updates, maintenance)
-        - Legitimate resource management (provisioning, optimization, cleanup)
-        
-        For Social Engineering contexts:
-        - Authentic business communications (internal memos, legitimate requests)
-        - Normal customer interactions (support requests, information sharing)
-        - Standard verification processes (identity confirmation, authorization)
-        - Routine administrative communications (policy updates, announcements)
+        Schema Reference:
+        {schema_reference}
 
-        Each example should include the same technical detail level as malicious examples but represent normal operations.
-        Include realistic technical data such as:
-        - Normal log entries and timestamps
-        - Legitimate network traffic patterns
-        - Standard authentication flows
-        - Routine system activities
-        - Normal user behavior patterns
+        Requirements:
+        1. Use the EXACT same field names and structure
+        2. Generate legitimate, non-malicious activities
+        3. Set appropriate values for the label field to indicate benign activity
+        4. Ensure all generated data follows the same patterns and constraints
+        5. Include realistic technical details for normal operations
         
-        Structure each example with:
-        1. "scenario": Brief description of the legitimate activity
-        2. "technical_data": Detailed technical information showing normal operations
-        3. "indicators": Technical indicators showing this is legitimate activity
-        4. "activity_type": Specific type of legitimate activity
-        5. "business_justification": Why this activity is normal and expected
+        Examples of legitimate activities for this context:
+        - Normal user authentication and system access
+        - Routine business operations and data processing
+        - Standard network traffic and communications
+        - Regular system maintenance and updates
+        - Typical user behavior patterns
 
-        IMPORTANT: Return ONLY valid JSON with a 'samples' key containing an array of {count} benign examples.
-        Do not include any markdown formatting, code blocks, or explanatory text.
-        
-        Expected format:
+        Return ONLY valid JSON:
         {{
           "samples": [
-            {{
-              "scenario": "brief description of legitimate activity",
-              "technical_data": "detailed normal operation data",
-              "indicators": ["legitimate indicator1", "legitimate indicator2"],
-              "activity_type": "specific legitimate activity type",
-              "business_justification": "why this is normal"
-            }}
+            // {count} benign samples with identical schema
           ]
         }}
       
       variables:
-        - area
         - count
-        - context
+        - schema_reference
 
-  # Backup generation prompt (when seeds are not available)
+  # Fallback generation prompt (when seeds are not available)
   backup_generation:
     system:
       template: |
