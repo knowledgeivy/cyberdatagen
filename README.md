@@ -15,10 +15,10 @@ CyberData provides two distinct workflows for synthetic cybersecurity data gener
 ### Workflow B: Real-World Data Processing
 1. **Process real-world data** with stratified sampling and LLM analysis
 2. **Generate seed datasets** from actual cybersecurity incidents
-3. **Generate large synthetic datasets** using real-world patterns
+3. **Generate large synthetic datasets** using real-world patterns with **schema preservation**
 4. **Validate datasets** with enhanced real-world alignment checks
 
-Both workflows converge at the synthetic data generation step, enabling flexible data sourcing while maintaining consistent output quality.
+Both workflows converge at the synthetic data generation step, enabling flexible data sourcing while maintaining consistent output quality. **The key improvement is schema preservation for real-world data**, ensuring generated samples maintain the exact structure of the original dataset.
 
 ## 📂 Project Structure
 
@@ -26,22 +26,13 @@ Both workflows converge at the synthetic data generation step, enabling flexible
 cyberdata/
 ├── src/cyberdata/
 │   ├── process/                     # Core pipeline scripts
-<<<<<<< HEAD
-│   │   ├── problems.py              # Generate cybersecurity problems
-│   │   ├── extend_problems.py       # Evaluate & enhance taxonomy
-│   │   ├── small_dataset.py         # Create seed examples with technical data
-│   │   ├── generator.py             # Generate large synthetic datasets
-│   │   ├── validate_small.py        # Validate seed examples
-│   │   └── validate_large.py        # Quality assessment of large datasets
-=======
 │   │   ├── problem_generator.py     # Generate cybersecurity problems
 │   │   ├── problem_enhancer.py      # Evaluate & enhance taxonomy
 │   │   ├── seed_generator.py        # Create seeds from problem definitions
 │   │   ├── realworld_processor.py   # Create seeds from real-world data
-│   │   ├── synthetic_generator.py   # Generate large synthetic datasets
+│   │   ├── synthetic_generator.py   # Generate large synthetic datasets (with schema preservation)
 │   │   ├── seed_validator.py        # Validate seed examples
 │   │   └── dataset_validator.py     # Quality assessment of large datasets
->>>>>>> 6707d09330510fa7c7b8cbaf2fc35970329e7322
 │   └── utils/                       # Utility modules
 │       ├── llm_invoke.py            # LLM API interface
 │       ├── logger_config.py         # Logging configuration
@@ -56,7 +47,7 @@ cyberdata/
 │       ├── problems_prompts.yaml
 │       ├── extension_prompts.yaml
 │       ├── seed_generation_prompts.yaml
-│       ├── generation_config.yaml
+│       ├── generation_config.yaml   # Unified generation configuration
 │       ├── validation_prompts.yaml
 │       └── realworld_analysis_prompts.yaml
 ├── data/                            # Generated datasets
@@ -122,16 +113,16 @@ python synthetic_generator.py --count 50 --malicious-ratio 0.6
 python dataset_validator.py
 ```
 
-### Workflow B: Real-World Data Processing
+### Workflow B: Real-World Data Processing (Schema-Preserving)
 
 ```bash
 # Navigate to process directory
 cd src/cyberdata/process
 
-# 1. Process real-world data to create seeds
+# 1. Process real-world data to create schema-preserving seeds
 python realworld_processor.py --csv-file your_dataset.csv.gz --label-column label --samples-per-class 5
 
-# 2. Generate large synthetic datasets (same as Workflow A)
+# 2. Generate large synthetic datasets with preserved schema
 python synthetic_generator.py --count 50 --malicious-ratio 0.6
 
 # 3. Validate large datasets
@@ -199,6 +190,8 @@ raw/
 ```
 
 ### Seed Example Schema
+
+#### Traditional Seeds (Manual Problems)
 ```json
 {
   "scenario": "Brief description of the attack instance",
@@ -206,16 +199,26 @@ raw/
   "indicators": ["Specific technical indicators of compromise"],
   "detection_method": "How this would be detected in practice",
   "relevant_mitre_techniques": ["MITRE ATT&CK techniques"],
-  "sample_type": "malicious or benign",
-  "real_world_alignment": "How this relates to actual data patterns"
+  "sample_type": "malicious or benign"
+}
+```
+
+#### Real-World Seeds (Schema-Preserving)
+The schema exactly matches your original dataset. For example:
+```json
+{
+  "feature1": "value1",
+  "feature2": 42,
+  "network_traffic": "bytes",
+  "label": 1
 }
 ```
 
 ## 🔍 Quality Assurance
 
-The toolkit implements multi-layered quality assurance:
+The toolkit implements multi-layered quality assurance with enhanced schema preservation:
 
-1. **Schema Validation**: Ensures consistent data structure across both workflows
+1. **Schema Validation**: Ensures consistent data structure, especially for real-world derived data
 2. **LLM-based Quality Assessment**: Evaluates realism and technical accuracy
 3. **Statistical Analysis**: Measures uniqueness, distribution, and balance
 4. **Real-World Alignment**: Validates synthetic data against original patterns
@@ -224,6 +227,7 @@ The toolkit implements multi-layered quality assurance:
 
 ### Quality Metrics
 
+- **Schema Preservation**: Maintains exact column structure of original data
 - **Uniqueness Ratio**: Percentage of unique samples in the dataset
 - **Technical Accuracy**: LLM-assessed realism of technical details
 - **Real-World Fidelity**: Alignment with original data patterns (Workflow B)
@@ -279,6 +283,28 @@ This toolkit supports various cybersecurity research applications:
 - **Cross-Domain Evaluation**: Test models on synthetic data from different threat landscapes
 - **Benchmark Creation**: Standardized datasets for comparing detection algorithms
 - **Data Augmentation**: Enhance small real-world datasets with synthetic examples
+- **Schema-Consistent Training**: Generate additional samples that maintain data compatibility
+
+## 🆕 Key Features
+
+### Schema Preservation for Real-World Data
+- **Exact Column Matching**: Generated data maintains identical column names and types
+- **Label Encoding Preservation**: Maintains original labeling scheme (1/0, True/False, etc.)
+- **Data Type Consistency**: Preserves numeric, categorical, and text field types
+- **Statistical Alignment**: Maintains value ranges and distributions
+- **ML Pipeline Compatibility**: Generated data can be directly used with existing models
+
+### Intelligent Generation Routing
+- **Automatic Detection**: System detects real-world vs manual problem sources
+- **Adaptive Prompting**: Uses different generation strategies based on data source
+- **Quality Assurance**: Enhanced validation for schema-preserving generation
+- **Metadata Tracking**: Comprehensive logging of generation methods and schema preservation
+
+### Enhanced Configuration Management
+- **Unified YAML Configuration**: Centralized settings in `generation_config.yaml`
+- **Schema-Aware Prompts**: Specialized prompts for different data types
+- **Flexible Override System**: Runtime configuration adjustments
+- **Quality Control Settings**: Configurable validation and duplicate detection
 
 ## 📄 License
 
@@ -292,26 +318,32 @@ knowledgeivy01@gmail.com
 
 ## 🆕 What's New in Enhanced Version
 
-### Real-World Data Integration
-- **Stratified sampling** from labeled cybersecurity datasets
+### Schema Preservation Capabilities
+- **Real-World Data Integration** with complete schema preservation
 - **Automatic schema analysis** using LLM-based data understanding
-- **Pattern preservation** in synthetic data generation
-- **Enhanced validation** with real-world alignment metrics
+- **Exact column structure maintenance** in synthetic data generation
+- **Label encoding preservation** for ML model compatibility
 
 ### Improved Pipeline Architecture
-- **Two distinct workflows** for different data sources
-- **Converged processing** at synthetic generation step
-- **Modular design** enabling easy extension and customization
-- **Clear file naming** without numeric prefixes
+- **Intelligent generation routing** based on data source type
+- **Unified configuration system** with schema-aware prompts
+- **Enhanced duplicate detection** with flexible field matching
+- **Comprehensive quality assurance** with schema validation
 
 ### Enhanced Quality Assurance
+- **Schema compliance validation** for generated samples
 - **Multi-source validation** supporting both manual and real-world derived data
 - **Technical accuracy assessment** with domain-specific evaluation
 - **Real-world fidelity metrics** for data alignment validation
-- **Comprehensive reporting** with detailed quality statistics
+
+### Advanced Generation Features
+- **Parallel processing** with configurable workers and batch sizes
+- **Retry logic** with exponential backoff for reliability
+- **Progress tracking** with detailed logging and statistics
+- **Memory-efficient streaming** for large dataset generation
 
 ## Version
-0.2.1
+0.2.2
 
 ## 📄 License
 
