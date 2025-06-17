@@ -119,41 +119,43 @@
     "problem_definition": {
       "area": "Social Engineering",
       "nature": "Phishing and Spam Email Campaigns",
-      "description": "The analyzed data represents a cybersecurity threat scenario involving phishing and spam emails designed to deceive recipients into engaging with malicious content. The malicious emails often use promotional language, urgent calls to action, and suspicious URLs to lure victims. Examples include fake job offers promising high income, fraudulent courier service advertisements, and classic advance-fee scams impersonating bank officials offering large sums of money. The emails mimic legitimate communication styles but contain embedded URLs and text patterns aimed at tricking users into clicking links or divulging sensitive information. The benign emails contrast with neutral, technical, or conversational content without suspicious elements.",
+      "description": "The data represents a cybersecurity threat scenario where malicious actors use email communications to deliver phishing and spam content. Malicious emails often contain promotional or urgent language in the subject and body, including offers for financial gain, health products, or fraudulent business opportunities. These emails embed suspicious URLs and use formatting tricks such as reply prefixes and mailing list tags to appear legitimate. The benign emails contrast with neutral or technical language, often containing conversational or informational content without promotional intent. The threat exploits user trust in email communications to induce clicks on malicious links or engagement with fraudulent offers.",
       "attack_vector": "Email",
-      "asset_targeted": "End User Trust and Potentially Sensitive Information (e.g., credentials, financial information)",
+      "asset_targeted": "End Users (via deception to obtain sensitive information or induce action)",
       "impact_level": "Medium",
       "technical_characteristics": {
         "indicators_of_compromise": [
-          "Email subjects with promotional or urgent language such as 'Part-Time opportunity - $2000/week'",
-          "Bodies containing suspicious URLs (e.g., http://www.largevalue.net, herrespect.com)",
-          "Use of urgent or enticing calls to action",
-          "Presence of classic phishing scam narratives (e.g., advance-fee scams involving large sums of money)",
-          "Subjects often include prefixes like 'Re:' or bracketed tags in benign emails but promotional language in malicious ones",
-          "Source categories correlate with label distribution, e.g., 'TREC-07' and 'Enron' sources appearing in malicious samples"
+          "Subject lines with promotional or urgent language (e.g., 'Part-Time opportunity - $2000/week')",
+          "Email bodies containing suspicious URLs (e.g., 'http://www.largevalue.net')",
+          "Presence of special characters, encoded content, and HTML-like tags in email bodies",
+          "Use of reply prefixes ('Re:'), mailing list tags (e.g., '[zzzzteana]') in subjects",
+          "Malicious emails often include calls to action or financial inducements",
+          "Sender/source labels associated with known malicious datasets (e.g., 'TREC-07', 'Enron')"
         ],
         "attack_patterns": [
-          "Use of multi-line email bodies with embedded URLs and disclaimers",
-          "Inclusion of special characters and encoded text to mimic legitimate email formatting",
-          "Malicious samples frequently contain repeated calls to action and suspicious URLs",
-          "Subjects often contain urgent promotional offers or suspicious financial opportunities",
-          "Malicious emails sometimes impersonate trusted entities or use social engineering narratives"
+          "Use of persuasive language to lure recipients into clicking links or responding",
+          "Embedding URLs that lead to potentially harmful websites",
+          "Impersonation or spoofing tactics using familiar mailing list tags or reply formatting",
+          "Long, multi-paragraph email bodies with elaborate narratives to build trust",
+          "Inclusion of fake business or financial opportunity scenarios (e.g., inheritance scams)"
         ],
         "normal_patterns": [
-          "Subjects with neutral, technical, or conversational text",
-          "Bodies containing typical email formatting, disclaimers, and technical or academic content",
-          "Absence of suspicious URLs or promotional language",
-          "Presence of email/forum style subject lines with prefixes like 'Re:' or bracketed tags",
-          "Source values consistent with benign distribution (e.g., 'Ling', 'TREC-07' benign samples)"
+          "Neutral or technical language in subjects and bodies",
+          "Emails often structured as replies or discussions in mailing lists",
+          "Presence of legitimate email headers and formatting",
+          "Absence of promotional or urgent calls to action",
+          "Sources associated with benign datasets (e.g., 'Ling', 'TREC-07' with non-malicious content)"
         ]
       },
       "risk_reduction": [
-        "Implement robust email filtering solutions that analyze subject and body text for promotional language and suspicious URLs",
-        "Deploy phishing detection systems that leverage pattern recognition of known scam narratives and URL reputations",
-        "Educate users on identifying phishing attempts, emphasizing caution with unsolicited offers and requests for sensitive information"
+        "Implement robust email filtering solutions that analyze subject and body content for promotional and suspicious language patterns",
+        "Deploy URL reputation and sandboxing technologies to detect and block malicious links",
+        "User awareness training to recognize phishing tactics and suspicious email characteristics",
+        "Use of sender authentication protocols such as SPF, DKIM, and DMARC to reduce spoofing",
+        "Monitor email source categories to identify and block high-risk origins"
       ],
       "confidence_level": "High",
-      "data_source_notes": "The data preserves original schema and label distributions with realistic text patterns and source correlations. Malicious and benign samples exhibit distinct linguistic and structural characteristics consistent with known phishing and benign email content. Minimal null values and strict data type adherence ensure high data quality and reliability for analysis."
+      "data_source_notes": "The dataset contains well-structured email samples with clear labeling (malicious=1, benign=0) and preserved schema reflecting realistic email subject and body patterns. The presence of known data sources such as 'TREC-07' and 'Enron' enhances reliability. Label distribution and content correlations align with expected phishing and benign email characteristics, supporting strong confidence in the analysis."
     },
     "schema_preserved": true,
     "generation_metadata": {
@@ -249,37 +251,35 @@
               "dtype": "object",
               "value_patterns": [
                 "Short to medium length text strings",
-                "Often include prefixes like 'Re:', '[listname]', or other bracketed tags",
-                "May contain special characters, punctuation, and mixed case",
-                "Typical length ranges from a few words up to around 100 characters",
-                "Some null values (~0.57%) present"
+                "May contain prefixes like 'Re:', '[tag]', or '[zzzzteana]'",
+                "Includes alphanumeric characters, punctuation, and special characters",
+                "Typical length ranges from a few words to about 10-15 words",
+                "May include email or group references in brackets"
               ],
               "constraints": {
-                "min_value": null,
-                "max_value": null,
-                "allowed_values": null,
-                "format_pattern": "Free text, often email or forum style subject lines with optional tags"
+                "null_count": 753,
+                "unique_count": 74880,
+                "format_pattern": "Free text with optional mailing list tags or reply prefixes"
               },
-              "generation_instructions": "Generate varied text strings resembling email or forum subjects, optionally including bracketed tags or 'Re:' prefixes. Maintain realistic length distribution and occasional nulls (~0.5%). Use vocabulary consistent with spam and benign email topics.",
-              "relationship_to_label": "Malicious subjects often contain promotional language, urgent calls to action, or suspicious offers; benign subjects tend to be more neutral, technical, or conversational."
+              "generation_instructions": "Generate varied text strings resembling email subjects, optionally including reply prefixes ('Re:'), mailing list tags in brackets (e.g., '[zzzzteana]'), and typical punctuation. Length should be roughly 5-15 words. Include alphanumeric and special characters as in real email subjects.",
+              "relationship_to_label": "Malicious subjects often contain promotional or urgent language (e.g., 'Guaranteed to lose 10-12 lbs', 'Life Insurance - Why Pay More?'), while benign subjects tend to be more neutral or technical (e.g., 'Re: New Sequences Window')."
             },
             "body": {
               "dtype": "object",
               "value_patterns": [
-                "Long text blocks, often multi-line",
-                "Contains URLs, email headers, disclaimers, and natural language text",
-                "May include special characters, punctuation, and encoded characters",
-                "Typical length varies widely, from short notes to very long email bodies",
-                "Almost no nulls (<0.001%)"
+                "Long text blocks, often multi-paragraph",
+                "Contains email headers, URLs, special characters, and line breaks",
+                "May include HTML-like tags or encoded characters",
+                "Includes natural language text with punctuation and formatting",
+                "Length varies widely, from short messages to very long emails"
               ],
               "constraints": {
-                "min_value": null,
-                "max_value": null,
-                "allowed_values": null,
-                "format_pattern": "Free text with possible embedded URLs, email metadata, and disclaimers"
+                "null_count": 1,
+                "unique_count": 131344,
+                "format_pattern": "Free text email body with possible embedded URLs, headers, and encoded characters"
               },
-              "generation_instructions": "Generate multi-line text simulating email or message bodies. Include realistic URLs, disclaimers, and typical email formatting. For malicious samples, include promotional or phishing style content; for benign, include conversational or technical content. Avoid nulls except very rare cases.",
-              "relationship_to_label": "Malicious bodies often contain promotional language, repeated calls to action, or suspicious URLs; benign bodies contain normal email conversation or technical discussion."
+              "generation_instructions": "Generate multi-sentence paragraphs resembling email bodies. Include realistic email formatting such as headers (Date, From, Message-ID), URLs, line breaks, and occasional encoded or special characters. Malicious bodies often contain promotional content, offers, or calls to action; benign bodies are more conversational or technical.",
+              "relationship_to_label": "Malicious bodies frequently contain marketing language, discount offers, or suspicious links. Benign bodies are more likely to contain technical discussions, replies, or neutral content."
             },
             "label": {
               "dtype": "int64",
@@ -292,33 +292,28 @@
                 "allowed_values": [
                   0,
                   1
-                ],
-                "format_pattern": null
+                ]
               },
-              "generation_instructions": "Assign label 1 for malicious samples and 0 for benign samples exactly as in original data.",
+              "generation_instructions": "Assign label 1 for malicious samples and 0 for benign samples exactly as per original encoding.",
               "relationship_to_label": "Target variable indicating malicious (1) or benign (0) email."
             },
             "source": {
               "dtype": "object",
               "value_patterns": [
                 "Categorical string values",
-                "Five unique values total",
-                "Sample values include 'Assassin'"
+                "Limited set of unique values (5 unique)",
+                "Examples include 'Assassin'"
               ],
               "constraints": {
-                "min_value": null,
-                "max_value": null,
+                "null_count": 0,
+                "unique_count": 5,
                 "allowed_values": [
                   "Assassin",
-                  "Other1",
-                  "Other2",
-                  "Other3",
-                  "Other4"
-                ],
-                "format_pattern": null
+                  "Other possible source values as per original dataset"
+                ]
               },
-              "generation_instructions": "Generate categorical values from the original set of 5 unique source strings, preserving their relative frequencies if known. No nulls allowed.",
-              "relationship_to_label": "Source may correlate with label distribution; some sources may have higher malicious rates."
+              "generation_instructions": "Randomly assign one of the original source categories, preserving the original distribution if known. Use exact string values as in the original data.",
+              "relationship_to_label": "Source may correlate with label distribution; some sources may have higher malicious content."
             }
           },
           "generation_guidelines": {
@@ -326,8 +321,8 @@
             "preserve_data_types": true,
             "maintain_label_encoding": true,
             "value_generation_strategy": {
-              "malicious_samples": "Generate subject and body text with promotional, urgent, or suspicious content patterns; include URLs and calls to action. Use source values consistent with original malicious distribution.",
-              "benign_samples": "Generate subject and body text with neutral, conversational, or technical content; include typical email formatting and disclaimers. Use source values consistent with original benign distribution."
+              "malicious_samples": "Generate 'subject' and 'body' text with promotional, urgent, or marketing language patterns. Include URLs, special characters, and formatting typical of spam/phishing emails. Assign label=1 and sample 'source' from categories associated with malicious data.",
+              "benign_samples": "Generate 'subject' and 'body' text with neutral, technical, or conversational language. Include email headers and typical mailing list or reply formatting. Assign label=0 and sample 'source' from categories associated with benign data."
             },
             "statistical_preservation": {
               "maintain_distributions": true,
@@ -337,13 +332,13 @@
           },
           "quality_checks": [
             "Verify column names and order exactly match ['subject', 'body', 'label', 'source']",
-            "Ensure data types match exactly: subject and body as object (string), label as int64 with values 0 or 1, source as object with allowed categorical values",
-            "Check label distribution matches original proportions (~51.3% malicious, ~48.7% benign)",
-            "Validate no unexpected nulls in label and source columns; subject nulls approx 0.57%, body nulls near zero",
-            "Confirm source column contains only the original 5 unique values",
-            "Perform text pattern validation to ensure subject and body resemble original style and length distributions",
-            "Check correlations between source and label are preserved statistically",
-            "Ensure no data leakage or schema drift occurs in synthetic data"
+            "Ensure data types match: 'subject' and 'body' as object (string), 'label' as int64 with values 0 or 1, 'source' as object with allowed categories",
+            "Check no unexpected nulls beyond original counts (subject nulls \u2264 753, body nulls \u2264 1, label and source no nulls)",
+            "Validate label encoding strictly limited to 0 and 1",
+            "Confirm 'source' values are only from original set of 5 unique strings",
+            "Ensure generated text fields follow length and pattern distributions similar to original samples",
+            "Maintain approximate label distribution ratio (~51% malicious, ~49% benign)",
+            "Cross-check correlations: promotional language in 'subject' and 'body' aligns with label=1, neutral language aligns with label=0"
           ],
           "original_columns": [
             "subject",

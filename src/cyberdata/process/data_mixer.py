@@ -662,7 +662,7 @@ def infer_problem_from_raw_file(raw_file: str) -> Tuple[Optional[str], Optional[
     return inferred_area, inferred_nature
 
 
-def main(raw_file: str,
+def main(raw_file: str = "five_email_phishing.csv.gz",
          synthetic_file: str = None,
          problem_area: str = None,
          problem_nature: str = None,
@@ -802,7 +802,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Intelligently mix raw data with schema-compatible synthetic data")
     
     # Required arguments
-    parser.add_argument('raw_file', help='Raw CSV file name in raw/ directory')
+    parser.add_argument('raw_file', nargs='?', default='five_email_phishing.csv.gz', 
+                       help='Raw CSV file name in raw/ directory (default: five_email_phishing.csv.gz)')
     
     # Synthetic data selection (all optional - will auto-infer if not provided)
     parser.add_argument('--synthetic-file', help='Specific synthetic JSON file path (optional)')
@@ -811,8 +812,8 @@ if __name__ == '__main__':
     
     # Data parameters
     parser.add_argument('--label-column', default='label', help='Label column name in raw data (default: label)')
-    parser.add_argument('--n-raw-samples', type=int, default=100, help='Number of raw samples to extract (default: 100)')
-    parser.add_argument('--n-synthetic-samples', type=int, default=100, help='Number of synthetic samples to extract (default: 100)')
+    parser.add_argument('--n-raw-samples', type=int, default=500, help='Number of raw samples to extract (default: 100)')
+    parser.add_argument('--n-synthetic-samples', type=int, default=500, help='Number of synthetic samples to extract (default: 100)')
     
     # Output parameters
     parser.add_argument('--output-file', help='Output file path (optional - will auto-generate)')

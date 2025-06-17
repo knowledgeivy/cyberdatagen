@@ -510,7 +510,7 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
 
 def main(csv_file: str = "five_email_phishing.csv.gz", 
          label_column: str = "label",
-         samples_per_class: int = 5):
+         samples_per_class: int = 10):
     """
     Main function to process real-world data and generate seed examples.
     
