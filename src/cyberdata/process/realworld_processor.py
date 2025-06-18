@@ -508,7 +508,7 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     logger.info(f"Schema template and generation instructions included for synthetic data generation")
 
 
-def main(csv_file: str = "five_email_phishing.csv.gz", 
+def main(csv_file: str = "nsl_kdd_rare_train.csv.gz", 
          label_column: str = "label",
          samples_per_class: int = 10):
     """
@@ -574,7 +574,7 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description="Process real-world data for seed generation")
-    parser.add_argument('--csv-file', default='five_email_phishing.csv.gz', 
+    parser.add_argument('--csv-file', default='nsl_kdd_rare_train.csv.gz', 
                        help='CSV file name in raw/ directory')
     parser.add_argument('--label-column', default='label', 
                        help='Name of the label column')
