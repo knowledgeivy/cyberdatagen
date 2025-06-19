@@ -990,7 +990,7 @@ class ParallelGenerator:
             }
             
             # Process completed tasks
-            for future in concurrent.futures.as_completed(future_to_task, timeout=300):  # 5 minute timeout
+            for future in concurrent.futures.as_completed(future_to_task, timeout=600):  # 5 minute timeout
                 task = future_to_task[future]
                 try:
                     result = future.result()
