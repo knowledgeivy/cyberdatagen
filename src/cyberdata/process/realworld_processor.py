@@ -5,8 +5,9 @@ import json
 import os
 import pandas as pd
 import sys
+import yaml
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from dotenv import load_dotenv
 
@@ -25,7 +26,12 @@ logger = setup_logger("cyberdata.scripts.realworld_sampler")
 # Load environment variables
 load_dotenv()
 
-# Model configuration
+# Configuration variables - set these for your dataset
+# CSV_FILE = "five_email_phishing.csv.gz"  # Raw CSV file in raw/ directory
+# DATA_INFO_NAME = "five_email_phishing"   # Dataset name in data_info.yaml
+
+CSV_FILE = "nsl_kdd_rare_train.csv.gz"  # Raw CSV file in raw/ directory
+DATA_INFO_NAME = "nsl_kdd_rare"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
 
 # Get config manager instance
@@ -34,6 +40,53 @@ config_manager = get_config_manager()
 logger.info(f"Using model: {MODEL_NAME}")
 logger.info(f"Project root: {config_manager.project_root}")
 logger.info(f"Raw data directory: {config_manager.project_root / 'raw'}")
+logger.info(f"Configured CSV file: {CSV_FILE}")
+logger.info(f"Configured data info: {DATA_INFO_NAME}")
+
+
+def load_data_info(data_name: str = None) -> Dict:
+    """
+    Load detailed data information from data_info.yaml.
+    
+    Args:
+        data_name (str): Name of the dataset (uses DATA_INFO_NAME if None)
+        
+    Returns:
+        Dict: Data information including schema, description, and characteristics
+    """
+    if data_name is None:
+        data_name = DATA_INFO_NAME
+        
+    logger.info(f"Loading data information for: {data_name}")
+    
+    try:
+        data_info_file = config_manager.config_dir / "data_info.yaml"
+        
+        if not data_info_file.exists():
+            logger.error(f"Data info file not found: {data_info_file}")
+            raise FileNotFoundError(f"Data info file not found: {data_info_file}")
+        
+        with data_info_file.open('r', encoding='utf-8') as f:
+            data_info = yaml.safe_load(f)
+        
+        datasets = data_info.get('datasets', {})
+        
+        if data_name not in datasets:
+            logger.error(f"Dataset '{data_name}' not found in data_info.yaml")
+            logger.info(f"Available datasets: {list(datasets.keys())}")
+            raise KeyError(f"Dataset '{data_name}' not found in data_info.yaml")
+        
+        dataset_info = datasets[data_name]
+        logger.info(f"Successfully loaded data information for: {data_name}")
+        logger.info(f"Domain: {dataset_info.get('domain', 'unknown')}")
+        logger.info(f"Attack types: {dataset_info.get('attack_types', [])}")
+        logger.info(f"Data characteristics: {dataset_info.get('data_characteristics', [])}")
+        
+        return dataset_info
+        
+    except Exception as e:
+        logger.error(f"Error loading data info: {str(e)}")
+        raise
 
 
 def load_raw_data(file_path: Path, label_column: str = "label") -> pd.DataFrame:
@@ -116,156 +169,97 @@ def stratified_sample(df: pd.DataFrame,
     return malicious_samples, benign_samples
 
 
-def analyze_data_schema(df: pd.DataFrame, label_column: str = "label") -> Dict:
+def create_enhanced_data_context(data_info: Dict, 
+                               malicious_samples: pd.DataFrame,
+                               benign_samples: pd.DataFrame) -> Dict:
     """
-    Analyze the data schema and patterns using LLM with focus on preserving original structure.
+    Create enhanced data context combining data_info.yaml with actual samples.
     
     Args:
-        df (pd.DataFrame): Input dataframe
-        label_column (str): Name of the label column
+        data_info (Dict): Data information from data_info.yaml
+        malicious_samples (pd.DataFrame): Sample malicious data
+        benign_samples (pd.DataFrame): Sample benign data
         
     Returns:
-        Dict: Schema analysis results
+        Dict: Enhanced context for LLM prompts
     """
-    logger.info("Analyzing data schema with LLM for schema preservation")
+    logger.info("Creating enhanced data context")
     
-    # Prepare comprehensive data summary for LLM
-    schema_info = {
-        "columns": list(df.columns),
-        "dtypes": {col: str(dtype) for col, dtype in df.dtypes.items()},
-        "shape": df.shape,
-        "label_column": label_column,
-        "label_distribution": df[label_column].value_counts().to_dict() if label_column in df.columns else {},
-        "sample_records": {
-            "malicious_examples": df[df[label_column] == 1].head(2).to_dict('records') if label_column in df.columns else [],
-            "benign_examples": df[df[label_column] == 0].head(2).to_dict('records') if label_column in df.columns else []
+    # Sample a few examples for context (limit to avoid token issues)
+    malicious_examples = malicious_samples.head(3).to_dict('records') if len(malicious_samples) > 0 else []
+    benign_examples = benign_samples.head(3).to_dict('records') if len(benign_samples) > 0 else []
+    
+    # Create comprehensive context
+    enhanced_context = {
+        # From data_info.yaml
+        'data_info': {
+            'data_name': data_info.get('data_name', ''),
+            'data_description': data_info.get('data_description', ''),
+            'data_schema': data_info.get('data_schema', ''),
+            'label_column': data_info.get('label_column', 'label'),
+            'label_encoding': data_info.get('label_encoding', {}),
+            'domain': data_info.get('domain', ''),
+            'attack_types': data_info.get('attack_types', []),
+            'features': data_info.get('features', []),
+            'data_characteristics': data_info.get('data_characteristics', [])
         },
-        "column_statistics": {}
+        
+        # From actual data samples
+        'sample_data': {
+            'malicious_examples': malicious_examples,
+            'benign_examples': benign_examples,
+            'malicious_count': len(malicious_samples),
+            'benign_count': len(benign_samples),
+            'total_samples': len(malicious_samples) + len(benign_samples)
+        },
+        
+        # Schema information
+        'schema_info': {
+            'columns': list(malicious_samples.columns) if len(malicious_samples) > 0 else list(benign_samples.columns),
+            'column_count': len(malicious_samples.columns) if len(malicious_samples) > 0 else len(benign_samples.columns),
+            'data_types': {col: str(dtype) for col, dtype in malicious_samples.dtypes.items()} if len(malicious_samples) > 0 else {}
+        }
     }
     
-    # Add column-level statistics
-    for col in df.columns:
-        col_data = df[col]
-        stats = {
-            "dtype": str(col_data.dtype),
-            "null_count": int(col_data.isnull().sum()),
-            "unique_count": int(col_data.nunique()),
-            "sample_values": col_data.dropna().head(3).tolist()
-        }
-        
-        # Add numeric statistics if applicable
-        if col_data.dtype in ['int64', 'float64', 'int32', 'float32']:
-            stats.update({
-                "min": float(col_data.min()) if not col_data.empty else None,
-                "max": float(col_data.max()) if not col_data.empty else None,
-                "mean": float(col_data.mean()) if not col_data.empty else None
-            })
-        
-        schema_info["column_statistics"][col] = stats
+    logger.info(f"Enhanced context created with {len(enhanced_context['sample_data']['malicious_examples'])} malicious and {len(enhanced_context['sample_data']['benign_examples'])} benign examples")
     
-    # Convert to JSON for prompt
-    schema_json = json.dumps(schema_info, indent=2, default=str)
-    
-    # Load prompts from YAML
-    system_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.schema_preservation.system.template"
-    )
-    
-    user_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.schema_preservation.user.template",
-        schema_json=schema_json
-    )
-    
-    # Call LLM for schema analysis
-    logger.info("Calling LLM for schema preservation analysis")
-    response_content = process_llm_request(
-        system_prompt=system_prompt,
-        user_prompt=user_prompt,
-        model_name=MODEL_NAME,
-        temperature=0.1  # Low temperature for consistent schema analysis
-    )
-    
-    try:
-        # Clean up and parse JSON response
-        if response_content.startswith('```'):
-            first_backticks_end = response_content.find('\n', 3)
-            if first_backticks_end != -1:
-                last_backticks_start = response_content.rfind('```')
-                if last_backticks_start > first_backticks_end:
-                    response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
-        
-        schema_analysis = json.loads(response_content)
-        schema_analysis['original_columns'] = list(df.columns)  # Preserve original column order
-        schema_analysis['label_column'] = label_column
-        logger.info("Successfully parsed schema preservation analysis")
-        return schema_analysis
-        
-    except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse schema analysis: {str(e)}")
-        # Return basic schema preserving the original structure
-        return {
-            "domain": "cybersecurity",
-            "data_type": "tabular_data",
-            "original_columns": list(df.columns),
-            "label_column": label_column,
-            "preserve_schema": True,
-            "key_fields": list(df.columns),
-            "generation_instructions": {
-                "maintain_column_names": True,
-                "maintain_data_types": True,
-                "maintain_label_encoding": True
-            }
-        }
+    return enhanced_context
 
 
-def infer_problem_definition(malicious_samples: pd.DataFrame, 
-                           benign_samples: pd.DataFrame,
-                           schema_analysis: Dict) -> Dict:
+def infer_problem_definition_from_data_info(enhanced_context: Dict) -> Dict:
     """
-    Use LLM to infer cybersecurity problem definition from real data.
+    Use LLM to infer cybersecurity problem definition from enhanced data context.
     
     Args:
-        malicious_samples (pd.DataFrame): Malicious data samples
-        benign_samples (pd.DataFrame): Benign data samples
-        schema_analysis (Dict): Schema analysis results
+        enhanced_context (Dict): Enhanced context with data_info and samples
         
     Returns:
         Dict: Inferred problem definition
     """
-    logger.info("Inferring problem definition from real data")
+    logger.info("Inferring problem definition from enhanced data context")
     
-    # Prepare sample data for LLM analysis
-    analysis_data = {
-        "schema_analysis": schema_analysis,
-        "malicious_examples": malicious_samples.head(3).to_dict('records'),
-        "benign_examples": benign_samples.head(3).to_dict('records'),
-        "malicious_count": len(malicious_samples),
-        "benign_count": len(benign_samples)
-    }
+    # Convert to JSON for prompt
+    context_json = json.dumps(enhanced_context, indent=2, default=str)
     
-    analysis_json = json.dumps(analysis_data, indent=2, default=str)
-    
-    # Load prompts from XML
+    # Load prompts from YAML
     system_prompt = load_prompt(
         "realworld_analysis_prompts",
-        "prompts.problem_inference.system.template"
+        "prompts.problem_inference_enhanced.system.template"
     )
     
     user_prompt = load_prompt(
         "realworld_analysis_prompts",
-        "prompts.problem_inference.user.template",
-        analysis_json=analysis_json
+        "prompts.problem_inference_enhanced.user.template",
+        enhanced_context_json=context_json
     )
     
     # Call LLM for problem inference
-    logger.info("Calling LLM for problem definition inference")
+    logger.info("Calling LLM for enhanced problem definition inference")
     response_content = process_llm_request(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model_name=MODEL_NAME,
-        temperature=0.5
+        temperature=0.3  # Slightly higher for more nuanced understanding
     )
     
     try:
@@ -283,195 +277,181 @@ def infer_problem_definition(malicious_samples: pd.DataFrame,
         
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse problem definition: {str(e)}")
-        # Return fallback problem definition
+        # Return fallback based on data_info
+        data_info = enhanced_context.get('data_info', {})
         return {
             "area": "Real-world Data",
-            "nature": "data_analysis",
-            "description": "Problem inferred from real-world cybersecurity data",
-            "risk_reduction": ["Implement data validation", "Monitor for anomalies"]
+            "nature": data_info.get('data_name', 'realworld_data'),
+            "description": data_info.get('data_description', 'Problem inferred from real-world cybersecurity data'),
+            "domain": data_info.get('domain', 'cybersecurity'),
+            "attack_types": data_info.get('attack_types', []),
+            "risk_reduction": ["Implement data validation", "Monitor for anomalies", "Deploy detection systems"]
         }
 
 
-def generate_seed_examples(malicious_samples: pd.DataFrame,
-                         benign_samples: pd.DataFrame,
-                         problem_definition: Dict,
-                         schema_analysis: Dict) -> List[Dict]:
+def generate_seed_examples_from_data_info(enhanced_context: Dict,
+                                        problem_definition: Dict) -> Dict:
     """
-    Generate seed examples that preserve the original data schema.
+    Generate seed examples using enhanced data context from data_info.yaml.
     
     Args:
-        malicious_samples (pd.DataFrame): Malicious data samples
-        benign_samples (pd.DataFrame): Benign data samples
+        enhanced_context (Dict): Enhanced context with data_info and samples
         problem_definition (Dict): Inferred problem definition
-        schema_analysis (Dict): Schema analysis results
         
     Returns:
-        List[Dict]: Generated seed examples maintaining original schema
+        Dict: Generated seed examples with metadata
     """
-    logger.info("Generating schema-preserving seed examples")
+    logger.info("Generating seed examples from enhanced data context")
     
-    # Create schema template for synthetic generation
-    all_data = pd.concat([malicious_samples, benign_samples], ignore_index=True)
-    schema_template = extract_schema_template(all_data, schema_analysis)
+    # Convert context to JSON for prompt
+    context_json = json.dumps(enhanced_context, indent=2, default=str)
+    problem_json = json.dumps(problem_definition, indent=2, default=str)
     
-    # Create seed examples that include both original samples and generation instructions
-    seed_examples = create_schema_preserving_seeds(
-        malicious_samples, benign_samples, schema_analysis, problem_definition
+    # Load prompts from YAML
+    system_prompt = load_prompt(
+        "realworld_analysis_prompts",
+        "prompts.seed_generation_enhanced.system.template"
     )
     
-    # Add generation instructions for synthetic data that will maintain schema
-    generation_metadata = {
-        'schema_template': schema_template,
-        'generation_instructions': {
-            'preserve_column_names': True,
-            'preserve_data_types': True,
-            'preserve_label_encoding': True,
-            'maintain_statistical_properties': True,
-            'column_relationships': schema_analysis.get('column_relationships', {}),
-            'value_constraints': schema_analysis.get('value_constraints', {})
+    user_prompt = load_prompt(
+        "realworld_analysis_prompts",
+        "prompts.seed_generation_enhanced.user.template",
+        enhanced_context_json=context_json,
+        problem_definition_json=problem_json
+    )
+    
+    # Call LLM for seed generation
+    logger.info("Calling LLM for enhanced seed generation")
+    response_content = process_llm_request(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        model_name=MODEL_NAME,
+        temperature=0.7  # Higher creativity for diverse seed generation
+    )
+    
+    try:
+        # Clean up and parse JSON response
+        if response_content.startswith('```'):
+            first_backticks_end = response_content.find('\n', 3)
+            if first_backticks_end != -1:
+                last_backticks_start = response_content.rfind('```')
+                if last_backticks_start > first_backticks_end:
+                    response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
+        
+        seed_data = json.loads(response_content)
+        
+        # Ensure we have the expected structure
+        if 'examples' not in seed_data:
+            seed_data = {'examples': seed_data}
+        
+        # Add generation metadata
+        generation_metadata = {
+            'data_source': 'enhanced_real_world_analysis',
+            'data_info_used': True,
+            'schema_preserved': True,
+            'original_data_info': enhanced_context['data_info'],
+            'generation_method': 'llm_with_data_info',
+            'schema_template': enhanced_context['schema_info']
         }
+        
+        return {
+            'examples': seed_data.get('examples', []),
+            'generation_metadata': generation_metadata
+        }
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse seed generation response: {str(e)}")
+        # Create fallback seed examples based on actual samples
+        return create_fallback_seed_examples(enhanced_context, problem_definition)
+
+
+def create_fallback_seed_examples(enhanced_context: Dict, problem_definition: Dict) -> Dict:
+    """
+    Create fallback seed examples from actual data samples.
+    
+    Args:
+        enhanced_context (Dict): Enhanced context
+        problem_definition (Dict): Problem definition
+        
+    Returns:
+        Dict: Fallback seed examples
+    """
+    logger.warning("Creating fallback seed examples from actual samples")
+    
+    sample_data = enhanced_context.get('sample_data', {})
+    malicious_examples = sample_data.get('malicious_examples', [])
+    benign_examples = sample_data.get('benign_examples', [])
+    
+    all_examples = []
+    
+    # Add malicious examples with metadata
+    for example in malicious_examples:
+        enhanced_example = example.copy()
+        enhanced_example['_metadata'] = {
+            'sample_type': 'malicious',
+            'source': 'real_world_fallback',
+            'enhanced_context_available': True
+        }
+        all_examples.append(enhanced_example)
+    
+    # Add benign examples with metadata
+    for example in benign_examples:
+        enhanced_example = example.copy()
+        enhanced_example['_metadata'] = {
+            'sample_type': 'benign',
+            'source': 'real_world_fallback',
+            'enhanced_context_available': True
+        }
+        all_examples.append(enhanced_example)
+    
+    generation_metadata = {
+        'data_source': 'fallback_from_samples',
+        'data_info_used': True,
+        'schema_preserved': True,
+        'original_data_info': enhanced_context.get('data_info', {}),
+        'generation_method': 'fallback_direct_samples',
+        'schema_template': enhanced_context.get('schema_info', {})
     }
     
     return {
-        'examples': seed_examples,
+        'examples': all_examples,
         'generation_metadata': generation_metadata
     }
 
 
-def create_schema_preserving_seeds(malicious_samples: pd.DataFrame,
-                                  benign_samples: pd.DataFrame,
-                                  schema_analysis: Dict,
-                                  problem_definition: Dict) -> List[Dict]:
+def save_realworld_problem(problem_definition: Dict, enhanced_context: Dict) -> str:
     """
-    Create seed examples that preserve the original data schema exactly.
-    
-    Args:
-        malicious_samples (pd.DataFrame): Malicious data samples
-        benign_samples (pd.DataFrame): Benign data samples
-        schema_analysis (Dict): Schema analysis results
-        problem_definition (Dict): Inferred problem definition
-        
-    Returns:
-        List[Dict]: Seed examples maintaining original schema
-    """
-    logger.info("Creating schema-preserving seed examples")
-    
-    all_samples = []
-    
-    # Process malicious samples
-    for idx, row in malicious_samples.iterrows():
-        sample = row.to_dict()
-        # Add metadata while preserving original schema
-        sample['_metadata'] = {
-            'sample_type': 'malicious',
-            'source': 'real_world_data',
-            'original_index': idx
-        }
-        all_samples.append(sample)
-    
-    # Process benign samples
-    for idx, row in benign_samples.iterrows():
-        sample = row.to_dict()
-        # Add metadata while preserving original schema
-        sample['_metadata'] = {
-            'sample_type': 'benign',
-            'source': 'real_world_data',
-            'original_index': idx
-        }
-        all_samples.append(sample)
-    
-    logger.info(f"Created {len(all_samples)} schema-preserving seed examples")
-    return all_samples
-
-
-def extract_schema_template(df: pd.DataFrame, schema_analysis: Dict) -> Dict:
-    """
-    Extract a schema template for generating new data with the same structure.
-    
-    Args:
-        df (pd.DataFrame): Original dataframe
-        schema_analysis (Dict): Schema analysis from LLM
-        
-    Returns:
-        Dict: Schema template for generation
-    """
-    logger.info("Extracting schema template for synthetic generation")
-    
-    # Get column information
-    columns_info = {}
-    for col in df.columns:
-        col_data = df[col]
-        columns_info[col] = {
-            'dtype': str(col_data.dtype),
-            'sample_values': col_data.dropna().head(5).tolist(),
-            'null_count': col_data.isnull().sum(),
-            'unique_count': col_data.nunique(),
-            'is_categorical': col_data.dtype == 'object' or col_data.nunique() < 20
-        }
-        
-        # Add statistical info for numeric columns
-        if col_data.dtype in ['int64', 'float64']:
-            columns_info[col].update({
-                'min': float(col_data.min()) if not col_data.empty else None,
-                'max': float(col_data.max()) if not col_data.empty else None,
-                'mean': float(col_data.mean()) if not col_data.empty else None,
-                'std': float(col_data.std()) if not col_data.empty else None
-            })
-    
-    schema_template = {
-        'columns': list(df.columns),
-        'column_details': columns_info,
-        'total_records': len(df),
-        'schema_analysis': schema_analysis,
-        'label_column': schema_analysis.get('label_column', 'label'),
-        'label_mapping': {
-            'malicious': 1,
-            'benign': 0
-        }
-    }
-    
-    return schema_template
-
-
-def save_realworld_problem(problem_definition: Dict, schema_analysis: Dict) -> str:
-    """
-    Save the inferred problem definition to problems.json.
+    Save the inferred problem definition to problems.json (replacing any existing content).
     
     Args:
         problem_definition (Dict): Problem definition
-        schema_analysis (Dict): Schema analysis
+        enhanced_context (Dict): Enhanced context with data info
         
     Returns:
         str: Problem nature identifier
     """
-    logger.info("Saving real-world problem definition")
+    logger.info("Saving real-world problem definition (replacing existing problems)")
     
-    # Load existing problems
-    try:
-        existing_problems = config_manager.load_problems(prefer_updated=False)
-    except FileNotFoundError:
-        existing_problems = []
-    
-    # Add metadata to problem definition
+    # Create new problems list with only the real-world problem
     enhanced_problem = problem_definition.copy()
-    enhanced_problem['source'] = 'real_world_data'
-    enhanced_problem['schema_analysis'] = schema_analysis
+    enhanced_problem['source'] = 'real_world_data_with_info'
+    enhanced_problem['data_info_used'] = True
+    enhanced_problem['original_data_info'] = enhanced_context.get('data_info', {})
+    enhanced_problem['schema_info'] = enhanced_context.get('schema_info', {})
     
-    # Add to existing problems
-    existing_problems.append(enhanced_problem)
-    
-    # Save updated problems
-    config_manager.save_problems(existing_problems, "problems")
+    # Save as the only problem (replace existing)
+    new_problems = [enhanced_problem]
+    config_manager.save_problems(new_problems, "problems")
     
     nature = problem_definition.get('nature', 'realworld_data')
-    logger.info(f"Added real-world problem: {nature}")
+    logger.info(f"Replaced problems.json with real-world problem: {nature}")
     
     return nature
 
 
 def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     """
-    Save seed examples using the existing config manager structure with schema preservation.
+    Save seed examples using the existing config manager structure with enhanced metadata.
     
     Args:
         problem_definition (Dict): Problem definition
@@ -486,16 +466,20 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     
     # Prepare enhanced metadata
     metadata = {
-        'source': 'real_world_data',
+        'source': 'real_world_data_with_enhanced_info',
+        'data_info_used': True,
         'total_examples': len(seed_data['examples']),
-        'malicious_examples': sum(1 for ex in seed_data['examples'] if ex.get('_metadata', {}).get('sample_type') == 'malicious'),
-        'benign_examples': sum(1 for ex in seed_data['examples'] if ex.get('_metadata', {}).get('sample_type') == 'benign'),
+        'malicious_examples': sum(1 for ex in seed_data['examples'] 
+                                if ex.get('_metadata', {}).get('sample_type') == 'malicious'),
+        'benign_examples': sum(1 for ex in seed_data['examples'] 
+                             if ex.get('_metadata', {}).get('sample_type') == 'benign'),
         'problem_definition': problem_definition,
         'schema_preserved': True,
-        'generation_metadata': seed_data['generation_metadata']
+        'generation_metadata': seed_data['generation_metadata'],
+        'enhancement_method': 'data_info_yaml_integration'
     }
     
-    # Save seed examples with schema preservation
+    # Save seed examples with enhanced metadata
     complete_seed_data = {
         'examples': seed_data['examples'],
         'metadata': metadata
@@ -504,80 +488,102 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     with file_path.open('w', encoding='utf-8') as f:
         json.dump(complete_seed_data, f, indent=2, default=str)
     
-    logger.info(f"Saved {len(seed_data['examples'])} schema-preserving seed examples to {file_path}")
-    logger.info(f"Schema template and generation instructions included for synthetic data generation")
+    logger.info(f"Saved {len(seed_data['examples'])} enhanced seed examples to {file_path}")
+    logger.info(f"Enhanced with data_info.yaml context and schema preservation")
 
 
-def main(csv_file: str = "nsl_kdd_rare_train.csv.gz", 
+def main(csv_file: str = None, 
+         data_info_name: str = None,
          label_column: str = "label",
-         samples_per_class: int = 10):
+         samples_per_class: int = 5):
     """
-    Main function to process real-world data and generate seed examples.
+    Main function to process real-world data using enhanced data_info.yaml context.
     
     Args:
-        csv_file (str): Name of the CSV file in raw/ directory
+        csv_file (str): Name of the CSV file in raw/ directory (uses CSV_FILE if None)
+        data_info_name (str): Dataset name in data_info.yaml (uses DATA_INFO_NAME if None)
         label_column (str): Name of the label column
         samples_per_class (int): Number of samples per class to extract
     """
-    logger.info(f"Starting real-world data processing for: {csv_file}")
+    # Use configured values if not provided
+    if csv_file is None:
+        csv_file = CSV_FILE
+    if data_info_name is None:
+        data_info_name = DATA_INFO_NAME
+        
+    logger.info(f"Starting enhanced real-world data processing")
+    logger.info(f"CSV file: {csv_file}")
+    logger.info(f"Data info name: {data_info_name}")
     
     try:
         # Define file path
         raw_dir = config_manager.project_root / "raw"
         file_path = raw_dir / csv_file
         
-        # Step 1: Load raw data
+        # Step 1: Load data info
+        data_info = load_data_info(data_info_name)
+        
+        # Use label column from data_info if available
+        if 'label_column' in data_info and data_info['label_column']:
+            label_column = data_info['label_column']
+            logger.info(f"Using label column from data_info.yaml: {label_column}")
+        
+        # Step 2: Load raw data
         df = load_raw_data(file_path, label_column)
         
-        # Step 2: Stratified sampling
+        # Step 3: Stratified sampling
         malicious_samples, benign_samples = stratified_sample(
             df, label_column, samples_per_class
         )
         
-        # Step 3: Analyze data schema with preservation focus
-        schema_analysis = analyze_data_schema(df, label_column)
-        
-        # Step 4: Infer problem definition
-        problem_definition = infer_problem_definition(
-            malicious_samples, benign_samples, schema_analysis
+        # Step 4: Create enhanced data context
+        enhanced_context = create_enhanced_data_context(
+            data_info, malicious_samples, benign_samples
         )
         
-        # Step 5: Generate schema-preserving seed examples
-        seed_data = generate_seed_examples(
-            malicious_samples, benign_samples, problem_definition, schema_analysis
+        # Step 5: Infer problem definition using enhanced context
+        problem_definition = infer_problem_definition_from_data_info(enhanced_context)
+        
+        # Step 6: Generate seed examples using enhanced context
+        seed_data = generate_seed_examples_from_data_info(
+            enhanced_context, problem_definition
         )
         
-        # Step 6: Save problem definition
-        nature = save_realworld_problem(problem_definition, schema_analysis)
+        # Step 7: Save problem definition with enhanced context (replace existing)
+        nature = save_realworld_problem(problem_definition, enhanced_context)
         
-        # Step 7: Save schema-preserving seed examples
+        # Step 8: Save enhanced seed examples
         save_seed_examples(problem_definition, seed_data)
         
         # Summary
         logger.info("="*60)
-        logger.info("REAL-WORLD DATA PROCESSING COMPLETED")
+        logger.info("ENHANCED REAL-WORLD DATA PROCESSING COMPLETED")
         logger.info("="*60)
         logger.info(f"Dataset: {csv_file}")
+        logger.info(f"Data info used: {data_info.get('data_name', 'unknown')}")
+        logger.info(f"Domain: {data_info.get('domain', 'unknown')}")
+        logger.info(f"Attack types: {', '.join(data_info.get('attack_types', []))}")
         logger.info(f"Problem: {problem_definition.get('area', 'Unknown')}/{nature}")
         logger.info(f"Seed examples generated: {len(seed_data['examples'])}")
+        logger.info(f"Enhancement method: data_info.yaml integration")
         logger.info(f"Files updated:")
-        logger.info(f"  - problems.json (added real-world problem)")
+        logger.info(f"  - problems.json (replaced with real-world problem)")
         logger.info(f"  - seeds/{problem_definition.get('area', 'Unknown')}/{nature}_examples.json")
         logger.info("="*60)
         
     except Exception as e:
-        logger.error(f"Error in main process: {str(e)}", exc_info=True)
+        logger.error(f"Error in enhanced processing: {str(e)}", exc_info=True)
         raise
 
 
 if __name__ == '__main__':
     import argparse
     
-    parser = argparse.ArgumentParser(description="Process real-world data for seed generation")
-    parser.add_argument('--csv-file', default='nsl_kdd_rare_train.csv.gz', 
-                       help='CSV file name in raw/ directory')
+    parser = argparse.ArgumentParser(description="Process real-world data using enhanced data_info.yaml context")
+    parser.add_argument('--csv-file', help=f'CSV file name in raw/ directory (default: {CSV_FILE})')
+    parser.add_argument('--data-info-name', help=f'Dataset name in data_info.yaml (default: {DATA_INFO_NAME})')
     parser.add_argument('--label-column', default='label', 
-                       help='Name of the label column')
+                       help='Name of the label column (can be overridden by data_info.yaml)')
     parser.add_argument('--samples-per-class', type=int, default=5,
                        help='Number of samples per class to extract')
     
@@ -585,6 +591,7 @@ if __name__ == '__main__':
     
     main(
         csv_file=args.csv_file,
+        data_info_name=args.data_info_name,
         label_column=args.label_column,
         samples_per_class=args.samples_per_class
     )
