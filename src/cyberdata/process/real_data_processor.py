@@ -249,12 +249,12 @@ def infer_problem_definition_from_data_info(enhanced_context: Dict) -> Dict:
     
     # Load prompts from YAML
     system_prompt = load_prompt(
-        "realworld_analysis_prompts",
+        "real_data_analysis_prompts",
         "prompts.problem_inference_enhanced.system.template"
     )
     
     user_prompt = load_prompt(
-        "realworld_analysis_prompts",
+        "real_data_analysis_prompts",
         "prompts.problem_inference_enhanced.user.template",
         enhanced_context_json=context_json
     )
@@ -325,12 +325,12 @@ def generate_seed_examples_from_data_info(enhanced_context: Dict,
         
         # Load prompts from YAML
         system_prompt = load_prompt(
-            "realworld_analysis_prompts",
+            "real_data_analysis_prompts",
             "prompts.seed_generation_enhanced.system.template"
         )
         
         user_prompt = load_prompt(
-            "realworld_analysis_prompts",
+            "real_data_analysis_prompts",
             "prompts.seed_generation_enhanced.user.template",
             enhanced_context_json=context_json,
             problem_definition_json=problem_json
