@@ -1,0 +1,46 @@
+{
+  "attack_indicators": [
+    "presence of root_shell=1 and num_root>0 indicating privilege escalation attempts",
+    "hot indicators > 0 signaling suspicious activity like system file access or program creation",
+    "high rerror_rate and srv_rerror_rate values (close to 1.0) indicating rejected connections or failed login attempts",
+    "flags such as RSTO and S3 associated with connection resets and suspicious session teardowns",
+    "low src_bytes with very high dst_bytes in some R2L attacks (e.g., warezmaster) indicating data exfiltration",
+    "logged_in=0 combined with num_failed_logins>0 indicating brute force or guessing attempts"
+  ],
+  "attack_signatures": [
+    "Signature 1: R2L attacks often have flag=RSTO or SF with high rerror_rate (\u22650.9), num_failed_logins\u22651, and logged_in=0, e.g., guess_passwd attack samples",
+    "Signature 2: U2R attacks show root_shell=1, hot\u22651, logged_in=1, and increased num_compromised and num_root counts, often with short duration and service ftp_data or telnet",
+    "Signature 3: Warezmaster and warezclient attacks characterized by src_bytes=0, very large dst_bytes (millions), flag=SF, and same_srv_rate=1.0 indicating repeated access to the same service with no data sent from source"
+  ],
+  "technical_markers": [
+    "root_shell=1 and num_root\u22651 as markers of privilege escalation",
+    "rerror_rate and srv_rerror_rate \u22650.9 as indicators of connection rejection/failure in R2L attacks",
+    "hot\u22651 combined with logged_in=1 and num_compromised\u22651 in U2R attacks",
+    "dst_bytes > 5,000,000 with src_bytes=0 in warezmaster attacks",
+    "serror_rate and srv_serror_rate near zero in most attacks except some guess_passwd samples with serror_rate\u22480.5"
+  ],
+  "normal_indicators": [
+    "Normal traffic predominantly uses protocol_type tcp, udp, and icmp with flag=SF",
+    "src_bytes and dst_bytes are balanced and moderate, with no extreme outliers",
+    "num_failed_logins=0 and logged_in=0 or 1 depending on session type",
+    "low or zero hot, num_compromised, root_shell, su_attempted, and num_root values",
+    "Stable connection patterns with high same_srv_rate (close to 1.0) and low error rates"
+  ],
+  "baseline_metrics": [
+    "serror_rate, srv_serror_rate, rerror_rate, srv_rerror_rate typically 0.0 in benign samples",
+    "count and srv_count can be high (e.g., 100+), reflecting normal repeated connections",
+    "dst_host_count and dst_host_srv_count often at maximum (255), indicating normal host activity",
+    "duration mostly 0 or low values, typical of normal short connections",
+    "hot=0 and num_failed_logins=0 in majority of benign samples"
+  ],
+  "metadata": {
+    "dataset_name": "nsl_kdd_rare",
+    "analysis_timestamp": "2025-06-19T14:49:55.972981",
+    "samples_analyzed": {
+      "malicious": 100,
+      "benign": 100
+    },
+    "step": "domain_discovery",
+    "version": "1.0"
+  }
+}

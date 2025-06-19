@@ -1,0 +1,42 @@
+{
+  "primary_attacks": [
+    "r2l_attacks",
+    "u2r_attacks",
+    "privilege_escalation",
+    "remote_access"
+  ],
+  "attack_patterns": [
+    "Brute force login attempts with failed logins and rejected connections",
+    "Privilege escalation via root_shell and hot indicators",
+    "Data exfiltration with zero source bytes and high destination bytes",
+    "Connection resets using flags RSTO and S3 combined with high error rates",
+    "Repeated service access with high same_srv_rate in warezmaster attacks"
+  ],
+  "attack_sophistication_levels": [
+    "Low: Brute force password guessing with obvious failed login spikes",
+    "Medium: Data exfiltration with anomalous byte patterns but no privilege escalation",
+    "High: Stealthy U2R privilege escalation with subtle host behavior changes and short duration",
+    "Advanced: Multi-vector attacks combining evasion via connection resets and multi-service exploitation"
+  ],
+  "mitigation_strategies": [
+    "Strong authentication and password policies",
+    "Host-based privilege escalation prevention and monitoring",
+    "Service hardening and access control for FTP, Telnet, HTTP, IMAP",
+    "Integrated anomaly and signature-based detection systems",
+    "Continuous monitoring of connection flags and error rates"
+  ],
+  "detection_approaches": [
+    "Threshold-based alerting on error rates and failed login counts",
+    "Signature matching for known attack patterns (e.g., root_shell=1 & hot\u22651)",
+    "Multi-feature anomaly detection models capturing subtle correlations",
+    "Host behavior profiling focusing on privilege escalation markers",
+    "Correlation of connection resets and rejected connections with suspicious activity"
+  ],
+  "metadata": {
+    "dataset_name": "nsl_kdd_rare",
+    "enrichment_timestamp": "2025-06-19T14:50:47.213965",
+    "domain_discovery_used": true,
+    "step": "contextual_enrichment",
+    "version": "1.0"
+  }
+}
