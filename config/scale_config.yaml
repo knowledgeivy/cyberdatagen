@@ -1,0 +1,287 @@
+version: "2.0"
+description: "Configuration for enhanced scale generation and validation"
+author: "CyberData Team"
+last_updated: "2025-06-19"
+
+# Scale Generation Configuration
+scale_generation:
+  # Default generation parameters
+  defaults:
+    scale_count: 100
+    malicious_ratio: 0.5
+    max_workers: 4
+    batch_size: 5
+    
+  # Performance settings
+  performance:
+    api_delay: 0.2  # seconds between API calls
+    retry_attempts: 3
+    retry_delay: 2
+    timeout: 300  # 5 minutes per batch
+    
+  # Quality control
+  quality_control:
+    duplicate_similarity_threshold: 0.85
+    context_integration_required: true
+    schema_validation_strict: true
+    
+  # Generation parameters by sample type
+  sample_types:
+    malicious:
+      temperature: 0.8
+      priority: 2
+      diversity_emphasis: high
+    benign:
+      temperature: 0.8
+      priority: 1
+      diversity_emphasis: medium
+
+# Scale Validation Configuration  
+scale_validation:
+  # Validation parameters
+  validation_strategy:
+    sample_rate: 0.15  # 15% statistical sampling
+    min_samples: 50
+    max_samples: 1500
+    confidence_level: 0.95
+    
+  # Quality thresholds (higher than seed validation)
+  quality_thresholds:
+    technical_accuracy: 0.75
+    schema_consistency: 0.95
+    realism_assessment: 0.70
+    semantic_uniqueness: 0.65
+    domain_alignment: 0.75
+    overall_minimum: 0.75
+    
+  # Composite score weighting
+  score_weights:
+    technical_accuracy: 0.25
+    schema_consistency: 0.25
+    realism_assessment: 0.20
+    semantic_uniqueness: 0.15
+    domain_alignment: 0.15
+    
+  # Quality tiers
+  quality_tiers:
+    excellent: 0.9
+    good: 0.8
+    fair: 0.7
+    poor: 0.0
+    
+  # Production readiness criteria
+  production_readiness:
+    minimum_quality_rate: 0.75
+    minimum_schema_consistency: 0.95
+    minimum_technical_accuracy: 0.75
+    recommended_quality_rate: 0.80
+
+# Context Integration Settings
+context_integration:
+  # Required context sources
+  required_sources:
+    - domain_discovery
+    - data_info_schema
+    
+  # Optional context sources  
+  optional_sources:
+    - contextual_problems
+    - attack_taxonomy
+    - technical_indicators
+    
+  # Context weighting for generation
+  generation_weights:
+    domain_discovery: 0.4
+    contextual_problems: 0.3
+    data_info_schema: 0.2
+    seed_examples: 0.1
+    
+  # Context validation
+  context_validation:
+    require_domain_discovery: true
+    require_schema_info: true
+    validate_context_completeness: true
+
+# Statistical Estimation Settings
+statistical_estimation:
+  # Sampling methodology
+  sampling:
+    method: "stratified_random"
+    stratify_by: "sample_type"
+    ensure_representation: true
+    
+  # Confidence intervals
+  confidence_intervals:
+    quality_estimation: 0.95
+    distribution_estimation: 0.90
+    production_readiness: 0.95
+    
+  # Extrapolation methods
+  extrapolation:
+    quality_projection_method: "conservative"
+    uncertainty_margin: 0.05
+    validation_requirements: strict
+
+# Adaptive Selection Configuration
+adaptive_selection:
+  # Selection strategy
+  strategy:
+    primary_criterion: "composite_score"
+    secondary_criterion: "diversity"
+    balance_sample_types: true
+    
+  # Quality-weighted selection
+  quality_weighting:
+    excellent_weight: 1.0
+    good_weight: 0.8
+    fair_weight: 0.6
+    poor_weight: 0.0
+    
+  # Diversity optimization
+  diversity_optimization:
+    similarity_threshold: 0.7
+    diversity_weight: 0.3
+    uniqueness_emphasis: medium
+    
+  # Prediction methodology
+  quality_prediction:
+    method: "type_based_averaging"
+    fallback_score: 0.5
+    confidence_threshold: 0.7
+
+# Output Configuration
+output:
+  # Directory structure
+  directories:
+    scaled_raw: "data/scaled-raw"
+    scaled_validation: "data/scaled_validation"
+    scaled_high: "data/scaled-high"
+    scaled_filtered: "data/scaled-filtered"
+    
+  # File naming conventions
+  file_naming:
+    scale_data: "{nature}_scale.json"
+    validation_report: "{nature}_scale_validation_report.json"
+    quality_summary: "{nature}_scale_quality_summary.json"
+    
+  # Metadata inclusion
+  metadata:
+    include_generation_stats: true
+    include_validation_details: true
+    include_context_sources: true
+    include_quality_metrics: true
+    track_processing_time: true
+
+# Logging Configuration
+logging:
+  # Log levels by component
+  levels:
+    scale_generation: "INFO"
+    scale_validation: "INFO"
+    context_loading: "INFO"
+    quality_assessment: "DEBUG"
+    
+  # Progress reporting
+  progress_reporting:
+    batch_completion: true
+    validation_progress: true
+    quality_metrics: true
+    
+  # Performance metrics
+  performance_tracking:
+    generation_rate: true
+    validation_rate: true
+    context_loading_time: true
+    api_call_metrics: true
+
+# Model Configuration
+models:
+  # Primary model for generation and validation
+  primary:
+    name: "gpt-4.1-mini"
+    max_tokens: 16384
+    
+  # Temperature settings by task
+  temperatures:
+    scale_generation: 0.8
+    scale_validation: 0.0
+    context_analysis: 0.3
+    
+  # Rate limiting
+  rate_limiting:
+    calls_per_minute: 60
+    burst_allowance: 10
+    backoff_strategy: "exponential"
+
+# Error Handling
+error_handling:
+  # Retry configuration
+  retry_logic:
+    max_retries: 3
+    base_delay: 2
+    max_delay: 30
+    exponential_backoff: true
+    
+  # Failure thresholds
+  failure_thresholds:
+    max_batch_failures: 5
+    max_validation_failures: 10
+    min_success_rate: 0.8
+    
+  # Recovery strategies
+  recovery:
+    continue_on_batch_failure: true
+    reduce_batch_size_on_failure: true
+    skip_problematic_samples: true
+    
+  # Fallback behaviors
+  fallbacks:
+    use_simplified_prompts: true
+    reduce_context_complexity: true
+    lower_quality_thresholds: false
+
+# Validation Enhancement Settings
+validation_enhancements:
+  # Multi-dimensional assessment
+  multi_dimensional:
+    enabled: true
+    dimensions: 5
+    comprehensive_analysis: true
+    
+  # Intelligent sampling
+  intelligent_sampling:
+    enabled: true
+    stratification: true
+    representation_analysis: true
+    
+  # Quality prediction
+  quality_prediction:
+    enabled: true
+    prediction_confidence: 0.7
+    type_based_analysis: true
+    
+  # Production assessment
+  production_assessment:
+    enabled: true
+    deployment_readiness: true
+    operational_analysis: true
+
+# Performance Optimization
+performance_optimization:
+  # Parallel processing
+  parallelization:
+    enable_parallel_generation: true
+    enable_parallel_validation: false  # LLM validation is sequential
+    thread_pool_optimization: true
+    
+  # Memory management
+  memory_management:
+    batch_processing: true
+    context_caching: true
+    result_streaming: true
+    
+  # Caching strategies
+  caching:
+    context_caching: true
+    validation_caching: false
+    result_caching: true

@@ -1,0 +1,1507 @@
+{
+  "scale_validation_summary": {
+    "total_samples": 98,
+    "samples_validated": 50,
+    "validation_coverage": "51.0%",
+    "estimated_high_quality_total": 96,
+    "estimated_quality_ratio": "98.0%",
+    "production_readiness_score": 0.9518000000000001,
+    "average_scores": {
+      "technical_accuracy": 0.9072000000000001,
+      "schema_consistency": 0.9788,
+      "realism_assessment": 0.8472,
+      "semantic_uniqueness": 0.9784,
+      "domain_alignment": 0.8936000000000002,
+      "composite_score": 0.9160499999999999
+    },
+    "quality_distribution": {
+      "excellent": 47,
+      "good": 2,
+      "fair": 0,
+      "poor": 1
+    }
+  },
+  "validation_metadata": {
+    "validator_version": "2.0_scale_enhanced",
+    "validation_timestamp": 1750375911.767214,
+    "validation_approach": "intelligent_sampling_multi_dimensional",
+    "quality_thresholds": {
+      "technical_accuracy": 0.75,
+      "schema_consistency": 0.95,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.65,
+      "domain_alignment": 0.75,
+      "overall_minimum": 0.75
+    },
+    "validation_sample_rate": 0.15
+  },
+  "type_analysis": {
+    "malicious": {
+      "count": 24,
+      "high_quality_count": 24,
+      "average_score": 0.9189583333333333
+    },
+    "benign": {
+      "count": 26,
+      "high_quality_count": 25,
+      "average_score": 0.9133653846153845
+    }
+  },
+  "common_issues": [
+    [
+      "Realism Assessment: logged_in=0 with num_failed_logins=0 in warezmaster attack is less typical, may reduce scenario plausibility slightly (minor severity).",
+      1
+    ],
+    [
+      "Technical Accuracy: High rerror_rate and srv_rerror_rate near 0.95 are plausible but uncommon in warezmaster; consider adding contextual justification (low severity).",
+      1
+    ],
+    [
+      "Domain Alignment: Slight mismatch in login indicators could affect domain coherence marginally (minor severity).",
+      1
+    ],
+    [
+      "Realism Assessment: Slightly low error rates (0.0) may underrepresent some U2R attack variants with minor connection anomalies - minor severity.",
+      1
+    ],
+    [
+      "Overall Sample Scope: Single sample limits diversity assessment and temporal pattern validation - moderate severity.",
+      1
+    ],
+    [
+      "Operational Context: Lack of explicit temporal or sequential session data reduces scenario richness - minor severity.",
+      1
+    ],
+    [
+      "Minor deviation in same_srv_rate (0.85) below normal baseline threshold (\u22650.9) - realism_assessment - low severity",
+      1
+    ],
+    [
+      "Absence of error rate anomalies (serror_rate, rerror_rate) may reduce detection cues in some models - technical_accuracy - low severity",
+      1
+    ],
+    [
+      "Limited temporal pattern complexity due to short duration and low connection counts - realism_assessment - low severity",
+      1
+    ],
+    [
+      "Duration fixed at minimal value (1 second) limits temporal pattern diversity - realism_assessment - minor",
+      1
+    ]
+  ],
+  "production_assessment": {
+    "deployment_readiness": "Production ready with high confidence",
+    "schema_compliance_rate": 0.9788,
+    "technical_accuracy_confidence": 0.9072000000000001,
+    "operational_risks": [
+      "Minimal risk for deployment"
+    ]
+  },
+  "training_analysis": {
+    "training_effectiveness": "Excellent for ML model training",
+    "diversity_adequacy": "High diversity supports robust training",
+    "class_balance_analysis": "Malicious: 24, Benign: 26"
+  },
+  "original_metadata": {
+    "area": "Network_Intrusion_Detection",
+    "nature": "Remote-to-Local (R2L) and User-to-Root (U2R) attacks with privilege escalation",
+    "scale_count_requested": 100,
+    "malicious_ratio_requested": 0.5,
+    "actual_samples_generated": 98,
+    "actual_malicious_count": 48,
+    "actual_benign_count": 50,
+    "actual_malicious_ratio": 0.4897959183673469,
+    "generation_method": "enhanced_scale_generation",
+    "generation_stats": {
+      "total_generated": 100,
+      "total_unique": 98,
+      "duplicates_filtered": 2,
+      "failed_generations": 0,
+      "successful_batches": 20,
+      "total_api_calls": 20,
+      "generation_start_time": 1750374147.2695365,
+      "generation_end_time": 1750374342.8501637
+    },
+    "duplicate_detection_stats": {
+      "samples_tracked": 98,
+      "similarity_threshold": 0.85
+    },
+    "generation_timestamp": 1750374342.8501637,
+    "total_generation_time": 195.58062720298767,
+    "samples_per_minute": 30.064327352306282,
+    "context_sources": {
+      "domain_discovery_used": true,
+      "contextual_problems_used": true,
+      "data_info_used": true,
+      "dataset_name": "nsl_kdd_rare"
+    },
+    "quality_indicators": {
+      "uniqueness_rate": 0.98,
+      "success_rate": 1.0,
+      "average_batch_time": 9.779031360149384
+    }
+  },
+  "detailed_results": [
+    {
+      "sample_index": 35,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 0.98,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 0.98,
+        "domain_alignment": 0.9,
+        "composite_score": 0.92
+      },
+      "issues": [
+        "Realism Assessment: logged_in=0 with num_failed_logins=0 in warezmaster attack is less typical, may reduce scenario plausibility slightly (minor severity).",
+        "Technical Accuracy: High rerror_rate and srv_rerror_rate near 0.95 are plausible but uncommon in warezmaster; consider adding contextual justification (low severity).",
+        "Domain Alignment: Slight mismatch in login indicators could affect domain coherence marginally (minor severity)."
+      ],
+      "strengths": [
+        "Technical Accuracy: Exemplary adherence to domain attack signatures and technical markers (high impact).",
+        "Schema Consistency: Perfect compliance with data schema and label encoding ensuring processing reliability (high impact).",
+        "Semantic Uniqueness: Outstanding uniqueness score enhancing dataset diversity and model generalization (high impact)."
+      ],
+      "recommendations": [
+        "Incorporate additional session context fields or metadata to clarify login state nuances for warezmaster attacks.",
+        "Introduce slight variability in failed login counts or logged_in flags in similar samples to improve realism and reduce pattern rigidity.",
+        "Document and validate error rate thresholds in warezmaster scenarios to support high rerror_rate values with operational context."
+      ]
+    },
+    {
+      "sample_index": 91,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism Assessment: Slightly low error rates (0.0) may underrepresent some U2R attack variants with minor connection anomalies - minor severity.",
+        "Overall Sample Scope: Single sample limits diversity assessment and temporal pattern validation - moderate severity.",
+        "Operational Context: Lack of explicit temporal or sequential session data reduces scenario richness - minor severity."
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate representation of U2R attack markers and feature correlations - high impact.",
+        "Schema Consistency: Full compliance with schema ensuring data integrity and ML compatibility - critical impact.",
+        "Semantic Uniqueness: Unique feature combination enhancing dataset diversity and model learning - high impact."
+      ],
+      "recommendations": [
+        "Introduce controlled variability in error rates and connection flags to better represent U2R attack diversity.",
+        "Expand dataset with additional samples covering temporal and sequential session features for richer operational context.",
+        "Incorporate temporal features or session sequences to improve realism and detection model robustness."
+      ]
+    },
+    {
+      "sample_index": 79,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9275
+      },
+      "issues": [
+        "Minor deviation in same_srv_rate (0.85) below normal baseline threshold (\u22650.9) - realism_assessment - low severity",
+        "Absence of error rate anomalies (serror_rate, rerror_rate) may reduce detection cues in some models - technical_accuracy - low severity",
+        "Limited temporal pattern complexity due to short duration and low connection counts - realism_assessment - low severity"
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack signature with root_shell and hot indicators - technical_accuracy - high impact",
+        "Complete and exact schema compliance facilitating ML pipeline compatibility - schema_consistency - high impact",
+        "High semantic uniqueness ensuring novel and diverse training data - semantic_uniqueness - high impact"
+      ],
+      "recommendations": [
+        "Introduce slight variability in same_srv_rate and diff_srv_rate to better reflect attack-induced deviations while maintaining realism.",
+        "Consider incorporating subtle error rate anomalies in some U2R samples to enhance detection signal diversity.",
+        "Expand temporal and connection count features in future samples to capture richer session dynamics."
+      ]
+    },
+    {
+      "sample_index": 55,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 0.98,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.92
+      },
+      "issues": [
+        "Duration fixed at minimal value (1 second) limits temporal pattern diversity - realism_assessment - minor",
+        "Same_srv_rate at lower threshold (0.7) may reduce variability - realism_assessment - minor",
+        "Diff_srv_rate at upper threshold (0.3) could be diversified for broader normal/attack boundary coverage - realism_assessment - minor"
+      ],
+      "strengths": [
+        "Strong technical accuracy with correct attack signature features - technical_accuracy - high impact",
+        "Complete schema compliance enabling direct ML pipeline use - schema_consistency - high impact",
+        "High semantic uniqueness supporting robust model generalization - semantic_uniqueness - high impact"
+      ],
+      "recommendations": [
+        "Incorporate variable connection durations to better simulate temporal attack patterns.",
+        "Vary same_srv_rate and diff_srv_rate values within realistic ranges to enhance feature diversity.",
+        "Expand feature value ranges slightly around thresholds to improve model robustness against edge cases."
+      ]
+    },
+    {
+      "sample_index": 7,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9275
+      },
+      "issues": [
+        "Minor anomaly in realism dimension: logged_in=0 with num_failed_logins=0 is less typical for warezmaster but still plausible (realism_assessment, low severity)",
+        "Limited temporal pattern complexity reduces scenario richness (technical_accuracy, medium severity)",
+        "Single attack vector focus limits multi-vector attack representation (domain_alignment, low severity)"
+      ],
+      "strengths": [
+        "Accurate and authentic attack signature representation (technical_accuracy, high impact)",
+        "Complete and exact schema compliance (schema_consistency, critical impact)",
+        "High semantic uniqueness contributing to dataset diversity (semantic_uniqueness, high impact)"
+      ],
+      "recommendations": [
+        "Introduce controlled variations in login attempt features (num_failed_logins, logged_in) for warezmaster samples to reflect broader real-world patterns",
+        "Enhance temporal and session-based features to capture multi-step attack sequences and improve operational realism",
+        "Include multi-vector attack samples combining R2L with privilege escalation or evasion tactics to increase domain coverage"
+      ]
+    },
+    {
+      "sample_index": 20,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.82,
+        "semantic_uniqueness": 0.98,
+        "domain_alignment": 0.9,
+        "composite_score": 0.91
+      },
+      "issues": [
+        "Minor ambiguity in attack_type 'phf' mapping to sub_label 'r2l' (Technical Accuracy, low severity).",
+        "Duration value of 0 may be uncommon for some U2R attacks, suggesting slight realism limitation (Realism Assessment, low severity).",
+        "No explicit indication of su_attempted or num_shells which could enrich privilege escalation representation (Domain Alignment, minor)."
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack signatures with root_shell=1 and hot=1 (Technical Accuracy, high impact).",
+        "Complete and exact schema compliance facilitating ML pipeline compatibility (Schema Consistency, critical impact).",
+        "High semantic uniqueness score (0.98) indicating strong contribution to dataset diversity (Semantic Uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Clarify and document attack_type to sub_label mappings explicitly to avoid label confusion.",
+        "Introduce slight variation in duration feature for U2R samples to better reflect real-world session lengths.",
+        "Consider adding features like su_attempted and num_shells where applicable to enrich privilege escalation scenarios."
+      ]
+    },
+    {
+      "sample_index": 31,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.82,
+        "semantic_uniqueness": 0.98,
+        "domain_alignment": 0.9,
+        "composite_score": 0.91
+      },
+      "issues": [
+        "Minor inconsistency in zero num_failed_logins despite high rerror_rate and srv_rerror_rate (technical_accuracy, medium severity).",
+        "Absence of hot indicators in warezmaster attack sample may reduce subtlety representation (realism_assessment, low severity).",
+        "Limited temporal context beyond duration restricts full operational scenario modeling (realism_assessment, low severity)."
+      ],
+      "strengths": [
+        "Strong adherence to domain discovery attack signatures and technical markers (technical_accuracy, high impact).",
+        "Complete and exact schema compliance facilitating ML pipeline compatibility (schema_consistency, high impact).",
+        "Exceptional semantic uniqueness enhancing dataset diversity and model training effectiveness (semantic_uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Review and possibly introduce minimal num_failed_logins in samples with high rerror_rate to better reflect brute force patterns.",
+        "Consider incorporating low-level hot indicators in warezmaster samples to capture subtle host behavior changes.",
+        "Augment dataset with richer temporal features or session context to improve operational realism."
+      ]
+    },
+    {
+      "sample_index": 45,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.82,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.85,
+        "composite_score": 0.9
+      },
+      "issues": [
+        "Realism Assessment: Moderate deviation in same_srv_rate (0.6) and diff_srv_rate (0.4) slightly outside typical normal thresholds (severity: low).",
+        "Domain Alignment: Lack of explicit privilege escalation markers limits multi-vector attack representation (severity: low).",
+        "Technical Accuracy: src_bytes=5 is low but plausible; monitoring for edge cases recommended (severity: very low)."
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate reflection of R2L brute force attack signatures with correct error rates and flags (impact: high).",
+        "Schema Consistency: Full compliance with data schema and label encoding ensuring data integrity (impact: critical).",
+        "Semantic Uniqueness: Unique sample with no duplicates, enhancing training diversity and model robustness (impact: high)."
+      ],
+      "recommendations": [
+        "Adjust same_srv_rate and diff_srv_rate values closer to typical attack thresholds to improve realism.",
+        "Incorporate additional features indicating privilege escalation to broaden domain alignment coverage.",
+        "Validate low src_bytes values against operational logs to ensure edge case realism."
+      ]
+    },
+    {
+      "sample_index": 24,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism Assessment: Zero error rates (serror_rate, rerror_rate) may be less common in real U2R attacks - minor realism concern.",
+        "Realism Assessment: Duration=0 might be too idealized; slight nonzero durations could enhance scenario plausibility.",
+        "Domain Alignment: Slightly conservative sophistication match due to absence of connection resets or error flags."
+      ],
+      "strengths": [
+        "Technical Accuracy: Strong adherence to U2R attack signatures and domain technical markers.",
+        "Schema Consistency: Perfect schema compliance with all required fields and correct label encoding.",
+        "Semantic Uniqueness: Exemplary uniqueness score (1.0) indicating high content novelty and training value."
+      ],
+      "recommendations": [
+        "Introduce minimal nonzero error rates in some samples to better reflect real-world subtle anomalies.",
+        "Simulate short but nonzero durations to capture temporal variability in U2R attacks.",
+        "Incorporate occasional connection reset flags or error indicators to represent advanced evasion tactics."
+      ]
+    },
+    {
+      "sample_index": 44,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 0.98,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.925
+      },
+      "issues": [
+        "Realism Assessment: Slightly low same_srv_rate (0.6) and elevated diff_srv_rate (0.4) deviate from normal baseline thresholds, minor concern.",
+        "Technical Accuracy: Lack of privilege escalation indicators limits representation to R2L only, reducing multi-vector coverage.",
+        "Realism Assessment: Single short duration limits temporal pattern diversity, affecting scenario richness."
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate and domain-consistent attack signature representation enhances detection fidelity.",
+        "Schema Consistency: Full compliance with schema ensures data integrity and ML pipeline compatibility.",
+        "Semantic Uniqueness: High uniqueness score contributes significantly to dataset diversity and model generalization."
+      ],
+      "recommendations": [
+        "Incorporate samples with combined R2L and U2R features to cover multi-vector attack scenarios.",
+        "Adjust same_srv_rate and diff_srv_rate values closer to documented normal and attack thresholds to improve realism.",
+        "Introduce temporal pattern variations such as session bursts and repeated connection attempts for richer operational context."
+      ]
+    },
+    {
+      "sample_index": 4,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.82,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.91
+      },
+      "issues": [
+        "Minor concern in realism_assessment: same_srv_rate=0.6 and diff_srv_rate=0.4 deviate from normal thresholds, requiring validation for attack plausibility (medium severity).",
+        "Technical_accuracy note: root_shell=0 with hot=2 is plausible but uncommon; consider verifying edge case representation (low severity).",
+        "Realism_assessment: fixed short duration (1 second) may reduce temporal pattern diversity (low severity)."
+      ],
+      "strengths": [
+        "Technical_accuracy: Accurate reflection of R2L brute force attack signatures with correct feature correlations (high impact).",
+        "Schema_consistency: Complete and exact schema compliance enabling robust ML pipeline compatibility (high impact).",
+        "Semantic_uniqueness: High uniqueness score and novel feature combination enhancing dataset diversity and model generalization (high impact)."
+      ],
+      "recommendations": [
+        "Introduce variability in duration and service features to better capture temporal and protocol diversity.",
+        "Review and validate edge cases where root_shell=0 but hot indicators are elevated to ensure domain consistency.",
+        "Monitor and adjust same_srv_rate and diff_srv_rate distributions to better reflect attack versus normal baselines."
+      ]
+    },
+    {
+      "sample_index": 73,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Duration value of 0 (technical_accuracy, realism_assessment) - minor concern for edge case handling in some models.",
+        "Zero error rates (serror_rate, rerror_rate) (realism_assessment) - may reduce detection signals in error-rate based models.",
+        "Single service focus (telnet) (domain_alignment) - limits representation of multi-vector attack complexity."
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack signature with root_shell=1 and hot\u22651 (technical_accuracy) - critical for detection.",
+        "Complete schema compliance with all required fields and correct label encoding (schema_consistency) - ensures data usability.",
+        "High semantic uniqueness score of 1.0 (semantic_uniqueness) - enhances dataset diversity and model robustness."
+      ],
+      "recommendations": [
+        "Introduce slight variation in duration feature to avoid zero-value edge cases and improve model robustness.",
+        "Consider adding multi-service exploitation features (e.g., ftp_data, http) in similar samples to represent multi-vector attacks.",
+        "Incorporate subtle error rate variations in stealthy attacks to better simulate real-world detection challenges."
+      ]
+    },
+    {
+      "sample_index": 36,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.85,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.78,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.88,
+        "composite_score": 0.89
+      },
+      "issues": [
+        "Technical Accuracy: Elevated hot=2 without root_shell=1 may not fully align with strict U2R attack patterns (minor severity)",
+        "Realism Assessment: same_srv_rate=0.6 and diff_srv_rate=0.4 slightly deviate from normal thresholds, could affect anomaly detection calibration (minor severity)",
+        "Realism Assessment: Duration fixed at 0 limits temporal pattern diversity, potentially reducing scenario richness (low severity)"
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate representation of R2L brute force attack signature with correct error rates and flags (high impact)",
+        "Schema Consistency: Full compliance with data schema and label encoding ensures data integrity and ML readiness (high impact)",
+        "Semantic Uniqueness: High uniqueness score and novel feature combination enhance dataset diversity and model training (high impact)"
+      ],
+      "recommendations": [
+        "Introduce variability in duration feature to better simulate temporal attack patterns and improve realism",
+        "Review and adjust hot indicator values in samples without root_shell=1 to better reflect domain attack signatures",
+        "Fine-tune same_srv_rate and diff_srv_rate distributions to more closely match normal and attack baseline thresholds"
+      ]
+    },
+    {
+      "sample_index": 37,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Duration value of 0 may be interpreted as instantaneous connection, which is rare but plausible (Realism Assessment, minor severity).",
+        "Absence of connection error indicators (serror_rate, rerror_rate) may limit detection signals in some models (Technical Accuracy, low severity).",
+        "Lack of explicit evasion flags (RSTO, S3) reduces representation of multi-vector attack complexity (Domain Alignment, low severity)."
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack signature with root_shell=1 and hot=4 (Technical Accuracy, high impact).",
+        "Complete and exact schema compliance with all required fields and correct label encoding (Schema Consistency, critical impact).",
+        "Highly realistic scenario consistent with operational stealthy privilege escalation attacks (Realism Assessment, high impact).",
+        "Unique feature combination with no duplicates, enhancing dataset diversity (Semantic Uniqueness, high impact).",
+        "Strong alignment with domain threat landscape and attack sophistication (Domain Alignment, high impact)."
+      ],
+      "recommendations": [
+        "Consider introducing slight variation in duration to reflect short but non-zero session lengths for enhanced realism.",
+        "Incorporate subtle connection error indicators or evasion flags in some samples to represent multi-vector attack complexity.",
+        "Augment dataset with samples exhibiting connection resets or rejected connection flags to improve domain coverage."
+      ]
+    },
+    {
+      "sample_index": 70,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9275
+      },
+      "issues": [
+        "Realism Assessment: Zero error rates may underrepresent some U2R attack variants involving connection resets or rejected connections (minor severity).",
+        "Technical Accuracy: Difficulty level 14 is moderate-high but does not cover highest detection challenges (medium severity).",
+        "Domain Alignment: Lack of temporal or sequential session features limits full representation of fast exploitation patterns (low severity)."
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate and authentic representation of U2R attack signatures with correct feature correlations (high impact).",
+        "Schema Consistency: Complete and exact schema compliance enabling robust ML pipeline compatibility (high impact).",
+        "Semantic Uniqueness: High uniqueness and diversity contribution enhancing model training on rare attack types (high impact)."
+      ],
+      "recommendations": [
+        "Incorporate subtle variations in error rates (serror_rate, rerror_rate) to better reflect diverse U2R attack behaviors.",
+        "Expand difficulty level coverage in synthetic samples to include highest detection challenges (levels 18-21).",
+        "Add temporal or sequential session features to capture fast exploitation and multi-step attack patterns.",
+        "Continue rigorous duplicate filtering and semantic uniqueness checks to maintain dataset diversity.",
+        "Validate synthetic samples against updated threat intelligence to capture emerging attack tactics."
+      ]
+    },
+    {
+      "sample_index": 13,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.91
+      },
+      "issues": [
+        "Elevated serror_rate and srv_serror_rate values (technical_accuracy, realism_assessment) - minor realism concern",
+        "Lower same_srv_rate (0.5) than typical normal baseline (domain_alignment, realism_assessment) - requires contextual justification",
+        "Absence of root_shell=1 despite hot=3 (technical_accuracy) - uncommon but plausible, recommend clarification"
+      ],
+      "strengths": [
+        "Accurate representation of R2L brute force attack signature (technical_accuracy) - critical for detection",
+        "Complete and exact schema compliance (schema_consistency) - ensures data usability",
+        "High semantic uniqueness score of 1.0 (semantic_uniqueness) - enhances training diversity",
+        "Strong alignment with domain threat landscape and attack vectors (domain_alignment) - ensures contextual relevance",
+        "Realistic feature values and scenario plausibility (realism_assessment) - supports operational deployment"
+      ],
+      "recommendations": [
+        "Review and document rationale for elevated serror_rate and srv_serror_rate values to support realism claims.",
+        "Provide contextual explanation for lower same_srv_rate to clarify deviation from normal baselines.",
+        "Consider including samples with root_shell=1 and hot>0 for U2R attacks to complement R2L examples and enhance dataset balance.",
+        "Maintain strict schema validation in generation pipelines to preserve perfect schema consistency.",
+        "Continue monitoring semantic uniqueness metrics to avoid redundancy and maximize dataset value."
+      ]
+    },
+    {
+      "sample_index": 47,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9275
+      },
+      "issues": [
+        "Minor deviation in same_srv_rate below typical normal baseline (Realism Assessment, low severity).",
+        "Lack of error rate anomalies may reduce detection of combined attack vectors (Technical Accuracy, medium severity).",
+        "Limited diversity in some host behavior features could reduce scenario complexity (Semantic Uniqueness, low severity)."
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack signatures with correct feature correlations (Technical Accuracy, high impact).",
+        "Complete and exact schema compliance enabling direct ML pipeline use (Schema Consistency, high impact).",
+        "High semantic uniqueness ensuring valuable contribution to training diversity (Semantic Uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Introduce controlled variability in error rate features (serror_rate, rerror_rate) to simulate multi-vector attack nuances.",
+        "Incorporate occasional minor deviations in host behavior features (e.g., su_attempted, num_shells) to increase scenario complexity.",
+        "Validate and adjust same_srv_rate values to better reflect normal baseline thresholds while maintaining attack realism."
+      ]
+    },
+    {
+      "sample_index": 2,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism dimension: Lack of elevated error rates (serror_rate, rerror_rate) may reduce detection signal strength - minor severity.",
+        "Technical accuracy: src_bytes and dst_bytes moderately balanced, whereas some U2R attacks show more skewed patterns - low severity.",
+        "Domain alignment: Could include additional attack vector diversity beyond telnet to cover broader threat landscape - low severity."
+      ],
+      "strengths": [
+        "Technical accuracy: Faithful representation of U2R attack markers root_shell=1, hot\u22651, logged_in=1 with correct service and duration - high impact.",
+        "Schema consistency: Complete and exact adherence to data schema and label encoding standards - critical for ML pipeline compatibility.",
+        "Semantic uniqueness: Unique feature combination and attack subtype providing valuable training diversity - strong impact."
+      ],
+      "recommendations": [
+        "Introduce subtle variations in error rates (serror_rate, rerror_rate) in future samples to enhance attack signature realism.",
+        "Consider including additional attack vectors and services (e.g., ftp_data, http) in similar samples to broaden domain coverage.",
+        "Incorporate more extreme src_bytes/dst_bytes imbalances in some U2R samples to reflect data exfiltration scenarios."
+      ]
+    },
+    {
+      "sample_index": 26,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.82,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.78,
+        "semantic_uniqueness": 0.98,
+        "domain_alignment": 0.85,
+        "composite_score": 0.87
+      },
+      "issues": [
+        "Label inconsistency: sub_label='r2l' conflicts with root_shell=1 and hot=2 indicating U2R attack (Technical Accuracy, Realism) - moderate severity",
+        "num_root=0 with root_shell=1 is unusual and may reduce attack signature clarity (Technical Accuracy) - low severity",
+        "Duration=0 may be borderline for some detection models expecting positive duration (Realism) - low severity"
+      ],
+      "strengths": [
+        "Accurate representation of U2R attack technical markers (Technical Accuracy) - high impact",
+        "Full schema compliance with all required fields and correct data types (Schema Consistency) - critical impact",
+        "High semantic uniqueness with 0.98 uniqueness rate enhancing dataset diversity (Semantic Uniqueness) - high impact"
+      ],
+      "recommendations": [
+        "Update sub_label to 'u2r' to align with attack indicators and improve labeling consistency.",
+        "Review and possibly adjust num_root value to better reflect typical U2R attack patterns or provide justification for zero value.",
+        "Consider enforcing minimum positive duration values to avoid potential issues in downstream models."
+      ]
+    },
+    {
+      "sample_index": 95,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.88,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.82,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.91
+      },
+      "issues": [
+        "Minor inconsistency in sub_label 'r2l' vs. feature pattern indicating U2R attack (Technical Accuracy, Realism) - low severity",
+        "Absence of elevated error rates (rerror_rate, srv_rerror_rate) which are common in R2L attacks but sample labeled as R2L (Technical Accuracy) - low severity",
+        "Potential ambiguity in attack_type 'phf' classification vs. sub_label and feature indicators (Domain Alignment) - low severity"
+      ],
+      "strengths": [
+        "Accurate representation of privilege escalation markers root_shell=1 and hot=1 (Technical Accuracy) - high impact",
+        "Complete and exact schema compliance with all required fields and correct data types (Schema Consistency) - critical for ML pipelines",
+        "High semantic uniqueness with novel feature combination enhancing dataset diversity (Semantic Uniqueness) - significant for training robustness",
+        "Strong alignment with domain threat landscape and enriched problem context (Domain Alignment) - ensures contextual relevance"
+      ],
+      "recommendations": [
+        "Ensure label and sub_label fields consistently reflect the attack pattern indicated by features to avoid ambiguity.",
+        "Incorporate explicit annotation or metadata clarifying attack type when feature patterns overlap multiple categories.",
+        "Maintain strict validation of error rate features to distinguish R2L from U2R attacks more clearly in future samples."
+      ]
+    },
+    {
+      "sample_index": 93,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism Assessment: Slightly low hot indicator (0) whereas some warezmaster attacks may have hot>0 - minor realism concern",
+        "Technical Accuracy: Absence of any failed login attempts or error rates may reduce detection signal strength in some scenarios - moderate severity",
+        "Domain Alignment: Limited host behavior feature variation (num_compromised=0) may underrepresent some attack nuances - low severity"
+      ],
+      "strengths": [
+        "Technical Accuracy: Exemplary match to warezmaster attack signature with correct feature values - high impact",
+        "Schema Consistency: Complete and exact schema adherence enabling robust ML pipeline compatibility - critical impact",
+        "Semantic Uniqueness: High uniqueness score and novel feature combination enhancing training diversity - significant impact"
+      ],
+      "recommendations": [
+        "Incorporate occasional low-level hot indicators (>0) in warezmaster samples to reflect subtle host activity variations",
+        "Introduce minor variability in host behavior features such as num_compromised and num_root to simulate attack progression",
+        "Add temporal session features or sequence context to improve realism and support temporal anomaly detection models"
+      ]
+    },
+    {
+      "sample_index": 30,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism Assessment: Slightly conservative error rate values (0.0) may underrepresent some U2R attack variants - minor impact.",
+        "Domain Alignment: Absence of connection reset flags (RSTO, S3) reduces representation of evasion tactics - moderate impact.",
+        "Technical Accuracy: Limited representation of multi-service exploitation beyond telnet in this sample - low impact."
+      ],
+      "strengths": [
+        "Technical Accuracy: Accurate and domain-consistent representation of U2R attack markers with correct feature correlations - high impact.",
+        "Schema Consistency: Complete and flawless adherence to data schema ensuring data integrity and usability - critical impact.",
+        "Semantic Uniqueness: High novelty and distinctiveness enhancing dataset diversity and model robustness - significant impact."
+      ],
+      "recommendations": [
+        "Introduce controlled variations in error rates and connection flags to simulate evasion tactics and increase realism.",
+        "Expand sample diversity to include multi-service exploitation scenarios (e.g., ftp_data, http) for comprehensive coverage.",
+        "Incorporate temporal and sequential features to better model attack progression and improve detection capabilities."
+      ]
+    },
+    {
+      "sample_index": 78,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Realism Assessment: same_srv_rate at 0.7 and diff_srv_rate at 0.3 are borderline values, potentially reducing scenario naturalness (medium severity).",
+        "Domain Alignment: srv_diff_host_rate=0.0 and dst_host_srv_diff_host_rate=0.2 slightly deviate from typical domain patterns (low severity).",
+        "Technical Accuracy: absence of any error rates or rejected connection flags may limit representation of evasion tactics (low severity)."
+      ],
+      "strengths": [
+        "Technical Accuracy: authentic representation of U2R attack with correct privilege escalation markers (high impact).",
+        "Schema Consistency: flawless adherence to schema ensuring data usability (high impact).",
+        "Semantic Uniqueness: unique feature combination enhancing dataset diversity and model robustness (high impact)."
+      ],
+      "recommendations": [
+        "Adjust same_srv_rate and diff_srv_rate values slightly towards more typical normal/attack thresholds to improve realism.",
+        "Incorporate subtle error rate or rejected connection flags in some samples to better represent evasion techniques.",
+        "Continue ensuring strict schema compliance and semantic uniqueness in future sample generations."
+      ]
+    },
+    {
+      "sample_index": 74,
+      "sample_type": "malicious",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Minor inconsistency in same_srv_rate (0.75) below normal threshold of 0.9 - realism_assessment - low severity",
+        "Absence of root_shell=1 despite hot=3 and num_compromised=1 may reduce clarity of privilege escalation - technical_accuracy - medium severity",
+        "Limited duration variability (fixed at 1 second) may reduce temporal realism - realism_assessment - low severity"
+      ],
+      "strengths": [
+        "Precise adherence to attack signatures with correct flag and error rate values - technical_accuracy - high impact",
+        "Complete and exact schema compliance facilitating ML processing - schema_consistency - critical impact",
+        "High semantic uniqueness ensuring valuable contribution to training diversity - semantic_uniqueness - high impact"
+      ],
+      "recommendations": [
+        "Introduce variability in duration to better simulate temporal attack patterns",
+        "Consider including samples with root_shell=1 alongside hot indicators to cover full privilege escalation spectrum",
+        "Review and adjust same_srv_rate and diff_srv_rate values to better align with normal traffic thresholds for clearer anomaly delineation"
+      ]
+    },
+    {
+      "sample_index": 96,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Minor potential issue: duration=0 may be less frequent in some UDP sessions but still operationally valid (realism_assessment, low severity)."
+      ],
+      "strengths": [
+        "Exemplary schema adherence enabling robust data processing (schema_consistency, high impact).",
+        "Authentic normal traffic feature values supporting accurate model learning (technical_accuracy, high impact).",
+        "High semantic uniqueness contributing to dataset diversity and reducing overfitting risk (semantic_uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Consider including a range of duration values for normal samples to better represent session variability.",
+        "Maintain strict schema validation to ensure continued ML pipeline compatibility.",
+        "Continue generating diverse benign samples to balance rare attack classes and improve model generalization."
+      ]
+    },
+    {
+      "sample_index": 60,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [
+        "Limited attack pattern representation reduces utility for attack detection dimension (technical_accuracy) - minor severity.",
+        "Absence of temporal or sequential features limits advanced operational context modeling - moderate severity.",
+        "Single sample evaluation restricts assessment of dataset-wide diversity and realism - minor severity."
+      ],
+      "strengths": [
+        "Exemplary schema consistency ensures data integrity and processing reliability - high impact.",
+        "Authentic benign feature distribution supports realistic model training and reduces false positives - high impact.",
+        "High semantic uniqueness contributes to dataset diversity and robustness - moderate impact."
+      ],
+      "recommendations": [
+        "Expand dataset with diverse attack samples reflecting documented R2L and U2R signatures to improve technical accuracy coverage.",
+        "Integrate temporal and session sequence features to capture operational context and improve realism.",
+        "Maintain strict schema validation and uniqueness checks to preserve data quality and training effectiveness."
+      ]
+    },
+    {
+      "sample_index": 83,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "No critical issues detected; minor enhancement opportunity in realism dimension for temporal diversity (low severity)."
+      ],
+      "strengths": [
+        "Strong technical accuracy with domain-validated normal traffic features (high impact).",
+        "Complete schema adherence enabling robust data processing (high impact).",
+        "Exceptional semantic uniqueness contributing to dataset robustness (high impact)."
+      ],
+      "recommendations": [
+        "Introduce more varied normal session durations and service types to enhance realism diversity.",
+        "Continue strict schema validation to maintain data integrity across all samples.",
+        "Maintain high uniqueness standards to prevent redundancy and improve model generalization."
+      ]
+    },
+    {
+      "sample_index": 28,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.94
+      },
+      "issues": [
+        "Limited representation of attack complexity in this benign sample (Technical Accuracy, minor severity).",
+        "No direct challenge to detection models due to absence of subtle anomalies (Realism Assessment, low severity).",
+        "Single sample limits comprehensive evaluation of dataset-wide diversity (Semantic Uniqueness, low severity)."
+      ],
+      "strengths": [
+        "Exemplary schema compliance ensuring data integrity and processing compatibility (Schema Consistency, high impact).",
+        "Authentic and realistic feature values matching domain baselines (Technical Accuracy, high impact).",
+        "Unique and novel benign example contributing to dataset diversity (Semantic Uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Expand dataset with additional benign samples exhibiting varied normal behaviors and edge cases.",
+        "Include more samples with subtle anomalies to test detection sensitivity and model robustness.",
+        "Ensure balanced representation of rare attack types alongside benign samples for comprehensive training."
+      ]
+    },
+    {
+      "sample_index": 5,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [
+        "Minor: Duration fixed at 0 may limit representation of normal session length variability (realism_assessment, low severity)."
+      ],
+      "strengths": [
+        "Technical accuracy: Perfect match to domain discovery normal traffic baselines, ensuring authenticity and correctness.",
+        "Schema consistency: Full compliance with data schema and label encoding, enabling robust ML pipeline compatibility.",
+        "Semantic uniqueness: High uniqueness rate and novel benign example, enhancing training diversity and model generalization."
+      ],
+      "recommendations": [
+        "Introduce slight variation in duration feature for normal samples to better capture real-world session length variability.",
+        "Expand benign samples to include diverse service types beyond http to improve normal traffic coverage.",
+        "Continue enforcing strict schema validation and domain alignment checks to maintain high data quality."
+      ]
+    },
+    {
+      "sample_index": 59,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.955
+      },
+      "issues": [],
+      "strengths": [
+        "Strong technical accuracy with domain-validated normal feature values (technical_accuracy).",
+        "Complete and exact schema adherence facilitating ML processing (schema_consistency).",
+        "High semantic uniqueness supporting effective model generalization (semantic_uniqueness)."
+      ],
+      "recommendations": [
+        "Continue rigorous validation of feature distributions to maintain realism.",
+        "Expand benign sample diversity to cover edge cases within normal traffic.",
+        "Regularly update domain knowledge to capture evolving normal behavior patterns."
+      ]
+    },
+    {
+      "sample_index": 29,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [
+        "No critical issues detected; minor limitation in scope as sample is benign and does not test attack pattern representation (Technical Accuracy - minor)."
+      ],
+      "strengths": [
+        "Complete schema compliance enabling robust data processing (Schema Consistency - high impact).",
+        "Realistic feature values supporting operational plausibility (Realism Assessment - high impact).",
+        "High semantic uniqueness enhancing training diversity (Semantic Uniqueness - high impact)."
+      ],
+      "recommendations": [
+        "Expand sample set to include diverse attack samples to validate attack pattern representation and detection.",
+        "Continue monitoring feature distributions to maintain realism and avoid drift over time.",
+        "Incorporate temporal and session-based features to enrich operational context realism."
+      ]
+    },
+    {
+      "sample_index": 8,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "No critical issues detected; minor opportunity to diversify benign traffic patterns (semantic_uniqueness, low severity)."
+      ],
+      "strengths": [
+        "Exemplary technical accuracy with domain-appropriate feature values (technical_accuracy, high impact).",
+        "Complete and exact schema adherence facilitating ML processing (schema_consistency, high impact).",
+        "Realistic and plausible normal traffic scenario supporting operational use cases (realism_assessment, high impact)."
+      ],
+      "recommendations": [
+        "Expand benign sample variety to cover broader service and protocol distributions for enhanced training coverage.",
+        "Continue monitoring for any schema updates to maintain perfect compliance.",
+        "Incorporate temporal session patterns in benign samples to simulate realistic network usage dynamics."
+      ]
+    },
+    {
+      "sample_index": 61,
+      "sample_type": "benign",
+      "is_high_quality": false,
+      "quality_scores": {
+        "technical_accuracy": 0.0,
+        "schema_consistency": 0.0,
+        "realism_assessment": 0.0,
+        "semantic_uniqueness": 0.0,
+        "domain_alignment": 0.0,
+        "composite_score": 0.0
+      },
+      "issues": [
+        "Failed to parse validation response"
+      ],
+      "strengths": [],
+      "recommendations": [
+        "Review validation prompt and response"
+      ]
+    },
+    {
+      "sample_index": 76,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.955
+      },
+      "issues": [
+        "Minor concern in realism assessment: duration=0 may be less frequent but still plausible (low severity).",
+        "No schema inconsistencies detected (none).",
+        "No technical inaccuracies or domain misalignments found (none)."
+      ],
+      "strengths": [
+        "Technical accuracy: sample perfectly matches domain normal traffic baselines, enhancing detection reliability.",
+        "Schema consistency: flawless adherence to schema ensures data integrity and processing compatibility.",
+        "Semantic uniqueness: contributes unique benign pattern, improving dataset diversity and model generalization."
+      ],
+      "recommendations": [
+        "Include benign samples with varied durations >0 to cover broader normal session profiles.",
+        "Continue generating diverse benign examples across different protocols and services to enrich training data.",
+        "Maintain strict schema validation and domain alignment checks for all generated samples to ensure dataset quality."
+      ]
+    },
+    {
+      "sample_index": 34,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [
+        "Minor domain alignment score below perfect (0.9) due to lack of subtle benign variations - low severity"
+      ],
+      "strengths": [
+        "Technical accuracy near perfect (0.95) ensuring domain correctness and operational feasibility - high impact",
+        "Schema consistency perfect (1.0) enabling direct ML pipeline compatibility - critical impact",
+        "Semantic uniqueness perfect (1.0) enhancing dataset diversity and training robustness - high impact"
+      ],
+      "recommendations": [
+        "Introduce additional benign samples with subtle variations to improve domain alignment and realism scores",
+        "Continue monitoring feature distributions to maintain technical accuracy and realism over scale",
+        "Maintain strict schema validation to ensure ongoing ML pipeline compatibility"
+      ]
+    },
+    {
+      "sample_index": 14,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Limited representation of normal traffic variability (realism_assessment, moderate severity)",
+        "Service 'private' usage may be less common in operational environments (domain_alignment, low severity)",
+        "No direct attack pattern representation in this sample (technical_accuracy, informational but expected)"
+      ],
+      "strengths": [
+        "Accurate reflection of normal traffic baseline (technical_accuracy, high impact)",
+        "Complete and exact schema adherence (schema_consistency, critical impact)",
+        "High semantic uniqueness enhancing dataset diversity (semantic_uniqueness, significant impact)"
+      ],
+      "recommendations": [
+        "Expand normal traffic samples to include more diverse protocols and services with realistic error rates",
+        "Include normal samples with slight variations in duration and connection flags to better represent operational variability",
+        "Maintain strict schema compliance and label encoding consistency across all samples"
+      ]
+    },
+    {
+      "sample_index": 87,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Minor: Realism assessment could be improved by adding temporal variability in duration (realism_assessment, low severity)"
+      ],
+      "strengths": [
+        "Technical accuracy: Accurate representation of normal traffic features and baselines (high impact)",
+        "Schema consistency: Full compliance with data schema and label encoding (critical impact)",
+        "Semantic uniqueness: High uniqueness rate enhancing dataset diversity (important impact)"
+      ],
+      "recommendations": [
+        "Introduce more variation in connection duration and counts to better simulate real-world normal traffic variability",
+        "Continue ensuring strict schema adherence for all generated samples",
+        "Maintain high uniqueness thresholds to avoid redundancy and improve model generalization"
+      ]
+    },
+    {
+      "sample_index": 56,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Lack of temporal/session sequence context limits dynamic behavior modeling (realism_assessment, medium)",
+        "Sample represents only benign class, no attack complexity present (technical_accuracy, low)",
+        "No explicit feature variability beyond baseline normal pattern (semantic_uniqueness, low)"
+      ],
+      "strengths": [
+        "Exact schema compliance ensures data integrity and processing compatibility (schema_consistency, high)",
+        "Authentic feature values aligned with domain discovery normal baselines (technical_accuracy, high)",
+        "Unique benign example contributing to dataset diversity and training effectiveness (semantic_uniqueness, high)"
+      ],
+      "recommendations": [
+        "Incorporate temporal or session sequence features to capture dynamic network behavior",
+        "Augment dataset with diverse normal traffic patterns to cover broader operational scenarios",
+        "Ensure balanced representation of attack and benign samples for comprehensive model training"
+      ]
+    },
+    {
+      "sample_index": 85,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "None detected; all dimensions meet or exceed quality thresholds."
+      ],
+      "strengths": [
+        "Technical accuracy: Accurate representation of normal traffic with correct feature values and domain terminology.",
+        "Schema consistency: Full compliance with data schema and label encoding standards.",
+        "Semantic uniqueness: High uniqueness rate ensuring valuable contribution to training diversity."
+      ],
+      "recommendations": [
+        "Maintain strict adherence to domain discovery baselines for normal and attack samples to preserve technical accuracy.",
+        "Continue rigorous schema validation to ensure ML pipeline compatibility and data integrity.",
+        "Expand diversity in normal samples to cover broader operational scenarios enhancing model generalization."
+      ]
+    },
+    {
+      "sample_index": 90,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Limited attack pattern representation in this benign sample (technical_accuracy) - minor impact due to sample nature.",
+        "Absence of temporal or sequential features reduces context richness (realism_assessment) - moderate impact for some models.",
+        "Single sample limits assessment of attack diversity and subtlety (semantic_uniqueness) - low impact for dataset scale."
+      ],
+      "strengths": [
+        "Exemplary schema compliance ensures data integrity and processing compatibility (schema_consistency) - high impact.",
+        "Accurate reflection of normal traffic baselines supports effective anomaly detection (technical_accuracy, realism_assessment) - high impact.",
+        "High semantic uniqueness contributes to dataset diversity and model generalization (semantic_uniqueness) - high impact."
+      ],
+      "recommendations": [
+        "Expand benign sample variations including temporal and sequential features to improve context realism.",
+        "Include more diverse attack samples to complement benign examples for balanced training.",
+        "Validate multi-sample correlations and session-level patterns to enhance detection model effectiveness."
+      ]
+    },
+    {
+      "sample_index": 97,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.955
+      },
+      "issues": [
+        "No critical issues detected; minor enhancement opportunity in semantic diversity (semantic_uniqueness) to cover broader normal traffic patterns - low severity."
+      ],
+      "strengths": [
+        "Exceptional schema compliance enabling error-free ML pipeline processing (schema_consistency).",
+        "Authentic and technically accurate representation of normal network session (technical_accuracy).",
+        "High semantic uniqueness contributing to dataset diversity and training effectiveness (semantic_uniqueness)."
+      ],
+      "recommendations": [
+        "Expand normal traffic samples to include more diverse service types and connection patterns for improved coverage.",
+        "Continue monitoring feature distributions to avoid potential subtle unrealistic patterns in future samples.",
+        "Maintain strict schema validation to ensure ongoing data quality and ML compatibility."
+      ]
+    },
+    {
+      "sample_index": 22,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "No critical issues detected; minor enhancement opportunity in semantic uniqueness dimension to increase normal traffic variability (low severity)"
+      ],
+      "strengths": [
+        "Exemplary technical accuracy with domain-appropriate feature values (technical_accuracy, high impact)",
+        "Complete and exact schema adherence facilitating robust data processing (schema_consistency, high impact)",
+        "Realistic and plausible scenario supporting operational deployment (realism_assessment, high impact)"
+      ],
+      "recommendations": [
+        "Expand normal traffic sample diversity by varying features such as duration, service types, and byte distributions",
+        "Continue rigorous schema validation to maintain 100% compliance in future samples",
+        "Maintain strong alignment with domain discovery insights to ensure ongoing technical accuracy and domain relevance"
+      ]
+    },
+    {
+      "sample_index": 1,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.92,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.93
+      },
+      "issues": [
+        "Service field uses 'private' which is less common and may require domain-specific clarification (domain_alignment, minor).",
+        "Duration fixed at 0 limits temporal pattern variability (realism_assessment, minor).",
+        "No benign samples with low-level anomalies included, potentially limiting model robustness (realism_assessment, moderate)."
+      ],
+      "strengths": [
+        "Accurate representation of benign network traffic with all technical indicators correctly set (technical_accuracy, high impact).",
+        "Complete and exact schema compliance ensuring data integrity and ML compatibility (schema_consistency, critical impact).",
+        "Unique benign sample contributing to dataset diversity and reducing redundancy (semantic_uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Expand benign sample variety by including additional service types and non-zero durations to better simulate real-world traffic variability.",
+        "Introduce benign samples with minor anomalies (e.g., low hot or failed login counts) to improve model's false positive resilience.",
+        "Document and clarify usage of less common service labels like 'private' to ensure operational interpretability."
+      ]
+    },
+    {
+      "sample_index": 58,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Minor potential issue in realism dimension: duration=0 may be less frequent but still plausible (low severity)."
+      ],
+      "strengths": [
+        "Technical accuracy: perfectly aligns with domain discovery normal baselines, ensuring authenticity and operational feasibility.",
+        "Schema consistency: flawless adherence to data schema and label encoding, supporting robust ML processing.",
+        "Semantic uniqueness: high uniqueness rate and novel benign pattern enhancing training diversity and model generalization."
+      ],
+      "recommendations": [
+        "Consider including normal samples with small non-zero durations to increase temporal diversity.",
+        "Maintain strict schema validation to ensure continued data quality.",
+        "Continue generating diverse benign samples to balance rare attack classes and improve model robustness."
+      ]
+    },
+    {
+      "sample_index": 10,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [],
+      "strengths": [
+        "Technical accuracy: Exemplary alignment with domain discovery normal baselines and attack pattern absence.",
+        "Schema consistency: Complete and exact compliance with data schema and label encoding standards.",
+        "Semantic uniqueness: Unique benign sample contributing critical diversity in rare attack-focused dataset."
+      ],
+      "recommendations": [
+        "Continue ensuring strict schema validation to maintain ML pipeline compatibility.",
+        "Expand benign sample variety to cover additional normal service types and session durations.",
+        "Maintain high fidelity to domain discovery and contextual problem insights for all generated samples."
+      ]
+    },
+    {
+      "sample_index": 0,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.9565
+      },
+      "issues": [
+        "Realism assessment: duration=0 may be less frequent in some normal traffic scenarios, minor realism concern (low severity).",
+        "Semantic uniqueness: sample represents benign class only, no direct contribution to attack pattern diversity (informational).",
+        "No schema or technical accuracy issues detected."
+      ],
+      "strengths": [
+        "Technical accuracy: perfectly matches domain discovery normal baselines and technical indicators (high impact).",
+        "Schema consistency: full compliance with data_info schema and label encoding (critical for ML pipelines).",
+        "Semantic uniqueness: unique and distinct benign example enhancing dataset diversity (important for training robustness)."
+      ],
+      "recommendations": [
+        "Introduce slight variation in duration feature (e.g., small positive values) to better reflect typical normal connection durations.",
+        "Ensure continued inclusion of diverse benign samples to maintain dataset balance and realism.",
+        "Maintain strict schema validation and domain alignment checks for all generated samples."
+      ]
+    },
+    {
+      "sample_index": 89,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9475
+      },
+      "issues": [
+        "Limited service variety in this sample (domain_alignment, minor severity)."
+      ],
+      "strengths": [
+        "Complete schema compliance enabling robust ML processing (schema_consistency, high impact).",
+        "Realistic normal traffic feature distribution supporting accurate model baseline (technical_accuracy, high impact).",
+        "High semantic uniqueness contributing to dataset diversity and training effectiveness (semantic_uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Expand benign sample variety by including additional network services and protocols to cover broader normal traffic scenarios.",
+        "Continue monitoring feature distributions to maintain realism and avoid drift in normal traffic representation.",
+        "Maintain strict schema validation to ensure ongoing ML pipeline compatibility and data quality."
+      ]
+    },
+    {
+      "sample_index": 75,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.9375
+      },
+      "issues": [],
+      "strengths": [
+        "Exemplary technical accuracy with domain-validated normal traffic features (technical_accuracy).",
+        "Complete and exact schema adherence facilitating robust data processing (schema_consistency).",
+        "High semantic uniqueness ensuring valuable contribution to training diversity (semantic_uniqueness)."
+      ],
+      "recommendations": [
+        "Introduce additional normal samples with varied durations and connection counts to enhance coverage.",
+        "Continue strict schema validation to maintain data integrity across dataset.",
+        "Maintain high uniqueness thresholds to prevent redundancy and improve model generalization."
+      ]
+    },
+    {
+      "sample_index": 53,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.9,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.95,
+        "composite_score": 0.955
+      },
+      "issues": [],
+      "strengths": [
+        "Strong technical accuracy with domain-appropriate normal traffic features (technical_accuracy).",
+        "Complete and exact schema adherence facilitating ML processing (schema_consistency).",
+        "High realism and scenario plausibility supporting operational deployment (realism_assessment)."
+      ],
+      "recommendations": [
+        "Expand benign sample variety to cover broader service and protocol distributions for enhanced training coverage.",
+        "Continue monitoring for subtle feature correlations to maintain high technical accuracy in synthetic data.",
+        "Maintain strict schema validation to ensure ongoing ML pipeline compatibility."
+      ]
+    },
+    {
+      "sample_index": 12,
+      "sample_type": "benign",
+      "is_high_quality": true,
+      "quality_scores": {
+        "technical_accuracy": 0.95,
+        "schema_consistency": 1.0,
+        "realism_assessment": 0.85,
+        "semantic_uniqueness": 1.0,
+        "domain_alignment": 0.9,
+        "composite_score": 0.94
+      },
+      "issues": [
+        "Limited complexity in realism dimension due to benign sample nature - minor concern.",
+        "Lack of subtle anomaly representation in semantic uniqueness - moderate concern.",
+        "Single sample limits temporal pattern validation in domain alignment - minor concern."
+      ],
+      "strengths": [
+        "Complete schema compliance enabling error-free ML processing (schema_consistency, high impact).",
+        "Authentic and technically accurate normal traffic representation (technical_accuracy, high impact).",
+        "High semantic uniqueness contributing to dataset diversity and training effectiveness (semantic_uniqueness, high impact)."
+      ],
+      "recommendations": [
+        "Expand benign sample variety to include borderline and low-level anomaly cases for improved realism.",
+        "Include temporal or session-based features in future samples to capture operational context better.",
+        "Maintain strict schema validation and domain alignment in all generated samples to ensure production readiness."
+      ]
+    }
+  ]
+}
