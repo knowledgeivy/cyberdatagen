@@ -1,12 +1,12 @@
 {
   "problems": [
     {
-      "area": "network_security_intrusion_detection",
-      "nature": "rare and sophisticated network intrusion attacks focusing on Remote-to-Local (R2L) and User-to-Root (U2R) privilege escalation",
-      "description": "This cybersecurity problem involves detecting rare and highly imbalanced network intrusion events where attackers attempt to gain unauthorized local access from remote locations (R2L) or escalate privileges from user-level to root-level access (U2R). The dataset focuses exclusively on these critical and challenging attack types alongside normal network traffic, reflecting real-world scenarios where such attacks are sparse but highly impactful. The attacks are characterized by subtle anomalies in network connection features, host behavior, and traffic patterns, making detection difficult. The data includes detailed connection metadata such as protocol, service, flags, byte counts, login attempts, and various error rates, which collectively provide a comprehensive view of network activity for anomaly detection.",
-      "attack_vector": "exploitation of network services and protocols to gain unauthorized access and escalate privileges remotely, often through brute force, exploitation of vulnerabilities, or malicious payload delivery",
-      "asset_targeted": "networked computing systems and servers, particularly their authentication mechanisms, user privilege levels, and critical system resources",
-      "impact_level": "high severity due to the potential for unauthorized root access and control over critical systems, enabling data breaches, system compromise, and further lateral movement within networks",
+      "area": "Network Intrusion Detection and Anomaly Detection",
+      "nature": "Rare and critical network attacks focusing on Remote-to-Local (R2L) and User-to-Root (U2R) privilege escalation threats",
+      "description": "This cybersecurity problem involves detecting rare but highly impactful network intrusions where attackers either gain unauthorized local access from remote locations (R2L) or escalate privileges from user-level to root access (U2R). The dataset reflects real-world challenges including severe class imbalance and subtle attack signatures embedded within normal network traffic. The attacks are difficult to detect due to their rarity and the sophisticated nature of privilege escalation attempts, requiring advanced anomaly detection and imbalanced learning techniques. Observed patterns include low duration connections with specific protocol and service usage, presence of indicators such as root shell access, failed login attempts, and unusual file creation or access activities.",
+      "attack_vector": "Exploitation of network services and protocols (e.g., ftp_data, telnet, http) to remotely gain unauthorized access and escalate privileges through techniques like buffer overflow, rootkits, and password guessing",
+      "asset_targeted": "Networked hosts and services, particularly those providing remote access and user privilege management on critical infrastructure",
+      "impact_level": "High - These attacks can lead to full system compromise, unauthorized data access, and control over critical network assets",
       "technical_characteristics": {
         "data_domain": "network_security",
         "attack_types": [
@@ -28,45 +28,45 @@
           "network_traffic"
         ],
         "indicators_of_compromise": [
-          "unusual login attempts (num_failed_logins > 0)",
-          "presence of root shell obtained (root_shell = 1)",
-          "privilege escalation attempts (su_attempted = 1, num_root > 0)",
-          "anomalous service usage (e.g., ftp_data, http with suspicious flags)",
-          "high counts of connections to same host/service in short time (count, srv_count)",
-          "abnormal error rates (serror_rate, rerror_rate, srv_serror_rate, srv_rerror_rate)",
-          "hot indicators signaling suspicious activity (hot > 0)",
-          "unusual file creation or access operations (num_file_creations, num_access_files)",
-          "flags indicating successful or rejected connections (flag = SF or REJ)"
+          "presence of root_shell=1 and su_attempted=0 in malicious samples",
+          "increased num_failed_logins and num_compromised counts",
+          "unusual service usage such as ftp_data and telnet with abnormal byte counts",
+          "flags indicating connection status anomalies (e.g., RSTO, S3)",
+          "high difficulty_level scores correlating with stealthy attacks",
+          "elevated error rates (rerror_rate, srv_rerror_rate) in attack samples",
+          "hot indicators reflecting suspicious system activity",
+          "abnormal patterns in dst_host_srv_diff_host_rate and srv_diff_host_rate"
         ],
         "attack_patterns": [
-          "short or zero duration connections with suspicious service usage",
-          "zero or low src_bytes but high dst_bytes indicating data exfiltration",
-          "successful login followed by root shell or file access",
-          "low error rates but high connection counts to specific hosts/services",
-          "presence of hot indicators and privilege escalation flags",
-          "rare but distinct combinations of network and host features signaling R2L or U2R"
+          "short duration TCP connections with zero or low src_bytes but high dst_bytes",
+          "use of services like ftp_data, telnet, and http for attack payload delivery",
+          "presence of root shell and file creation attempts in U2R attacks",
+          "failed login attempts preceding successful privilege escalation",
+          "high same_srv_rate and low diff_srv_rate indicating targeted service exploitation",
+          "frequent SYN and REJ errors indicating scanning or brute force attempts",
+          "rare but high-impact events embedded within normal traffic patterns"
         ],
         "normal_patterns": [
-          "consistent protocol usage (tcp, udp) with expected service patterns",
-          "balanced src_bytes and dst_bytes",
-          "no failed login attempts and no privilege escalation indicators",
-          "stable connection counts with low error rates",
-          "flags predominantly indicating normal connection status (SF)",
-          "absence of hot indicators or suspicious file operations"
+          "zero or low hot indicators and failed login attempts",
+          "balanced src_bytes and dst_bytes with standard protocol usage (udp, tcp, icmp)",
+          "flags predominantly SF indicating normal connection status",
+          "high same_srv_rate and low error rates",
+          "consistent logged_in=0 or 1 without suspicious privilege escalation indicators",
+          "normal counts of connections to hosts and services without anomalies",
+          "absence of root_shell, su_attempted, and num_root activity"
         ]
       },
       "risk_reduction": [
-        "implement multi-factor authentication and strict access controls to mitigate R2L attacks",
-        "deploy host-based intrusion detection systems to monitor privilege escalation attempts",
-        "utilize anomaly detection models trained on imbalanced datasets focusing on rare events",
-        "continuous monitoring of network traffic and connection metadata for early detection",
-        "apply network segmentation and least privilege principles to limit attack surface",
-        "regular patching and vulnerability management to reduce exploitation vectors",
-        "employ behavior-based detection leveraging host and network features",
-        "use threshold-based alerts on indicators like failed logins, root shell access, and unusual service usage"
+        "Implement advanced anomaly detection systems capable of handling imbalanced data and rare event detection",
+        "Deploy multi-layered intrusion detection systems focusing on R2L and U2R attack signatures and behavioral indicators",
+        "Use continuous monitoring of login attempts, privilege escalation activities, and unusual service usage",
+        "Employ network segmentation and least privilege principles to limit attack surface and privilege escalation opportunities",
+        "Incorporate machine learning models trained on curated datasets like NSL-KDD rare to improve detection accuracy",
+        "Regularly update detection rules and threat intelligence feeds to capture evolving attack methods",
+        "Conduct security awareness training to reduce risks related to credential guessing and social engineering"
       ],
-      "confidence_level": "high",
-      "data_context_notes": "The detailed data_info.yaml provided comprehensive metadata on the dataset's focus on rare R2L and U2R attacks, schema definitions, and feature descriptions, enabling precise identification of relevant indicators and attack patterns. The inclusion of difficulty levels and multi-class labels enhanced understanding of detection challenges. Sample data exemplified real-world rare attack characteristics and benign traffic, grounding the problem definition in practical observations. This rich context allowed for a nuanced and accurate cybersecurity problem formulation tailored to rare event detection in network intrusion scenarios.",
+      "confidence_level": "High - The analysis is based on a well-documented, curated dataset with detailed metadata, realistic attack and benign samples, and comprehensive feature descriptions enabling accurate problem characterization",
+      "data_context_notes": "The enhanced data_info.yaml provides critical insights into the dataset's focus on rare and challenging attack types (R2L and U2R), detailed feature descriptions, and domain-specific attack categorizations. This rich context, combined with actual sample patterns, enables a nuanced understanding of the threat landscape and supports the formulation of targeted detection and mitigation strategies.",
       "source": "real_world_data_with_info",
       "data_info_used": true,
       "original_data_info": {
@@ -194,7 +194,9 @@
           "label": "int64",
           "sub_label": "object"
         }
-      }
+      },
+      "samples_per_class_used": 100,
+      "target_seeds_per_class": 50
     }
   ]
 }

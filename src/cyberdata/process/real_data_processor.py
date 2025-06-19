@@ -1,4 +1,4 @@
-# cyberdata/process/realworld_processor.py
+# cyberdata/process/real_data_processor.py
 
 import gzip
 import json
@@ -21,15 +21,16 @@ from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_prompt
 
 # Set up logger
-logger = setup_logger("cyberdata.scripts.realworld_sampler")
+logger = setup_logger("cyberdata.scripts.real_data_processor")
 
 # Load environment variables
 load_dotenv()
 
-# Configuration variables - set these for your dataset
-# CSV_FILE = "five_email_phishing.csv.gz"  # Raw CSV file in raw/ directory
-# DATA_INFO_NAME = "five_email_phishing"   # Dataset name in data_info.yaml
+# Configuration variables
+SAMPLES_PER_CLASS = 100  # Number of real-world samples per class, default: 20
+TARGET_SEEDS_PER_CLASS = 50  # Target number of seeds per class, default: 25
 
+# Dataset configuration
 CSV_FILE = "nsl_kdd_rare_train.csv.gz"  # Raw CSV file in raw/ directory
 DATA_INFO_NAME = "nsl_kdd_rare"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
@@ -42,6 +43,8 @@ logger.info(f"Project root: {config_manager.project_root}")
 logger.info(f"Raw data directory: {config_manager.project_root / 'raw'}")
 logger.info(f"Configured CSV file: {CSV_FILE}")
 logger.info(f"Configured data info: {DATA_INFO_NAME}")
+logger.info(f"Samples per class: {SAMPLES_PER_CLASS}")
+logger.info(f"Target seeds per class: {TARGET_SEEDS_PER_CLASS}")
 
 
 def load_data_info(data_name: str = None) -> Dict:
@@ -131,7 +134,7 @@ def load_raw_data(file_path: Path, label_column: str = "label") -> pd.DataFrame:
 
 def stratified_sample(df: pd.DataFrame, 
                      label_column: str = "label", 
-                     samples_per_class: int = 5) -> Tuple[pd.DataFrame, pd.DataFrame]:
+                     samples_per_class: int = SAMPLES_PER_CLASS) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Perform stratified sampling to get equal samples from each class.
     
@@ -185,9 +188,12 @@ def create_enhanced_data_context(data_info: Dict,
     """
     logger.info("Creating enhanced data context")
     
-    # Sample a few examples for context (limit to avoid token issues)
-    malicious_examples = malicious_samples.head(3).to_dict('records') if len(malicious_samples) > 0 else []
-    benign_examples = benign_samples.head(3).to_dict('records') if len(benign_samples) > 0 else []
+    # Use more examples for context
+    max_examples_per_class = min(10, max(len(malicious_samples), len(benign_samples)) // 2)
+    malicious_examples = malicious_samples.head(max_examples_per_class).to_dict('records') if len(malicious_samples) > 0 else []
+    benign_examples = benign_samples.head(max_examples_per_class).to_dict('records') if len(benign_samples) > 0 else []
+    
+    logger.info(f"Using {len(malicious_examples)} malicious and {len(benign_examples)} benign examples for context")
     
     # Create comprehensive context
     enhanced_context = {
@@ -259,7 +265,7 @@ def infer_problem_definition_from_data_info(enhanced_context: Dict) -> Dict:
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model_name=MODEL_NAME,
-        temperature=0.3  # Slightly higher for more nuanced understanding
+        temperature=0.3
     )
     
     try:
@@ -301,68 +307,89 @@ def generate_seed_examples_from_data_info(enhanced_context: Dict,
     Returns:
         Dict: Generated seed examples with metadata
     """
-    logger.info("Generating seed examples from enhanced data context")
+    logger.info(f"Generating seed examples from enhanced data context (target: {TARGET_SEEDS_PER_CLASS} per class)")
     
     # Convert context to JSON for prompt
     context_json = json.dumps(enhanced_context, indent=2, default=str)
     problem_json = json.dumps(problem_definition, indent=2, default=str)
     
-    # Load prompts from YAML
-    system_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.seed_generation_enhanced.system.template"
-    )
+    # Generate seeds in multiple batches to reach target count
+    all_seeds = []
+    seeds_per_batch = 8
+    batches_needed = (TARGET_SEEDS_PER_CLASS * 2) // seeds_per_batch + 1
     
-    user_prompt = load_prompt(
-        "realworld_analysis_prompts",
-        "prompts.seed_generation_enhanced.user.template",
-        enhanced_context_json=context_json,
-        problem_definition_json=problem_json
-    )
+    logger.info(f"Generating seeds in {batches_needed} batches of {seeds_per_batch} each")
     
-    # Call LLM for seed generation
-    logger.info("Calling LLM for enhanced seed generation")
-    response_content = process_llm_request(
-        system_prompt=system_prompt,
-        user_prompt=user_prompt,
-        model_name=MODEL_NAME,
-        temperature=0.7  # Higher creativity for diverse seed generation
-    )
+    for batch_num in range(batches_needed):
+        logger.info(f"Generating seed batch {batch_num + 1}/{batches_needed}")
+        
+        # Load prompts from YAML
+        system_prompt = load_prompt(
+            "realworld_analysis_prompts",
+            "prompts.seed_generation_enhanced.system.template"
+        )
+        
+        user_prompt = load_prompt(
+            "realworld_analysis_prompts",
+            "prompts.seed_generation_enhanced.user.template",
+            enhanced_context_json=context_json,
+            problem_definition_json=problem_json
+        )
+        
+        # Add instruction for more seeds
+        user_prompt += f"\n\nGenerate exactly {seeds_per_batch} seed examples in this batch (batch {batch_num + 1}/{batches_needed}). Include both malicious and benign examples with high diversity and technical accuracy."
+        
+        # Call LLM for seed generation
+        response_content = process_llm_request(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            model_name=MODEL_NAME,
+            temperature=0.8
+        )
+        
+        try:
+            # Clean up and parse JSON response
+            if response_content.startswith('```'):
+                first_backticks_end = response_content.find('\n', 3)
+                if first_backticks_end != -1:
+                    last_backticks_start = response_content.rfind('```')
+                    if last_backticks_start > first_backticks_end:
+                        response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
+            
+            seed_data = json.loads(response_content)
+            
+            # Ensure we have the expected structure
+            if 'examples' not in seed_data:
+                seed_data = {'examples': seed_data}
+            
+            batch_seeds = seed_data.get('examples', [])
+            all_seeds.extend(batch_seeds)
+            logger.info(f"Batch {batch_num + 1} generated {len(batch_seeds)} seeds. Total so far: {len(all_seeds)}")
+            
+        except json.JSONDecodeError as e:
+            logger.warning(f"Failed to parse seed batch {batch_num + 1}: {str(e)}")
+            continue
     
-    try:
-        # Clean up and parse JSON response
-        if response_content.startswith('```'):
-            first_backticks_end = response_content.find('\n', 3)
-            if first_backticks_end != -1:
-                last_backticks_start = response_content.rfind('```')
-                if last_backticks_start > first_backticks_end:
-                    response_content = response_content[first_backticks_end + 1:last_backticks_start].strip()
-        
-        seed_data = json.loads(response_content)
-        
-        # Ensure we have the expected structure
-        if 'examples' not in seed_data:
-            seed_data = {'examples': seed_data}
-        
-        # Add generation metadata
-        generation_metadata = {
-            'data_source': 'enhanced_real_world_analysis',
-            'data_info_used': True,
-            'schema_preserved': True,
-            'original_data_info': enhanced_context['data_info'],
-            'generation_method': 'llm_with_data_info',
-            'schema_template': enhanced_context['schema_info']
-        }
-        
-        return {
-            'examples': seed_data.get('examples', []),
-            'generation_metadata': generation_metadata
-        }
-        
-    except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse seed generation response: {str(e)}")
-        # Create fallback seed examples based on actual samples
-        return create_fallback_seed_examples(enhanced_context, problem_definition)
+    # Add generation metadata
+    generation_metadata = {
+        'data_source': 'enhanced_real_world_analysis',
+        'data_info_used': True,
+        'schema_preserved': True,
+        'original_data_info': enhanced_context['data_info'],
+        'generation_method': 'llm_with_data_info_multi_batch',
+        'schema_template': enhanced_context['schema_info'],
+        'target_seeds_per_class': TARGET_SEEDS_PER_CLASS,
+        'total_seeds_generated': len(all_seeds),
+        'batches_used': batches_needed,
+        'seeds_per_batch': seeds_per_batch
+    }
+    
+    logger.info(f"Generated {len(all_seeds)} total seeds (target was {TARGET_SEEDS_PER_CLASS * 2})")
+    
+    return {
+        'examples': all_seeds,
+        'generation_metadata': generation_metadata
+    }
 
 
 def create_fallback_seed_examples(enhanced_context: Dict, problem_definition: Dict) -> Dict:
@@ -376,7 +403,7 @@ def create_fallback_seed_examples(enhanced_context: Dict, problem_definition: Di
     Returns:
         Dict: Fallback seed examples
     """
-    logger.warning("Creating fallback seed examples from actual samples")
+    logger.warning(f"Creating fallback seed examples from actual samples (target: {TARGET_SEEDS_PER_CLASS} per class)")
     
     sample_data = enhanced_context.get('sample_data', {})
     malicious_examples = sample_data.get('malicious_examples', [])
@@ -384,34 +411,50 @@ def create_fallback_seed_examples(enhanced_context: Dict, problem_definition: Di
     
     all_examples = []
     
-    # Add malicious examples with metadata
-    for example in malicious_examples:
-        enhanced_example = example.copy()
-        enhanced_example['_metadata'] = {
-            'sample_type': 'malicious',
-            'source': 'real_world_fallback',
-            'enhanced_context_available': True
-        }
-        all_examples.append(enhanced_example)
+    # Replicate examples to reach target count
+    target_malicious = TARGET_SEEDS_PER_CLASS
+    target_benign = TARGET_SEEDS_PER_CLASS
     
-    # Add benign examples with metadata
-    for example in benign_examples:
-        enhanced_example = example.copy()
-        enhanced_example['_metadata'] = {
-            'sample_type': 'benign',
-            'source': 'real_world_fallback',
-            'enhanced_context_available': True
-        }
-        all_examples.append(enhanced_example)
+    # Add malicious examples with metadata (replicate if needed)
+    for i in range(target_malicious):
+        if malicious_examples:
+            source_idx = i % len(malicious_examples)
+            enhanced_example = malicious_examples[source_idx].copy()
+            enhanced_example['_metadata'] = {
+                'sample_type': 'malicious',
+                'source': 'real_world_fallback',
+                'enhanced_context_available': True,
+                'replication_id': i,
+                'source_sample_idx': source_idx
+            }
+            all_examples.append(enhanced_example)
+    
+    # Add benign examples with metadata (replicate if needed)
+    for i in range(target_benign):
+        if benign_examples:
+            source_idx = i % len(benign_examples)
+            enhanced_example = benign_examples[source_idx].copy()
+            enhanced_example['_metadata'] = {
+                'sample_type': 'benign',
+                'source': 'real_world_fallback',
+                'enhanced_context_available': True,
+                'replication_id': i,
+                'source_sample_idx': source_idx
+            }
+            all_examples.append(enhanced_example)
     
     generation_metadata = {
         'data_source': 'fallback_from_samples',
         'data_info_used': True,
         'schema_preserved': True,
         'original_data_info': enhanced_context.get('data_info', {}),
-        'generation_method': 'fallback_direct_samples',
-        'schema_template': enhanced_context.get('schema_info', {})
+        'generation_method': 'fallback_direct_samples_with_replication',
+        'schema_template': enhanced_context.get('schema_info', {}),
+        'target_seeds_per_class': TARGET_SEEDS_PER_CLASS,
+        'fallback_replication_applied': True
     }
+    
+    logger.info(f"Generated {len(all_examples)} fallback seeds from {len(malicious_examples)} malicious and {len(benign_examples)} benign source samples")
     
     return {
         'examples': all_examples,
@@ -438,6 +481,8 @@ def save_realworld_problem(problem_definition: Dict, enhanced_context: Dict) -> 
     enhanced_problem['data_info_used'] = True
     enhanced_problem['original_data_info'] = enhanced_context.get('data_info', {})
     enhanced_problem['schema_info'] = enhanced_context.get('schema_info', {})
+    enhanced_problem['samples_per_class_used'] = SAMPLES_PER_CLASS
+    enhanced_problem['target_seeds_per_class'] = TARGET_SEEDS_PER_CLASS
     
     # Save as the only problem (replace existing)
     new_problems = [enhanced_problem]
@@ -464,19 +509,30 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
     file_path = config_manager.get_seeds_file(area, nature)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     
+    # Count malicious and benign examples
+    malicious_count = sum(1 for ex in seed_data['examples'] 
+                         if ex.get('_metadata', {}).get('sample_type') == 'malicious' or
+                            any(str(val).lower() in ['malicious', 'attack', '1'] for val in ex.values()))
+    benign_count = sum(1 for ex in seed_data['examples'] 
+                      if ex.get('_metadata', {}).get('sample_type') == 'benign' or
+                         any(str(val).lower() in ['benign', 'normal', '0'] for val in ex.values()))
+    
     # Prepare enhanced metadata
     metadata = {
         'source': 'real_world_data_with_enhanced_info',
         'data_info_used': True,
         'total_examples': len(seed_data['examples']),
-        'malicious_examples': sum(1 for ex in seed_data['examples'] 
-                                if ex.get('_metadata', {}).get('sample_type') == 'malicious'),
-        'benign_examples': sum(1 for ex in seed_data['examples'] 
-                             if ex.get('_metadata', {}).get('sample_type') == 'benign'),
+        'malicious_examples': malicious_count,
+        'benign_examples': benign_count,
         'problem_definition': problem_definition,
         'schema_preserved': True,
         'generation_metadata': seed_data['generation_metadata'],
-        'enhancement_method': 'data_info_yaml_integration'
+        'enhancement_method': 'data_info_yaml_integration',
+        'configuration': {
+            'samples_per_class': SAMPLES_PER_CLASS,
+            'target_seeds_per_class': TARGET_SEEDS_PER_CLASS,
+            'actual_seeds_generated': len(seed_data['examples'])
+        }
     }
     
     # Save seed examples with enhanced metadata
@@ -489,13 +545,14 @@ def save_seed_examples(problem_definition: Dict, seed_data: Dict):
         json.dump(complete_seed_data, f, indent=2, default=str)
     
     logger.info(f"Saved {len(seed_data['examples'])} enhanced seed examples to {file_path}")
+    logger.info(f"Results: {malicious_count} malicious, {benign_count} benign seeds")
     logger.info(f"Enhanced with data_info.yaml context and schema preservation")
 
 
 def main(csv_file: str = None, 
          data_info_name: str = None,
          label_column: str = "label",
-         samples_per_class: int = 5):
+         samples_per_class: int = None):
     """
     Main function to process real-world data using enhanced data_info.yaml context.
     
@@ -503,17 +560,21 @@ def main(csv_file: str = None,
         csv_file (str): Name of the CSV file in raw/ directory (uses CSV_FILE if None)
         data_info_name (str): Dataset name in data_info.yaml (uses DATA_INFO_NAME if None)
         label_column (str): Name of the label column
-        samples_per_class (int): Number of samples per class to extract
+        samples_per_class (int): Number of samples per class (uses SAMPLES_PER_CLASS if None)
     """
     # Use configured values if not provided
     if csv_file is None:
         csv_file = CSV_FILE
     if data_info_name is None:
         data_info_name = DATA_INFO_NAME
+    if samples_per_class is None:
+        samples_per_class = SAMPLES_PER_CLASS
         
     logger.info(f"Starting enhanced real-world data processing")
     logger.info(f"CSV file: {csv_file}")
     logger.info(f"Data info name: {data_info_name}")
+    logger.info(f"Samples per class: {samples_per_class}")
+    logger.info(f"Target seeds per class: {TARGET_SEEDS_PER_CLASS}")
     
     try:
         # Define file path
@@ -564,7 +625,10 @@ def main(csv_file: str = None,
         logger.info(f"Domain: {data_info.get('domain', 'unknown')}")
         logger.info(f"Attack types: {', '.join(data_info.get('attack_types', []))}")
         logger.info(f"Problem: {problem_definition.get('area', 'Unknown')}/{nature}")
-        logger.info(f"Seed examples generated: {len(seed_data['examples'])}")
+        logger.info(f"Configuration:")
+        logger.info(f"  - Samples per class used: {samples_per_class}")
+        logger.info(f"  - Target seeds per class: {TARGET_SEEDS_PER_CLASS}")
+        logger.info(f"  - Actual seeds generated: {len(seed_data['examples'])}")
         logger.info(f"Enhancement method: data_info.yaml integration")
         logger.info(f"Files updated:")
         logger.info(f"  - problems.json (replaced with real-world problem)")
@@ -584,8 +648,8 @@ if __name__ == '__main__':
     parser.add_argument('--data-info-name', help=f'Dataset name in data_info.yaml (default: {DATA_INFO_NAME})')
     parser.add_argument('--label-column', default='label', 
                        help='Name of the label column (can be overridden by data_info.yaml)')
-    parser.add_argument('--samples-per-class', type=int, default=5,
-                       help='Number of samples per class to extract')
+    parser.add_argument('--samples-per-class', type=int, default=SAMPLES_PER_CLASS,
+                       help=f'Number of samples per class to extract (default: {SAMPLES_PER_CLASS})')
     
     args = parser.parse_args()
     
