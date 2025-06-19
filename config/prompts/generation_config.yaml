@@ -1,27 +1,14 @@
 version: "1.0"
-description: "Unified configuration for synthetic data generation and prompts"
+description: "Unified configuration for synthetic data generation with data_info.yaml integration"
 author: "CyberData Team"
-last_updated: "2025-06-07"
+last_updated: "2025-06-18"
 
 # Default generation settings
-# generation:
-#   # Default values (user can override via command line or config)
-#   default_count: 1000
-#   default_malicious_ratio: 0.5
-#   max_workers: 8
-#   batch_size: 5
-#   retry_attempts: 3
-#   retry_delay: 2  # seconds between retries
-#   temperature:
-#     malicious_generation: 0.7
-#     benign_generation: 0.7
-#     validation: 0.0
-
 generation:
   # Default values (user can override via command line or config)
   default_count: 10
   default_malicious_ratio: 0.5
-  max_workers: 2
+  max_workers: 4
   batch_size: 2
   retry_attempts: 3
   retry_delay: 2  # seconds between retries
@@ -71,7 +58,172 @@ output:
 
 # Prompts for generation
 prompts:
-  # Main generation prompt for malicious samples from seed examples
+  # Enhanced generation prompt for data_info.yaml integrated samples
+  enhanced_generation:
+    system:
+      template: |
+        You are a cybersecurity synthetic data generator specialized in creating realistic examples using comprehensive domain knowledge.
+        
+        You have access to enhanced seed examples that were created using detailed cybersecurity data information including:
+        - Comprehensive data descriptions and domain expertise
+        - Documented attack types and characteristics
+        - Real-world data patterns and schemas
+        - Technical authenticity guidelines
+        
+        CRITICAL SCHEMA REQUIREMENTS:
+        - Preserve the EXACT column names and data types from the seed examples
+        - Maintain the same field structure and value patterns
+        - Generate data that matches the documented domain characteristics
+        - Follow the technical authenticity described in the data context
+        - Do not add metadata fields like "sample_type", "nature", "description" unless they exist in the seeds
+        
+        Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Return ONLY the JSON object with the structure: {"samples": [...]}.
+
+    user:
+      template: |
+        Generate {count} additional samples using these enhanced seed examples that incorporate comprehensive cybersecurity domain knowledge:
+
+        Enhanced Seed Examples:
+        {examples_json}
+
+        Data Context (if available):
+        {data_context}
+
+        Requirements:
+        1. Use the SAME field names as shown in the seed examples
+        2. Generate realistic values that reflect the documented domain characteristics
+        3. Maintain any existing label encoding (e.g., 1 for malicious, 0 for benign)
+        4. Do not add any additional fields beyond what's in the seed examples
+        5. Ensure technical accuracy based on the cybersecurity domain knowledge
+        6. Reflect the documented attack types and data characteristics
+        
+        Return ONLY valid JSON with this exact format:
+        {{
+          "samples": [
+            // {count} samples with the same structure as seed examples
+            // incorporating the enhanced cybersecurity domain knowledge
+          ]
+        }}
+      
+      variables:
+        - examples_json
+        - count
+        - data_context
+
+  # Enhanced generation prompt for malicious samples from data_info.yaml context
+  enhanced_malicious_generation:
+    system:
+      template: |
+        You are a cybersecurity synthetic data generator specialized in creating realistic malicious examples.
+        
+        You have access to enhanced seed examples created with comprehensive cybersecurity domain knowledge including:
+        - Detailed data descriptions and attack type documentation
+        - Real-world malicious patterns and characteristics
+        - Technical indicators and attack vectors
+        - Domain-specific authenticity guidelines
+        
+        CRITICAL SCHEMA REQUIREMENTS:
+        - Preserve the EXACT column names and data types from the seed examples
+        - Maintain the same field structure and value patterns
+        - Generate malicious data that reflects documented attack characteristics
+        - Follow the technical authenticity described in the domain context
+        - Ensure generated samples represent realistic cybersecurity threats
+        
+        Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Return ONLY the JSON object with the structure: {"samples": [...]}.
+
+    user:
+      template: |
+        Generate {count} malicious samples using these enhanced seed examples with cybersecurity domain knowledge:
+
+        Enhanced Seed Examples:
+        {examples_json}
+
+        Data Context:
+        {data_context}
+
+        Requirements:
+        1. Use the SAME field names as shown in the seed examples
+        2. Generate malicious examples that reflect documented attack types and characteristics
+        3. Maintain the label encoding for malicious samples
+        4. Do not add any additional fields beyond what's in the seed examples
+        5. Ensure technical accuracy for cybersecurity attack scenarios
+        6. Reflect the documented threat patterns and indicators
+        
+        Return ONLY valid JSON:
+        {{
+          "samples": [
+            // {count} malicious samples with enhanced domain authenticity
+          ]
+        }}
+      
+      variables:
+        - examples_json
+        - count
+        - data_context
+
+  # Enhanced generation prompt for benign samples with data_info.yaml context
+  enhanced_benign_generation:
+    system:
+      template: |
+        You are a cybersecurity synthetic data generator specialized in creating realistic benign/legitimate activity examples.
+        
+        You have access to enhanced seed examples created with comprehensive cybersecurity domain knowledge including:
+        - Detailed data descriptions and normal behavior patterns
+        - Documented legitimate activity characteristics
+        - Technical indicators of normal operations
+        - Domain-specific authenticity guidelines
+        
+        CRITICAL SCHEMA REQUIREMENTS:
+        - Use the EXACT same field names and structure as the seed examples
+        - Maintain the same data types and value patterns
+        - Generate benign data that reflects documented normal characteristics
+        - Set the label field to indicate benign/legitimate activity
+        - Do not add any additional metadata fields
+        
+        Focus on creating realistic examples of legitimate business operations, normal user behavior, and standard IT activities based on the documented domain knowledge.
+        
+        Your response must be valid JSON format. Do not include any markdown code blocks or explanatory text.
+        Return ONLY the JSON object with the structure: {"samples": [...]}.
+
+    user:
+      template: |
+        Generate {count} benign/legitimate activity samples using enhanced seed examples with domain knowledge:
+
+        Enhanced Schema Reference:
+        {schema_reference}
+
+        Data Context:
+        {data_context}
+
+        Requirements:
+        1. Use the EXACT same field names and structure
+        2. Generate legitimate, non-malicious activities that reflect documented normal patterns
+        3. Set appropriate values for the label field to indicate benign activity
+        4. Ensure all generated data follows the documented domain characteristics
+        5. Include realistic technical details for normal operations based on domain knowledge
+        
+        Examples of legitimate activities for this domain context:
+        - Normal user authentication and system access
+        - Routine business operations and data processing
+        - Standard network traffic and communications
+        - Regular system maintenance and updates
+        - Typical user behavior patterns as documented
+
+        Return ONLY valid JSON:
+        {{
+          "samples": [
+            // {count} benign samples reflecting enhanced domain knowledge
+          ]
+        }}
+      
+      variables:
+        - count
+        - schema_reference
+        - data_context
+
+  # Traditional generation prompt for seeds without enhanced context
   generation:
     system:
       template: |
@@ -112,17 +264,23 @@ prompts:
         - examples_json
         - count
 
-  # Enhanced generation prompt for schema-preserving real-world data
+  # Enhanced schema-preserving generation for real-world data with data_info.yaml
   schema_preserving_generation:
     system:
       template: |
-        You are an expert cybersecurity data generator that specializes in creating synthetic data that perfectly matches real-world dataset schemas.
+        You are an expert cybersecurity data generator that specializes in creating synthetic data that perfectly matches real-world dataset schemas while incorporating comprehensive domain knowledge.
+        
+        You have access to:
+        1. Enhanced seed examples created using detailed cybersecurity data information
+        2. Comprehensive domain knowledge including attack types and characteristics
+        3. Technical authenticity guidelines from data documentation
+        4. Real-world data patterns and statistical properties
         
         Your task is to generate synthetic samples that:
         1. Use the EXACT same column names as the original data
         2. Maintain the same data types and value patterns
         3. Preserve the original label encoding
-        4. Follow the statistical distributions of the original data
+        4. Follow the documented domain characteristics and attack patterns
         5. Generate realistic cybersecurity scenarios within the schema constraints
         
         CRITICAL: Do not add any additional fields or metadata. Only use the columns present in the original schema.
@@ -131,22 +289,22 @@ prompts:
 
     user:
       template: |
-        Original Schema Information:
+        Enhanced Schema Information:
         {schema_info}
 
-        Seed Examples:
+        Enhanced Seed Examples with Domain Knowledge:
         {examples_json}
 
         Generate {count} new samples that:
         - Use the exact same column names: {column_names}
         - Maintain the label encoding: {label_mapping}
-        - Follow the same data patterns as the seed examples
-        - Are realistic for cybersecurity scenarios
+        - Follow the documented domain characteristics and attack patterns
+        - Are realistic for the documented cybersecurity domain
 
         Return ONLY valid JSON:
         {{
           "samples": [
-            // {count} samples with identical schema to seeds
+            // {count} samples with identical schema incorporating domain knowledge
           ]
         }}
       
@@ -157,12 +315,14 @@ prompts:
         - column_names
         - label_mapping
 
-  # Prompt for generating benign/legitimate samples with schema preservation
+  # Prompt for generating benign/legitimate samples with enhanced context
   benign_generation:
     system:
       template: |
         You are a cybersecurity synthetic data generator specialized in creating realistic benign/legitimate activity examples.
         Generate normal, non-malicious activities that follow the exact schema of the provided examples.
+        
+        If enhanced domain context is available, use it to create more authentic benign examples.
         
         CRITICAL SCHEMA REQUIREMENTS:
         - Use the EXACT same field names and structure as the seed examples
@@ -181,6 +341,9 @@ prompts:
 
         Schema Reference:
         {schema_reference}
+
+        Data Context (if available):
+        {data_context}
 
         Requirements:
         1. Use the EXACT same field names and structure
@@ -206,6 +369,7 @@ prompts:
       variables:
         - count
         - schema_reference
+        - data_context
 
   # Fallback generation prompt (when seeds are not available)
   backup_generation:

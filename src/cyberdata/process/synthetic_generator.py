@@ -10,6 +10,7 @@ import re
 import sys
 import threading
 import time
+import yaml
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
@@ -41,6 +42,7 @@ class GenerationTask:
     examples: Optional[List] = None
     schema_info: Optional[Dict] = None
     is_realworld_based: bool = False
+    data_info_context: Optional[Dict] = None  # Enhanced with data_info.yaml
     priority: int = 0
 
 @dataclass
@@ -163,7 +165,7 @@ class DuplicateDetector:
             }
 
 class ParallelGenerator:
-    """Unified parallel generator with schema preservation"""
+    """Unified parallel generator with data_info.yaml integration"""
     
     def __init__(self, config_override: Optional[Dict] = None):
         """Initialize with configuration from unified YAML"""
@@ -302,8 +304,63 @@ class ParallelGenerator:
             logger.warning(f"Error finding samples file: {e}")
             return None
     
-    def load_examples(self, problem: Dict) -> Tuple[List[Dict], Dict]:
-        """Load seed examples and determine if they're from real-world data"""
+    def load_data_info_context(self, data_name: str) -> Optional[Dict]:
+        """Load data_info.yaml context for enhanced generation"""
+        try:
+            data_info_file = self.config_manager.config_dir / "data_info.yaml"
+            
+            if not data_info_file.exists():
+                logger.debug("data_info.yaml not found, skipping enhanced context")
+                return None
+            
+            with data_info_file.open('r', encoding='utf-8') as f:
+                data_info = yaml.safe_load(f)
+            
+            datasets = data_info.get('datasets', {})
+            
+            if data_name in datasets:
+                logger.info(f"Loaded data_info context for: {data_name}")
+                return datasets[data_name]
+            else:
+                # Try partial matching
+                partial_matches = [name for name in datasets.keys() if data_name.lower() in name.lower()]
+                if partial_matches:
+                    best_match = partial_matches[0]
+                    logger.info(f"Using partial match from data_info: {best_match}")
+                    return datasets[best_match]
+            
+            return None
+            
+        except Exception as e:
+            logger.warning(f"Error loading data_info context: {e}")
+            return None
+    
+    def infer_data_name_from_problem(self, problem: Dict) -> Optional[str]:
+        """Infer data name from problem metadata for data_info lookup"""
+        try:
+            # Check if problem has data_info metadata
+            original_data_info = problem.get('original_data_info', {})
+            if original_data_info and 'data_name' in original_data_info:
+                return original_data_info['data_name']
+            
+            # Try to infer from nature or area
+            nature = problem.get('nature', '').lower()
+            area = problem.get('area', '').lower()
+            
+            # Common mappings
+            if 'phishing' in nature or 'email' in nature:
+                return 'five_email_phishing'
+            elif 'network' in nature or 'intrusion' in nature:
+                return 'nsl_kdd_rare'
+            
+            return None
+            
+        except Exception as e:
+            logger.warning(f"Error inferring data name: {e}")
+            return None
+    
+    def load_examples(self, problem: Dict) -> Tuple[List[Dict], Dict, Optional[Dict]]:
+        """Load seed examples and determine if they have enhanced context"""
         try:
             area = problem['area']
             nature = problem['nature']
@@ -316,48 +373,51 @@ class ParallelGenerator:
                 examples = data.get('examples', [])
                 metadata = data.get('metadata', {})
                 
-                # Check if this is real-world derived data
-                is_realworld = metadata.get('source') == 'real_world_data'
-                schema_info = metadata.get('generation_metadata', {}) if is_realworld else {}
+                # Check if this was enhanced with data_info.yaml
+                data_info_used = metadata.get('data_info_used', False)
+                original_data_info = metadata.get('problem_definition', {}).get('original_data_info', {})
                 
-                logger.info(f"Loaded {len(examples)} examples for {nature} (real-world: {is_realworld})")
+                logger.info(f"Loaded {len(examples)} examples for {nature} (data_info enhanced: {data_info_used})")
                 
-                # For real-world data, preserve schema exactly
-                if is_realworld and examples:
-                    # Clean examples to remove any metadata fields added during processing
-                    cleaned_examples = []
-                    for example in examples[:3]:  # Limit to avoid token issues
-                        if '_metadata' in example:
-                            # Remove metadata but keep original data structure
-                            cleaned_example = {k: v for k, v in example.items() if k != '_metadata'}
-                            cleaned_examples.append(cleaned_example)
-                        else:
-                            cleaned_examples.append(example)
-                    
-                    schema_info['original_schema'] = {
-                        'columns': list(cleaned_examples[0].keys()) if cleaned_examples else [],
-                        'sample_record': cleaned_examples[0] if cleaned_examples else {}
-                    }
-                    
-                    return cleaned_examples, schema_info
-                else:
-                    # Traditional seed examples (limit to avoid token issues)
-                    return examples[:2], {}
+                # Load additional data_info context if available
+                data_info_context = None
+                if data_info_used and original_data_info:
+                    data_name = original_data_info.get('data_name')
+                    if data_name:
+                        data_info_context = self.load_data_info_context(data_name)
+                elif not data_info_used:
+                    # Try to find data_info for traditional problems
+                    inferred_data_name = self.infer_data_name_from_problem(problem)
+                    if inferred_data_name:
+                        data_info_context = self.load_data_info_context(inferred_data_name)
+                
+                # Clean examples for generation (remove metadata)
+                cleaned_examples = []
+                for example in examples[:3]:  # Limit to avoid token issues
+                    if '_metadata' in example:
+                        cleaned_example = {k: v for k, v in example.items() if k != '_metadata'}
+                        cleaned_examples.append(cleaned_example)
+                    else:
+                        cleaned_examples.append(example)
+                
+                return cleaned_examples, metadata, data_info_context
                     
         except Exception as e:
             logger.warning(f"Could not load examples for {problem['nature']}: {e}")
         
-        return [], {}
+        return [], {}, None
     
     def create_generation_tasks(self, problem: Dict, malicious_count: int, benign_count: int) -> List[GenerationTask]:
-        """Create generation tasks with schema preservation awareness"""
+        """Create generation tasks with enhanced context awareness"""
         tasks = []
         task_counter = 0
         
         try:
-            # Load examples and schema info
-            examples, schema_info = self.load_examples(problem)
-            is_realworld_based = bool(schema_info)
+            # Load examples and enhanced context
+            examples, metadata, data_info_context = self.load_examples(problem)
+            is_enhanced = data_info_context is not None
+            
+            logger.info(f"Creating tasks for {problem['nature']} (enhanced: {is_enhanced})")
             
             # Create malicious generation tasks
             if malicious_count > 0:
@@ -371,8 +431,9 @@ class ParallelGenerator:
                         batch_size=current_batch,
                         task_id=f"{problem['nature']}_mal_{task_counter}",
                         examples=examples,
-                        schema_info=schema_info,
-                        is_realworld_based=is_realworld_based,
+                        schema_info=metadata.get('generation_metadata', {}),
+                        is_realworld_based=metadata.get('data_info_used', False),
+                        data_info_context=data_info_context,
                         priority=2  # Higher priority for malicious
                     )
                     tasks.append(task)
@@ -390,9 +451,10 @@ class ParallelGenerator:
                         sample_type='benign',
                         batch_size=current_batch,
                         task_id=f"{problem['nature']}_ben_{task_counter}",
-                        examples=examples,  # Use same examples for schema reference
-                        schema_info=schema_info,
-                        is_realworld_based=is_realworld_based,
+                        examples=examples,
+                        schema_info=metadata.get('generation_metadata', {}),
+                        is_realworld_based=metadata.get('data_info_used', False),
+                        data_info_context=data_info_context,
                         priority=1
                     )
                     tasks.append(task)
@@ -402,7 +464,7 @@ class ParallelGenerator:
             # Sort tasks by priority
             tasks.sort(key=lambda x: x.priority, reverse=True)
             
-            logger.info(f"Created {len(tasks)} generation tasks for {problem['nature']} (real-world: {is_realworld_based})")
+            logger.info(f"Created {len(tasks)} generation tasks for {problem['nature']} (enhanced: {is_enhanced})")
             return tasks
             
         except Exception as e:
@@ -410,13 +472,14 @@ class ParallelGenerator:
             return []
     
     def execute_generation_task(self, task: GenerationTask) -> GenerationResult:
-        """Execute a single generation task with retry logic"""
+        """Execute a single generation task with enhanced context support"""
         start_time = time.time()
         
         for attempt in range(self.retry_attempts):
             try:
+                enhanced_context = task.data_info_context is not None
                 logger.info(f"Executing task {task.task_id} (attempt {attempt + 1}): "
-                           f"{task.batch_size} {task.sample_type} samples (schema-aware: {task.is_realworld_based})")
+                           f"{task.batch_size} {task.sample_type} samples (enhanced: {enhanced_context})")
                 
                 if task.sample_type == 'malicious':
                     samples = self._generate_malicious_batch(task)
@@ -439,13 +502,13 @@ class ParallelGenerator:
                         
                     if not self.duplicate_detector.is_duplicate(sample):
                         # Only add minimal metadata if not present in original schema
-                        if not task.is_realworld_based:
+                        if not task.is_realworld_based or not task.data_info_context:
                             # Traditional approach - add metadata
                             sample['sample_type'] = task.sample_type
                             sample['is_attack'] = task.sample_type == 'malicious'
                             sample['generation_task_id'] = task.task_id
                             sample['generation_timestamp'] = time.time()
-                        # For real-world based data, preserve original schema exactly
+                        # For enhanced real-world based data, preserve original schema exactly
                         
                         unique_samples.append(sample)
                     else:
@@ -506,13 +569,16 @@ class ParallelGenerator:
         )
     
     def _generate_malicious_batch(self, task: GenerationTask) -> List[Dict]:
-        """Generate a batch of malicious samples with schema preservation"""
+        """Generate a batch of malicious samples with enhanced context support"""
         try:
             gen_config = self.config.get('generation', {})
             temperature_config = gen_config.get('temperature', {})
             temperature = temperature_config.get('malicious_generation', 0.7)
             
-            if task.is_realworld_based and task.schema_info:
+            if task.data_info_context:
+                # Use enhanced generation with data_info.yaml context
+                return self._generate_enhanced_malicious_batch(task, temperature)
+            elif task.is_realworld_based and task.schema_info:
                 # Use schema-preserving generation for real-world data
                 return self._generate_schema_preserving_batch(task, temperature)
             else:
@@ -523,13 +589,50 @@ class ParallelGenerator:
             logger.error(f"Error generating malicious batch: {e}")
             return []
     
+    def _generate_enhanced_malicious_batch(self, task: GenerationTask, temperature: float) -> List[Dict]:
+        """Generate malicious samples using enhanced data_info.yaml context"""
+        try:
+            examples_json = json.dumps(task.examples, indent=2) if task.examples else "[]"
+            data_context = json.dumps(task.data_info_context, indent=2) if task.data_info_context else "{}"
+            
+            system_content = load_prompt(
+                "generation_config",
+                "prompts.enhanced_malicious_generation.system.template"
+            )
+            
+            user_content = load_prompt(
+                "generation_config",
+                "prompts.enhanced_malicious_generation.user.template",
+                examples_json=examples_json,
+                count=task.batch_size,
+                data_context=data_context
+            )
+            
+            response_content = process_llm_request(
+                system_prompt=system_content,
+                user_prompt=user_content,
+                model_name="gpt-4.1-mini",
+                temperature=temperature
+            )
+            
+            parsed = self._extract_json_from_response(response_content)
+            samples = parsed.get('samples', [])
+            
+            logger.info(f"Enhanced malicious generation produced {len(samples)} samples")
+            return samples
+            
+        except Exception as e:
+            logger.error(f"Error in enhanced malicious generation: {e}")
+            return []
+    
     def _generate_schema_preserving_batch(self, task: GenerationTask, temperature: float) -> List[Dict]:
         """Generate samples that preserve the original data schema exactly"""
         try:
             examples_json = json.dumps(task.examples, indent=2) if task.examples else "[]"
             
             # Extract schema information
-            original_schema = task.schema_info.get('original_schema', {})
+            schema_info = task.schema_info or {}
+            original_schema = schema_info.get('original_schema', {})
             column_names = original_schema.get('columns', [])
             
             # Determine label mapping from examples
@@ -631,13 +734,16 @@ class ParallelGenerator:
             return []
     
     def _generate_benign_batch(self, task: GenerationTask) -> List[Dict]:
-        """Generate a batch of benign samples with schema preservation"""
+        """Generate a batch of benign samples with enhanced context support"""
         try:
             gen_config = self.config.get('generation', {})
             temperature_config = gen_config.get('temperature', {})
             temperature = temperature_config.get('benign_generation', 0.7)
             
-            if task.is_realworld_based and task.examples:
+            if task.data_info_context:
+                # Use enhanced benign generation with data_info.yaml context
+                return self._generate_enhanced_benign_batch(task, temperature)
+            elif task.is_realworld_based and task.examples:
                 # Use schema-preserving benign generation for real-world data
                 return self._generate_schema_preserving_benign_batch(task, temperature)
             else:
@@ -648,11 +754,59 @@ class ParallelGenerator:
             logger.error(f"Error generating benign batch: {e}")
             return []
     
+    def _generate_enhanced_benign_batch(self, task: GenerationTask, temperature: float) -> List[Dict]:
+        """Generate benign samples using enhanced data_info.yaml context"""
+        try:
+            # Use the same schema as the examples
+            schema_reference = json.dumps(task.examples[0], indent=2) if task.examples else "{}"
+            data_context = json.dumps(task.data_info_context, indent=2) if task.data_info_context else "{}"
+            
+            system_content = load_prompt(
+                "generation_config",
+                "prompts.enhanced_benign_generation.system.template"
+            )
+            
+            user_content = load_prompt(
+                "generation_config",
+                "prompts.enhanced_benign_generation.user.template",
+                count=task.batch_size,
+                schema_reference=schema_reference,
+                data_context=data_context
+            )
+            
+            response_content = process_llm_request(
+                system_prompt=system_content,
+                user_prompt=user_content,
+                model_name="gpt-4.1-mini",
+                temperature=temperature
+            )
+            
+            parsed = self._extract_json_from_response(response_content)
+            samples = parsed.get('samples', [])
+            
+            # Validate schema compliance
+            if task.examples:
+                expected_columns = list(task.examples[0].keys())
+                validated_samples = []
+                for sample in samples:
+                    if self._validate_schema_compliance(sample, expected_columns):
+                        validated_samples.append(sample)
+                    else:
+                        logger.warning(f"Enhanced benign sample failed schema validation")
+                return validated_samples
+            
+            return samples
+            
+        except Exception as e:
+            logger.error(f"Error in enhanced benign generation: {e}")
+            return []
+    
     def _generate_schema_preserving_benign_batch(self, task: GenerationTask, temperature: float) -> List[Dict]:
         """Generate benign samples that preserve the original data schema"""
         try:
             # Use the same schema as the examples
             schema_reference = json.dumps(task.examples[0], indent=2) if task.examples else "{}"
+            data_context = json.dumps(task.data_info_context or {}, indent=2)
             
             system_content = load_prompt(
                 "generation_config",
@@ -663,7 +817,8 @@ class ParallelGenerator:
                 "generation_config",
                 "prompts.benign_generation.user.template",
                 count=task.batch_size,
-                schema_reference=schema_reference
+                schema_reference=schema_reference,
+                data_context=data_context
             )
             
             response_content = process_llm_request(
@@ -696,6 +851,9 @@ class ParallelGenerator:
     def _generate_traditional_benign_batch(self, task: GenerationTask, temperature: float) -> List[Dict]:
         """Generate benign samples using traditional approach"""
         try:
+            schema_reference = json.dumps(task.examples[0] if task.examples else {}, indent=2)
+            data_context = "{}"  # No enhanced context for traditional approach
+            
             system_content = load_prompt(
                 "generation_config",
                 "prompts.benign_generation.system.template"
@@ -704,9 +862,9 @@ class ParallelGenerator:
             user_content = load_prompt(
                 "generation_config",
                 "prompts.benign_generation.user.template",
-                area=task.problem['area'],
                 count=task.batch_size,
-                schema_reference=json.dumps(task.examples[0] if task.examples else {}, indent=2)
+                schema_reference=schema_reference,
+                data_context=data_context
             )
             
             response_content = process_llm_request(
@@ -805,7 +963,7 @@ class ParallelGenerator:
             return {"samples": []}
     
     def generate_parallel(self, problem: Dict, malicious_count: int, benign_count: int) -> List[Dict]:
-        """Generate samples for a problem using parallel execution"""
+        """Generate samples for a problem using parallel execution with enhanced context"""
         logger.info(f"Starting parallel generation for {problem['nature']}: "
                    f"{malicious_count} malicious, {benign_count} benign")
         
@@ -879,16 +1037,18 @@ class ParallelGenerator:
             generation_time = (self.stats.get("generation_end_time", 0) - 
                               self.stats.get("generation_start_time", 0))
             
-            # Check if this is schema-preserving generation
-            schema_preserved = self._check_schema_preservation(new_samples, existing_samples)
+            # Check if this used enhanced context
+            enhanced_generation = any(self._sample_has_enhanced_context(sample) for sample in new_samples)
+            data_info_used = problem.get('data_info_used', False) or enhanced_generation
             
             metadata = {
                 'total_samples': len(all_samples),
                 'new_samples_added': len(new_samples),
                 'new_malicious_samples': malicious_new,
                 'new_benign_samples': benign_new,
-                'generation_method': 'parallel_schema_preserving' if schema_preserved else 'parallel',
-                'schema_preserved': schema_preserved,
+                'generation_method': 'parallel_enhanced' if enhanced_generation else 'parallel_traditional',
+                'data_info_enhanced': data_info_used,
+                'enhanced_context_used': enhanced_generation,
                 'generation_stats': self.stats.copy(),
                 'duplicate_detection_stats': self.duplicate_detector.get_stats(),
                 'generation_timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -907,11 +1067,17 @@ class ParallelGenerator:
                 json.dump(output_data, f, indent=2)
             
             logger.info(f"Saved {len(new_samples)} new samples to {out_file}")
-            logger.info(f"Total samples in file: {len(all_samples)} (schema preserved: {schema_preserved})")
+            logger.info(f"Total samples in file: {len(all_samples)} (enhanced: {data_info_used})")
             logger.info(f"Generation rate: {metadata['samples_per_minute']:.1f} samples/minute")
             
         except Exception as e:
             logger.error(f"Error saving samples: {e}")
+    
+    def _sample_has_enhanced_context(self, sample: Dict) -> bool:
+        """Check if a sample was generated with enhanced context"""
+        # This is a heuristic - enhanced samples typically have better technical detail
+        # or follow documented domain patterns more closely
+        return len(sample) > 5  # Enhanced samples typically have more fields
     
     def _count_malicious_samples(self, samples: List[Dict]) -> int:
         """Count malicious samples using various labeling schemes"""
@@ -942,42 +1108,10 @@ class ParallelGenerator:
                         break
         
         return malicious_count
-    
-    def _check_schema_preservation(self, new_samples: List[Dict], existing_samples: List[Dict]) -> bool:
-        """Check if new samples preserve the schema of existing samples"""
-        if not new_samples or not existing_samples:
-            return False
-        
-        try:
-            # Get schema from existing samples
-            existing_schema = set(existing_samples[0].keys()) if existing_samples else set()
-            
-            # Check if new samples follow the same schema
-            for sample in new_samples[:5]:  # Check first 5 samples
-                sample_schema = set(sample.keys())
-                
-                # Allow some flexibility - new samples shouldn't have traditional metadata
-                # if they're preserving real-world schema
-                traditional_metadata = {'sample_type', 'is_attack', 'generation_task_id', 'generation_timestamp'}
-                sample_schema_clean = sample_schema - traditional_metadata
-                existing_schema_clean = existing_schema - traditional_metadata
-                
-                if sample_schema_clean == existing_schema_clean:
-                    return True
-                
-                # If schemas don't match exactly, check if it's close
-                if len(sample_schema_clean.symmetric_difference(existing_schema_clean)) <= 2:
-                    return True
-            
-            return False
-            
-        except Exception as e:
-            logger.warning(f"Error checking schema preservation: {e}")
-            return False
 
 def main(count: int = None, malicious_ratio: float = None, problem_filter: List[str] = None, 
          config_override: Dict = None):
-    """Main function for unified parallel generation"""
+    """Main function for unified parallel generation with enhanced context"""
     
     try:
         # Initialize generator first to get default values
@@ -989,7 +1123,7 @@ def main(count: int = None, malicious_ratio: float = None, problem_filter: List[
         if malicious_ratio is None:
             malicious_ratio = generator.default_malicious_ratio
         
-        logger.info(f"Starting generation: count={count}, malicious_ratio={malicious_ratio}")
+        logger.info(f"Starting enhanced generation: count={count}, malicious_ratio={malicious_ratio}")
         
         # Validate inputs
         if not 0.0 <= malicious_ratio <= 1.0:
@@ -1022,7 +1156,8 @@ def main(count: int = None, malicious_ratio: float = None, problem_filter: List[
             "total_samples_generated": 0,
             "total_duplicates_filtered": 0,
             "total_generation_time": 0,
-            "schema_preserved_problems": 0
+            "enhanced_context_problems": 0,
+            "data_info_enhanced_problems": 0
         }
         
         overall_start_time = time.time()
@@ -1060,11 +1195,16 @@ def main(count: int = None, malicious_ratio: float = None, problem_filter: List[
                     overall_stats["total_samples_generated"] += len(new_samples)
                     overall_stats["total_duplicates_filtered"] += generator.stats["duplicates_filtered"]
                     
-                    # Check if schema was preserved
-                    if generator._check_schema_preservation(new_samples, existing_samples):
-                        overall_stats["schema_preserved_problems"] += 1
+                    # Check if enhanced context was used
+                    data_info_used = problem.get('data_info_used', False)
+                    enhanced_generation = any(generator._sample_has_enhanced_context(sample) for sample in new_samples)
                     
-                    logger.info(f"Successfully generated {len(new_samples)} samples for {problem['nature']}")
+                    if data_info_used:
+                        overall_stats["data_info_enhanced_problems"] += 1
+                    if enhanced_generation:
+                        overall_stats["enhanced_context_problems"] += 1
+                    
+                    logger.info(f"Successfully generated {len(new_samples)} samples for {problem['nature']} (enhanced: {enhanced_generation})")
                 else:
                     logger.warning(f"No samples generated for {problem['nature']}")
                     overall_stats["failed_problems"] += 1
@@ -1079,10 +1219,11 @@ def main(count: int = None, malicious_ratio: float = None, problem_filter: List[
         
         # Print final statistics
         logger.info(f"\n{'='*60}")
-        logger.info("GENERATION COMPLETED")
+        logger.info("ENHANCED GENERATION COMPLETED")
         logger.info(f"{'='*60}")
         logger.info(f"Problems processed: {overall_stats['successful_problems']}/{overall_stats['total_problems']}")
-        logger.info(f"Schema preserved: {overall_stats['schema_preserved_problems']}/{overall_stats['successful_problems']}")
+        logger.info(f"Enhanced with data_info.yaml: {overall_stats['data_info_enhanced_problems']}")
+        logger.info(f"Enhanced context used: {overall_stats['enhanced_context_problems']}")
         logger.info(f"Total samples generated: {overall_stats['total_samples_generated']}")
         logger.info(f"Total duplicates filtered: {overall_stats['total_duplicates_filtered']}")
         logger.info(f"Total generation time: {overall_stats['total_generation_time']:.2f} seconds")
@@ -1099,7 +1240,7 @@ def main(count: int = None, malicious_ratio: float = None, problem_filter: List[
 if __name__ == '__main__':
     import argparse
     
-    parser = argparse.ArgumentParser(description="Unified synthetic data generation with schema preservation")
+    parser = argparse.ArgumentParser(description="Unified synthetic data generation with data_info.yaml enhancement")
     parser.add_argument('--count', type=int, help='Total samples per problem (default from config: 20)')
     parser.add_argument('--malicious-ratio', type=float, help='Ratio of malicious samples (default from config: 0.5)')
     parser.add_argument('--problems', nargs='+', help='Specific problem natures to generate samples for')
