@@ -541,7 +541,7 @@ class ScaleValidator:
         logger.info("Saving scale validation results...")
         
         # Create validation directory
-        scaled_validation_dir = self.config_manager.data_dir / "scaled_validation"
+        scaled_validation_dir = self.config_manager.scaled_validation_dir
         area_clean = area.replace(' ', '_').replace('(', '').replace(')', '')
         area_dir = scaled_validation_dir / area_clean
         area_dir.mkdir(parents=True, exist_ok=True)
@@ -626,14 +626,14 @@ class ScaleValidator:
         logger.info("Saving filtered scale data...")
         
         # Create directories
-        scaled_high_dir = self.config_manager.data_dir / "scaled-high"
-        scaled_filtered_dir = self.config_manager.data_dir / "scaled-filtered"
+        scaled_validated_dir = self.config_manager.scaled_validated_dir
+        scaled_filtered_dir = self.config_manager.scaled_filtered_dir
         
         area_clean = area.replace(' ', '_').replace('(', '').replace(')', '')
-        high_area_dir = scaled_high_dir / area_clean
+        validated_area_dir = scaled_validated_dir / area_clean
         filtered_area_dir = scaled_filtered_dir / area_clean
         
-        high_area_dir.mkdir(parents=True, exist_ok=True)
+        validated_area_dir.mkdir(parents=True, exist_ok=True)
         filtered_area_dir.mkdir(parents=True, exist_ok=True)
         
         # Count sample types for high quality data
@@ -661,7 +661,7 @@ class ScaleValidator:
         })
         
         # Save high quality data
-        high_quality_file = high_area_dir / f"{nature}_scale.json"
+        high_quality_file = validated_area_dir / f"{nature}_scale.json"
         high_quality_data = {
             'samples': high_quality_samples,
             'metadata': high_quality_metadata
@@ -709,7 +709,7 @@ class ScaleValidator:
 def find_scale_datasets_to_validate() -> List[Tuple[str, str, Path]]:
     """Find all scale datasets ready for validation."""
     config_mgr = get_config_manager()
-    scaled_raw_dir = config_mgr.data_dir / "scaled-raw"
+    scaled_raw_dir = config_mgr.scaled_raw_dir
     
     if not scaled_raw_dir.exists():
         logger.warning(f"Scaled-raw directory not found: {scaled_raw_dir}")
@@ -844,7 +844,7 @@ def main():
     logger.info("")
     logger.info("Output Directories:")
     logger.info("  - data/scaled_validation/ (validation reports)")
-    logger.info("  - data/scaled-high/ (production-ready data)")
+    logger.info("  - data/scaled-validated/ (production-ready data)")
     logger.info("  - data/scaled-filtered/ (filtered analysis data)")
     logger.info(f"{'='*80}")
 

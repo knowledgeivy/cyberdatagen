@@ -596,7 +596,7 @@ class EnhancedSeedValidator:
         logger.info("Saving validation results...")
         
         # Create validation directory
-        seed_validation_dir = self.config_manager.data_dir / "seed_validation"
+        seed_validation_dir = self.config_manager.data_dir / "seeds_validation"
         area_clean = area.replace(' ', '_').replace('(', '').replace(')', '')
         area_dir = seed_validation_dir / area_clean
         area_dir.mkdir(parents=True, exist_ok=True)
@@ -629,7 +629,7 @@ class EnhancedSeedValidator:
             validation_report['individual_results'].append(result_data)
         
         # Save validation report
-        validation_file = area_dir / f"{nature}_seed_validation_report.json"
+        validation_file = area_dir / f"{nature}_seeds_validation_report.json"
         with validation_file.open('w', encoding='utf-8') as f:
             json.dump(validation_report, f, indent=2, default=str)
         
@@ -855,7 +855,7 @@ def main():
     logger.info("  ✓ Diversity-driven selection")
     logger.info("")
     logger.info("Output Directories:")
-    logger.info("  - data/seed_validation/ (validation reports)")
+    logger.info("  - data/seeds_validation/ (validation reports)")
     logger.info("  - data/seeds-validated/ (high quality seeds)")
     logger.info("  - data/seeds-filtered/ (filtered examples for analysis)")
     logger.info(f"{'='*80}")

@@ -32,7 +32,7 @@ config_manager = get_config_manager()
 
 logger.info(f"Project root: {config_manager.project_root}")
 logger.info(f"Raw data directory: {config_manager.project_root / 'raw'}")
-logger.info(f"Large samples directory: {config_manager.large_samples_dir}")
+logger.info(f"Scaled validated directory: {config_manager.scaled_validated_dir}")
 
 
 def load_raw_data(file_path: Path, label_column: str = "label") -> pd.DataFrame:
@@ -471,7 +471,7 @@ def check_schema_compatibility(raw_df: pd.DataFrame, synthetic_file: Path) -> Tu
         raw_cols = set(raw_df.columns)
         
         # Remove synthetic-specific metadata columns
-        metadata_cols = {'sample_type', 'is_attack', 'generation_task_id', 'generation_timestamp', 'synthetic'}
+        metadata_cols = {'sample_type', 'is_attack', 'generation_task_id', 'generation_timestamp', 'synthetic', 'sample_id'}
         synthetic_cols_clean = synthetic_cols - metadata_cols
         
         # Calculate compatibility metrics
@@ -516,7 +516,7 @@ def find_best_synthetic_file(raw_df: pd.DataFrame,
     """
     logger.info("Searching for schema-compatible synthetic data files...")
     
-    # Get all synthetic files to check
+    # Get all synthetic files to check from scaled-validated directory
     search_dirs = []
     
     if problem_area:
@@ -528,19 +528,19 @@ def find_best_synthetic_file(raw_df: pd.DataFrame,
         ]
         
         for area_var in area_variations:
-            area_dir = config_manager.large_samples_dir / area_var
+            area_dir = config_manager.scaled_validated_dir / area_var
             if area_dir.exists():
                 search_dirs.append(area_dir)
                 break
     
     # Always include full search as fallback
-    search_dirs.append(config_manager.large_samples_dir)
+    search_dirs.append(config_manager.scaled_validated_dir)
     
     compatible_files = []
     
     # Search for compatible files
     for search_dir in search_dirs:
-        synthetic_files = list(search_dir.rglob('*_large.json'))
+        synthetic_files = list(search_dir.rglob('*_scale.json'))
         
         for synthetic_file in synthetic_files:
             is_compatible, sample_count, common_cols, extra_cols = check_schema_compatibility(raw_df, synthetic_file)
@@ -572,22 +572,22 @@ def find_best_synthetic_file(raw_df: pd.DataFrame,
                     'coverage': coverage_score
                 })
                 
-                logger.info(f"Compatible file found: {synthetic_file.relative_to(config_manager.large_samples_dir)}")
+                logger.info(f"Compatible file found: {synthetic_file.relative_to(config_manager.scaled_validated_dir)}")
                 logger.info(f"  Score: {compatibility_score:.3f}, Coverage: {coverage_score:.2f}, Samples: {sample_count}")
     
     if not compatible_files:
         logger.warning("No schema-compatible synthetic files found!")
         logger.warning("Available synthetic files:")
-        all_files = list(config_manager.large_samples_dir.rglob('*_large.json'))
+        all_files = list(config_manager.scaled_validated_dir.rglob('*_scale.json'))
         for file_path in all_files[:10]:  # Show first 10
-            logger.warning(f"  - {file_path.relative_to(config_manager.large_samples_dir)}")
+            logger.warning(f"  - {file_path.relative_to(config_manager.scaled_validated_dir)}")
         return None
     
     # Sort by compatibility score (highest first)
     compatible_files.sort(key=lambda x: x['score'], reverse=True)
     
     best_file = compatible_files[0]
-    logger.info(f"Selected best match: {best_file['path'].relative_to(config_manager.large_samples_dir)}")
+    logger.info(f"Selected best match: {best_file['path'].relative_to(config_manager.scaled_validated_dir)}")
     logger.info(f"  Final score: {best_file['score']:.3f}")
     logger.info(f"  Schema coverage: {best_file['coverage']:.1%}")
     logger.info(f"  Sample count: {best_file['sample_count']}")
@@ -709,14 +709,14 @@ def main(raw_file: str = "five_email_phishing.csv.gz",
         if synthetic_file:
             # Use specified synthetic file, but verify compatibility
             if not synthetic_file.startswith('/'):
-                # Relative path, search in large_samples_dir
-                synthetic_path = config_manager.large_samples_dir / synthetic_file
+                # Relative path, search in scaled-validated directory
+                synthetic_path = config_manager.scaled_validated_dir / synthetic_file
                 if not synthetic_path.exists():
                     # Try adding .json extension
-                    synthetic_path = config_manager.large_samples_dir / f"{synthetic_file}.json"
+                    synthetic_path = config_manager.scaled_validated_dir / f"{synthetic_file}.json"
                 if not synthetic_path.exists():
                     # Search recursively
-                    found_files = list(config_manager.large_samples_dir.rglob(f"*{synthetic_file}*"))
+                    found_files = list(config_manager.scaled_validated_dir.rglob(f"*{synthetic_file}*"))
                     if found_files:
                         synthetic_path = found_files[0]
                     else:
@@ -736,14 +736,14 @@ def main(raw_file: str = "five_email_phishing.csv.gz",
             if not synthetic_path:
                 # Fallback: try any available file
                 logger.warning("No schema-compatible files found, trying any available synthetic file...")
-                all_files = list(config_manager.large_samples_dir.rglob('*_large.json'))
+                all_files = list(config_manager.scaled_validated_dir.rglob('*_scale.json'))
                 if all_files:
                     synthetic_path = all_files[0]
-                    logger.warning(f"Using fallback file: {synthetic_path.relative_to(config_manager.large_samples_dir)}")
+                    logger.warning(f"Using fallback file: {synthetic_path.relative_to(config_manager.scaled_validated_dir)}")
                 else:
-                    raise FileNotFoundError("No synthetic data files found in large_samples directory")
+                    raise FileNotFoundError("No synthetic data files found in scaled-validated directory")
         
-        logger.info(f"Selected synthetic file: {synthetic_path.relative_to(config_manager.large_samples_dir)}")
+        logger.info(f"Selected synthetic file: {synthetic_path.relative_to(config_manager.scaled_validated_dir)}")
         
         # Load synthetic data
         synthetic_df = load_synthetic_data(synthetic_path)
@@ -774,12 +774,12 @@ def main(raw_file: str = "five_email_phishing.csv.gz",
         else:
             # Generate descriptive output filename
             raw_name = Path(raw_file).stem.replace('.csv', '').replace('.gz', '')
-            synthetic_name = synthetic_path.stem.replace('_large', '')
+            synthetic_name = synthetic_path.stem.replace('_scale', '')
             # Clean up names for filename
             raw_name = re.sub(r'[^a-zA-Z0-9_]', '_', raw_name)
             synthetic_name = re.sub(r'[^a-zA-Z0-9_]', '_', synthetic_name)
             output_name = f"mixed_{raw_name}_{synthetic_name}_{n_raw_samples}+{n_synthetic_samples}.{output_format}"
-            output_path = config_manager.data_dir / "mixed" / output_name
+            output_path = config_manager.mixed_dir / output_name
         
         # Save mixed dataset
         save_mixed_dataset(
@@ -812,8 +812,8 @@ if __name__ == '__main__':
     
     # Data parameters
     parser.add_argument('--label-column', default='label', help='Label column name in raw data (default: label)')
-    parser.add_argument('--n-raw-samples', type=int, default=500, help='Number of raw samples to extract (default: 100)')
-    parser.add_argument('--n-synthetic-samples', type=int, default=500, help='Number of synthetic samples to extract (default: 100)')
+    parser.add_argument('--n-raw-samples', type=int, default=500, help='Number of raw samples to extract (default: 500)')
+    parser.add_argument('--n-synthetic-samples', type=int, default=500, help='Number of synthetic samples to extract (default: 500)')
     
     # Output parameters
     parser.add_argument('--output-file', help='Output file path (optional - will auto-generate)')
@@ -826,7 +826,7 @@ if __name__ == '__main__':
         print(f"\n✨ Auto-detection mode enabled for: {args.raw_file}")
         print("The script will automatically:")
         print("  1. Infer problem area/nature from filename")
-        print("  2. Find schema-compatible synthetic data")
+        print("  2. Find schema-compatible synthetic data from scaled-validated/")
         print("  3. Generate descriptive output filename")
         print("\nFor manual control, you can specify:")
         print("  --problem-area 'Social Engineering' --problem-nature 'phishing'")

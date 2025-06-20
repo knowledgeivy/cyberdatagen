@@ -69,20 +69,24 @@ class ConfigManager:
         self.seeds_validated_dir = self.data_dir / "seeds-validated"  # High quality seeds
         self.seeds_filtered_dir = self.data_dir / "seeds-filtered"  # Filtered out seeds
         self.seed_validation_dir = self.data_dir / "seed_validation"  # Validation reports
-        self.generation_analytics_dir = self.data_dir / "generation-analytics"  # Analytics
         
-        # Existing directories
-        self.large_samples_dir = self.data_dir / "large_samples"
-        self.validation_reports_dir = self.data_dir / "validation_reports"
-        self.quality_reports_dir = self.data_dir / "quality_reports"
+        # Scale generation directories
+        self.scaled_raw_dir = self.data_dir / "scaled-raw"  # Raw scale generation
+        self.scaled_validated_dir = self.data_dir / "scaled-validated"  # Validated scale data
+        self.scaled_filtered_dir = self.data_dir / "scaled-filtered"  # Filtered scale data
+        self.scaled_validation_dir = self.data_dir / "scaled_validation"  # Scale validation reports
+        
+        # Utility directories
+        self.mixed_dir = self.data_dir / "mixed"  # Mixed datasets
         
         # Create all directories
         for dir_path in [
             self.config_dir, self.data_dir, self.logs_dir,
             self.prompts_dir, self.domain_discovery_dir, self.contextual_problems_dir,
             self.seeds_dir, self.seeds_raw_dir, self.seeds_validated_dir, 
-            self.seeds_filtered_dir, self.seed_validation_dir, self.generation_analytics_dir,
-            self.large_samples_dir, self.validation_reports_dir, self.quality_reports_dir
+            self.seeds_filtered_dir, self.seed_validation_dir,
+            self.scaled_raw_dir, self.scaled_validated_dir, self.scaled_filtered_dir,
+            self.scaled_validation_dir, self.mixed_dir
         ]:
             dir_path.mkdir(parents=True, exist_ok=True)
             logger.debug(f"Ensured directory exists: {dir_path}")
@@ -343,6 +347,32 @@ class ConfigManager:
         sanitized_nature = self._sanitize_name(nature)
         return self.seed_validation_dir / sanitized_area / f"{sanitized_nature}_quality_summary.json"
     
+    # === Scale Data Management Methods ===
+    
+    def get_scaled_raw_file(self, area: str, nature: str) -> Path:
+        """Get the path for a raw scale data file."""
+        sanitized_area = self._sanitize_name(area)
+        sanitized_nature = self._sanitize_name(nature)
+        return self.scaled_raw_dir / sanitized_area / f"{sanitized_nature}_scale.json"
+    
+    def get_scaled_validated_file(self, area: str, nature: str) -> Path:
+        """Get the path for a validated scale data file."""
+        sanitized_area = self._sanitize_name(area)
+        sanitized_nature = self._sanitize_name(nature)
+        return self.scaled_validated_dir / sanitized_area / f"{sanitized_nature}_scale.json"
+    
+    def get_scaled_filtered_file(self, area: str, nature: str) -> Path:
+        """Get the path for a filtered scale data file."""
+        sanitized_area = self._sanitize_name(area)
+        sanitized_nature = self._sanitize_name(nature)
+        return self.scaled_filtered_dir / sanitized_area / f"{sanitized_nature}_scale.json"
+    
+    def get_scale_validation_report_file(self, area: str, nature: str) -> Path:
+        """Get the path for a scale validation report file."""
+        sanitized_area = self._sanitize_name(area)
+        sanitized_nature = self._sanitize_name(nature)
+        return self.scaled_validation_dir / sanitized_area / f"{sanitized_nature}_scale_validation_report.json"
+    
     # === Legacy Problem Management (Enhanced) ===
     
     def load_problems(self, prefer_updated: bool = True) -> list:
@@ -402,24 +432,6 @@ class ConfigManager:
         sanitized_nature = self._sanitize_name(nature)
         return self.seeds_dir / sanitized_area / f"{sanitized_nature}_examples.json"
     
-    def get_large_samples_file(self, area: str, nature: str) -> Path:
-        """Get the path for a large samples file."""
-        sanitized_area = self._sanitize_name(area)
-        sanitized_nature = self._sanitize_name(nature)
-        return self.large_samples_dir / sanitized_area / f"{sanitized_nature}_large.json"
-    
-    def get_validation_report_file(self, area: str, nature: str) -> Path:
-        """Get the path for a validation report file."""
-        sanitized_area = self._sanitize_name(area)
-        sanitized_nature = self._sanitize_name(nature)
-        return self.validation_reports_dir / sanitized_area / f"{sanitized_nature}_validation.json"
-    
-    def get_quality_report_file(self, area: str, nature: str) -> Path:
-        """Get the path for a quality report file."""
-        sanitized_area = self._sanitize_name(area)
-        sanitized_nature = self._sanitize_name(nature)
-        return self.quality_reports_dir / sanitized_area / f"{sanitized_nature}_quality_report.json"
-    
     def find_existing_file(self, base_dir: Path, nature: str, suffix: str = "") -> Optional[Path]:
         """
         Find an existing file by searching through area subdirectories.
@@ -448,54 +460,6 @@ class ConfigManager:
     def _sanitize_name(self, name: str) -> str:
         """Sanitize a name for use in filenames and directory names."""
         return name.replace(' ', '_').replace('(', '').replace(')', '').replace('-', '_')
-    
-    # === Enhanced Analytics Methods ===
-    
-    def save_generation_analytics(self, dataset_name: str, analytics_data: Dict[str, Any]) -> Path:
-        """
-        Save generation analytics data.
-        
-        Args:
-            dataset_name (str): Name of the dataset
-            analytics_data (Dict[str, Any]): Analytics data
-            
-        Returns:
-            Path: Path to saved file
-        """
-        analytics_file = self.generation_analytics_dir / f"{dataset_name}_generation_analytics.json"
-        
-        with analytics_file.open('w', encoding='utf-8') as f:
-            json.dump(analytics_data, f, indent=2, default=str)
-        
-        logger.info(f"Saved generation analytics for: {dataset_name}")
-        return analytics_file
-    
-    def load_generation_analytics(self, dataset_name: str) -> Dict[str, Any]:
-        """
-        Load generation analytics data.
-        
-        Args:
-            dataset_name (str): Name of the dataset
-            
-        Returns:
-            Dict[str, Any]: Analytics data
-        """
-        try:
-            analytics_file = self.generation_analytics_dir / f"{dataset_name}_generation_analytics.json"
-            
-            if not analytics_file.exists():
-                logger.warning(f"Generation analytics file not found: {analytics_file}")
-                return {}
-            
-            with analytics_file.open('r', encoding='utf-8') as f:
-                data = json.load(f)
-            
-            logger.info(f"Loaded generation analytics for: {dataset_name}")
-            return data
-            
-        except Exception as e:
-            logger.error(f"Error loading generation analytics: {str(e)}")
-            return {}
     
     # === Enhanced Sample Type Analysis ===
     
@@ -660,6 +624,30 @@ class ConfigManager:
         
         logger.info(f"Found {len(seed_files)} validated seed files")
         return seed_files
+    
+    def find_all_scaled_validated(self) -> List[Tuple[str, str, Path]]:
+        """
+        Find all validated scale data files in the scaled-validated directory.
+        
+        Returns:
+            List[Tuple[str, str, Path]]: List of (area, nature, file_path) tuples
+        """
+        scale_files = []
+        
+        if not self.scaled_validated_dir.exists():
+            logger.warning(f"Scaled-validated directory not found: {self.scaled_validated_dir}")
+            return scale_files
+        
+        for area_dir in self.scaled_validated_dir.iterdir():
+            if area_dir.is_dir():
+                area = area_dir.name
+                
+                for scale_file in area_dir.glob("*_scale.json"):
+                    nature = scale_file.stem.replace('_scale', '')
+                    scale_files.append((area, nature, scale_file))
+        
+        logger.info(f"Found {len(scale_files)} validated scale files")
+        return scale_files
     
     def get_dataset_pipeline_status(self, dataset_name: str) -> Dict[str, Any]:
         """
