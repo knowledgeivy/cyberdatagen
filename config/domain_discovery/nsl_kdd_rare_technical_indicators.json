@@ -1,41 +1,45 @@
 {
   "attack_indicators": [
-    "presence of root_shell=1 and num_root>0 indicating privilege escalation attempts",
-    "hot indicators > 0 signaling suspicious activity like system file access or program creation",
-    "high rerror_rate and srv_rerror_rate values (close to 1.0) indicating rejected connections or failed login attempts",
-    "flags such as RSTO and S3 associated with connection resets and suspicious session teardowns",
-    "low src_bytes with very high dst_bytes in some R2L attacks (e.g., warezmaster) indicating data exfiltration",
-    "logged_in=0 combined with num_failed_logins>0 indicating brute force or guessing attempts"
+    "elevated 'hot' indicators (e.g., hot >= 1) signaling suspicious system activity",
+    "presence of root_shell=1 and num_root > 0 indicating privilege escalation attempts",
+    "high rerror_rate and srv_rerror_rate values (close to 1.0) associated with rejected connections during attacks like guess_passwd",
+    "low or zero src_bytes combined with very high dst_bytes in some R2L attacks (e.g., warezmaster)",
+    "flags such as SF (normal finish), RSTO (reset on timeout), and S3 (SYN sent and received) appearing in attack traffic",
+    "num_failed_logins > 0 in R2L attack samples indicating brute force or guessing attempts"
   ],
   "attack_signatures": [
-    "Signature 1: R2L attacks often have flag=RSTO or SF with high rerror_rate (\u22650.9), num_failed_logins\u22651, and logged_in=0, e.g., guess_passwd attack samples",
-    "Signature 2: U2R attacks show root_shell=1, hot\u22651, logged_in=1, and increased num_compromised and num_root counts, often with short duration and service ftp_data or telnet",
-    "Signature 3: Warezmaster and warezclient attacks characterized by src_bytes=0, very large dst_bytes (millions), flag=SF, and same_srv_rate=1.0 indicating repeated access to the same service with no data sent from source"
+    "Signature 1: R2L attacks often show low src_bytes (0-51), high dst_bytes (thousands to millions), and logged_in=0 or 1 with failed login attempts, e.g., guess_passwd with flag=RSTO and rerror_rate=1.0",
+    "Signature 2: U2R attacks characterized by root_shell=1, num_compromised > 0, hot >= 1, and sometimes num_root > 0, often with short or zero duration and services like ftp_data or telnet",
+    "Signature 3: High serror_rate and srv_serror_rate near zero in most attacks except guess_passwd where serror_rate can be 0.5, indicating SYN error patterns linked to scanning or brute forcing"
   ],
   "technical_markers": [
-    "root_shell=1 and num_root\u22651 as markers of privilege escalation",
-    "rerror_rate and srv_rerror_rate \u22650.9 as indicators of connection rejection/failure in R2L attacks",
-    "hot\u22651 combined with logged_in=1 and num_compromised\u22651 in U2R attacks",
-    "dst_bytes > 5,000,000 with src_bytes=0 in warezmaster attacks",
-    "serror_rate and srv_serror_rate near zero in most attacks except some guess_passwd samples with serror_rate\u22480.5"
+    "src_bytes = 0 combined with dst_bytes > 5000 in warezmaster and similar R2L attacks",
+    "rerror_rate and srv_rerror_rate >= 0.9 in guess_passwd attacks indicating many rejected connections",
+    "hot indicators >= 1 in U2R attacks (loadmodule, buffer_overflow, rootkit)",
+    "num_failed_logins >= 1 in guess_passwd attacks",
+    "count and srv_count often low (1-4) in U2R attacks, higher in benign traffic",
+    "difficulty_level ranges from 0 to 18, with higher values indicating more subtle or complex attacks"
   ],
   "normal_indicators": [
-    "Normal traffic predominantly uses protocol_type tcp, udp, and icmp with flag=SF",
-    "src_bytes and dst_bytes are balanced and moderate, with no extreme outliers",
-    "num_failed_logins=0 and logged_in=0 or 1 depending on session type",
-    "low or zero hot, num_compromised, root_shell, su_attempted, and num_root values",
-    "Stable connection patterns with high same_srv_rate (close to 1.0) and low error rates"
+    "Normal connections have src_bytes and dst_bytes > 0 with balanced data flow",
+    "Flags predominantly SF indicating normal session establishment and termination",
+    "No failed login attempts (num_failed_logins=0)",
+    "Hot indicators = 0, no suspicious system activity",
+    "Logged_in=0 or 1 depending on service, but no privilege escalation markers",
+    "Low error rates (serror_rate, rerror_rate near 0.0)",
+    "Count and srv_count values higher (e.g., count > 10, srv_count > 10) reflecting normal traffic volume"
   ],
   "baseline_metrics": [
-    "serror_rate, srv_serror_rate, rerror_rate, srv_rerror_rate typically 0.0 in benign samples",
-    "count and srv_count can be high (e.g., 100+), reflecting normal repeated connections",
-    "dst_host_count and dst_host_srv_count often at maximum (255), indicating normal host activity",
-    "duration mostly 0 or low values, typical of normal short connections",
-    "hot=0 and num_failed_logins=0 in majority of benign samples"
+    "src_bytes typically > 20 and dst_bytes > 50 for normal traffic",
+    "serror_rate, srv_serror_rate, rerror_rate, srv_rerror_rate all near 0.0",
+    "hot = 0, num_failed_logins = 0, root_shell = 0",
+    "same_srv_rate close to 1.0 indicating consistent service usage",
+    "dst_host_count and dst_host_srv_count often high (e.g., 45-255) reflecting normal host activity",
+    "difficulty_level high (18-21) for normal samples indicating benign complexity"
   ],
   "metadata": {
     "dataset_name": "nsl_kdd_rare",
-    "analysis_timestamp": "2025-06-19T14:49:55.972981",
+    "analysis_timestamp": "2025-06-20T09:44:42.288100",
     "samples_analyzed": {
       "malicious": 100,
       "benign": 100

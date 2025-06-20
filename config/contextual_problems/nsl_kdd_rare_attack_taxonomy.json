@@ -6,35 +6,34 @@
     "remote_access"
   ],
   "attack_patterns": [
-    "Brute force login attempts with failed logins and rejected connections",
-    "Privilege escalation via root_shell and hot indicators",
-    "Data exfiltration with zero source bytes and high destination bytes",
-    "Connection resets using flags RSTO and S3 combined with high error rates",
-    "Repeated service access with high same_srv_rate in warezmaster attacks"
+    "Low src_bytes with high dst_bytes in R2L attacks",
+    "Elevated hot indicators and root_shell flags in U2R attacks",
+    "High rerror_rate and srv_rerror_rate in brute force password guessing",
+    "Short or zero duration connections in privilege escalation",
+    "Use of flags RSTO, SF, and S3 in attack traffic"
   ],
   "attack_sophistication_levels": [
-    "Low: Brute force password guessing with obvious failed login spikes",
-    "Medium: Data exfiltration with anomalous byte patterns but no privilege escalation",
-    "High: Stealthy U2R privilege escalation with subtle host behavior changes and short duration",
-    "Advanced: Multi-vector attacks combining evasion via connection resets and multi-service exploitation"
+    "Low to moderate for brute force R2L attacks",
+    "Moderate to high for stealthy U2R privilege escalation",
+    "Increasing difficulty indicated by difficulty_level metadata (0 to 18+)"
   ],
   "mitigation_strategies": [
-    "Strong authentication and password policies",
-    "Host-based privilege escalation prevention and monitoring",
-    "Service hardening and access control for FTP, Telnet, HTTP, IMAP",
-    "Integrated anomaly and signature-based detection systems",
-    "Continuous monitoring of connection flags and error rates"
+    "Access control and strong authentication on vulnerable services",
+    "Patch management and vulnerability remediation",
+    "Behavioral and anomaly-based intrusion detection",
+    "Login attempt monitoring and alerting",
+    "Host-level privilege escalation monitoring"
   ],
   "detection_approaches": [
-    "Threshold-based alerting on error rates and failed login counts",
-    "Signature matching for known attack patterns (e.g., root_shell=1 & hot\u22651)",
-    "Multi-feature anomaly detection models capturing subtle correlations",
-    "Host behavior profiling focusing on privilege escalation markers",
-    "Correlation of connection resets and rejected connections with suspicious activity"
+    "Signature-based detection using attack signatures and flags",
+    "Anomaly detection leveraging baseline profiling of error rates and connection counts",
+    "Correlation of multiple indicators such as hot, root_shell, failed logins, and error rates",
+    "Prioritization using difficulty_level metadata",
+    "Temporal analysis of connection bursts and service usage"
   ],
   "metadata": {
     "dataset_name": "nsl_kdd_rare",
-    "enrichment_timestamp": "2025-06-19T14:50:47.213965",
+    "enrichment_timestamp": "2025-06-20T09:45:39.094132",
     "domain_discovery_used": true,
     "step": "contextual_enrichment",
     "version": "1.0"

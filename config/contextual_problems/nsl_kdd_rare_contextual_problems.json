@@ -2,113 +2,203 @@
   "enriched_problems": [
     {
       "area": "Network Intrusion Detection",
-      "nature": "Remote-to-Local (R2L) and User-to-Root (U2R) attacks with privilege escalation",
-      "description": "This problem focuses on detecting rare and stealthy network intrusions where attackers gain unauthorized local access from remote systems (R2L) or escalate privileges from user-level to root-level access (U2R). These attacks are characterized by subtle behavioral changes in network traffic and host activity, severe class imbalance, and complex multi-feature correlations. The detection challenge is compounded by attackers using evasion techniques such as connection resets, rejected connections, and mimicking normal traffic patterns. The dataset reflects real-world scenarios with rare events and numeric features capturing connection, host behavior, and traffic patterns.",
+      "nature": "Remote-to-Local (R2L) Unauthorized Access Attempts",
+      "description": "R2L attacks involve adversaries attempting to gain unauthorized local access from remote hosts by exploiting network services such as ftp_data, telnet, and http. These attacks are characterized by rare but high-impact events with severe class imbalance, making detection highly challenging. Attackers often use brute force password guessing combined with suspicious connection patterns such as zero source bytes and abnormally high destination bytes. Detection complexity is elevated due to stealthy behavior, use of legitimate protocols, and low frequency of occurrence in network traffic.",
       "attack_vectors": [
-        "Remote-to-Local (R2L) via unauthorized login attempts and password guessing",
-        "User-to-Root (U2R) via privilege escalation exploiting vulnerabilities",
-        "Exploitation of FTP and Telnet services",
-        "Use of HTTP and IMAP services for remote attacks"
+        "Remote-to-Local (R2L)",
+        "Brute force password guessing",
+        "Exploitation of vulnerable services (ftp_data, telnet, http)"
       ],
       "real_world_context": {
-        "domain_insights": "R2L and U2R attacks are rare but critical, exhibiting high rerror_rate and srv_rerror_rate, presence of root_shell=1, and hot indicators signaling privilege escalation attempts. Attackers exploit common services like ftp_data, telnet, and http, often using brute force, buffer overflow, or rootkit techniques. Normal traffic shows stable connection patterns with balanced src_bytes and dst_bytes, low error rates, and zero hot or root_shell indicators.",
-        "attack_sophistication": "High sophistication involving stealthy privilege escalation, evasion via connection resets (RSTO flag), and multi-service exploitation. Attackers leverage subtle host behavior changes and multi-feature correlations to avoid detection.",
-        "technical_implementation": "R2L attacks manifest as multiple failed login attempts (num_failed_logins>0) with logged_in=0, high connection rejection rates (rerror_rate\u22650.9), and flags like RSTO or SF indicating suspicious session teardowns. U2R attacks show root_shell=1, hot\u22651, logged_in=1, increased num_compromised and num_root counts, often during short duration sessions on ftp_data or telnet services. Warezmaster attacks involve src_bytes=0 with very high dst_bytes (>5,000,000) and same_srv_rate=1.0, indicating data exfiltration.",
-        "threat_landscape": "These attacks represent some of the most challenging threats in network security due to their rarity and stealth. Increasing use of data exfiltration with zero source bytes and subtle privilege escalation attempts heighten risk. Attackers frequently use rejected connection flags and error rates to evade detection, complicating defensive efforts.",
-        "victim_impact": "Successful R2L and U2R attacks lead to unauthorized access, privilege escalation, data exfiltration, and potential full system compromise. They undermine network integrity, confidentiality, and availability, posing severe risks especially in critical infrastructure and enterprise environments."
+        "domain_insights": "R2L attacks show low src_bytes (0-51), very high dst_bytes (thousands to millions), high rerror_rate and srv_rerror_rate near 1.0, and multiple failed login attempts. Flags like RSTO and SF appear frequently. These attacks are rare and embedded in highly imbalanced datasets with numeric network traffic features spanning multiple protocols and services.",
+        "attack_sophistication": "Moderate sophistication with stealthy, low-volume traffic patterns and use of legitimate service protocols to evade detection.",
+        "technical_implementation": "Attackers perform brute force or guessing attacks generating many rejected connections (high rerror_rate) with failed login attempts, often resulting in zero source bytes but large inbound data transfer (dst_bytes). Connection flags like RSTO indicate resets on timeout, signaling failed authentication attempts.",
+        "threat_landscape": "R2L attacks remain a critical threat exploiting remote access vulnerabilities, often masked within normal traffic due to legitimate protocol use and low frequency, complicating anomaly detection.",
+        "victim_impact": "Successful R2L attacks lead to unauthorized local user access, potentially enabling further exploitation or data exfiltration, severely compromising network security."
       },
       "technical_characteristics": {
         "attack_signatures": [
-          "R2L attacks: flag=RSTO or SF with rerror_rate\u22650.9, num_failed_logins\u22651, logged_in=0 (e.g., guess_passwd)",
-          "U2R attacks: root_shell=1, hot\u22651, logged_in=1, increased num_compromised and num_root, short duration, services ftp_data or telnet",
-          "Warezmaster attacks: src_bytes=0, dst_bytes>5,000,000, flag=SF, same_srv_rate=1.0"
+          "Low src_bytes (0-51) with high dst_bytes (thousands to millions)",
+          "High rerror_rate and srv_rerror_rate (\u22650.9) with flag=RSTO",
+          "num_failed_logins > 0 combined with logged_in=0",
+          "Flags such as RSTO and SF frequently observed"
         ],
         "indicators_of_compromise": [
-          "root_shell=1 and num_root>0 indicating privilege escalation",
-          "hot>0 signaling suspicious system file access or program creation",
-          "high rerror_rate and srv_rerror_rate close to 1.0 indicating rejected connections or failed logins",
-          "flags RSTO and S3 associated with connection resets and suspicious session teardowns",
-          "logged_in=0 combined with num_failed_logins>0 indicating brute force attempts",
-          "dst_bytes >> src_bytes in data exfiltration scenarios"
+          "src_bytes=0 with dst_bytes > 5000 on ftp_data or telnet services",
+          "rerror_rate and srv_rerror_rate close to 1.0",
+          "Multiple failed login attempts (num_failed_logins \u2265 1)",
+          "Presence of RSTO flag in connection records"
         ],
         "detection_criteria": [
-          "Alert on root_shell=1 combined with hot\u22651 and logged_in=1 for privilege escalation",
-          "Flag connections with rerror_rate or srv_rerror_rate\u22650.9 and num_failed_logins\u22651 with logged_in=0 as brute force R2L",
-          "Detect warezmaster by identifying src_bytes=0 with dst_bytes>5,000,000 and same_srv_rate=1.0 on ftp_data",
-          "Monitor flags RSTO or S3 with high rerror_rate and srv_rerror_rate as suspicious resets",
-          "Correlate num_compromised and num_root counts with low duration sessions for fast exploitation"
+          "Flag sessions with rerror_rate or srv_rerror_rate \u2265 0.9 and num_failed_logins \u2265 1",
+          "Detect src_bytes=0 combined with dst_bytes > 5000 on vulnerable services",
+          "Monitor for repeated failed login attempts with logged_in=0",
+          "Use difficulty_level metadata to prioritize alerts for subtle attacks"
         ],
         "normal_vs_malicious": [
-          "Normal traffic has serror_rate, srv_serror_rate, rerror_rate, srv_rerror_rate near 0.0; malicious shows \u22650.9 in R2L",
-          "Normal sessions have hot=0, num_failed_logins=0, root_shell=0; malicious have elevated values",
-          "Normal src_bytes and dst_bytes are balanced and moderate; malicious may have extreme dst_bytes with zero src_bytes",
-          "Flags predominantly SF in normal traffic; malicious traffic often includes RSTO, S3, or REJ",
-          "High same_srv_rate (\u22650.9) and low diff_srv_rate (\u22640.1) in normal; deviations indicate anomalies"
+          "Normal traffic has src_bytes > 20 and dst_bytes > 50 with balanced flow; R2L attacks show zero or near-zero src_bytes and high dst_bytes",
+          "Normal sessions have num_failed_logins=0; R2L attacks show \u22651 failed login attempts",
+          "Normal error rates (rerror_rate, srv_rerror_rate) near 0.0; R2L attacks have rates near 1.0",
+          "Flags in normal traffic predominantly SF; R2L attacks often include RSTO"
         ],
         "measurable_thresholds": [
-          "rerror_rate and srv_rerror_rate \u2265 0.9 for brute force detection",
-          "hot \u2265 1 combined with root_shell=1 for privilege escalation alerts",
-          "dst_bytes > 5,000,000 with src_bytes=0 for data exfiltration detection",
-          "serror_rate or srv_serror_rate > 0.5 combined with failed logins for suspicious activity",
-          "same_srv_rate < 0.7 or diff_srv_rate > 0.3 as anomaly indicators"
+          "hot \u2265 1 for suspicious activity",
+          "rerror_rate and srv_rerror_rate \u2265 0.9 to flag brute force attempts",
+          "src_bytes = 0 and dst_bytes > 5000 for R2L detection",
+          "num_failed_logins \u2265 1 combined with logged_in=0",
+          "serror_rate > 0.1 as potential SYN scan indicator"
         ]
       },
       "contextual_examples": {
         "attack_scenarios": [
-          "An attacker performs multiple failed login attempts on a Telnet service, generating high rerror_rate and srv_rerror_rate, with logged_in=0 and flag=RSTO, attempting Remote-to-Local access.",
-          "A user-level compromised host exploits a buffer overflow vulnerability on ftp_data service, triggering root_shell=1, hot=2, num_root=1, and short duration connection indicative of User-to-Root escalation.",
-          "Data exfiltration via warezmaster attack where the source sends zero bytes but receives over 10 million bytes from the destination, with flag=SF and same_srv_rate=1.0, indicating repeated service access."
+          "An attacker launches a brute force password guessing attack on an ftp_data service, generating multiple failed login attempts with rerror_rate close to 1.0 and flags RSTO, resulting in zero bytes sent from source but large data received.",
+          "A remote adversary exploits telnet service by sending low-volume requests with zero src_bytes and high dst_bytes, repeatedly triggering authentication failures detected by elevated num_failed_logins.",
+          "A stealthy R2L attack where the attacker uses legitimate HTTP connections but with abnormal error rates and failed login attempts, evading signature-based IDS detection."
         ],
         "legitimate_scenarios": [
-          "Normal HTTP traffic with balanced src_bytes and dst_bytes, flag=SF, zero failed login attempts, and stable same_srv_rate close to 1.0.",
-          "A short duration ICMP connection with low error rates, no hot indicators, and logged_in=0 reflecting routine network diagnostics.",
-          "Repeated connections to a DNS service with high count and srv_count values, low error rates, and no root_shell or suspicious file creation activity."
+          "A normal user browsing the web over HTTP with balanced src_bytes and dst_bytes, flags predominantly SF, no failed login attempts, and low error rates.",
+          "Routine FTP data transfer with src_bytes and dst_bytes both above threshold, no failed logins, and stable connection counts.",
+          "Multiple connections to the same host and service with high same_srv_rate and no suspicious hot indicators or error spikes."
         ]
       },
       "risk_reduction": [
-        "Implement multi-factor authentication and strong password policies to mitigate brute force R2L attacks.",
-        "Deploy host-based privilege escalation prevention tools and monitor root_shell and hot indicators closely.",
-        "Restrict and monitor FTP and Telnet services, applying strict access controls and anomaly detection.",
-        "Use signature-based detection rules combined with anomaly detection models to capture subtle attack patterns.",
-        "Continuously monitor login attempts, error rates, and connection flags, correlating multi-feature anomalies for early warning."
+        "Implement strict access control and authentication policies on vulnerable services such as ftp_data and telnet.",
+        "Deploy anomaly-based IDS tuned to detect high rerror_rate and multiple failed login attempts.",
+        "Enforce login attempt monitoring with alerting on repeated failures combined with connection resets.",
+        "Use detection rules flagging src_bytes=0 with high dst_bytes and RSTO flags to identify suspicious sessions.",
+        "Continuously profile normal traffic baselines for error rates and connection counts to detect deviations."
       ],
       "synthetic_generation_guidance": {
         "key_features_to_vary": [
+          "src_bytes",
+          "dst_bytes",
           "num_failed_logins",
-          "logged_in",
-          "root_shell",
-          "hot",
           "rerror_rate",
           "srv_rerror_rate",
           "flag",
-          "src_bytes",
-          "dst_bytes",
-          "same_srv_rate",
-          "num_compromised",
-          "num_root",
-          "duration",
-          "service"
+          "service",
+          "protocol_type",
+          "logged_in"
         ],
         "pattern_preservation": [
-          "Maintain correlation between root_shell=1 and hot\u22651 for U2R attacks",
-          "Preserve high rerror_rate and srv_rerror_rate with failed logins for R2L brute force",
-          "Keep src_bytes=0 and very high dst_bytes with same_srv_rate=1.0 for warezmaster",
-          "Retain flag patterns (RSTO, S3, SF) consistent with attack signatures",
-          "Ensure multi-class labeling consistency (normal, r2l, u2r)"
+          "Low src_bytes combined with high dst_bytes in attacks",
+          "High rerror_rate and srv_rerror_rate near 1.0 during brute force attempts",
+          "Presence of failed login attempts with logged_in=0",
+          "Use of flags RSTO and SF in attack traffic"
         ],
         "realism_requirements": [
-          "Reflect severe class imbalance with rare attack samples",
-          "Simulate realistic network protocols and service distributions",
-          "Generate numeric features within plausible ranges and distributions",
-          "Model temporal patterns such as short duration for U2R and repeated connections for R2L",
-          "Avoid unrealistic feature combinations violating domain baselines"
+          "Maintain multi-protocol and multi-service diversity reflecting real network traffic",
+          "Preserve temporal connection statistics such as count and srv_count patterns",
+          "Reflect realistic class imbalance with rare attack samples",
+          "Ensure numeric feature distributions align with observed baselines"
         ],
         "diversity_dimensions": [
-          "Vary attack difficulty levels and subtlety",
-          "Include multiple services (ftp_data, telnet, http, imap4)",
-          "Vary connection flags and error rates",
-          "Simulate different host behavior profiles",
-          "Introduce variability in data volume (src_bytes/dst_bytes ratios)"
+          "Different services (ftp_data, telnet, http)",
+          "Various protocols (tcp, udp, icmp)",
+          "Range of difficulty levels (0 to 18+)",
+          "Variations in connection duration and byte counts",
+          "Diverse flag combinations (RSTO, SF, S3)"
+        ]
+      }
+    },
+    {
+      "area": "Network Intrusion Detection",
+      "nature": "User-to-Root (U2R) Privilege Escalation Exploits",
+      "description": "U2R attacks involve attackers escalating privileges from user-level accounts to root access on compromised hosts by exploiting vulnerabilities such as buffer overflows, loadable kernel modules, and rootkits. These attacks are extremely rare and difficult to detect due to subtle indicators and severe class imbalance. They often manifest as short or zero-duration connections with suspicious system activity indicated by elevated hot indicators, root_shell flags, and compromised counts. Detection requires advanced behavioral analysis and correlation of multiple host and connection features.",
+      "attack_vectors": [
+        "User-to-Root (U2R)",
+        "Privilege escalation",
+        "Buffer overflow",
+        "Loadable kernel module insertion",
+        "Rootkit installation"
+      ],
+      "real_world_context": {
+        "domain_insights": "U2R attacks are marked by root_shell=1, num_compromised > 0, hot \u2265 1, and sometimes num_root > 0. They frequently involve short or zero-duration connections and target services like ftp_data and telnet. These attacks exhibit low connection counts (count, srv_count 1-4) compared to benign traffic and often bypass signature detection due to stealthy behavior.",
+        "attack_sophistication": "High sophistication with stealthy privilege escalation techniques and use of kernel-level exploits requiring advanced detection methods.",
+        "technical_implementation": "Attackers exploit vulnerabilities to gain root shell access, often indicated by hot indicators reflecting suspicious system activity and compromised counts. The attacks may involve installation of rootkits or loadable modules to maintain persistence.",
+        "threat_landscape": "U2R attacks represent a critical threat with increasing difficulty of detection due to evolving stealth techniques and minimal network footprint.",
+        "victim_impact": "Successful U2R attacks result in full system compromise, enabling attackers to control the host, install backdoors, and evade detection."
+      },
+      "technical_characteristics": {
+        "attack_signatures": [
+          "root_shell=1 with num_compromised > 0 and hot \u2265 1",
+          "Short or zero duration connections targeting ftp_data or telnet",
+          "Low count and srv_count values (1-4) indicating sparse connections",
+          "Presence of num_root > 0 and su_attempted flags"
+        ],
+        "indicators_of_compromise": [
+          "Elevated hot indicators (\u22651) signaling suspicious activity",
+          "root_shell=1 and num_root > 0 indicating privilege escalation",
+          "Low temporal connection counts contrasting with normal baselines",
+          "Services ftp_data and telnet frequently targeted"
+        ],
+        "detection_criteria": [
+          "Flag connections with hot \u2265 1 combined with root_shell=1 or num_root > 0",
+          "Monitor short or zero duration sessions with suspicious service usage",
+          "Use count and srv_count thresholds to detect anomalously low connection bursts",
+          "Prioritize alerts with higher difficulty_level metadata"
+        ],
+        "normal_vs_malicious": [
+          "Normal traffic has hot=0 and root_shell=0; U2R attacks show hot \u2265 1 and root_shell=1",
+          "Normal count and srv_count values > 10; U2R attacks have low counts (1-4)",
+          "Normal connections have balanced duration; U2R often have short or zero duration",
+          "Normal logged_in status without privilege escalation markers"
+        ],
+        "measurable_thresholds": [
+          "hot \u2265 1 for suspicious system activity",
+          "count and srv_count \u2264 4 to indicate sparse connection bursts",
+          "root_shell=1 and num_root > 0 for privilege escalation detection",
+          "duration \u2264 1 second for short connection identification"
+        ]
+      },
+      "contextual_examples": {
+        "attack_scenarios": [
+          "An attacker exploits a buffer overflow vulnerability on a telnet service, gaining root shell access indicated by root_shell=1 and elevated hot indicators, with only a few connection attempts logged.",
+          "A compromised host experiences a loadable kernel module insertion attack resulting in num_root > 0 and suspicious system activity, with short duration ftp_data sessions.",
+          "A rootkit installation attack that triggers multiple hot indicators and num_compromised counts but maintains low connection counts to evade detection."
+        ],
+        "legitimate_scenarios": [
+          "A normal user performing routine ftp_data transfers with hot=0, root_shell=0, and connection counts above 10.",
+          "Standard telnet sessions with balanced duration, no privilege escalation markers, and normal host behavior metrics.",
+          "Multiple connections to the same service with high same_srv_rate and no suspicious system activity."
+        ]
+      },
+      "risk_reduction": [
+        "Implement strict patch management to remediate known vulnerabilities exploited by U2R attacks.",
+        "Deploy behavioral analysis systems to monitor hot indicators and root_shell flags.",
+        "Enforce host-level monitoring for privilege escalation attempts and kernel module insertions.",
+        "Use detection rules correlating hot \u2265 1 with root_shell=1 and low connection counts for early warning.",
+        "Continuously profile normal host behavior baselines to identify anomalous sparse connection patterns."
+      ],
+      "synthetic_generation_guidance": {
+        "key_features_to_vary": [
+          "hot",
+          "root_shell",
+          "num_compromised",
+          "num_root",
+          "count",
+          "srv_count",
+          "duration",
+          "service",
+          "flag"
+        ],
+        "pattern_preservation": [
+          "Elevated hot indicators with root_shell=1 in attack samples",
+          "Short or zero duration connections targeting ftp_data and telnet",
+          "Low count and srv_count values contrasting with normal traffic",
+          "Presence of privilege escalation markers such as num_root and su_attempted"
+        ],
+        "realism_requirements": [
+          "Maintain multi-protocol and multi-service diversity reflecting real network environments",
+          "Preserve temporal connection statistics and host behavior features",
+          "Reflect severe class imbalance with rare U2R attack samples",
+          "Ensure numeric feature distributions align with observed attack and normal baselines"
+        ],
+        "diversity_dimensions": [
+          "Different attack types (buffer_overflow, loadmodule, rootkit)",
+          "Range of difficulty levels (0 to 18+)",
+          "Variations in duration and connection counts",
+          "Diverse flag and protocol combinations"
         ]
       }
     }
@@ -121,84 +211,80 @@
       "remote_access"
     ],
     "attack_patterns": [
-      "Brute force login attempts with failed logins and rejected connections",
-      "Privilege escalation via root_shell and hot indicators",
-      "Data exfiltration with zero source bytes and high destination bytes",
-      "Connection resets using flags RSTO and S3 combined with high error rates",
-      "Repeated service access with high same_srv_rate in warezmaster attacks"
+      "Low src_bytes with high dst_bytes in R2L attacks",
+      "Elevated hot indicators and root_shell flags in U2R attacks",
+      "High rerror_rate and srv_rerror_rate in brute force password guessing",
+      "Short or zero duration connections in privilege escalation",
+      "Use of flags RSTO, SF, and S3 in attack traffic"
     ],
     "attack_sophistication_levels": [
-      "Low: Brute force password guessing with obvious failed login spikes",
-      "Medium: Data exfiltration with anomalous byte patterns but no privilege escalation",
-      "High: Stealthy U2R privilege escalation with subtle host behavior changes and short duration",
-      "Advanced: Multi-vector attacks combining evasion via connection resets and multi-service exploitation"
+      "Low to moderate for brute force R2L attacks",
+      "Moderate to high for stealthy U2R privilege escalation",
+      "Increasing difficulty indicated by difficulty_level metadata (0 to 18+)"
     ],
     "mitigation_strategies": [
-      "Strong authentication and password policies",
-      "Host-based privilege escalation prevention and monitoring",
-      "Service hardening and access control for FTP, Telnet, HTTP, IMAP",
-      "Integrated anomaly and signature-based detection systems",
-      "Continuous monitoring of connection flags and error rates"
+      "Access control and strong authentication on vulnerable services",
+      "Patch management and vulnerability remediation",
+      "Behavioral and anomaly-based intrusion detection",
+      "Login attempt monitoring and alerting",
+      "Host-level privilege escalation monitoring"
     ],
     "detection_approaches": [
-      "Threshold-based alerting on error rates and failed login counts",
-      "Signature matching for known attack patterns (e.g., root_shell=1 & hot\u22651)",
-      "Multi-feature anomaly detection models capturing subtle correlations",
-      "Host behavior profiling focusing on privilege escalation markers",
-      "Correlation of connection resets and rejected connections with suspicious activity"
+      "Signature-based detection using attack signatures and flags",
+      "Anomaly detection leveraging baseline profiling of error rates and connection counts",
+      "Correlation of multiple indicators such as hot, root_shell, failed logins, and error rates",
+      "Prioritization using difficulty_level metadata",
+      "Temporal analysis of connection bursts and service usage"
     ]
   },
   "threat_intelligence": {
-    "current_threat_landscape": "Network environments face rare but highly sophisticated R2L and U2R attacks that exploit common services and use evasion tactics such as connection resets and rejected connection flags. Brute force password guessing remains prevalent on Telnet and FTP services. Data exfiltration via warezmaster attacks is increasing, leveraging large outbound data transfers with minimal inbound traffic.",
+    "current_threat_landscape": "The domain faces rare and stealthy R2L and U2R attacks exploiting remote access vulnerabilities and privilege escalation vectors. Password guessing and brute force attempts on common services remain prevalent, alongside rootkit and loadable module persistence mechanisms. These attacks are embedded in legitimate traffic, complicating detection.",
     "emerging_trends": [
-      "Rising use of high dst_bytes with zero src_bytes indicating stealthy data exfiltration",
-      "Subtle privilege escalation attempts with minimal hot indicators but confirmed root_shell=1",
-      "Frequent use of RSTO flag combined with high rerror_rate as evasion mechanism",
-      "Service-specific error rate anomalies as early indicators of compromise",
-      "Fast exploitation with low duration but high num_compromised and root_shell counts"
+      "Increasing difficulty levels in detecting U2R attacks due to evolving stealth techniques",
+      "Use of low or zero duration connections to evade detection systems",
+      "High error rates (rerror_rate near 1.0) signaling repeated failed login attempts",
+      "Sparse but high volume dst_bytes with zero src_bytes in R2L attacks",
+      "Consistent use of specific flags (RSTO, SF) in attack traffic"
     ],
-    "risk_assessment": "High risk due to stealth, rarity, and severe class imbalance complicating detection. Attackers' ability to mimic normal traffic patterns and exploit multiple services increases potential impact and reduces visibility.",
+    "risk_assessment": "High risk due to severe class imbalance, rarity of attacks, and their high impact including full system compromise. Detection requires advanced techniques combining signature and behavioral analysis to mitigate evolving stealthy threats.",
     "intelligence_gaps": [
       "Limited visibility into zero-day privilege escalation exploits",
-      "Insufficient behavioral baselines for emerging service-specific attack patterns",
-      "Need for enhanced correlation techniques to reduce false negatives in rare event detection",
-      "Lack of comprehensive datasets capturing evolving evasion tactics",
-      "Gaps in real-time detection of fast exploitation sequences"
+      "Insufficient labeled data for rare attack variants",
+      "Need for improved correlation of host and network level indicators",
+      "Challenges in real-time detection of short duration, low volume attacks"
     ]
   },
   "synthetic_data_requirements": {
     "realism_criteria": [
-      "Reflect natural class imbalance with rare attack samples",
-      "Preserve realistic numeric feature distributions and inter-feature correlations",
-      "Simulate authentic network protocols, services, and flag usage",
-      "Include temporal and session duration patterns consistent with real traffic",
-      "Avoid unrealistic or contradictory feature combinations"
+      "Maintain realistic numeric feature distributions consistent with network traffic",
+      "Preserve multi-protocol and multi-service diversity",
+      "Reflect temporal connection statistics and host behavior patterns",
+      "Incorporate realistic error rates and flag combinations"
     ],
     "pattern_fidelity": [
-      "Maintain attack signatures such as root_shell=1 with hot\u22651 for U2R",
-      "Preserve error rate thresholds and failed login patterns for R2L",
-      "Replicate warezmaster data exfiltration byte patterns",
-      "Retain flag patterns (RSTO, S3, SF) aligned with attack and normal traffic",
-      "Ensure multi-class labels match feature-based attack definitions"
+      "Low src_bytes with high dst_bytes for R2L attacks",
+      "Elevated hot and root_shell indicators for U2R attacks",
+      "High rerror_rate and srv_rerror_rate in brute force scenarios",
+      "Short or zero duration connections in privilege escalation",
+      "Flag patterns including RSTO, SF, and S3"
     ],
     "diversity_requirements": [
-      "Vary attack difficulty and subtlety levels",
-      "Include multiple attack vectors and services",
-      "Generate diverse connection flags and error rate patterns",
-      "Simulate varied host behavior profiles and network conditions",
-      "Introduce variability in data volume and session durations"
+      "Wide range of difficulty levels (0 to 18+)",
+      "Variations across protocols (tcp, udp, icmp) and services",
+      "Different attack types and subtypes within R2L and U2R",
+      "Balanced representation of normal and malicious samples despite class imbalance"
     ],
     "quality_metrics": [
       "Statistical similarity of feature distributions to real data",
-      "Preservation of multi-feature correlations critical for detection",
-      "Class balance reflecting real-world rarity",
-      "Detection model performance consistency on synthetic versus real data",
-      "Absence of unrealistic feature value combinations or outliers"
+      "Preservation of attack signature patterns and IoCs",
+      "Detection performance consistency when trained on synthetic data",
+      "Class imbalance representation fidelity",
+      "Temporal and behavioral pattern replication"
     ]
   },
   "metadata": {
     "dataset_name": "nsl_kdd_rare",
-    "enrichment_timestamp": "2025-06-19T14:50:47.213965",
+    "enrichment_timestamp": "2025-06-20T09:45:39.094132",
     "domain_discovery_used": true,
     "step": "contextual_enrichment",
     "version": "1.0"
