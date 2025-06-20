@@ -1,6 +1,7 @@
 # cyberdata/process/data_mixer.py
 #
 # python data_mixer.py five_email_phishing.csv.gz
+# python data_mixer.py nsl_kdd_rare_train.csv.gz
 
 import re
 import argparse
