@@ -27,8 +27,8 @@ logger = setup_logger("cyberdata.scripts.real_data_processor")
 load_dotenv()
 
 # Configuration variables
-SAMPLES_PER_CLASS = 30   # Number of real-world samples per class for analysis
-TARGET_SEEDS_PER_CLASS = 10  # Target number of seeds per class
+SAMPLES_PER_CLASS = 50   # Number of real-world samples per class for analysis
+TARGET_SEEDS_PER_CLASS = 20  # Target number of seeds per class
 
 # Dataset configuration
 CSV_FILE = "five_email_phishing.csv.gz"  # Raw CSV file

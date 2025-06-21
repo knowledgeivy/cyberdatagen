@@ -1,107 +1,101 @@
 {
   "problems": [
     {
-      "area": "email_security",
-      "nature": "phishing and social engineering via crafted email content",
-      "description": "This problem involves detecting phishing and social engineering attacks embedded in email content characterized by text-heavy narratives, obfuscated email addresses, suspicious URLs, and varied linguistic styles. Attackers exploit emotional manipulation through financial gain or health-related lures, using domain spoofing and URL obfuscation to evade detection. The detection complexity is moderate to high due to multi-source data variability and sophisticated text obfuscation techniques. Real-world attacks often include advance-fee scam narratives, counterfeit product advertisements, and fake corporate identities to establish false legitimacy.",
+      "area": "email security",
+      "nature": "phishing and social engineering via deceptive email content",
+      "description": "This problem involves detecting phishing and social engineering attacks embedded within email content. Attackers craft emails that leverage financial scams, fake job offers, and online pharmacy promotions, often using obfuscated URLs and impersonation of trusted institutions to deceive recipients. The detection challenge is moderate to high due to the text-heavy nature of emails, varied linguistic styles, and the use of social engineering tactics appealing to urgency and emotion. Attackers exploit multi-source datasets and balanced class distributions to evade simplistic detection, embedding narrative-rich content and suspicious metadata such as free email contacts and uncommon domain URLs.",
       "attack_vectors": [
-        "email phishing campaigns",
-        "social engineering via crafted email narratives",
-        "malicious URLs leading to fraudulent websites",
-        "advertisement of counterfeit or illegal products"
+        "email phishing via deceptive email content",
+        "social engineering through crafted narratives",
+        "malicious URLs directing to fraudulent or malicious websites"
       ],
       "real_world_context": {
-        "domain_insights": "Phishing emails often contain suspicious URLs with uncommon or unrelated domain names, urgent or enticing subject lines promising financial or health benefits, and social engineering language soliciting personal or financial information. Attackers use obfuscated email addresses and encoded subject lines to evade detection. Multi-source datasets reveal attackers adapt tactics across different victim pools, increasing detection complexity.",
-        "attack_sophistication": "Medium sophistication characterized by social engineering focus, leveraging text obfuscation, domain spoofing, and emotional manipulation but typically lacking advanced malware payloads.",
-        "technical_implementation": "Attacks manifest as emails embedding URLs with uncommon TLDs, advance-fee scam narratives with long detailed stories, encoded or MIME-encoded subject lines, and insertion of nonsensical text blocks to confuse filters. Non-standard email addresses with irregular spacing or inserted characters are used to bypass simple pattern matching.",
-        "threat_landscape": "These attacks represent a prevalent threat leveraging financial and health-related lures, widespread phishing campaigns across multiple sources, and increasing use of obfuscation and multi-lingual text to evade automated detection systems.",
-        "victim_impact": "Victims risk financial loss, identity theft, exposure to counterfeit or illegal products, and compromised personal information due to successful social engineering and phishing attempts."
+        "domain_insights": "Phishing emails often contain suspicious URLs unrelated to sender domains, urgent or lucrative subject lines, financial or personal gain narratives, and obfuscated domain names. Attackers impersonate trusted entities like banks and pharmacies, embedding contact info with free or suspicious domains to build false legitimacy.",
+        "attack_sophistication": "Moderate sophistication with social engineering, URL obfuscation, and narrative complexity, but lacking advanced polymorphic or encrypted payloads.",
+        "technical_implementation": "Emails include long narrative bodies exceeding 500 words describing scams, use of shortened or uncommon TLD URLs, and subject lines with monetary inducements. Contact information often uses free email providers, and attackers embed misspellings and unusual formatting to evade filters.",
+        "threat_landscape": "Phishing exploiting financial scams and online pharmacy promotions remains prevalent. Emerging patterns include narrative-rich scam emails and diversification into health and employment themes, blending multi-source data to evade detection.",
+        "victim_impact": "Victims risk financial loss, identity theft, and exposure to fraudulent services. Emotional manipulation and urgency increase the likelihood of engagement and compromise."
       },
       "technical_characteristics": {
         "attack_signatures": [
-          "phishing URL pattern: URLs with uncommon TLDs or unrelated domains (e.g., http://www.largevalue.net)",
-          "advance-fee scam narrative involving inheritance or abandoned funds",
-          "medication and health product spam with embedded URLs",
-          "fake corporate or banking identities with fraudulent contact details",
-          "encoded or MIME-encoded subject lines to evade keyword detection",
-          "insertion of unrelated or nonsensical text blocks"
+          "Emails containing financial scams referencing large abandoned sums with detailed backstories and requests for cooperation",
+          "Phishing emails promoting online pharmacies with direct URLs and claims of FDA approval or discounts",
+          "Short, spam-like bodies with lists of cheap medications and embedded suspicious URLs"
         ],
         "indicators_of_compromise": [
-          "presence of suspicious URLs linking to newly registered or uncommon domains",
-          "short, enticing subject lines with monetary or urgent keywords",
-          "email body containing spelling/grammar errors and unusual formatting",
-          "generic greetings or alphanumeric codes in salutations",
-          "non-standard email address formatting with spaces or inserted characters",
-          "embedded contact information with suspicious email addresses or fax numbers"
+          "URLs with uncommon or newly registered domains containing numeric or random strings",
+          "Subject lines with monetary amounts or urgent calls to action",
+          "Email bodies exceeding 500 words with narrative scams including personal names and contact details",
+          "Contact information using free or suspicious email domains",
+          "Multiple spelling or grammatical errors in business-context emails"
         ],
         "detection_criteria": [
-          "flag emails with URLs from domains not in whitelist or registered within last 6 months",
-          "detect advance-fee scam keywords and phrases in body text",
-          "identify encoded subject lines and obfuscated email addresses",
-          "alert on combination of monetary promises in subject and embedded suspicious URLs",
-          "use NLP anomaly detection to find incoherent or nonsensical text blocks"
+          "Flag emails with >1 suspicious URL or URLs with uncommon TLDs",
+          "Flag subject lines containing monetary values or urgent phrases",
+          "Flag emails with body length >500 words containing financial scam narratives",
+          "Flag presence of free or public email addresses in contact info within financial or health contexts",
+          "Flag emails with >3 spelling or grammatical errors in professional communication"
         ],
         "normal_vs_malicious": [
-          "benign emails have descriptive, relevant, and longer subject lines (5-15 words) vs. short, enticing phishing subjects (3-8 words)",
-          "benign URLs link to reputable domains without obfuscation vs. suspicious or uncommon domains in phishing",
-          "proper grammar and formatting in benign emails vs. errors and unusual formatting in malicious",
-          "standard email address syntax in benign vs. irregular spacing or inserted characters in malicious",
-          "presence of organizational disclaimers and signatures in benign emails absent in phishing"
+          "Benign emails have professional or neutral subject lines without monetary inducements",
+          "Legitimate URLs correspond to known reputable domains matching sender source",
+          "Normal email bodies are coherent, topic-consistent, and free of unsolicited financial offers",
+          "Legitimate contact info aligns with sender domain and organizational context",
+          "Minimal spelling and grammatical errors in professional emails"
         ],
         "measurable_thresholds": [
-          "flag emails with more than one suspicious indicator (e.g., suspicious URL + advance-fee keywords)",
-          "alert on URLs from domains registered within last 6 months",
-          "subject lines containing monetary amounts or urgent calls to action (e.g., '$2000/week')",
-          "body length thresholds: very short (<50 words) with promotional URLs or very long (>200 words) with scam narratives",
-          "mark emails with non-standard email address formatting as suspicious"
+          "More than one suspicious URL per email triggers suspicion",
+          "Subject lines containing '$' or urgent keywords raise alerts",
+          "Body length exceeding 500 words with scam keywords is suspicious",
+          "Contact emails from free providers in sensitive contexts are flagged",
+          "More than three spelling/grammar errors in professional emails indicate risk"
         ]
       },
       "contextual_examples": {
         "attack_scenarios": [
-          "An email with subject 'Claim your $2000/week now!' containing a URL to 'http://spreadreciprocity.com' and body text describing a quick financial opportunity with generic greeting and embedded suspicious contact email.",
-          "A long narrative email (>300 words) describing an inheritance claim requiring cooperation with bank officials, including advance-fee scam keywords and a suspicious URL with uncommon TLD.",
-          "A short promotional email advertising cheap medications with embedded obfuscated URLs and encoded subject line characters to evade keyword filters."
+          "An email claiming to be from a senior credit officer detailing an abandoned sum of 12.5 million British pounds, requesting cooperation and including free email contact info and obfuscated URLs.",
+          "A phishing email promoting an online pharmacy with a direct suspicious URL, claiming FDA approval and offering discounts on medications.",
+          "A short spam-like email listing cheap medications with embedded suspicious URLs using uncommon TLDs and numeric strings."
         ],
         "legitimate_scenarios": [
-          "A corporate newsletter email with descriptive subject 'Q2 Financial Results and Upcoming Meetings' containing URLs linking to the official company domain and properly formatted contact details.",
-          "An academic call for papers email from a known conference source with structured information, standard email address formatting, and no suspicious URLs.",
-          "A technical discussion email with domain-specific jargon, coherent body text, and sender metadata consistent with known legitimate sources."
+          "A business email with a neutral subject line related to a quarterly report, containing structured, coherent text and URLs matching the sender's domain.",
+          "An academic newsletter email with formal salutations, consistent organizational signatures, and no unsolicited financial offers or suspicious links.",
+          "A transactional email from a known vendor with professional formatting, legitimate contact information, and links to reputable domains."
         ]
       },
       "risk_reduction": [
-        "Implement URL reputation filtering to block access to domains with poor or unknown reputation",
-        "Deploy machine learning models trained on multi-source phishing and benign email datasets to improve detection accuracy",
-        "Enforce sender authentication protocols such as SPF, DKIM, and DMARC to reduce email header spoofing",
-        "Use heuristic and signature-based detection to identify advance-fee scam narratives and encoded subject lines",
-        "Continuously monitor email subjects and bodies for emerging phishing lures and update detection rules accordingly"
+        "Implement email filtering with URL reputation and domain age verification for embedded links.",
+        "Apply content-based detection using natural language processing to identify social engineering narratives and phishing keywords.",
+        "Enforce sender authentication protocols (SPF, DKIM, DMARC) to verify sender domain consistency.",
+        "Deploy heuristic analysis to flag emails with multiple suspicious URLs, monetary inducements, and free email contact addresses.",
+        "Continuously monitor for repeated phishing keywords and suspicious domain patterns to update blacklists and detection models."
       ],
       "synthetic_generation_guidance": {
         "key_features_to_vary": [
-          "subject line length and linguistic style",
-          "presence and type of URLs including domain TLDs",
-          "email body length and narrative complexity",
-          "email address formatting including obfuscation patterns",
-          "inclusion of encoded or MIME-encoded characters"
+          "Email subject lines with varying urgency and monetary inducements",
+          "Body length from short spam-like to long narrative scams",
+          "URL domain characteristics including TLDs, obfuscation, and registration age",
+          "Presence and style of contact information including free and suspicious email domains",
+          "Language style variations: formal, informal, spam-like with misspellings"
         ],
         "pattern_preservation": [
-          "phishing URL patterns with uncommon or unrelated domains",
-          "advance-fee scam narrative structures",
-          "use of generic greetings or alphanumeric codes",
-          "insertion of nonsensical or unrelated text blocks",
-          "presence of suspicious contact information"
+          "Maintain narrative-rich scam structures with detailed backstories",
+          "Preserve use of obfuscated or shortened URLs with uncommon TLDs",
+          "Include social engineering tactics appealing to urgency and emotion",
+          "Embed typical phishing keywords and financial or health-related themes"
         ],
         "realism_requirements": [
-          "maintain balanced classes with realistic proportions of phishing and benign emails",
-          "reflect multi-source linguistic diversity and formatting styles",
-          "simulate realistic email metadata consistent with source domains",
-          "preserve natural language errors and obfuscation tactics used in real attacks"
+          "Ensure linguistic diversity reflecting multi-source email origins",
+          "Incorporate realistic sender metadata consistent with email content",
+          "Balance class distribution to reflect real-world benign and malicious ratios",
+          "Simulate common formatting and grammatical error patterns observed in attacks"
         ],
         "diversity_dimensions": [
-          "different phishing lures (financial, health, inheritance)",
-          "varied email sources and sender identities",
-          "range of subject and body lengths",
-          "multiple obfuscation techniques for email addresses and URLs",
-          "multi-lingual or poorly structured text inclusion"
+          "Vary sender domains and source identifiers to simulate multi-source data",
+          "Include different phishing themes such as financial scams, health products, and job offers",
+          "Generate emails with different body lengths and complexity",
+          "Vary URL obfuscation techniques and domain registration ages",
+          "Simulate both professional and spam-like language styles"
         ]
       },
       "source": "three_step_real_world_analysis",

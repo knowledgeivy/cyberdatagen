@@ -1,0 +1,86 @@
+{
+  "samples": [
+    {
+      "subject": "Quarterly Newsletter - Corporate Social Responsibility Update",
+      "body": "Dear Team,\n\nWe are pleased to share the latest edition of our Corporate Social Responsibility newsletter. This quarter, we highlight successful environmental initiatives and community outreach programs.\n\nYou can read the full newsletter at https://intranet.corp.example.com/newsletters/csr-q2-2025.pdf.\n\nFor any feedback or contributions, please write to csr@corporate-example.com.\n\nThank you for your continued support.\n\nWarm regards,\nOlivia Harper\nCorporate Communications\n",
+      "label": 0,
+      "source": "TREC-07",
+      "sample_id": "ben_347_3",
+      "generation_timestamp": 1750532988.4829462
+    },
+    {
+      "subject": "Invitation to the Quarterly Project Review Meeting",
+      "body": "Hello Team,\n\nYou are invited to attend the Quarterly Project Review Meeting scheduled for Monday, July 14, 2025, at 9:30 AM in Meeting Room 3B.\n\nThe agenda will cover project milestones, resource allocation, and risk assessment updates.\n\nPlease review the attached project status document and be prepared to discuss your respective deliverables.\n\nFor any inquiries, reach out to project.coordinator@corporate-example.com.\n\nRegards,\nAnna Mitchell\nProject Coordinator\n",
+      "label": 0,
+      "source": "Ling",
+      "sample_id": "ben_274_1",
+      "generation_timestamp": 1750532918.3901207
+    },
+    {
+      "subject": "Invitation to Submit Abstracts for 2025 International Data Science Conference",
+      "body": "Dear Researcher,\n\nWe are pleased to invite you to submit abstracts for the 2025 International Data Science Conference to be held from October 12-15, 2025 at the Grand Convention Center.\n\nThis conference aims to bring together experts from academia and industry to share insights on advances in data analytics, machine learning, and big data technologies.\n\nPlease submit your abstracts by August 1, 2025, via the official portal: https://datascienceconf2025.org/submit\n\nFor more information, contact conference@datascienceconf2025.org.\n\nLooking forward to your valuable contribution.\n\nSincerely,\nConference Organizing Committee\n",
+      "label": 0,
+      "source": "CEAS-08",
+      "sample_id": "ben_307_1",
+      "generation_timestamp": 1750532946.6574883
+    }
+  ],
+  "metadata": {
+    "area": "email_security",
+    "nature": "phishing and social engineering via deceptive email content",
+    "scale_count_requested": 2150,
+    "malicious_ratio_requested": 0.5,
+    "actual_samples_generated": 2150,
+    "actual_malicious_count": 0,
+    "actual_benign_count": 2150,
+    "actual_malicious_ratio": 0.0,
+    "generation_method": "enhanced_scale_generation",
+    "generation_stats": {
+      "total_generated": 2150,
+      "total_unique": 2150,
+      "duplicates_filtered": 0,
+      "failed_generations": 0,
+      "successful_batches": 430,
+      "total_api_calls": 430,
+      "generation_start_time": 1750532628.4702806,
+      "generation_end_time": 1750533078.7034507
+    },
+    "duplicate_detection_stats": {
+      "samples_tracked": 647,
+      "similarity_threshold": 0.85
+    },
+    "generation_timestamp": 1750533078.7044504,
+    "total_generation_time": 450.2331700325012,
+    "samples_per_minute": 286.51820564594965,
+    "context_sources": {
+      "domain_discovery_used": true,
+      "contextual_problems_used": true,
+      "data_info_used": true,
+      "dataset_name": "five_email_phishing"
+    },
+    "quality_indicators": {
+      "uniqueness_rate": 1.0,
+      "success_rate": 1.0,
+      "average_batch_time": 1.0470538837965144
+    },
+    "quality_status": "filtered_low_quality_scale_parallel_config",
+    "validation_method": "parallel_multi_dimensional_scale_config_driven",
+    "validation_timestamp": 1750538036.6978114,
+    "quality_filtering_applied": true,
+    "parallel_validation": true,
+    "parallel_workers": 12,
+    "configuration_driven": true,
+    "filtered_count": 3,
+    "filtered_malicious": 0,
+    "filtered_benign": 3,
+    "quality_thresholds_used": {
+      "technical_accuracy": 0.75,
+      "schema_consistency": 0.95,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.65,
+      "domain_alignment": 0.75,
+      "overall_minimum": 0.75
+    },
+    "reason_for_filtering": "Failed to meet scale quality thresholds in config-driven parallel validation"
+  }
+}
