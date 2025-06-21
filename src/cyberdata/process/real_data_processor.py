@@ -27,11 +27,11 @@ logger = setup_logger("cyberdata.scripts.real_data_processor")
 load_dotenv()
 
 # Configuration variables
-SAMPLES_PER_CLASS = 100  # Number of real-world samples per class for analysis
-TARGET_SEEDS_PER_CLASS = 100  # Target number of seeds per class
+SAMPLES_PER_CLASS = 5   # Number of real-world samples per class for analysis
+TARGET_SEEDS_PER_CLASS = 5  # Target number of seeds per class
 
 # Dataset configuration
-CSV_FILE = "TR-OP/kpd.csv.gz"  # Raw CSV file in raw/ directory
+CSV_FILE = "TR-OP/kpd_train.csv.gz"  # Raw CSV file
 DATA_INFO_NAME = "kpd"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
 
@@ -451,7 +451,7 @@ def generate_schema_aware_seeds(data_info: Dict,
     
     # Generate seeds in multiple batches for diversity
     all_seeds = []
-    seeds_per_batch = 12
+    seeds_per_batch = 5
     batches_needed = max(2, (TARGET_SEEDS_PER_CLASS * 2) // seeds_per_batch)
     
     logger.info(f"Generating seeds in {batches_needed} batches of {seeds_per_batch} each")

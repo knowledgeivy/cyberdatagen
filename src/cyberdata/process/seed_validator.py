@@ -1,10 +1,13 @@
 # cyberdata/process/seed_validator.py
 
+import concurrent.futures
 import json
 import numpy as np
 import os
 import sys
 import time
+import threading
+import yaml
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
@@ -22,7 +25,7 @@ from cyberdata.utils.logger_config import setup_logger
 from cyberdata.utils.prompt_loader import load_prompt
 
 # Set up logger
-logger = setup_logger("cyberdata.scripts.enhanced_seed_validator")
+logger = setup_logger("cyberdata.scripts.enhanced_parallel_seed_validator")
 
 # Load environment variables
 load_dotenv()
@@ -30,21 +33,56 @@ load_dotenv()
 # Constants
 MODEL_NAME = "gpt-4.1-mini"
 
-# Quality thresholds
-QUALITY_THRESHOLDS = {
-    'technical_accuracy': 0.7,
-    'schema_consistency': 0.9,
-    'realism_assessment': 0.7,
-    'semantic_uniqueness': 0.6,
-    'domain_alignment': 0.7,
-    'overall_minimum': 0.75
-}
-
 # Get config manager instance
 config_manager = get_config_manager()
 
 logger.info(f"Using model: {MODEL_NAME}")
-logger.info(f"Quality thresholds: {QUALITY_THRESHOLDS}")
+
+
+def load_validation_config() -> Dict[str, Any]:
+    """Load seed validation configuration from scale_config.yaml."""
+    try:
+        config_file = config_manager.config_dir / "scale_config.yaml"
+        
+        if not config_file.exists():
+            logger.warning(f"Scale config file not found: {config_file}. Using defaults.")
+            return get_default_seed_config()
+        
+        with config_file.open('r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        
+        logger.info(f"Loaded seed validation configuration from: {config_file}")
+        return config
+        
+    except Exception as e:
+        logger.error(f"Error loading scale configuration: {e}. Using defaults.")
+        return get_default_seed_config()
+
+
+def get_default_seed_config() -> Dict[str, Any]:
+    """Get default configuration if scale_config.yaml is not available."""
+    return {
+        'seed_validation': {
+            'parallel_processing': {
+                'max_workers': 6,
+                'batch_delay': 0.15,
+                'enable_parallel': True
+            },
+            'quality_thresholds': {
+                'technical_accuracy': 0.7,
+                'schema_consistency': 0.9,
+                'realism_assessment': 0.7,
+                'semantic_uniqueness': 0.6,
+                'domain_alignment': 0.7,
+                'overall_minimum': 0.75
+            },
+            'performance_optimization': {
+                'enable_progress_logging': True,
+                'log_every_n_samples': 25,
+                'enable_performance_metrics': True
+            }
+        }
+    }
 
 
 @dataclass
@@ -78,11 +116,8 @@ class QualityScore:
             composite_score=data.get('composite_score', 0.0)
         )
     
-    def is_high_quality(self, thresholds: Dict[str, float] = None) -> bool:
+    def is_high_quality(self, thresholds: Dict[str, float]) -> bool:
         """Check if this score meets high quality thresholds."""
-        if thresholds is None:
-            thresholds = QUALITY_THRESHOLDS
-        
         return (
             self.technical_accuracy >= thresholds['technical_accuracy'] and
             self.schema_consistency >= thresholds['schema_consistency'] and
@@ -107,14 +142,92 @@ class ValidationResult:
     recommendations: List[str]
 
 
-class EnhancedSeedValidator:
-    """Enhanced seed validator with multi-dimensional quality assessment."""
+@dataclass
+class ValidationTask:
+    """Represents a single validation task for parallel processing."""
+    task_id: str
+    example_index: int
+    example: Dict[str, Any]
+    validation_context: Dict[str, Any]
+    uniqueness_score: float
+    priority: int = 0
+
+
+@dataclass
+class ValidationTaskResult:
+    """Result of a validation task."""
+    task_id: str
+    validation_result: ValidationResult
+    success: bool
+    processing_time: float = 0.0
+    error: Optional[str] = None
+
+
+class EnhancedParallelSeedValidator:
+    """Enhanced seed validator with parallel multi-dimensional quality assessment."""
     
-    def __init__(self):
+    def __init__(self, config_override: Dict[str, Any] = None):
         self.config_manager = config_manager
-        self.quality_thresholds = QUALITY_THRESHOLDS.copy()
-        self.validation_cache = {}
         
+        # Load configuration
+        self.config = load_validation_config()
+        if config_override:
+            self.config = self._merge_configs(self.config, config_override)
+        
+        # Extract validation configuration (look for seed_validation or fall back to scale_validation)
+        validation_config = self.config.get('seed_validation', self.config.get('scale_validation', {}))
+        
+        # Parallel processing settings
+        parallel_config = validation_config.get('parallel_processing', {})
+        self.max_workers = parallel_config.get('max_workers', 6)
+        self.batch_delay = parallel_config.get('batch_delay', 0.15)
+        self.enable_parallel = parallel_config.get('enable_parallel', True)
+        
+        # Quality thresholds
+        self.quality_thresholds = validation_config.get('quality_thresholds', {
+            'technical_accuracy': 0.7,
+            'schema_consistency': 0.9,
+            'realism_assessment': 0.7,
+            'semantic_uniqueness': 0.6,
+            'domain_alignment': 0.7,
+            'overall_minimum': 0.75
+        })
+        
+        # Performance settings
+        perf_config = validation_config.get('performance_optimization', {})
+        self.enable_progress_logging = perf_config.get('enable_progress_logging', True)
+        self.log_interval = perf_config.get('log_every_n_samples', 25)
+        
+        # Statistics tracking
+        self.stats = {
+            'total_validated': 0,
+            'successful_validations': 0,
+            'failed_validations': 0,
+            'high_quality_count': 0,
+            'validation_start_time': None,
+            'validation_end_time': None,
+            'total_api_calls': 0
+        }
+        
+        # Thread lock for stats
+        self.stats_lock = threading.Lock()
+        
+        logger.info(f"EnhancedParallelSeedValidator initialized from config:")
+        logger.info(f"  - Parallel workers: {self.max_workers}")
+        logger.info(f"  - Batch delay: {self.batch_delay}s")
+        logger.info(f"  - Parallel enabled: {self.enable_parallel}")
+        logger.info(f"  - Quality thresholds: {self.quality_thresholds}")
+    
+    def _merge_configs(self, base: Dict, override: Dict) -> Dict:
+        """Recursively merge configuration dictionaries."""
+        result = base.copy()
+        for key, value in override.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = self._merge_configs(result[key], value)
+            else:
+                result[key] = value
+        return result
+    
     def load_domain_discovery(self, dataset_name: str) -> Dict[str, Any]:
         """Load domain discovery results for validation context."""
         try:
@@ -206,20 +319,142 @@ class EnhancedSeedValidator:
             logger.error(f"Error loading raw seeds: {str(e)}")
             raise
     
+    def calculate_semantic_uniqueness_batch(self, examples: List[Dict[str, Any]]) -> Dict[int, float]:
+        """Calculate semantic uniqueness scores for examples."""
+        logger.info("Calculating semantic uniqueness scores...")
+        
+        uniqueness_scores = {}
+        
+        # Create text representations
+        text_representations = {}
+        for i, example in enumerate(examples):
+            text_parts = []
+            for key, value in example.items():
+                if key not in ['_metadata', 'sample_id', 'generation_timestamp']:
+                    text_parts.append(str(value).lower())
+            text_representations[i] = ' '.join(text_parts)
+        
+        # Calculate uniqueness scores
+        for i, text_repr in text_representations.items():
+            words_current = set(text_repr.split())
+            similar_count = 0
+            
+            for other_idx, other_repr in text_representations.items():
+                if i != other_idx:
+                    words_other = set(other_repr.split())
+                    
+                    if len(words_current) > 0 and len(words_other) > 0:
+                        intersection = len(words_current.intersection(words_other))
+                        union = len(words_current.union(words_other))
+                        jaccard_similarity = intersection / union if union > 0 else 0
+                        
+                        if jaccard_similarity > 0.7:  # High similarity threshold
+                            similar_count += 1
+            
+            # Calculate uniqueness score
+            total_comparisons = len(text_representations) - 1
+            uniqueness_score = 1.0 - (similar_count / total_comparisons) if total_comparisons > 0 else 1.0
+            uniqueness_scores[i] = max(0.0, min(1.0, uniqueness_score))
+        
+        logger.info(f"Calculated uniqueness scores for {len(examples)} examples")
+        return uniqueness_scores
+    
+    def create_validation_tasks(self, examples: List[Dict[str, Any]], 
+                               validation_context: Dict[str, Any], 
+                               uniqueness_scores: Dict[int, float]) -> List[ValidationTask]:
+        """Create validation tasks for parallel processing."""
+        tasks = []
+        
+        for i, example in enumerate(examples):
+            task = ValidationTask(
+                task_id=f"seed_val_{i}",
+                example_index=i,
+                example=example,
+                validation_context=validation_context.copy(),  # Each task gets its own copy
+                uniqueness_score=uniqueness_scores.get(i, 0.5),
+                priority=1  # All seed validation tasks have same priority
+            )
+            tasks.append(task)
+        
+        logger.info(f"Created {len(tasks)} validation tasks")
+        return tasks
+    
+    def execute_validation_task(self, task: ValidationTask) -> ValidationTaskResult:
+        """Execute a single validation task."""
+        start_time = time.time()
+        
+        logger.debug(f"Executing validation task {task.task_id} (example {task.example_index})")
+        
+        try:
+            # Validate the example
+            result = self.validate_individual_example(
+                task.example, 
+                task.example_index, 
+                task.validation_context, 
+                task.uniqueness_score
+            )
+            
+            # Update stats
+            with self.stats_lock:
+                self.stats['successful_validations'] += 1
+                self.stats['total_api_calls'] += 1
+                if result.is_high_quality:
+                    self.stats['high_quality_count'] += 1
+            
+            processing_time = time.time() - start_time
+            
+            logger.debug(f"Task {task.task_id} completed successfully in {processing_time:.2f}s")
+            
+            return ValidationTaskResult(
+                task_id=task.task_id,
+                validation_result=result,
+                success=True,
+                processing_time=processing_time
+            )
+            
+        except Exception as e:
+            logger.error(f"Task {task.task_id} failed: {e}")
+            
+            with self.stats_lock:
+                self.stats['failed_validations'] += 1
+            
+            # Create a failed validation result
+            failed_result = ValidationResult(
+                example_index=task.example_index,
+                example=task.example,
+                quality_score=QualityScore(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                is_high_quality=False,
+                validation_details={'error': str(e)},
+                sample_type='unknown',
+                issues=[f'Validation error: {str(e)}'],
+                strengths=[],
+                recommendations=['Review example format and validation process']
+            )
+            
+            return ValidationTaskResult(
+                task_id=task.task_id,
+                validation_result=failed_result,
+                success=False,
+                processing_time=time.time() - start_time,
+                error=str(e)
+            )
+    
     def validate_individual_example(self, 
                                    example: Dict[str, Any],
                                    example_index: int,
-                                   validation_context: Dict[str, Any]) -> ValidationResult:
+                                   validation_context: Dict[str, Any],
+                                   uniqueness_score: float) -> ValidationResult:
         """Validate a single example with multi-dimensional quality assessment."""
         logger.debug(f"Validating example {example_index}")
         
         try:
-            # Prepare validation context
-            context_json = json.dumps({
-                'example': example,
-                'example_index': example_index,
-                'validation_context': validation_context
-            }, indent=2, default=str)
+            # Prepare validation context with uniqueness score
+            full_context = validation_context.copy()
+            full_context['example'] = example
+            full_context['example_index'] = example_index
+            full_context['semantic_uniqueness_score'] = uniqueness_score
+            
+            context_json = json.dumps(full_context, indent=2, default=str)
             
             # Load validation prompts
             system_prompt = load_prompt(
@@ -327,54 +562,15 @@ class EnhancedSeedValidator:
         else:
             return 'unknown'
     
-    def calculate_semantic_uniqueness(self, examples: List[Dict[str, Any]]) -> Dict[int, float]:
-        """Calculate semantic uniqueness scores for examples."""
-        logger.info("Calculating semantic uniqueness scores...")
+    def validate_seed_batch_parallel(self, 
+                                   examples: List[Dict[str, Any]], 
+                                   metadata: Dict[str, Any],
+                                   max_examples: int = None) -> Tuple[List[ValidationResult], Dict[str, Any]]:
+        """Validate a batch of seed examples with parallel multi-dimensional quality assessment."""
+        logger.info(f"🎯 Starting enhanced parallel validation of {len(examples)} seed examples")
+        logger.info("="*80)
         
-        uniqueness_scores = {}
-        
-        # Simple text-based uniqueness calculation
-        # In a real implementation, you might use embeddings
-        text_representations = []
-        
-        for i, example in enumerate(examples):
-            # Create text representation of example
-            text_parts = []
-            for key, value in example.items():
-                if key != '_metadata' and isinstance(value, (str, int, float)):
-                    text_parts.append(str(value).lower())
-            
-            text_repr = ' '.join(text_parts)
-            text_representations.append(text_repr)
-        
-        # Calculate uniqueness based on text similarity
-        for i, text_repr in enumerate(text_representations):
-            similar_count = 0
-            for j, other_repr in enumerate(text_representations):
-                if i != j:
-                    # Simple similarity check (in real implementation, use more sophisticated methods)
-                    words_i = set(text_repr.split())
-                    words_j = set(other_repr.split())
-                    
-                    if len(words_i) > 0 and len(words_j) > 0:
-                        jaccard_similarity = len(words_i.intersection(words_j)) / len(words_i.union(words_j))
-                        if jaccard_similarity > 0.7:  # High similarity threshold
-                            similar_count += 1
-            
-            # Higher uniqueness score = fewer similar examples
-            total_comparisons = len(text_representations) - 1
-            uniqueness_score = 1.0 - (similar_count / total_comparisons) if total_comparisons > 0 else 1.0
-            uniqueness_scores[i] = max(0.0, min(1.0, uniqueness_score))
-        
-        logger.info(f"Calculated uniqueness scores for {len(examples)} examples")
-        return uniqueness_scores
-    
-    def validate_seed_batch(self, 
-                           examples: List[Dict[str, Any]], 
-                           metadata: Dict[str, Any],
-                           max_examples: int = None) -> Tuple[List[ValidationResult], Dict[str, Any]]:
-        """Validate a batch of seed examples with comprehensive quality assessment."""
-        logger.info(f"Starting enhanced validation of {len(examples)} seed examples")
+        self.stats['validation_start_time'] = time.time()
         
         # Limit examples if specified
         if max_examples and len(examples) > max_examples:
@@ -385,12 +581,14 @@ class EnhancedSeedValidator:
         dataset_name = metadata.get('dataset_name', metadata.get('source', 'unknown'))
         
         # Load validation context
+        logger.info("📋 Loading validation context...")
         domain_discovery = self.load_domain_discovery(dataset_name)
         contextual_problems = self.load_contextual_problems(dataset_name)
         data_info = self.load_data_info(dataset_name)
         
         # Calculate semantic uniqueness scores
-        uniqueness_scores = self.calculate_semantic_uniqueness(examples)
+        logger.info("🧮 Calculating semantic uniqueness scores...")
+        uniqueness_scores = self.calculate_semantic_uniqueness_batch(examples)
         
         # Prepare validation context
         validation_context = {
@@ -402,28 +600,303 @@ class EnhancedSeedValidator:
             'validation_timestamp': time.time()
         }
         
-        # Validate individual examples
+        # Create validation tasks
+        logger.info("📝 Creating validation tasks...")
+        validation_tasks = self.create_validation_tasks(examples, validation_context, uniqueness_scores)
+        
+        # Determine processing mode
+        processing_mode = "Parallel" if self.enable_parallel and len(validation_tasks) > 1 else "Sequential"
+        logger.info(f"🔄 Processing Mode: {processing_mode}")
+        logger.info(f"👥 Workers: {self.max_workers if self.enable_parallel else 1}")
+        logger.info("="*80)
+        
+        # Execute validation tasks
         validation_results = []
         
-        for i, example in enumerate(examples):
-            logger.info(f"Validating example {i+1}/{len(examples)}")
-            
-            # Add uniqueness score to validation context
-            validation_context['semantic_uniqueness_score'] = uniqueness_scores.get(i, 0.5)
-            
-            result = self.validate_individual_example(example, i, validation_context)
-            validation_results.append(result)
-            
-            # Small delay to avoid rate limiting
-            if i < len(examples) - 1:
-                time.sleep(0.2)
+        if self.enable_parallel and len(validation_tasks) > 1:
+            # Parallel execution
+            validation_results = self._execute_parallel_seed_validation(validation_tasks)
+        else:
+            # Sequential execution
+            validation_results = self._execute_sequential_seed_validation(validation_tasks)
+        
+        # Update final stats
+        with self.stats_lock:
+            self.stats['total_validated'] = len(validation_results)
+            self.stats['validation_end_time'] = time.time()
         
         # Calculate batch statistics
+        logger.info("📈 Calculating validation statistics...")
         batch_stats = self._calculate_batch_statistics(validation_results)
         
-        logger.info(f"Batch validation completed: {batch_stats['high_quality_count']}/{len(validation_results)} high quality")
+        # Final validation summary
+        total_time = self.stats['validation_end_time'] - self.stats['validation_start_time']
+        self._log_seed_validation_completion_summary(batch_stats, total_time)
         
         return validation_results, batch_stats
+    
+    def _execute_parallel_seed_validation(self, validation_tasks: List[ValidationTask]) -> List[ValidationResult]:
+        """Execute seed validation tasks in parallel with enhanced progress tracking."""
+        validation_results = []
+        total_tasks = len(validation_tasks)
+        
+        # Progress tracking variables
+        completed_count = 0
+        high_quality_count = 0
+        failed_count = 0
+        start_time = time.time()
+        last_progress_time = start_time
+        
+        logger.info(f"🚀 Starting parallel seed validation: {total_tasks} examples with {self.max_workers} workers")
+        logger.info("="*80)
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all tasks
+            future_to_task = {
+                executor.submit(self.execute_validation_task, task): task 
+                for task in validation_tasks
+            }
+            
+            # Collect results as they complete
+            for future in concurrent.futures.as_completed(future_to_task):
+                task = future_to_task[future]
+                try:
+                    task_result = future.result()
+                    validation_results.append(task_result.validation_result)
+                    completed_count += 1
+                    
+                    # Track quality
+                    if task_result.validation_result.is_high_quality:
+                        high_quality_count += 1
+                    
+                    # Enhanced progress logging
+                    current_time = time.time()
+                    should_log = (
+                        completed_count % self.log_interval == 0 or 
+                        completed_count == total_tasks or
+                        completed_count == 1 or  # Log first completion
+                        (current_time - last_progress_time) >= 10  # Log every 10 seconds minimum
+                    )
+                    
+                    if should_log and self.enable_progress_logging:
+                        self._log_seed_progress(
+                            completed_count, total_tasks, high_quality_count, 
+                            failed_count, start_time, current_time
+                        )
+                        last_progress_time = current_time
+                    
+                    # Add small delay to avoid overwhelming the API
+                    if completed_count < total_tasks:
+                        time.sleep(self.batch_delay)
+                        
+                except Exception as e:
+                    logger.error(f"Task {task.task_id} raised exception: {e}")
+                    failed_count += 1
+                    completed_count += 1
+                    
+                    # Add a failed result
+                    failed_result = ValidationResult(
+                        example_index=task.example_index,
+                        example=task.example,
+                        quality_score=QualityScore(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                        is_high_quality=False,
+                        validation_details={'error': str(e)},
+                        sample_type='unknown',
+                        issues=[f'Task execution error: {str(e)}'],
+                        strengths=[],
+                        recommendations=['Review task execution and validation process']
+                    )
+                    validation_results.append(failed_result)
+        
+        # Final progress summary
+        total_time = time.time() - start_time
+        self._log_final_seed_progress_summary(total_tasks, high_quality_count, failed_count, total_time)
+        
+        return validation_results
+    
+    def _execute_sequential_seed_validation(self, validation_tasks: List[ValidationTask]) -> List[ValidationResult]:
+        """Execute seed validation tasks sequentially with enhanced progress tracking."""
+        validation_results = []
+        total_tasks = len(validation_tasks)
+        
+        # Progress tracking variables
+        high_quality_count = 0
+        failed_count = 0
+        start_time = time.time()
+        
+        logger.info(f"🔄 Starting sequential seed validation: {total_tasks} examples")
+        logger.info("="*80)
+        
+        for i, task in enumerate(validation_tasks):
+            current_count = i + 1
+            
+            try:
+                task_result = self.execute_validation_task(task)
+                validation_results.append(task_result.validation_result)
+                
+                # Track quality
+                if task_result.validation_result.is_high_quality:
+                    high_quality_count += 1
+                
+                # Progress logging for sequential
+                if current_count % (self.log_interval // 2) == 0 or current_count == total_tasks or current_count == 1:
+                    self._log_sequential_seed_progress(
+                        current_count, total_tasks, high_quality_count, 
+                        failed_count, start_time, time.time()
+                    )
+                
+                # Add delay between tasks
+                if i < total_tasks - 1:
+                    time.sleep(self.batch_delay)
+                    
+            except Exception as e:
+                logger.error(f"Sequential task {task.task_id} failed: {e}")
+                failed_count += 1
+                
+                # Add a failed result
+                failed_result = ValidationResult(
+                    example_index=task.example_index,
+                    example=task.example,
+                    quality_score=QualityScore(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                    is_high_quality=False,
+                    validation_details={'error': str(e)},
+                    sample_type='unknown',
+                    issues=[f'Sequential execution error: {str(e)}'],
+                    strengths=[],
+                    recommendations=['Review sequential execution and validation process']
+                )
+                validation_results.append(failed_result)
+        
+        # Final summary
+        total_time = time.time() - start_time
+        self._log_final_seed_progress_summary(total_tasks, high_quality_count, failed_count, total_time)
+        
+        return validation_results
+    
+    def _log_seed_progress(self, completed: int, total: int, high_quality: int, 
+                          failed: int, start_time: float, current_time: float):
+        """Log detailed seed validation progress with visual indicators."""
+        # Calculate metrics
+        progress_pct = (completed / total) * 100
+        elapsed_time = current_time - start_time
+        rate_per_min = (completed / elapsed_time) * 60 if elapsed_time > 0 else 0
+        
+        # Estimate remaining time
+        if completed > 0 and elapsed_time > 0:
+            estimated_total_time = (total / completed) * elapsed_time
+            eta_seconds = estimated_total_time - elapsed_time
+            eta_minutes = eta_seconds / 60
+        else:
+            eta_minutes = 0
+        
+        # Quality metrics
+        quality_rate = (high_quality / completed) * 100 if completed > 0 else 0
+        success_rate = ((completed - failed) / completed) * 100 if completed > 0 else 0
+        
+        # Create progress bar
+        bar_width = 40
+        filled_width = int((progress_pct / 100) * bar_width)
+        progress_bar = "█" * filled_width + "░" * (bar_width - filled_width)
+        
+        # Log progress with visual indicators
+        logger.info(f"🌱 Seed Progress: [{progress_bar}] {progress_pct:.1f}% ({completed:,}/{total:,})")
+        logger.info(f"   ⚡ Rate: {rate_per_min:.1f} seeds/min | ⏱️  ETA: {eta_minutes:.1f} min | ⏰ Elapsed: {elapsed_time:.1f}s")
+        logger.info(f"   ✅ High Quality: {high_quality:,} ({quality_rate:.1f}%) | ❌ Failed: {failed:,} | 📈 Success: {success_rate:.1f}%")
+        logger.info("   " + "-" * 70)
+    
+    def _log_sequential_seed_progress(self, completed: int, total: int, high_quality: int, 
+                                     failed: int, start_time: float, current_time: float):
+        """Log sequential seed validation progress with visual indicators."""
+        # Calculate metrics
+        progress_pct = (completed / total) * 100
+        elapsed_time = current_time - start_time
+        rate_per_min = (completed / elapsed_time) * 60 if elapsed_time > 0 else 0
+        
+        # Estimate remaining time
+        if completed > 0 and elapsed_time > 0:
+            estimated_total_time = (total / completed) * elapsed_time
+            eta_seconds = estimated_total_time - elapsed_time
+            eta_minutes = eta_seconds / 60
+        else:
+            eta_minutes = 0
+        
+        # Quality metrics
+        quality_rate = (high_quality / completed) * 100 if completed > 0 else 0
+        
+        # Create simple progress bar
+        bar_width = 30
+        filled_width = int((progress_pct / 100) * bar_width)
+        progress_bar = "█" * filled_width + "░" * (bar_width - filled_width)
+        
+        # Log sequential progress
+        logger.info(f"🔄 Sequential: [{progress_bar}] {progress_pct:.1f}% ({completed}/{total})")
+        logger.info(f"   ⚡ Rate: {rate_per_min:.1f}/min | ⏱️  ETA: {eta_minutes:.1f}min | ✅ Quality: {quality_rate:.1f}%")
+    
+    def _log_final_seed_progress_summary(self, total: int, high_quality: int, failed: int, total_time: float):
+        """Log final seed validation progress summary with comprehensive metrics."""
+        successful = total - failed
+        quality_rate = (high_quality / total) * 100 if total > 0 else 0
+        success_rate = (successful / total) * 100 if total > 0 else 0
+        avg_rate = (total / total_time) * 60 if total_time > 0 else 0
+        
+        logger.info("="*80)
+        logger.info("🎉 PARALLEL SEED VALIDATION COMPLETED!")
+        logger.info("="*80)
+        logger.info(f"🌱 Total Seeds: {total:,}")
+        logger.info(f"✅ High Quality: {high_quality:,} ({quality_rate:.1f}%)")
+        logger.info(f"❌ Failed: {failed:,} ({(failed/total)*100:.1f}%)")
+        logger.info(f"📈 Success Rate: {success_rate:.1f}%")
+        logger.info(f"⏱️  Total Time: {total_time:.2f} seconds ({total_time/60:.1f} minutes)")
+        logger.info(f"⚡ Average Rate: {avg_rate:.1f} seeds/minute")
+        logger.info(f"🔄 Workers Used: {self.max_workers}")
+        logger.info("="*80)
+    
+    def _log_seed_validation_completion_summary(self, batch_stats: Dict[str, Any], total_time: float):
+        """Log comprehensive seed validation completion summary."""
+        logger.info("\n" + "="*80)
+        logger.info(f"🎉 SEED VALIDATION COMPLETED")
+        logger.info("="*80)
+        
+        # Basic metrics
+        logger.info(f"🌱 Seed Metrics:")
+        logger.info(f"   🎯 Total Examples: {batch_stats['total_count']:,}")
+        logger.info(f"   🏆 High Quality: {batch_stats['high_quality_count']:,}")
+        logger.info(f"   📈 Quality Rate: {batch_stats['high_quality_ratio']*100:.1f}%")
+        
+        # Performance metrics
+        logger.info(f"\n⚡ Performance Metrics:")
+        logger.info(f"   ⏱️  Total Time: {total_time:.2f} seconds ({total_time/60:.1f} minutes)")
+        logger.info(f"   🚀 Validation Rate: {batch_stats['total_count']/(total_time/60):.1f} seeds/minute")
+        logger.info(f"   🔄 Workers Used: {self.max_workers if self.enable_parallel else 1}")
+        logger.info(f"   📞 API Calls: {self.stats['total_api_calls']:,}")
+        logger.info(f"   ✅ Success Rate: {(self.stats['successful_validations']/(self.stats['successful_validations']+self.stats['failed_validations'])*100):.1f}%" if self.stats['successful_validations']+self.stats['failed_validations'] > 0 else "N/A")
+        
+        # Quality breakdown
+        logger.info(f"\n🎯 Quality Analysis:")
+        avg_scores = batch_stats['average_scores']
+        logger.info(f"   🔧 Technical Accuracy: {avg_scores['technical_accuracy']:.3f}")
+        logger.info(f"   📋 Schema Consistency: {avg_scores['schema_consistency']:.3f}")
+        logger.info(f"   🌍 Realism Assessment: {avg_scores['realism_assessment']:.3f}")
+        logger.info(f"   🎨 Semantic Uniqueness: {avg_scores['semantic_uniqueness']:.3f}")
+        logger.info(f"   🎯 Domain Alignment: {avg_scores['domain_alignment']:.3f}")
+        logger.info(f"   🏆 Composite Score: {avg_scores['composite_score']:.3f}")
+        
+        # Sample type breakdown
+        type_counts = batch_stats['type_counts']
+        type_quality_counts = batch_stats['type_quality_counts']
+        if type_counts:
+            logger.info(f"\n📊 Sample Type Analysis:")
+            for sample_type, count in type_counts.items():
+                quality_count = type_quality_counts.get(sample_type, 0)
+                quality_rate = (quality_count / count * 100) if count > 0 else 0
+                if sample_type == 'malicious':
+                    logger.info(f"   🔴 Malicious: {count:,} samples, {quality_count:,} high quality ({quality_rate:.1f}%)")
+                elif sample_type == 'benign':
+                    logger.info(f"   🟢 Benign: {count:,} samples, {quality_count:,} high quality ({quality_rate:.1f}%)")
+                else:
+                    logger.info(f"   ⚪ {sample_type.title()}: {count:,} samples, {quality_count:,} high quality ({quality_rate:.1f}%)")
+        
+        logger.info("="*80)
     
     def _calculate_batch_statistics(self, results: List[ValidationResult]) -> Dict[str, Any]:
         """Calculate comprehensive statistics for validation batch."""
@@ -593,10 +1066,10 @@ class EnhancedSeedValidator:
                                area: str,
                                nature: str):
         """Save comprehensive validation results."""
-        logger.info("Saving validation results...")
+        logger.info("Saving seed validation results...")
         
         # Create validation directory
-        seed_validation_dir = self.config_manager.data_dir / "seeds_validation"
+        seed_validation_dir = self.config_manager.data_dir / "seed_validation"
         area_clean = area.replace(' ', '_').replace('(', '').replace(')', '')
         area_dir = seed_validation_dir / area_clean
         area_dir.mkdir(parents=True, exist_ok=True)
@@ -605,12 +1078,24 @@ class EnhancedSeedValidator:
         validation_report = {
             'validation_metadata': {
                 'validation_timestamp': time.time(),
-                'validator_version': '2.0_enhanced',
+                'validator_version': '3.0_enhanced_parallel_config_driven',
                 'total_examples_validated': len(validation_results),
-                'validation_approach': 'multi_dimensional_quality_assessment',
-                'quality_thresholds': self.quality_thresholds
+                'validation_approach': 'parallel_multi_dimensional_quality_assessment',
+                'quality_thresholds': self.quality_thresholds,
+                'parallel_workers': self.max_workers,
+                'parallel_enabled': self.enable_parallel,
+                'configuration_source': 'scale_config.yaml'
             },
             'batch_statistics': batch_stats,
+            'performance_metrics': {
+                'total_validation_time': self.stats['validation_end_time'] - self.stats['validation_start_time'],
+                'validation_rate_per_minute': len(validation_results) / ((self.stats['validation_end_time'] - self.stats['validation_start_time']) / 60),
+                'successful_validations': self.stats['successful_validations'],
+                'failed_validations': self.stats['failed_validations'],
+                'total_api_calls': self.stats['total_api_calls'],
+                'parallel_workers_used': self.max_workers if self.enable_parallel else 1,
+                'parallel_mode': self.enable_parallel
+            },
             'individual_results': []
         }
         
@@ -633,10 +1118,11 @@ class EnhancedSeedValidator:
         with validation_file.open('w', encoding='utf-8') as f:
             json.dump(validation_report, f, indent=2, default=str)
         
-        logger.info(f"Validation report saved to: {validation_file}")
+        logger.info(f"Seed validation report saved to: {validation_file}")
         
         # Save quality summary
         quality_summary = {
+            'validation_mode': 'Parallel Multi-Dimensional Assessment',
             'total_examples': len(validation_results),
             'high_quality_count': batch_stats['high_quality_count'],
             'high_quality_ratio': batch_stats['high_quality_ratio'],
@@ -644,6 +1130,12 @@ class EnhancedSeedValidator:
             'quality_distribution': batch_stats['score_distribution'],
             'type_quality_rates': batch_stats['type_quality_rates'],
             'top_issues': batch_stats['common_issues'][:3],
+            'performance_metrics': validation_report['performance_metrics'],
+            'configuration_used': {
+                'max_workers': self.max_workers,
+                'parallel_enabled': self.enable_parallel,
+                'quality_thresholds': self.quality_thresholds
+            },
             'validation_timestamp': time.time()
         }
         
@@ -651,7 +1143,7 @@ class EnhancedSeedValidator:
         with summary_file.open('w', encoding='utf-8') as f:
             json.dump(quality_summary, f, indent=2, default=str)
         
-        logger.info(f"Quality summary saved to: {summary_file}")
+        logger.info(f"Seed quality summary saved to: {summary_file}")
         
         return validation_file, summary_file
     
@@ -688,16 +1180,20 @@ class EnhancedSeedValidator:
         # Enhanced metadata for high quality seeds
         high_quality_metadata = original_metadata.copy()
         high_quality_metadata.update({
-            'quality_status': 'validated_high_quality',
-            'validation_method': 'multi_dimensional_enhanced',
+            'quality_status': 'validated_high_quality_parallel_config',
+            'validation_method': 'parallel_multi_dimensional_enhanced_config_driven',
             'validation_timestamp': time.time(),
             'quality_filtering_applied': True,
+            'parallel_validation': self.enable_parallel,
+            'parallel_workers': self.max_workers,
+            'configuration_driven': True,
             'original_count': original_metadata.get('total_examples', 0),
             'high_quality_count': len(high_quality_examples),
             'high_quality_malicious': high_malicious,
             'high_quality_benign': high_benign,
             'quality_thresholds_used': self.quality_thresholds,
-            'adaptive_selection_applied': True
+            'adaptive_selection_applied': True,
+            'configuration_source': 'scale_config.yaml'
         })
         
         # Save high quality seeds
@@ -716,18 +1212,23 @@ class EnhancedSeedValidator:
         # Enhanced metadata for filtered out examples
         filtered_metadata = original_metadata.copy()
         filtered_metadata.update({
-            'quality_status': 'filtered_low_quality',
-            'validation_method': 'multi_dimensional_enhanced',
+            'quality_status': 'filtered_low_quality_parallel_config',
+            'validation_method': 'parallel_multi_dimensional_enhanced_config_driven',
             'validation_timestamp': time.time(),
             'quality_filtering_applied': True,
+            'parallel_validation': self.enable_parallel,
+            'parallel_workers': self.max_workers,
+            'configuration_driven': True,
             'filtered_count': len(low_quality_examples),
             'filtered_malicious': low_malicious,
             'filtered_benign': low_benign,
             'quality_thresholds_used': self.quality_thresholds,
-            'reason_for_filtering': 'Failed to meet quality thresholds'
+            'reason_for_filtering': 'Failed to meet quality thresholds in parallel config-driven validation',
+            'configuration_source': 'scale_config.yaml'
         })
         
         # Save filtered out examples for analysis
+        filtered_file = None
         if low_quality_examples:
             filtered_file = filtered_area_dir / f"{nature}_examples.json"
             filtered_data = {
@@ -741,7 +1242,7 @@ class EnhancedSeedValidator:
             logger.info(f"Filtered examples saved to: {filtered_file}")
             logger.info(f"Filtered results: {low_malicious} malicious, {low_benign} benign")
         
-        return high_quality_file, filtered_file if low_quality_examples else None
+        return high_quality_file, filtered_file
 
 
 def find_raw_seeds_files() -> List[Tuple[str, str, Path]]:
@@ -766,14 +1267,20 @@ def find_raw_seeds_files() -> List[Tuple[str, str, Path]]:
     return seed_files
 
 
-def main():
-    """Main function to validate all raw seeds with enhanced multi-dimensional assessment."""
+def main(config_override: Dict[str, Any] = None):
+    """Main function to validate all raw seeds with enhanced parallel multi-dimensional assessment."""
     logger.info("="*80)
-    logger.info("ENHANCED MULTI-DIMENSIONAL SEED VALIDATION")
+    logger.info("ENHANCED PARALLEL MULTI-DIMENSIONAL SEED VALIDATION")
     logger.info("="*80)
     
-    # Initialize validator
-    validator = EnhancedSeedValidator()
+    # Initialize validator with configuration
+    validator = EnhancedParallelSeedValidator(config_override=config_override)
+    
+    logger.info(f"Validation mode: Parallel Multi-Dimensional Assessment")
+    logger.info(f"Parallel processing: {'Enabled' if validator.enable_parallel else 'Disabled'}")
+    logger.info(f"Parallel workers: {validator.max_workers}")
+    logger.info(f"Batch delay: {validator.batch_delay}s")
+    logger.info(f"Quality thresholds: {validator.quality_thresholds}")
     
     # Find all raw seed files
     seed_files = find_raw_seeds_files()
@@ -785,10 +1292,21 @@ def main():
     # Process each seed file
     total_processed = 0
     total_high_quality = 0
+    overall_start_time = time.time()
     
-    for area, nature, seed_file in seed_files:
+    # Track overall statistics
+    overall_stats = {
+        'total_datasets': len(seed_files),
+        'successful_validations': 0,
+        'failed_validations': 0,
+        'total_examples_processed': 0,
+        'total_high_quality_examples': 0,
+        'total_validation_time': 0
+    }
+    
+    for i, (area, nature, seed_file) in enumerate(seed_files):
         logger.info(f"\n{'='*60}")
-        logger.info(f"VALIDATING: {area}/{nature}")
+        logger.info(f"🌱 VALIDATING DATASET {i+1}/{len(seed_files)}: {area}/{nature}")
         logger.info(f"{'='*60}")
         
         try:
@@ -799,8 +1317,8 @@ def main():
                 logger.warning(f"No examples found in {seed_file}")
                 continue
             
-            # Validate seed batch
-            validation_results, batch_stats = validator.validate_seed_batch(examples, metadata)
+            # Validate seed batch with parallel processing
+            validation_results, batch_stats = validator.validate_seed_batch_parallel(examples, metadata)
             
             # Adaptive seed selection
             high_quality_examples, low_quality_examples = validator.adaptive_seed_selection(validation_results)
@@ -818,13 +1336,19 @@ def main():
             # Update totals
             total_processed += len(examples)
             total_high_quality += len(high_quality_examples)
+            overall_stats['successful_validations'] += 1
+            overall_stats['total_examples_processed'] += len(examples)
+            overall_stats['total_high_quality_examples'] += len(high_quality_examples)
             
             # Log results
-            logger.info(f"Validation completed for {area}/{nature}:")
-            logger.info(f"  - Original examples: {len(examples)}")
-            logger.info(f"  - High quality: {len(high_quality_examples)} ({batch_stats['high_quality_ratio']:.1%})")
-            logger.info(f"  - Low quality: {len(low_quality_examples)}")
+            logger.info(f"✅ Validation completed for {area}/{nature}:")
+            logger.info(f"  - Processing mode: {'Parallel' if validator.enable_parallel else 'Sequential'} ({validator.max_workers} workers)")
+            logger.info(f"  - Original examples: {len(examples):,}")
+            logger.info(f"  - High quality: {len(high_quality_examples):,} ({batch_stats['high_quality_ratio']:.1%})")
+            logger.info(f"  - Low quality: {len(low_quality_examples):,}")
             logger.info(f"  - Average composite score: {batch_stats['average_scores']['composite_score']:.3f}")
+            logger.info(f"  - Validation time: {validator.stats['validation_end_time'] - validator.stats['validation_start_time']:.2f}s")
+            logger.info(f"  - Validation rate: {len(examples)/((validator.stats['validation_end_time'] - validator.stats['validation_start_time'])/60):.1f} examples/minute")
             logger.info(f"  - Files saved:")
             logger.info(f"    → {validation_file}")
             logger.info(f"    → {summary_file}")
@@ -834,32 +1358,84 @@ def main():
             
         except Exception as e:
             logger.error(f"Error validating {area}/{nature}: {str(e)}", exc_info=True)
+            overall_stats['failed_validations'] += 1
             continue
+    
+    # Calculate total time
+    overall_stats['total_validation_time'] = time.time() - overall_start_time
     
     # Final summary
     logger.info(f"\n{'='*80}")
-    logger.info("ENHANCED VALIDATION COMPLETED")
+    logger.info("ENHANCED PARALLEL SEED VALIDATION COMPLETED")
     logger.info(f"{'='*80}")
-    logger.info(f"Total examples processed: {total_processed}")
-    logger.info(f"Total high quality: {total_high_quality}")
-    logger.info(f"Overall quality rate: {total_high_quality/total_processed:.1%}" if total_processed > 0 else "N/A")
+    logger.info(f"Configuration source: scale_config.yaml")
+    logger.info(f"Datasets processed: {overall_stats['successful_validations']}/{overall_stats['total_datasets']}")
+    logger.info(f"Total examples processed: {overall_stats['total_examples_processed']:,}")
+    logger.info(f"Total high quality examples: {overall_stats['total_high_quality_examples']:,}")
+    
+    if overall_stats['total_examples_processed'] > 0:
+        overall_quality_rate = overall_stats['total_high_quality_examples'] / overall_stats['total_examples_processed']
+        logger.info(f"Overall quality rate: {overall_quality_rate:.1%}")
+    
+    logger.info(f"Total validation time: {overall_stats['total_validation_time']:.2f} seconds")
+    
+    if overall_stats['total_validation_time'] > 0:
+        overall_rate = overall_stats['total_examples_processed'] / (overall_stats['total_validation_time'] / 60)
+        logger.info(f"Overall validation rate: {overall_rate:.1f} examples/minute")
+    
     logger.info("")
-    logger.info("Quality Enhancement Features:")
-    logger.info("  ✓ Multi-dimensional quality scoring")
-    logger.info("  ✓ Domain discovery integration")
-    logger.info("  ✓ Contextual problem alignment")
-    logger.info("  ✓ Schema consistency validation")
-    logger.info("  ✓ Semantic uniqueness assessment")
-    logger.info("  ✓ Adaptive seed selection")
-    logger.info("  ✓ Quality-weighted filtering")
-    logger.info("  ✓ Diversity-driven selection")
+    logger.info("Enhanced Parallel Seed Validation Features:")
+    logger.info(f"  ✓ Configuration-driven from scale_config.yaml")
+    logger.info(f"  ✓ {'Parallel processing' if validator.enable_parallel else 'Sequential processing'} with {validator.max_workers} workers")
+    logger.info(f"  ✓ Multi-dimensional quality assessment")
+    logger.info(f"  ✓ Real-time progress tracking with visual indicators")
+    logger.info(f"  ✓ Adaptive seed selection and diversity optimization")
+    logger.info(f"  ✓ Quality-weighted filtering")
+    logger.info(f"  ✓ Comprehensive performance metrics")
+    logger.info(f"  ✓ Intelligent rate limiting")
+    logger.info(f"  ✓ Domain discovery integration")
+    logger.info(f"  ✓ Contextual problem alignment")
     logger.info("")
     logger.info("Output Directories:")
-    logger.info("  - data/seeds_validation/ (validation reports)")
+    logger.info("  - data/seed_validation/ (validation reports)")
     logger.info("  - data/seeds-validated/ (high quality seeds)")
-    logger.info("  - data/seeds-filtered/ (filtered examples for analysis)")
+    logger.info("  - data/seeds-filtered/ (filtered analysis data)")
     logger.info(f"{'='*80}")
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Enhanced parallel seed validation with configuration file support")
+    parser.add_argument('--max-workers', type=int,
+                       help='Override maximum number of parallel worker threads')
+    parser.add_argument('--batch-delay', type=float,
+                       help='Override delay between batches in seconds')
+    parser.add_argument('--sequential', action='store_true',
+                       help='Force sequential processing (disable parallel)')
+    parser.add_argument('--disable-progress', action='store_true',
+                       help='Disable detailed progress logging')
+    
+    args = parser.parse_args()
+    
+    # Build configuration overrides
+    config_override = {}
+    
+    if args.max_workers is not None or args.batch_delay is not None or args.sequential or args.disable_progress:
+        config_override['seed_validation'] = {}
+        
+        if args.max_workers is not None or args.batch_delay is not None or args.sequential:
+            config_override['seed_validation']['parallel_processing'] = {}
+            if args.max_workers is not None:
+                config_override['seed_validation']['parallel_processing']['max_workers'] = args.max_workers
+            if args.batch_delay is not None:
+                config_override['seed_validation']['parallel_processing']['batch_delay'] = args.batch_delay
+            if args.sequential:
+                config_override['seed_validation']['parallel_processing']['enable_parallel'] = False
+        
+        if args.disable_progress:
+            config_override['seed_validation']['performance_optimization'] = {
+                'enable_progress_logging': False
+            }
+    
+    main(config_override=config_override if config_override else None)

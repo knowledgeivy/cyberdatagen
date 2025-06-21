@@ -1,6 +1,7 @@
 {
   "domain_characteristics": {
     "primary_domain": "web_security",
+    "data_nature": "web_content_html_and_url",
     "attack_types": [
       "phishing",
       "social_engineering",
@@ -8,50 +9,184 @@
       "website_impersonation",
       "malicious_redirects"
     ],
+    "detection_complexity": "high - attacks use sophisticated HTML obfuscation, mimic legitimate sites, and employ social engineering",
     "data_characteristics": [
       "large_scale",
       "text_heavy",
       "html_structured",
       "multi_modal",
       "real_world_samples",
-      "high_content_volume"
+      "high_content_volume",
+      "includes_embedded_scripts_and_forms",
+      "contains_url_and_domain_features"
     ]
   },
   "attack_patterns": {
     "common_indicators": [
-      "Extracted from real data analysis"
+      "presence of hidden or obfuscated JavaScript for geolocation or browser manipulation",
+      "login forms with suspicious or non-standard action URLs (e.g., 'free.php', 'media', 'process.php')",
+      "URLs with domain names unrelated to the claimed brand or with suspicious subdomains",
+      "usage of embedded tracking or pixel images with hidden 1x1 size",
+      "mismatch between page content and URL domain (e.g., 'Telekom Login' content on 'communityhomecare.org')"
     ],
     "attack_signatures": [
-      "Pattern analysis failed"
+      "phishing pages mimicking legitimate login portals with fake credential forms posting to non-official endpoints",
+      "JavaScript code that intercepts or fakes browser geolocation APIs to evade detection or fingerprinting",
+      "Use of hidden input fields and anti-automation techniques in login forms",
+      "Embedding of external stylesheets and scripts from legitimate domains to appear authentic",
+      "Use of social engineering text and brand names (e.g., 'Telekom Login', 'Instagram', 'Telegram Web') with mismatched URLs"
     ],
-    "technical_markers": []
+    "technical_markers": [
+      "form action URLs containing uncommon or suspicious filenames (e.g., 'free.php', 'process.php')",
+      "presence of multiple hidden 1x1 pixel images for tracking or data exfiltration",
+      "JavaScript functions overriding native browser APIs (e.g., navigator.geolocation)",
+      "URLs with excessive subdomain levels or unusual TLDs (e.g., 'instagram-verification-com-0fb9d4d5c638e553c69258afdd617c17.netlify.app')",
+      "HTML title and meta description mismatches with actual domain"
+    ],
+    "attack_vectors": [
+      "web-based phishing via fake login pages",
+      "social engineering through deceptive UI and content",
+      "credential harvesting via form submission to attacker-controlled endpoints",
+      "malicious redirects and tracking via embedded scripts and images"
+    ],
+    "exploit_techniques": [
+      "API hooking and overriding (e.g., geolocation API) to evade detection",
+      "Use of hidden form fields and obfuscated JavaScript to bypass automated analysis",
+      "Domain impersonation and URL obfuscation to mimic legitimate services",
+      "Embedding legitimate external resources to increase trust",
+      "Use of pixel tracking for user monitoring"
+    ]
   },
   "normal_baselines": {
     "typical_behaviors": [
-      "Normal pattern analysis"
+      "HTML pages with consistent domain and content branding",
+      "Login forms with standard action URLs pointing to official domains",
+      "Use of standard meta tags and consistent language and charset declarations",
+      "Presence of legitimate external scripts and stylesheets from trusted domains",
+      "No hidden or obfuscated JavaScript overriding browser APIs"
     ],
-    "baseline_metrics": [],
-    "operational_patterns": []
+    "baseline_metrics": [
+      "form action URLs matching domain or subdomain of the site",
+      "absence of hidden 1x1 pixel images used for tracking",
+      "consistent use of HTTPS and valid certificates",
+      "URL structure with expected domain names and no excessive subdomains",
+      "HTML content size and structure consistent with legitimate sites"
+    ],
+    "operational_patterns": [
+      "Use of recognized web frameworks and CMS with standard HTML structure",
+      "Consistent navigation menus and footer links matching the domain",
+      "Use of official brand logos and images hosted on official domains",
+      "Standard user input fields with proper labels and accessibility features",
+      "No suspicious or hidden scripts that manipulate browser behavior"
+    ],
+    "normal_thresholds": [
+      "form action URLs must belong to the same domain or trusted subdomains",
+      "hidden input fields should not contain suspicious or encoded data",
+      "number of external scripts from untrusted domains should be zero or minimal",
+      "no overriding of native browser APIs via JavaScript",
+      "URL length and domain complexity within typical ranges for the brand"
+    ]
   },
   "domain_terminology": {
-    "technical_terms": [],
-    "attack_vectors": [],
-    "defensive_measures": []
+    "technical_terms": [
+      "HTML DOM",
+      "form action URL",
+      "JavaScript API hooking",
+      "geolocation API",
+      "hidden input fields",
+      "1x1 pixel tracking image",
+      "meta tags",
+      "external scripts and stylesheets",
+      "URL structure",
+      "credential harvesting",
+      "social engineering",
+      "malicious redirects"
+    ],
+    "attack_vectors": [
+      "phishing",
+      "website impersonation",
+      "credential harvesting",
+      "malicious redirects",
+      "social engineering"
+    ],
+    "defensive_measures": [
+      "URL validation",
+      "DOM analysis",
+      "JavaScript behavior monitoring",
+      "form action verification",
+      "content and metadata consistency checks",
+      "tracking pixel detection"
+    ],
+    "industry_context": [
+      "web_security",
+      "phishing detection",
+      "machine learning-based classification",
+      "multi-modal feature extraction",
+      "automated threat intelligence"
+    ]
   },
   "threat_landscape": {
-    "current_threats": [],
-    "emerging_patterns": [],
-    "risk_factors": []
+    "current_threats": [
+      "phishing attacks targeting major brands (e.g., Telekom, Instagram, Microsoft, Telegram)",
+      "use of sophisticated obfuscation and API hooking to evade detection",
+      "credential harvesting via fake login forms",
+      "malicious redirects and tracking via hidden pixels",
+      "domain impersonation and use of free hosting platforms for phishing"
+    ],
+    "emerging_patterns": [
+      "increasing use of multi-modal data (HTML + URL) for detection",
+      "advanced JavaScript manipulation to bypass browser security",
+      "use of legitimate external resources to increase trust",
+      "complex URL structures with brand names embedded in subdomains",
+      "social engineering content localized in multiple languages"
+    ],
+    "risk_factors": [
+      "high similarity of phishing pages to legitimate sites",
+      "use of dynamic JavaScript to alter page behavior",
+      "hidden form fields and tracking pixels",
+      "non-standard or suspicious form submission endpoints",
+      "lack of HTTPS or mismatched SSL certificates"
+    ],
+    "threat_sophistication": "high - attackers employ advanced web techniques and social engineering to bypass traditional detection"
+  },
+  "actionable_intelligence": {
+    "detection_rules": [
+      "flag pages with form action URLs not matching the main domain or known trusted domains",
+      "detect JavaScript code that overrides or hooks native browser APIs (e.g., navigator.geolocation)",
+      "identify presence of hidden 1x1 pixel images used for tracking or data exfiltration",
+      "monitor for mismatch between page title/meta description and domain name",
+      "detect URLs with excessive subdomain levels or brand name obfuscation"
+    ],
+    "monitoring_recommendations": [
+      "continuous monitoring of URL structures for suspicious patterns",
+      "analysis of embedded JavaScript for API hooking or obfuscation",
+      "inspection of form elements and their submission endpoints",
+      "tracking of external resource domains and their trustworthiness",
+      "use of multi-modal analysis combining HTML content and URL features"
+    ],
+    "threshold_suggestions": [
+      "alert if form action URL domain differs from page domain by more than 1 level",
+      "flag if more than 2 hidden 1x1 pixel images are present",
+      "detect if JavaScript overrides native APIs with custom functions",
+      "consider URLs with more than 3 brand name tokens in subdomain as suspicious",
+      "trigger alerts for login forms with non-HTTPS or invalid SSL"
+    ],
+    "pattern_matching": [
+      "use regex to detect suspicious form action URLs (e.g., containing 'free.php', 'process.php')",
+      "pattern match JavaScript code that redefines navigator.geolocation methods",
+      "match URLs with brand names embedded in unusual subdomain patterns",
+      "identify hidden input fields with encoded or suspicious values",
+      "detect presence of tracking pixels with 1x1 size and hidden attributes"
+    ]
   },
   "metadata": {
     "dataset_name": "kpd",
-    "analysis_timestamp": "2025-06-20T18:39:58.764539",
+    "analysis_timestamp": "2025-06-20T21:48:10.770197",
     "samples_analyzed": {
-      "malicious": 100,
-      "benign": 100
+      "malicious": 5,
+      "benign": 5
     },
     "step": "domain_discovery",
-    "version": "1.0",
-    "fallback_used": true
+    "version": "1.0"
   }
 }
