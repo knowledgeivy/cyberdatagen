@@ -153,8 +153,8 @@ python real_data_processor.py \
 ```
 
 ## To Do
-
-- [ ] Machine learning model evaluation framework
+- [ ] Fix real-data analysis token limit issue
+- [x] Machine learning model evaluation framework
 - [ ] Class imbalance sensitivity analysis tools  
 
 
