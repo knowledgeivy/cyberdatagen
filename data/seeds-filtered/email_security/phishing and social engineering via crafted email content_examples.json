@@ -1,0 +1,81 @@
+{
+  "examples": [
+    {
+      "subject": "Urgent: Inheritance fund needs your cooperation",
+      "body": "Dear 8f5d1a7c9b2d4e179a0f,\n\nI am Mr. Samuel Thompson, a senior official at Global Bank. We recently discovered an unclaimed inheritance fund of $8.6 million belonging to a deceased client. Since no heirs have come forward, we need your help to claim this fund.\n\n20% of the total amount will be yours as compensation. Please respond urgently to samuel.thompson 77 @ gbmail . com.\n\nThis transaction is confidential and risk free.\n\nBest regards,\nSamuel Thompson\nFax: +44 207 555 1234\n",
+      "label": 1,
+      "source": "Enron"
+    },
+    {
+      "subject": "Inheritance claim notification - immediate attention required",
+      "body": "Dear beneficiary,\n\nI am Mr. David Morrison, a senior official at the National Bank. Due to the recent passing of a client, an unclaimed inheritance of $4.3 million USD awaits transfer.\n\nPlease contact me urgently via email at david_morrison 27 @ safebank . com or by fax +1 202 555 0198 to initiate the claim process.\n\nThis transaction is confidential and risk-free. Your prompt response is highly appreciated.\n\nSincerely,\nDavid Morrison\n",
+      "label": 1,
+      "source": "Enron"
+    },
+    {
+      "subject": "Next of kin notification for unclaimed inheritance",
+      "body": "Dear beneficiary,\n\nI am Mr. Samuel O'Connell, senior legal officer at Royal Trust Bank.\nOur records indicate an unclaimed inheritance of USD 8,750,000 from the late Johnathan Miller, who passed away without a legal heir.\nYou can claim your part of the funds by contacting me at sam.oconnell 19 @ royaltrust . net with your full details.\n\nPlease note this is confidential and requires prompt response.\n\nRegards,\nSamuel O'Connell\nFax: +44 208 555 9821\n\nhttp://royaltrust-secure.com/claim\n\n",
+      "label": 1,
+      "source": "Enron"
+    },
+    {
+      "subject": "=?iso-8859-1?q?Next_of_kin_notification=2E?=",
+      "body": "Dear d4f7e9c8b12a4f3a9b,\n\nThis is to inform you about the abandoned estate of late Mr. James Walker.\nAs the next of kin, you are entitled to claim the sum of $3.8 million USD held by the bank.\n\nPlease visit http://inheritance-claim.net to submit your claim.\n\nAll communications should be addressed to claimdept_inherit@inheritance-claim.net\nFax: +44 208 456 7890\n\nStrict confidentiality is advised.\n\nBest regards,\nJameson & Partners Trust\n\n",
+      "label": 1,
+      "source": "Enron"
+    }
+  ],
+  "metadata": {
+    "source": "three_step_real_world_analysis",
+    "dataset_name": "five_email_phishing",
+    "generation_method": "domain_discovery_contextual_schema_aware",
+    "total_examples": 20,
+    "malicious_examples": 12,
+    "benign_examples": 8,
+    "area": "email_security",
+    "nature": "phishing and social engineering via crafted email content",
+    "domain_discovery_used": true,
+    "contextual_enrichment_used": true,
+    "schema_preserved": true,
+    "generation_metadata": {
+      "generation_method": "schema_aware_three_step",
+      "data_source": "real_world_enhanced_analysis",
+      "domain_discovery_used": true,
+      "contextual_enrichment_used": true,
+      "schema_preserved": true,
+      "dataset_name": "five_email_phishing",
+      "target_seeds_per_class": 10,
+      "total_seeds_generated": 20,
+      "generation_batches": 4,
+      "seeds_per_batch": 5,
+      "generation_timestamp": "2025-06-21T12:52:01.823103",
+      "step": "schema_aware_generation",
+      "version": "1.0"
+    },
+    "quality_status": "filtered_low_quality_parallel_config",
+    "configuration": {
+      "samples_per_class_analyzed": 30,
+      "target_seeds_per_class": 10,
+      "actual_seeds_generated": 20
+    },
+    "validation_method": "parallel_multi_dimensional_enhanced_config_driven",
+    "validation_timestamp": 1750524973.054978,
+    "quality_filtering_applied": true,
+    "parallel_validation": true,
+    "parallel_workers": 6,
+    "configuration_driven": true,
+    "filtered_count": 4,
+    "filtered_malicious": 4,
+    "filtered_benign": 0,
+    "quality_thresholds_used": {
+      "technical_accuracy": 0.7,
+      "schema_consistency": 0.9,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.6,
+      "domain_alignment": 0.7,
+      "overall_minimum": 0.75
+    },
+    "reason_for_filtering": "Failed to meet quality thresholds in parallel config-driven validation",
+    "configuration_source": "scale_config.yaml"
+  }
+}

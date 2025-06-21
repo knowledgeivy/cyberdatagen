@@ -1,0 +1,60 @@
+{
+  "validation_mode": "Parallel Multi-Dimensional Assessment",
+  "total_examples": 20,
+  "high_quality_count": 16,
+  "high_quality_ratio": 0.8,
+  "average_scores": {
+    "technical_accuracy": 0.7249999999999999,
+    "schema_consistency": 0.8,
+    "realism_assessment": 0.71,
+    "semantic_uniqueness": 0.8,
+    "domain_alignment": 0.7125,
+    "composite_score": 0.739525
+  },
+  "quality_distribution": {
+    "excellent": 10,
+    "good": 6,
+    "fair": 0,
+    "poor": 4
+  },
+  "type_quality_rates": {
+    "benign": 1.0,
+    "malicious": 0.6666666666666666
+  },
+  "top_issues": [
+    [
+      "Failed to parse validation response",
+      4
+    ],
+    [
+      "No issues detected in technical accuracy dimension.",
+      2
+    ],
+    [
+      "No schema consistency issues found.",
+      2
+    ]
+  ],
+  "performance_metrics": {
+    "total_validation_time": 76.6646363735199,
+    "validation_rate_per_minute": 15.652588426213187,
+    "successful_validations": 20,
+    "failed_validations": 0,
+    "total_api_calls": 20,
+    "parallel_workers_used": 6,
+    "parallel_mode": true
+  },
+  "configuration_used": {
+    "max_workers": 6,
+    "parallel_enabled": true,
+    "quality_thresholds": {
+      "technical_accuracy": 0.7,
+      "schema_consistency": 0.9,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.6,
+      "domain_alignment": 0.7,
+      "overall_minimum": 0.75
+    }
+  },
+  "validation_timestamp": 1750524973.0519776
+}

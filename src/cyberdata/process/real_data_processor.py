@@ -27,12 +27,12 @@ logger = setup_logger("cyberdata.scripts.real_data_processor")
 load_dotenv()
 
 # Configuration variables
-SAMPLES_PER_CLASS = 5   # Number of real-world samples per class for analysis
-TARGET_SEEDS_PER_CLASS = 5  # Target number of seeds per class
+SAMPLES_PER_CLASS = 30   # Number of real-world samples per class for analysis
+TARGET_SEEDS_PER_CLASS = 10  # Target number of seeds per class
 
 # Dataset configuration
-CSV_FILE = "TR-OP/kpd_train.csv.gz"  # Raw CSV file
-DATA_INFO_NAME = "kpd"   # Dataset name in data_info.yaml
+CSV_FILE = "five_email_phishing.csv.gz"  # Raw CSV file
+DATA_INFO_NAME = "five_email_phishing"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
 
 # Get config manager instance

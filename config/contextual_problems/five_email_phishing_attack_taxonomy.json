@@ -1,0 +1,40 @@
+{
+  "primary_attacks": [
+    "phishing",
+    "social_engineering"
+  ],
+  "attack_patterns": [
+    "presence of suspicious URLs with uncommon or unrelated domains",
+    "advance-fee scam narratives involving inheritance or abandoned funds",
+    "medication and health product spam with embedded URLs",
+    "fake corporate or banking identities with fraudulent contact details",
+    "encoded or MIME-encoded subject lines",
+    "insertion of unrelated or nonsensical text blocks"
+  ],
+  "attack_sophistication_levels": [
+    "low sophistication: generic phishing with simple URL links",
+    "medium sophistication: social engineering with text obfuscation and domain spoofing",
+    "high sophistication: spear phishing with personalized messages and advanced evasion"
+  ],
+  "mitigation_strategies": [
+    "URL reputation filtering and domain whitelisting",
+    "sender authentication protocols (SPF, DKIM, DMARC)",
+    "machine learning classification trained on multi-source datasets",
+    "heuristic and signature-based detection of scam narratives",
+    "continuous update of detection rules based on emerging phishing lures"
+  ],
+  "detection_approaches": [
+    "email content analysis using NLP and anomaly detection",
+    "pattern matching for phishing URL structures and scam keywords",
+    "heuristic analysis of email address formatting and embedded contact info",
+    "composite scoring combining subject, body, URL, and metadata indicators",
+    "monitoring domain registration dates and reputation for URLs"
+  ],
+  "metadata": {
+    "dataset_name": "five_email_phishing",
+    "enrichment_timestamp": "2025-06-21T12:51:18.606405",
+    "domain_discovery_used": true,
+    "step": "contextual_enrichment",
+    "version": "1.0"
+  }
+}
