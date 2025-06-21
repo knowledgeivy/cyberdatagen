@@ -1,0 +1,40 @@
+{
+  "primary_attacks": [
+    "phishing",
+    "social_engineering",
+    "credential_harvesting",
+    "website_impersonation",
+    "malicious_redirects"
+  ],
+  "attack_patterns": [
+    "Use of deceptive HTML forms to harvest credentials",
+    "Multi-stage URL redirects to mask final malicious destination",
+    "Embedding social engineering text content within webpages",
+    "Obfuscation of scripts and DOM manipulation to evade detection"
+  ],
+  "attack_sophistication_levels": [
+    "Basic static phishing pages",
+    "Intermediate with redirect chains and script obfuscation",
+    "Advanced dynamic content injection and multi-modal evasion"
+  ],
+  "mitigation_strategies": [
+    "URL filtering and reputation analysis",
+    "HTML and DOM structure validation",
+    "User awareness and training",
+    "Multi-modal machine learning detection combining URL, HTML, and text features",
+    "Continuous baseline behavior monitoring"
+  ],
+  "detection_approaches": [
+    "Pattern deviation detection from normal HTML and URL baselines",
+    "Multi-modal feature extraction from HTML content and URL structures",
+    "Anomaly detection on redirect chains and embedded scripts",
+    "Natural language processing to identify social engineering text"
+  ],
+  "metadata": {
+    "dataset_name": "kpd",
+    "enrichment_timestamp": "2025-06-20T18:40:24.824192",
+    "domain_discovery_used": true,
+    "step": "contextual_enrichment",
+    "version": "1.0"
+  }
+}

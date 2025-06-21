@@ -28,11 +28,11 @@ load_dotenv()
 
 # Configuration variables
 SAMPLES_PER_CLASS = 100  # Number of real-world samples per class for analysis
-TARGET_SEEDS_PER_CLASS = 50  # Target number of seeds per class
+TARGET_SEEDS_PER_CLASS = 100  # Target number of seeds per class
 
 # Dataset configuration
-CSV_FILE = "nsl_kdd_rare_train.csv.gz"  # Raw CSV file in raw/ directory
-DATA_INFO_NAME = "nsl_kdd_rare"   # Dataset name in data_info.yaml
+CSV_FILE = "TR-OP/kpd.csv.gz"  # Raw CSV file in raw/ directory
+DATA_INFO_NAME = "kpd"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
 
 # Get config manager instance
