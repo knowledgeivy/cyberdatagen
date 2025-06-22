@@ -11,6 +11,10 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 import warnings
 from pathlib import Path
+from sklearn.metrics import silhouette_score
+from scipy.stats import gaussian_kde
+from scipy.special import kl_div
+
 warnings.filterwarnings('ignore')
 
 # Set style for better plots
@@ -23,10 +27,10 @@ class EmailDataset(Dataset):
         self.texts = texts
         self.tokenizer = tokenizer
         self.max_length = max_length
-    
+
     def __len__(self):
         return len(self.texts)
-    
+
     def __getitem__(self, idx):
         text = str(self.texts[idx])
         encoding = self.tokenizer(
@@ -43,51 +47,51 @@ class EmailDataset(Dataset):
 
 class SyntheticDataVisualizer:
     """Visualize synthetic cybersecurity data using transformer embeddings and t-SNE"""
-    
+
     def __init__(self, model_name='distilbert-base-uncased'):
         """Initialize the visualizer with a transformer model"""
         print(f"Loading model: {model_name}")
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(f"Using device: {self.device}")
-        
+
         # Load tokenizer and model
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
         self.model.to(self.device)
         self.model.eval()
-        
+
         # Add padding token if it doesn't exist
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
-    
+
     def load_real_data(self, file_path, sample_size=None):
         """Load real-world data for comparison"""
         print(f"Loading real data from: {file_path}")
-        
+
         if file_path.endswith('.gz'):
             with gzip.open(file_path, 'rt', encoding='utf-8') as f:
                 df = pd.read_csv(f)
         else:
             df = pd.read_csv(file_path)
-        
+
         print(f"Real data shape: {df.shape}")
-        
+
         # Sample if requested
         if sample_size and len(df) > sample_size:
             df = self._stratified_sample(df, sample_size)
-        
+
         # Add data source column
         df['data_source'] = 'Real'
-        
+
         return df
-    
+
     def load_synthetic_data(self, file_path, sample_size=None):
         """Load synthetic data from CyberData JSON format"""
         print(f"Loading synthetic data from: {file_path}")
-        
+
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        
+
         # Extract samples from CyberData format
         if 'samples' in data:
             samples = data['samples']
@@ -95,27 +99,27 @@ class SyntheticDataVisualizer:
             samples = data['examples']
         else:
             raise ValueError("Could not find 'samples' or 'examples' in synthetic data file")
-        
+
         df = pd.DataFrame(samples)
         print(f"Synthetic data shape: {df.shape}")
         print(f"Synthetic data columns: {df.columns.tolist()}")
-        
+
         # Sample if requested
         if sample_size and len(df) > sample_size:
             df = self._stratified_sample(df, sample_size)
-        
+
         # Add data source column
         df['data_source'] = 'Synthetic'
-        
+
         return df
-    
+
     def load_multiple_synthetic_files(self, synthetic_dir, pattern="*_scale.json", sample_size_per_file=None):
         """Load multiple synthetic data files from a directory"""
         synthetic_dir = Path(synthetic_dir)
         synthetic_files = list(synthetic_dir.rglob(pattern))
-        
+
         print(f"Found {len(synthetic_files)} synthetic files in {synthetic_dir}")
-        
+
         all_dfs = []
         for i, file_path in enumerate(synthetic_files):
             print(f"Loading {file_path.name}...")
@@ -126,53 +130,53 @@ class SyntheticDataVisualizer:
             except Exception as e:
                 print(f"Error loading {file_path}: {e}")
                 continue
-        
+
         if not all_dfs:
             raise ValueError("No synthetic files could be loaded")
-        
+
         combined_df = pd.concat(all_dfs, ignore_index=True)
         print(f"Combined synthetic data shape: {combined_df.shape}")
-        
+
         return combined_df
-    
+
     def _stratified_sample(self, df, sample_size):
         """Perform stratified sampling maintaining label distribution"""
         if 'label' not in df.columns:
             return df.sample(n=min(sample_size, len(df)), random_state=42)
-        
+
         label_dist = df['label'].value_counts()
         total_samples = len(df)
-        
+
         sampled_dfs = []
         for label_value, count in label_dist.items():
             label_ratio = count / total_samples
             target_samples = max(1, int(sample_size * label_ratio))
             target_samples = min(target_samples, count)
-            
+
             label_df = df[df['label'] == label_value].sample(n=target_samples, random_state=42)
             sampled_dfs.append(label_df)
-        
+
         return pd.concat(sampled_dfs, ignore_index=True).sample(frac=1, random_state=42).reset_index(drop=True)
-    
+
     def prepare_text_from_dataframe(self, df, text_columns=None):
         """Prepare text data from DataFrame with flexible column handling"""
-        
+
         if text_columns is None:
             # Auto-detect text columns based on common CyberData schema
             possible_columns = ['subject', 'body', 'text', 'content', 'message', 'description']
             text_columns = [col for col in possible_columns if col in df.columns]
-        
+
         if not text_columns:
             # Fallback: use all string columns except metadata
-            exclude_cols = ['label', 'Label', 'data_source', 'synthetic_source', 'sample_id', 
-                          'generation_timestamp', '_metadata']
+            exclude_cols = ['label', 'Label', 'data_source', 'synthetic_source', 'sample_id',
+                              'generation_timestamp', '_metadata']
             text_columns = [col for col in df.columns if df[col].dtype == 'object' and col not in exclude_cols]
-        
+
         print(f"Using text columns: {text_columns}")
-        
+
         if not text_columns:
             raise ValueError("No suitable text columns found in the data")
-        
+
         # Combine text columns
         texts = []
         for _, row in df.iterrows():
@@ -180,51 +184,51 @@ class SyntheticDataVisualizer:
             for col in text_columns:
                 if pd.notna(row[col]):
                     text_parts.append(str(row[col]))
-            
+
             combined_text = " [SEP] ".join(text_parts) if text_parts else ""
             texts.append(combined_text[:2000])  # Limit length
-        
+
         print(f"Prepared {len(texts)} text samples")
         print(f"Average text length: {np.mean([len(t) for t in texts]):.1f} characters")
-        
+
         return texts
-    
+
     def get_embeddings(self, texts, batch_size=16, max_length=512):
         """Get transformer embeddings for texts"""
         print(f"Generating embeddings for {len(texts)} texts...")
-        
+
         dataset = EmailDataset(texts, self.tokenizer, max_length)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-        
+
         embeddings = []
-        
+
         with torch.no_grad():
             for i, batch in enumerate(dataloader):
                 if i % 10 == 0:
                     print(f"Processing batch {i+1}/{len(dataloader)}")
-                
+
                 input_ids = batch['input_ids'].to(self.device)
                 attention_mask = batch['attention_mask'].to(self.device)
-                
+
                 outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
-                
+
                 # Use [CLS] token embedding
                 cls_embeddings = outputs.last_hidden_state[:, 0, :]
                 embeddings.append(cls_embeddings.cpu().numpy())
-        
+
         embeddings = np.vstack(embeddings)
         print(f"Generated embeddings shape: {embeddings.shape}")
-        
+
         return embeddings
-    
+
     def apply_tsne(self, embeddings, n_components=2, perplexity=30, random_state=42):
         """Apply t-SNE dimensionality reduction"""
         print(f"Applying t-SNE (perplexity={perplexity})...")
-        
+
         # Standardize embeddings
         scaler = StandardScaler()
         embeddings_scaled = scaler.fit_transform(embeddings)
-        
+
         # Apply t-SNE
         tsne = TSNE(
             n_components=n_components,
@@ -233,121 +237,121 @@ class SyntheticDataVisualizer:
             max_iter=1000,
             verbose=1
         )
-        
+
         embeddings_2d = tsne.fit_transform(embeddings_scaled)
-        
+
         print(f"t-SNE completed. Output shape: {embeddings_2d.shape}")
         return embeddings_2d
-    
+
     def visualize_synthetic_comparison(self, embeddings_2d, combined_df, save_path=None):
         """Create comprehensive visualization comparing real and synthetic data"""
         print("Creating synthetic data comparison visualizations...")
-        
+
         # Create figure with multiple subplots
         fig = plt.figure(figsize=(20, 12))
-        
+
         # Plot 1: Real vs Synthetic (top left)
         ax1 = plt.subplot(2, 3, 1)
-        
+
         real_mask = combined_df['data_source'] == 'Real'
         synthetic_mask = combined_df['data_source'] == 'Synthetic'
-        
+
         ax1.scatter(
-            embeddings_2d[real_mask, 0], 
+            embeddings_2d[real_mask, 0],
             embeddings_2d[real_mask, 1],
             c='navy', alpha=0.6, s=20, label=f'Real ({np.sum(real_mask)})',
             edgecolors='black', linewidth=0.1
         )
-        
+
         ax1.scatter(
-            embeddings_2d[synthetic_mask, 0], 
+            embeddings_2d[synthetic_mask, 0],
             embeddings_2d[synthetic_mask, 1],
             c='orange', alpha=0.6, s=20, label=f'Synthetic ({np.sum(synthetic_mask)})',
             edgecolors='black', linewidth=0.1
         )
-        
+
         ax1.set_title('Real vs Synthetic Data', fontsize=12, fontweight='bold')
         ax1.set_xlabel('t-SNE Dimension 1')
         ax1.set_ylabel('t-SNE Dimension 2')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
-        
+
         # Plot 2: Labels in Real Data (top middle)
         ax2 = plt.subplot(2, 3, 2)
-        
+
         real_data = combined_df[real_mask]
         real_embeddings = embeddings_2d[real_mask]
-        
+
         if 'label' in real_data.columns:
             benign_mask_real = real_data['label'] == 0
             malicious_mask_real = real_data['label'] == 1
-            
+
             ax2.scatter(
-                real_embeddings[benign_mask_real, 0], 
+                real_embeddings[benign_mask_real, 0],
                 real_embeddings[benign_mask_real, 1],
-                c='lightblue', alpha=0.6, s=20, 
+                c='lightblue', alpha=0.6, s=20,
                 label=f'Real Benign ({np.sum(benign_mask_real)})',
                 edgecolors='navy', linewidth=0.1
             )
-            
+
             ax2.scatter(
-                real_embeddings[malicious_mask_real, 0], 
+                real_embeddings[malicious_mask_real, 0],
                 real_embeddings[malicious_mask_real, 1],
-                c='red', alpha=0.7, s=20, 
+                c='red', alpha=0.7, s=20,
                 label=f'Real Malicious ({np.sum(malicious_mask_real)})',
                 edgecolors='darkred', linewidth=0.1
             )
-        
+
         ax2.set_title('Real Data Labels', fontsize=12, fontweight='bold')
         ax2.set_xlabel('t-SNE Dimension 1')
         ax2.set_ylabel('t-SNE Dimension 2')
         ax2.legend()
         ax2.grid(True, alpha=0.3)
-        
+
         # Plot 3: Labels in Synthetic Data (top right)
         ax3 = plt.subplot(2, 3, 3)
-        
+
         synthetic_data = combined_df[synthetic_mask]
         synthetic_embeddings = embeddings_2d[synthetic_mask]
-        
+
         if 'label' in synthetic_data.columns:
             benign_mask_syn = synthetic_data['label'] == 0
             malicious_mask_syn = synthetic_data['label'] == 1
-            
+
             ax3.scatter(
-                synthetic_embeddings[benign_mask_syn, 0], 
+                synthetic_embeddings[benign_mask_syn, 0],
                 synthetic_embeddings[benign_mask_syn, 1],
-                c='lightgreen', alpha=0.6, s=20, 
+                c='lightgreen', alpha=0.6, s=20,
                 label=f'Synthetic Benign ({np.sum(benign_mask_syn)})',
                 edgecolors='green', linewidth=0.1
             )
-            
+
             ax3.scatter(
-                synthetic_embeddings[malicious_mask_syn, 0], 
+                synthetic_embeddings[malicious_mask_syn, 0],
                 synthetic_embeddings[malicious_mask_syn, 1],
-                c='purple', alpha=0.7, s=20, 
+                c='purple', alpha=0.7, s=20,
                 label=f'Synthetic Malicious ({np.sum(malicious_mask_syn)})',
                 edgecolors='indigo', linewidth=0.1
             )
-        
+
         ax3.set_title('Synthetic Data Labels', fontsize=12, fontweight='bold')
         ax3.set_xlabel('t-SNE Dimension 1')
         ax3.set_ylabel('t-SNE Dimension 2')
         ax3.legend()
         ax3.grid(True, alpha=0.3)
-        
+
         # Plot 4: Combined Labels (bottom left)
         ax4 = plt.subplot(2, 3, 4)
-        
+
         if 'label' in combined_df.columns:
             # Real data points
             real_benign = real_mask & (combined_df['label'] == 0)
             real_malicious = real_mask & (combined_df['label'] == 1)
-            
+
             # Synthetic data points
             syn_benign = synthetic_mask & (combined_df['label'] == 0)
             syn_malicious = synthetic_mask & (combined_df['label'] == 1)
-            
+
             ax4.scatter(
                 embeddings_2d[real_benign, 0], embeddings_2d[real_benign, 1],
                 c='lightblue', alpha=0.6, s=20, label='Real Benign',
@@ -368,23 +372,23 @@ class SyntheticDataVisualizer:
                 c='purple', alpha=0.7, s=20, label='Synthetic Malicious',
                 edgecolors='indigo', linewidth=0.1, marker='^'
             )
-        
+
         ax4.set_title('Combined: Real vs Synthetic Labels', fontsize=12, fontweight='bold')
         ax4.set_xlabel('t-SNE Dimension 1')
         ax4.set_ylabel('t-SNE Dimension 2')
         ax4.legend()
         ax4.grid(True, alpha=0.3)
-        
+
         # Plot 5: Synthetic Sources (bottom middle)
         ax5 = plt.subplot(2, 3, 5)
-        
+
         if 'synthetic_source' in combined_df.columns:
             synthetic_data_only = combined_df[synthetic_mask]
             synthetic_embeddings_only = embeddings_2d[synthetic_mask]
-            
+
             unique_sources = synthetic_data_only['synthetic_source'].unique()
             colors = plt.cm.Set3(np.linspace(0, 1, len(unique_sources)))
-            
+
             for i, source in enumerate(unique_sources):
                 source_mask = synthetic_data_only['synthetic_source'] == source
                 ax5.scatter(
@@ -394,25 +398,25 @@ class SyntheticDataVisualizer:
                     label=f'{source} ({np.sum(source_mask)})',
                     edgecolors='black', linewidth=0.1
                 )
-        
+
         ax5.set_title('Synthetic Data Sources', fontsize=12, fontweight='bold')
         ax5.set_xlabel('t-SNE Dimension 1')
         ax5.set_ylabel('t-SNE Dimension 2')
         ax5.legend(fontsize=8)
         ax5.grid(True, alpha=0.3)
-        
+
         # Plot 6: Quality Distribution (bottom right)
         ax6 = plt.subplot(2, 3, 6)
-        
+
         # Create quality heatmap or density plot
         from scipy.stats import gaussian_kde
-        
+
         try:
             if len(embeddings_2d) > 100:
                 # Create density plot
                 xy = embeddings_2d.T
                 density = gaussian_kde(xy)(xy)
-                
+
                 scatter = ax6.scatter(
                     embeddings_2d[:, 0], embeddings_2d[:, 1],
                     c=density, s=20, alpha=0.6, cmap='viridis'
@@ -420,36 +424,36 @@ class SyntheticDataVisualizer:
                 plt.colorbar(scatter, ax=ax6, label='Density')
         except:
             # Fallback to simple scatter
-            ax6.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], 
-                       c='gray', alpha=0.5, s=20)
-        
+            ax6.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1],
+                        c='gray', alpha=0.5, s=20)
+
         ax6.set_title('Data Density Distribution', fontsize=12, fontweight='bold')
         ax6.set_xlabel('t-SNE Dimension 1')
         ax6.set_ylabel('t-SNE Dimension 2')
         ax6.grid(True, alpha=0.3)
-        
+
         plt.tight_layout()
-        
+
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             print(f"Plot saved to: {save_path}")
-        
+
         plt.show()
-    
+
     def print_data_statistics(self, combined_df):
         """Print comprehensive statistics about the data"""
         print("\n" + "="*60)
         print("DATA STATISTICS")
         print("="*60)
-        
+
         print(f"Total samples: {len(combined_df)}")
-        
+
         # Data source distribution
         source_dist = combined_df['data_source'].value_counts()
         print(f"\nData Source Distribution:")
         for source, count in source_dist.items():
             print(f"  {source}: {count} ({count/len(combined_df)*100:.1f}%)")
-        
+
         # Label distribution by source
         if 'label' in combined_df.columns:
             print(f"\nLabel Distribution by Source:")
@@ -460,7 +464,7 @@ class SyntheticDataVisualizer:
                 for label, count in label_dist.items():
                     label_name = "Malicious" if label == 1 else "Benign"
                     print(f"    {label_name}: {count} ({count/len(source_data)*100:.1f}%)")
-        
+
         # Synthetic source distribution
         if 'synthetic_source' in combined_df.columns:
             syn_data = combined_df[combined_df['data_source'] == 'Synthetic']
@@ -470,35 +474,125 @@ class SyntheticDataVisualizer:
                 for source, count in syn_source_dist.items():
                     print(f"  {source}: {count} ({count/len(syn_data)*100:.1f}%)")
 
+    def calculate_and_print_cluster_metrics(self, embeddings_2d, combined_df):
+        """Calculate and print cluster centroids, silhouette score, and KL divergence."""
+        print("\n" + "="*60)
+        print("CLUSTER ANALYSIS")
+        print("="*60)
+
+        if 'label' not in combined_df.columns:
+            print("'label' column not found. Skipping cluster analysis.")
+            return
+
+        # Create cluster labels: 0: Real Benign, 1: Real Malicious, 2: Synthetic Benign, 3: Synthetic Malicious
+        cluster_labels = np.zeros(len(combined_df))
+        cluster_labels[(combined_df['data_source'] == 'Real') & (combined_df['label'] == 0)] = 0
+        cluster_labels[(combined_df['data_source'] == 'Real') & (combined_df['label'] == 1)] = 1
+        cluster_labels[(combined_df['data_source'] == 'Synthetic') & (combined_df['label'] == 0)] = 2
+        cluster_labels[(combined_df['data_source'] == 'Synthetic') & (combined_df['label'] == 1)] = 3
+
+        # --- Silhouette Score ---
+        score = silhouette_score(embeddings_2d, cluster_labels)
+        print(f"Overall Silhouette Score (4 clusters): {score:.4f}\n")
+
+        # --- Centroid Calculation ---
+        clusters = {
+            'Real Benign': embeddings_2d[cluster_labels == 0],
+            'Real Malicious': embeddings_2d[cluster_labels == 1],
+            'Synthetic Benign': embeddings_2d[cluster_labels == 2],
+            'Synthetic Malicious': embeddings_2d[cluster_labels == 3],
+        }
+
+        print("Cluster Centroids (t-SNE dimensions):")
+        centroids = {}
+        for name, points in clusters.items():
+            if len(points) > 0:
+                centroids[name] = np.mean(points, axis=0)
+                print(f"  {name:<20}: ({centroids[name][0]:.2f}, {centroids[name][1]:.2f})")
+            else:
+                centroids[name] = None
+                print(f"  {name:<20}: No samples in this cluster.")
+
+        # --- KL Divergence ---
+        print("\nKullback-Leibler (KL) Divergence:")
+        print("(Lower value indicates higher similarity between distributions)")
+
+        # Estimate KDEs for each cluster
+        kdes = {}
+        for name, points in clusters.items():
+            if points is not None and len(points) > 2:  # KDE needs at least 3 points
+                kdes[name] = gaussian_kde(points.T)
+            else:
+                kdes[name] = None
+
+        # Define grid for KL divergence calculation
+        x_min, x_max = embeddings_2d[:, 0].min() - 1, embeddings_2d[:, 0].max() + 1
+        y_min, y_max = embeddings_2d[:, 1].min() - 1, embeddings_2d[:, 1].max() + 1
+        xx, yy = np.mgrid[x_min:x_max:100j, y_min:y_max:100j]
+        grid_points = np.vstack([xx.ravel(), yy.ravel()])
+
+        def calculate_kl(kde1, kde2, name1, name2):
+            if kde1 and kde2:
+                p1 = kde1(grid_points)
+                p2 = kde2(grid_points)
+                # Add a small epsilon to avoid division by zero or log(0)
+                epsilon = 1e-10
+                p1 = (p1 + epsilon) / np.sum(p1 + epsilon)
+                p2 = (p2 + epsilon) / np.sum(p2 + epsilon)
+                return np.sum(kl_div(p1, p2))
+            else:
+                print(f"  Could not calculate KL Divergence for {name1} vs {name2} (insufficient data).")
+                return None
+
+        kl_results = {}
+        kl_results['Real Malicious vs. Synthetic Malicious'] = calculate_kl(
+            kdes.get('Real Malicious'), kdes.get('Synthetic Malicious'), 'Real Malicious', 'Synthetic Malicious'
+        )
+        kl_results['Real Benign vs. Synthetic Benign'] = calculate_kl(
+            kdes.get('Real Benign'), kdes.get('Synthetic Benign'), 'Real Benign', 'Synthetic Benign'
+        )
+        kl_results['Real Malicious vs. Real Benign'] = calculate_kl(
+            kdes.get('Real Malicious'), kdes.get('Real Benign'), 'Real Malicious', 'Real Benign'
+        )
+        kl_results['Synthetic Malicious vs. Synthetic Benign'] = calculate_kl(
+            kdes.get('Synthetic Malicious'), kdes.get('Synthetic Benign'), 'Synthetic Malicious', 'Synthetic Benign'
+        )
+
+        for name, value in kl_results.items():
+            if value is not None:
+                print(f"  {name:<40}: {value:.4f}")
+
+        print("="*60)
+
 def main():
     """Main function to run synthetic data visualization"""
-    
+
     # Configuration - Update these paths for your setup
     REAL_DATA_FILE = "../raw/five_email_phishing_train.csv.gz"
     SYNTHETIC_DATA_DIR = "../data/scaled-validated"  # Directory with synthetic JSON files
     # OR use a specific file:
     # SYNTHETIC_DATA_FILE = "../data/scaled-validated/Social_Engineering/phishing_scale.json"
-    
+
     MODEL_NAME = "distilbert-base-uncased"
     REAL_SAMPLE_SIZE = 1000  # Limit real data for faster processing
     SYNTHETIC_SAMPLE_SIZE = 1000  # Limit synthetic data
     SAVE_PATH = "synthetic_data_comparison.png"
-    
+
     print("="*60)
     print("Synthetic Cybersecurity Data Visualization")
     print("="*60)
-    
+
     # Initialize visualizer
     visualizer = SyntheticDataVisualizer(model_name=MODEL_NAME)
-    
+
     # Load real data
     real_df = visualizer.load_real_data(REAL_DATA_FILE, sample_size=REAL_SAMPLE_SIZE)
-    
+
     # Load synthetic data
     # Option 1: Load from directory (multiple files)
     try:
         synthetic_df = visualizer.load_multiple_synthetic_files(
-            SYNTHETIC_DATA_DIR, 
+            SYNTHETIC_DATA_DIR,
             pattern="*_scale.json",
             sample_size_per_file=SYNTHETIC_SAMPLE_SIZE//2  # Adjust based on number of files
         )
@@ -507,30 +601,33 @@ def main():
         # Option 2: Load single synthetic file
         synthetic_file = Path(SYNTHETIC_DATA_DIR) / "Social_Engineering" / "phishing_scale.json"
         synthetic_df = visualizer.load_synthetic_data(synthetic_file, sample_size=SYNTHETIC_SAMPLE_SIZE)
-    
+
     # Combine datasets
     combined_df = pd.concat([real_df, synthetic_df], ignore_index=True)
     print(f"\nCombined dataset shape: {combined_df.shape}")
-    
+
     # Print statistics
     visualizer.print_data_statistics(combined_df)
-    
+
     # Prepare text data
     texts = visualizer.prepare_text_from_dataframe(combined_df)
-    
+
     # Get embeddings
     embeddings = visualizer.get_embeddings(texts, batch_size=8)
-    
+
     # Apply t-SNE
     embeddings_2d = visualizer.apply_tsne(embeddings, perplexity=30)
-    
+
     # Create visualizations
     visualizer.visualize_synthetic_comparison(
-        embeddings_2d, 
-        combined_df, 
+        embeddings_2d,
+        combined_df,
         save_path=SAVE_PATH
     )
-    
+
+    # Perform and print cluster analysis
+    visualizer.calculate_and_print_cluster_metrics(embeddings_2d, combined_df)
+
     print(f"\nVisualization completed!")
     print(f"Comparison plot saved as: {SAVE_PATH}")
 
