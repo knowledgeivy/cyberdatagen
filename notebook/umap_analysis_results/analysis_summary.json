@@ -1,0 +1,48 @@
+{
+  "metrics": {
+    "centroid_distance": 6.1634440422058105,
+    "real_variance": 25.359474182128906,
+    "synthetic_variance": 75.51995849609375,
+    "variance_ratio": 2.977977991104126,
+    "real_hull_area": 843.3053414869669,
+    "synthetic_hull_area": 563.7676393605315,
+    "coverage_ratio": 0.6685213666101798,
+    "real_label_distribution": {
+      "0": 0.5,
+      "1": 0.5
+    },
+    "synthetic_label_distribution": {
+      "0": 0.5,
+      "1": 0.5
+    },
+    "class_0_real_synthetic_distance": 16.795564651489258,
+    "class_1_real_synthetic_distance": 12.980510711669922
+  },
+  "assessment": {
+    "centroid": "POOR - Significant difference in distribution centers",
+    "variance": "POOR - Significant difference in data spread",
+    "coverage": "GOOD - Reasonable coverage of feature space",
+    "label_distribution": "EXCELLENT - Very similar class distributions",
+    "overall": "POOR - Synthetic data needs improvement",
+    "recommendations": [
+      "Consider adjusting generation parameters to better match real data distribution",
+      "Synthetic data is too spread out - improve focus"
+    ]
+  },
+  "umap_parameters": {
+    "n_neighbors": 15,
+    "min_dist": 0.1,
+    "n_components": 2,
+    "metric": "cosine",
+    "random_state": 42
+  },
+  "dataset_info": {
+    "real_samples": 2000,
+    "synthetic_samples": 2000,
+    "features_used": 3000,
+    "text_columns": [
+      "subject",
+      "body"
+    ]
+  }
+}
