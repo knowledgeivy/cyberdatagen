@@ -2,51 +2,13 @@
 
 CyberData extracts patterns from real cybersecurity datasets and generates synthetic data that preserves technical accuracy and schema consistency. The system uses a three-step pipeline to ensure quality and production readiness.
 
-**Key Features:**
+## Key Features
+
 - Real-world data pattern extraction
 - Schema-preserving synthetic generation
 - Multi-dimensional quality validation
 - Large-scale production generation
 - Domain-specific intelligence integration
-
-## Workflow
-
-### Phase 1: Real-World Analysis
-1. **Domain Discovery**: Extract attack patterns and normal baselines from real data
-2. **Contextual Enrichment**: Create threat landscape context and problem definitions  
-3. **Schema-Aware Seeds**: Generate high-quality seed examples
-
-### Phase 2: Scale Generation
-4. **Scale Generation**: Generate large datasets using extracted intelligence
-5. **Scale Validation**: Validate quality and filter for production use
-
-## File Structure
-
-```
-cyberdata/
-├── src/cyberdata/
-│   ├── process/
-│   │   ├── real_data_processor.py    # Step 1-3: Real-world analysis
-│   │   ├── seed_validator.py         # Seed quality validation
-│   │   ├── scale_generation.py       # Large-scale generation
-│   │   ├── scale_validation.py       # Scale quality validation
-│   │   └── data_mixer.py             # Mix real and synthetic data
-│   └── utils/                        # Configuration and utilities
-├── config/
-│   ├── data_info.yaml               # Dataset schemas and metadata
-│   ├── scale_config.yaml            # Generation parameters
-│   ├── domain_discovery/            # Extracted domain patterns
-│   ├── contextual_problems/         # Enriched problem contexts
-│   └── prompts/                     # LLM prompt templates
-├── data/
-│   ├── seeds-raw/                   # Raw seed examples
-│   ├── seeds-validated/             # Validated high-quality seeds
-│   ├── scaled-raw/                  # Raw scale generation output
-│   ├── scaled-validated/            # Production-ready datasets
-│   └── scaled_validation/           # Quality reports
-├── raw/                             # Input datasets
-└── logs/                            # Execution logs
-```
 
 ## Installation
 
@@ -70,6 +32,20 @@ pip install -r requirements.txt
 cp .env.example .env
 # Add your OpenAI API key to .env
 ```
+
+## Workflow
+
+### Phase 1: Real-World Analysis
+1. **Domain Discovery**: Extract attack patterns and normal baselines from real data
+2. **Contextual Enrichment**: Create threat landscape context and problem definitions  
+3. **Schema-Aware Seeds**: Generate high-quality seed examples
+
+### Phase 2: Scale Generation
+4. **Scale Generation**: Generate large datasets using extracted intelligence
+5. **Scale Validation**: Validate quality and filter for production use
+
+<img src="reference/image/flowchart_2.png" alt="CyberData Flowchart" width="800">
+
 
 ## Usage
 
@@ -126,6 +102,34 @@ python scale_generation.py --scale-count 10000 --malicious-ratio 0.05
 python data_mixer.py your_real_data.csv.gz --n-raw-samples 500 --n-synthetic-samples 500
 ```
 
+## File Structure
+
+```
+cyberdata/
+├── src/cyberdata/
+│   ├── process/
+│   │   ├── real_data_processor.py    # Step 1-3: Real-world analysis
+│   │   ├── seed_validator.py         # Seed quality validation
+│   │   ├── scale_generation.py       # Large-scale generation
+│   │   ├── scale_validation.py       # Scale quality validation
+│   │   └── data_mixer.py             # Mix real and synthetic data
+│   └── utils/                        # Configuration and utilities
+├── config/
+│   ├── data_info.yaml               # Dataset schemas and metadata
+│   ├── scale_config.yaml            # Generation parameters
+│   ├── domain_discovery/            # Extracted domain patterns
+│   ├── contextual_problems/         # Enriched problem contexts
+│   └── prompts/                     # LLM prompt templates
+├── data/
+│   ├── seeds-raw/                   # Raw seed examples
+│   ├── seeds-validated/             # Validated high-quality seeds
+│   ├── scaled-raw/                  # Raw scale generation output
+│   ├── scaled-validated/            # Production-ready datasets
+│   └── scaled_validation/           # Quality reports
+├── raw/                             # Input datasets
+└── logs/                            # Execution logs
+```
+
 ## Output
 
 Generated datasets include:
@@ -152,15 +156,10 @@ python real_data_processor.py \
     --samples-per-class 200
 ```
 
-## To Do
-- [ ] Fix real-data analysis token limit issue
-- [x] Machine learning model evaluation framework
-- [ ] Class imbalance sensitivity analysis tools  
-
 
 ## Version
 
-Current version: 2.1.5
+Current version: 2.1.6
 
 ## License
 
