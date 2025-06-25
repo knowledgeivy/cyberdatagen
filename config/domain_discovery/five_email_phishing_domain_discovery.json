@@ -6,60 +6,80 @@
       "phishing",
       "social_engineering"
     ],
-    "detection_complexity": "moderate to high due to text obfuscation, social engineering tactics, and variability in phishing content",
+    "detection_complexity": "moderate to high due to text obfuscation, social engineering tactics, and multi-source variability",
     "data_characteristics": [
       "text_heavy",
       "multi_source",
       "balanced_classes",
-      "includes URLs, obfuscated words, and social engineering language"
+      "includes both short and long email bodies",
+      "presence of URLs and obfuscated text",
+      "varied subject line styles"
     ]
   },
   "attack_patterns": {
     "common_indicators": [
-      "presence of suspicious or obfuscated URLs in email body",
-      "use of urgent or enticing subject lines related to health, finance, or job offers",
-      "inclusion of misspellings, grammatical errors, and nonsensical filler text to evade detection"
+      "presence of unsolicited commercial offers related to health products or medications",
+      "inclusion of suspicious URLs often with uncommon or newly registered domains",
+      "use of urgent or alarming language to provoke immediate action (e.g., payment failure, job offers)",
+      "poor grammar and spelling errors indicative of non-native language use or automated generation",
+      "insertion of random or nonsensical word sequences to evade spam filters",
+      "use of generic or vague subject lines such as 'Re:' or minimal text subjects",
+      "spoofing of reputable brands or news sources (e.g., CNN) with fake content"
     ],
     "attack_signatures": [
-      "phishing emails often contain calls to action urging users to click links or provide personal information, e.g., 'Click Here!', 'Guaranteed results', 'Update your payment information'",
-      "use of brand impersonation or spoofed reputable sources, e.g., fake CNN newsletter style with embedded URLs",
-      "insertion of random or nonsensical word sequences (e.g., 'epicranium excellente ethylhexyl') to confuse text-based filters"
+      "signature pattern 1: Emails promoting counterfeit or replica products with embedded URLs linking to suspicious domains (e.g., replica watches, medications)",
+      "signature pattern 2: Phishing emails mimicking payment or account suspension notices urging users to update payment information with embedded links",
+      "signature pattern 3: Use of random word sequences or gibberish text blocks within the email body to bypass keyword-based detection",
+      "signature pattern 4: Social engineering content promising sexual performance enhancement or job offers requesting personal information",
+      "signature pattern 5: Fake newsletters or daily top 10 news digests with embedded malicious URLs and disclaimers to appear legitimate"
     ],
     "technical_markers": [
-      "URL presence rate: >1 suspicious URL per email body often indicates phishing",
-      "high frequency of health or medication-related keywords in phishing samples (e.g., 'Viagra', 'medications', 'herbal breakthrough')",
-      "subject line length typically short and generic or overly promotional (e.g., 'Job Vacancies', 'Guaranteed Erection Fast')"
+      "measurable marker 1: Presence of URLs with domains not matching known reputable sources, often with uncommon TLDs or subdomains",
+      "measurable marker 2: High ratio of non-dictionary or gibberish words in body text exceeding 20% of total words",
+      "measurable marker 3: Subject lines with less than 5 characters or generic terms like 'Re:' or numeric-only subjects",
+      "measurable marker 4: Inclusion of urgent call-to-action phrases such as 'Click Here!', 'Guaranteed', or 'Payment failed' appearing more than once",
+      "measurable marker 5: Use of excessive line breaks and whitespace irregularities to obfuscate content"
     ],
     "attack_vectors": [
-      "email phishing via crafted email content with embedded URLs and social engineering text"
+      "email phishing via deceptive content and social engineering",
+      "malicious URLs directing to fraudulent websites",
+      "spoofed sender or source identifiers",
+      "exploitation of user trust through impersonation of known brands or services"
     ],
     "exploit_techniques": [
-      "social engineering to induce clicks or data entry",
-      "URL obfuscation",
-      "brand impersonation",
-      "text obfuscation with filler nonsense words"
+      "social engineering to induce user clicks on malicious links",
+      "obfuscation of malicious content using random text insertion",
+      "use of urgency and fear tactics to bypass rational user scrutiny",
+      "credential harvesting through fake login or payment update pages"
     ]
   },
   "normal_baselines": {
     "typical_behaviors": [
-      "benign emails contain technical, professional, or community discussion content without urgent calls to action",
-      "subjects are descriptive and relevant to the email body content, e.g., mailing list discussions, technical problem reports",
-      "email bodies have coherent, well-structured text with minimal spelling or grammatical errors"
+      "benign emails contain technical, professional, or community discussion content with coherent and relevant language",
+      "presence of formal greetings and signatures with contact information",
+      "absence of unsolicited commercial offers or suspicious URLs",
+      "subject lines are descriptive, relevant to the content, and often longer than 5 characters",
+      "email bodies contain structured paragraphs, technical jargon, or event announcements without obfuscation"
     ],
     "baseline_metrics": [
-      "average URL count per email body close to zero or only legitimate URLs",
-      "absence of suspicious keywords related to health products, financial urgency, or job offers",
-      "subject line length moderate, typically descriptive and specific (e.g., '[Python-Dev] GSoC student introduction')"
+      "URL presence rate: less than 10% of benign emails contain URLs, and those URLs belong to well-known domains",
+      "Gibberish word ratio: less than 5% of total words in body text",
+      "Subject line length: average length between 20-80 characters",
+      "Call-to-action phrases frequency: near zero in benign emails",
+      "Whitespace irregularities: minimal, consistent formatting"
     ],
     "operational_patterns": [
-      "emails often contain signatures, contact information, or references to external resources relevant to the discussion",
-      "benign emails show consistent formatting and professional tone",
-      "absence of unsolicited requests for personal information or payment updates"
+      "emails are often replies or announcements within known communities or organizations",
+      "technical discussions or informational content referencing known projects or events",
+      "absence of urgent or alarmist language",
+      "consistent sender/source identifiers matching known mailing lists or organizations"
     ],
     "normal_thresholds": [
-      "URL count per email body < 1 for benign",
-      "absence of known phishing keywords such as 'Viagra', 'payment suspended', 'click here'",
-      "subject line length > 5 characters and contextually relevant"
+      "flag emails with subject lines shorter than 5 characters or generic terms",
+      "flag emails with gibberish word ratio exceeding 15%",
+      "flag emails containing URLs with domains not in whitelist",
+      "flag emails with more than one urgent call-to-action phrase",
+      "flag emails with excessive whitespace irregularities or random text blocks"
     ]
   },
   "domain_terminology": {
@@ -67,84 +87,90 @@
       "phishing",
       "social engineering",
       "URL obfuscation",
-      "brand impersonation",
-      "spam",
-      "email header",
-      "email body",
-      "click-through",
-      "payload",
-      "malicious link"
+      "spoofing",
+      "call-to-action",
+      "gibberish text",
+      "replica products",
+      "payment suspension",
+      "credential harvesting",
+      "email subject line",
+      "email body content"
     ],
     "attack_vectors": [
-      "phishing email",
-      "spear phishing",
-      "email spoofing",
-      "link manipulation"
+      "email phishing",
+      "malicious hyperlinks",
+      "brand impersonation",
+      "social engineering attacks"
     ],
     "defensive_measures": [
-      "email filtering",
-      "URL reputation analysis",
-      "content-based detection",
-      "machine learning classification",
-      "blacklisting",
-      "heuristic analysis"
+      "URL reputation filtering",
+      "content-based spam filtering",
+      "language model anomaly detection",
+      "whitelist/blacklist domain filtering",
+      "heuristic detection of urgency and call-to-action phrases"
     ],
     "industry_context": [
       "email security",
-      "anti-phishing",
-      "machine learning for cybersecurity",
-      "TREC-07, CEAS-08, Enron datasets",
-      "spam detection competitions"
+      "machine learning based phishing detection",
+      "multi-source phishing datasets",
+      "balanced dataset for classification",
+      "email metadata analysis"
     ]
   },
   "threat_landscape": {
     "current_threats": [
-      "phishing campaigns targeting users with health-related scams",
-      "financial fraud attempts via payment suspension notices",
-      "job offer scams soliciting personal information",
-      "brand impersonation of trusted news sources (e.g., CNN)"
+      "phishing emails promoting counterfeit goods and medications",
+      "payment fraud via fake account suspension notices",
+      "social engineering exploiting sexual health and job offer themes",
+      "malicious newsletters spoofing legitimate news outlets"
     ],
     "emerging_patterns": [
-      "use of nonsensical filler text to bypass text-based filters",
-      "increased use of multi-source phishing datasets indicating diverse phishing tactics",
-      "combining social engineering with URL obfuscation to evade detection"
+      "increased use of random word sequences to evade keyword detection",
+      "short or generic subject lines to bypass subject-based filters",
+      "multi-source phishing campaigns indicating coordinated threat actor activity",
+      "use of legitimate brand names combined with suspicious URLs"
     ],
     "risk_factors": [
-      "users clicking on embedded malicious URLs",
-      "lack of user awareness of phishing indicators",
-      "insufficient email filtering for obfuscated or disguised phishing content"
+      "users clicking on embedded URLs without verifying legitimacy",
+      "lack of domain reputation checks in email filtering",
+      "high volume of phishing emails with obfuscated content",
+      "difficulty in detecting social engineering tactics due to natural language use"
     ],
-    "threat_sophistication": "medium sophistication with basic evasion techniques such as obfuscation and social engineering but lacking advanced polymorphic or zero-day exploits"
+    "threat_sophistication": "moderate; attackers use basic obfuscation and social engineering but do not employ advanced evasion like polymorphic content or zero-day exploits"
   },
   "actionable_intelligence": {
     "detection_rules": [
-      "flag emails containing more than one URL with domain reputation below threshold",
-      "detect presence of health-related or financial urgency keywords combined with call-to-action phrases",
-      "identify emails with nonsensical or random filler words sequences exceeding a token threshold",
-      "monitor subject lines with generic or overly promotional language combined with suspicious body content"
+      "flag emails containing URLs with domains not in a trusted whitelist",
+      "detect and alert on emails with gibberish word ratio > 15%",
+      "flag emails with subject lines shorter than 5 characters or generic terms like 'Re:'",
+      "detect presence of urgent call-to-action phrases repeated more than once",
+      "identify emails with random or nonsensical word sequences embedded in body"
     ],
     "monitoring_recommendations": [
-      "implement URL reputation checks and sandboxing of links",
-      "monitor for sudden spikes in emails with payment or account suspension themes",
-      "use NLP techniques to detect incoherent or obfuscated text patterns",
-      "track source identifiers to identify phishing campaigns from known datasets or sources"
+      "monitor URL domains for reputation and newly registered suspicious domains",
+      "track frequency of urgent language and call-to-action phrases in incoming emails",
+      "implement NLP-based anomaly detection for gibberish or obfuscated text",
+      "correlate source identifiers with known phishing campaign sources",
+      "regularly update whitelist and blacklist domain lists based on threat intelligence"
     ],
     "threshold_suggestions": [
-      "alert if URL count per email body > 1 and URLs are not whitelisted",
-      "trigger alerts for emails containing >3 suspicious keywords related to health or finance",
-      "flag emails with >10% of body tokens identified as gibberish or nonsensical",
-      "consider subject lines shorter than 5 characters or containing only generic terms as suspicious when combined with other indicators"
+      "gibberish word ratio threshold: 15%",
+      "subject line length threshold: minimum 5 characters",
+      "maximum allowed urgent call-to-action phrase occurrences: 1",
+      "URL domain whitelist enforcement: block unknown or suspicious domains",
+      "maximum allowed random text block length: no more than 10 consecutive nonsensical words"
     ],
     "pattern_matching": [
-      "use regex patterns to detect common phishing phrases like 'Click Here', 'Guaranteed results', 'Update your payment information'",
-      "pattern match URLs with known phishing domains or suspicious TLDs",
-      "apply fuzzy matching to detect brand impersonation in subject lines and body text",
-      "detect repeated use of filler nonsense words as evasion technique"
+      "use regex patterns to detect common phishing URL structures and suspicious TLDs",
+      "pattern match repeated urgent phrases like 'Click Here!', 'Guaranteed', 'Payment failed'",
+      "detect sequences of non-dictionary words exceeding defined thresholds",
+      "match known phishing subject line templates such as 'Your payment didn't succeed'",
+      "identify spoofed brand names combined with suspicious URLs"
     ]
   },
   "metadata": {
     "dataset_name": "five_email_phishing",
-    "analysis_timestamp": "2025-06-25T17:04:54.755071",
+    "analysis_timestamp": "2025-06-25T18:56:43.341200",
     "samples_analyzed": {
       "malicious": 50,
       "benign": 50

@@ -1,0 +1,94 @@
+{
+  "samples": [
+    {
+      "subject": "Scheduled Network Upgrade Notification - July 15",
+      "body": "Dear Users,\n\nAs part of our ongoing efforts to improve network performance, a scheduled upgrade will occur on July 15th from 1:00 AM to 4:00 AM UTC. During this window, some network services may experience brief interruptions.\n\nWe appreciate your understanding and cooperation.\n\nRegards,\nNetwork Engineering Team\nnetwork-team@enterprise.org",
+      "label": 0,
+      "source": "CorpMail-23",
+      "sample_id": "ben_215_2",
+      "generation_timestamp": 1750892791.5201547
+    },
+    {
+      "subject": "Re:",
+      "body": "Dear User,\n\nYour payment did not succeed and your access is suspended. Update your billing now to avoid permanent termination.\n\nPlease click here immediately:\nhttp://secure-payments.verify-account-update.info/login\n\nFailure to act within 24 hours will result in account suspension.\n\nClick Here! Click Here!\n\nRegards,\nBilling Support Team\n\nxqwplf mzxvbn kplrqwe lzmxnvb qwerpoiu zxcmnvb\n",
+      "label": 1,
+      "source": "PhishNet-21",
+      "sample_id": "mal_86_0",
+      "generation_timestamp": 1750892669.3429463
+    },
+    {
+      "subject": "Upcoming Network Upgrade Scheduled for July 5",
+      "body": "Dear All,\n\nAs part of our ongoing infrastructure improvement plan, a network upgrade is scheduled for July 5th, starting at 1:00 AM UTC and lasting approximately 4 hours.\n\nDuring this window, some internal services may experience brief interruptions.\n\nPlease plan accordingly and report any issues to the IT Helpdesk at it-helpdesk@organization.com.\n\nThank you for your cooperation.\n\nRegards,\nNetwork Engineering Team",
+      "label": 0,
+      "source": "ITDept-07",
+      "sample_id": "ben_207_1",
+      "generation_timestamp": 1750892782.638157
+    },
+    {
+      "subject": "Re:",
+      "body": "Dear User,\n\nYour payment failed multiple times, and your account is at risk of suspension. Please update your billing information immediately to avoid service interruption.\n\nVerify your account here:\nhttp://secure-update.paymentportal-verify.info/login\n\nClick Here! Click Here! Failure to act within 24 hours will result in permanent suspension.\n\nThank you for your prompt attention.\n\nSupport Team\n\nkjdweur qwpeiru laksjdf qwoeir pqowieur tlsakdjf\n",
+      "label": 1,
+      "source": "PhishNet-21",
+      "sample_id": "mal_43_0",
+      "generation_timestamp": 1750892627.8813062
+    }
+  ],
+  "metadata": {
+    "area": "email_security",
+    "nature": "phishing and social engineering attacks via deceptive email content",
+    "scale_count_requested": 1100,
+    "malicious_ratio_requested": 0.5,
+    "actual_samples_generated": 1100,
+    "actual_malicious_count": 0,
+    "actual_benign_count": 1100,
+    "actual_malicious_ratio": 0.0,
+    "generation_method": "enhanced_scale_generation",
+    "generation_stats": {
+      "total_generated": 1100,
+      "total_unique": 1100,
+      "duplicates_filtered": 0,
+      "failed_generations": 0,
+      "successful_batches": 220,
+      "total_api_calls": 220,
+      "generation_start_time": 1750892574.1373117,
+      "generation_end_time": 1750892798.4061022
+    },
+    "duplicate_detection_stats": {
+      "samples_tracked": 599,
+      "similarity_threshold": 0.85
+    },
+    "generation_timestamp": 1750892798.407104,
+    "total_generation_time": 224.26879048347473,
+    "samples_per_minute": 294.2897219792302,
+    "context_sources": {
+      "domain_discovery_used": true,
+      "contextual_problems_used": true,
+      "data_info_used": true,
+      "dataset_name": "five_email_phishing"
+    },
+    "quality_indicators": {
+      "uniqueness_rate": 1.0,
+      "success_rate": 1.0,
+      "average_batch_time": 1.0194035931067034
+    },
+    "quality_status": "filtered_low_quality_scale_parallel_config",
+    "validation_method": "parallel_multi_dimensional_scale_config_driven",
+    "validation_timestamp": 1750895555.0750093,
+    "quality_filtering_applied": true,
+    "parallel_validation": true,
+    "parallel_workers": 12,
+    "configuration_driven": true,
+    "filtered_count": 4,
+    "filtered_malicious": 2,
+    "filtered_benign": 2,
+    "quality_thresholds_used": {
+      "technical_accuracy": 0.75,
+      "schema_consistency": 0.95,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.65,
+      "domain_alignment": 0.75,
+      "overall_minimum": 0.75
+    },
+    "reason_for_filtering": "Failed to meet scale quality thresholds in config-driven parallel validation"
+  }
+}

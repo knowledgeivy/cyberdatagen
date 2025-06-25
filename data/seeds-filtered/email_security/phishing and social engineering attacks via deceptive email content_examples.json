@@ -1,0 +1,105 @@
+{
+  "examples": [
+    {
+      "subject": "Urgent: Your payment failed",
+      "body": "Dear Customer,\n\nWe were unable to process your recent payment. Your account will be suspended unless you update your payment information immediately.\n\nPlease click the link below to verify your account details:\nhttp://secure-payments-update.xyz/verify\n\nFailure to act within 24 hours will result in service termination.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Team",
+      "label": 1,
+      "source": "PhishTank-21"
+    },
+    {
+      "subject": "CNN Daily Top 10",
+      "body": ">+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n>\n>THE DAILY TOP 10 from CNN.com\n>Top stories as of: June 24, 2025 9:00 AM EDT\n>\n>1. NEW HEALTH BREAKTHROUGH http://cnn-newsupdate.com/video/partners/email/index.html?url=/video/health/2025/06/23/breakthrough.cnn\n>2. FINANCIAL ALERT: Account Suspended http://secure-update-payments.com/login\n>3. EXCLUSIVE: Celebrity Scandal Revealed http://newsbuzz-cnn.com/article?id=12345\n>\n>Click Here! to see full reports and updates.\n>\n>CNN, The Most Trusted Name in News\n>All rights reserved.\n>\n>To unsubscribe, visit: http://unsubscribe.cnn.com/?uid=abc123\n",
+      "label": 1,
+      "source": "CEAS-08"
+    },
+    {
+      "subject": "Urgent: Your Payment Failed - Immediate Action Required",
+      "body": "Dear Customer,\n\nWe attempted to process your recent payment, but unfortunately it failed. Your account will be suspended unless you update your payment details immediately.\n\nPlease click the link below to verify and update your information:\nhttp://secure-payments-update.xyz/verify\n\nFailure to comply within 24 hours will result in account deactivation.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department",
+      "label": 1,
+      "source": "PhishFeed-21"
+    },
+    {
+      "subject": "Re: ",
+      "body": "Hello,\n\nIt is crucial you Click Here! to guarantee your payment before access is revoked.\nWe have tried to notify you about recent payment failed attempts.\nhttp://account-update.secure-payments-online.xyz\n\nDo not miss this urgent update.\n\nThank you.",
+      "label": 1,
+      "source": "PhishNet-21"
+    },
+    {
+      "subject": "Urgent: Payment failed - Update your account now!",
+      "body": "Dear Customer,\n\nWe noticed a problem processing your recent payment and your account has been temporarily suspended. Please click the link below immediately to update your payment details and restore service:\n\nhttp://secure-payments-update.biz/verify\n\nFailure to update within 24 hours will result in permanent suspension.\n\nThank you for your prompt attention.\n\nSupport Team",
+      "label": 1,
+      "source": "PhishTank-2025"
+    },
+    {
+      "subject": "Account Suspension Notice",
+      "body": "Dear user,\n\nWe detected unusual activity on your account. To prevent suspension, you must verify your payment information immediately.\n\nPlease update your details here: http://secure-payments.verify-account.info/login\n\nFailure to do so within 24 hours will result in account termination.\n\nThank you for your prompt attention.\n\nSupport Team",
+      "label": 1,
+      "source": "PhishNet-21"
+    },
+    {
+      "subject": "Urgent: Your payment failed - update immediately",
+      "body": "Dear customer,\n\nWe were unable to process your recent payment. To avoid suspension of your account, please update your payment information immediately by clicking the link below:\n\nhttp://secure-payment-update.xyz/verify\n\nFailure to do so within 24 hours will result in account termination.\n\nClick Here! Click Here! Guaranteed secure.\n\nThank you for your prompt attention,\nCustomer Service Team",
+      "label": 1,
+      "source": "PhishBank"
+    },
+    {
+      "subject": "Your payment suspension notice",
+      "body": "Dear user,\n\nWe were unable to process your recent payment. Your account will be suspended within 24 hours unless you update your payment information immediately.\n\nPlease click the link below to verify your account details:\nhttp://secure-payments.update-info.xyz/verify\n\nFailure to act promptly will result in permanent suspension.\n\nThank you,\nBilling Department",
+      "label": 1,
+      "source": "PhishBank"
+    }
+  ],
+  "metadata": {
+    "source": "three_step_real_world_analysis",
+    "dataset_name": "five_email_phishing",
+    "generation_method": "domain_discovery_contextual_schema_aware",
+    "total_examples": 35,
+    "malicious_examples": 21,
+    "benign_examples": 14,
+    "area": "email security",
+    "nature": "phishing and social engineering attacks via deceptive email content",
+    "domain_discovery_used": true,
+    "contextual_enrichment_used": true,
+    "schema_preserved": true,
+    "generation_metadata": {
+      "generation_method": "schema_aware_three_step",
+      "data_source": "real_world_enhanced_analysis",
+      "domain_discovery_used": true,
+      "contextual_enrichment_used": true,
+      "schema_preserved": true,
+      "dataset_name": "five_email_phishing",
+      "target_seeds_per_class": 20,
+      "total_seeds_generated": 35,
+      "generation_batches": 8,
+      "seeds_per_batch": 5,
+      "generation_timestamp": "2025-06-25T18:58:29.379206",
+      "step": "schema_aware_generation",
+      "version": "1.0"
+    },
+    "quality_status": "filtered_low_quality_parallel_config",
+    "configuration": {
+      "samples_per_class_analyzed": 50,
+      "target_seeds_per_class": 20,
+      "actual_seeds_generated": 35
+    },
+    "validation_method": "parallel_multi_dimensional_enhanced_config_driven",
+    "validation_timestamp": 1750892555.9137115,
+    "quality_filtering_applied": true,
+    "parallel_validation": true,
+    "parallel_workers": 6,
+    "configuration_driven": true,
+    "filtered_count": 8,
+    "filtered_malicious": 8,
+    "filtered_benign": 0,
+    "quality_thresholds_used": {
+      "technical_accuracy": 0.7,
+      "schema_consistency": 0.9,
+      "realism_assessment": 0.7,
+      "semantic_uniqueness": 0.6,
+      "domain_alignment": 0.7,
+      "overall_minimum": 0.75
+    },
+    "reason_for_filtering": "Failed to meet quality thresholds in parallel config-driven validation",
+    "configuration_source": "scale_config.yaml"
+  }
+}

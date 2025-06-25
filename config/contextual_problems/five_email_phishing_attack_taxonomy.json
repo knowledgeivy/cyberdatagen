@@ -4,35 +4,36 @@
     "social_engineering"
   ],
   "attack_patterns": [
-    "presence of suspicious or obfuscated URLs in email body",
-    "urgent or enticing subject lines related to health, finance, or job offers",
-    "misspellings, grammatical errors, and nonsensical filler text to evade detection",
-    "calls to action urging clicks or data entry",
-    "brand impersonation of reputable sources",
-    "random filler nonsense word insertion"
+    "unsolicited commercial offers related to health products or medications",
+    "suspicious URLs with uncommon or newly registered domains",
+    "urgent or alarming language to provoke immediate action",
+    "poor grammar and spelling errors",
+    "random or nonsensical word sequences to evade detection",
+    "generic or vague subject lines",
+    "spoofing reputable brands or news sources"
   ],
   "attack_sophistication_levels": [
-    "basic evasion with URL obfuscation and social engineering",
-    "medium sophistication combining multiple evasion techniques",
-    "absence of advanced polymorphic or zero-day exploits"
+    "basic obfuscation and social engineering",
+    "moderate sophistication without advanced evasion",
+    "multi-source coordinated campaigns"
   ],
   "mitigation_strategies": [
-    "email filtering with URL reputation analysis",
-    "content-based detection using NLP and heuristic analysis",
-    "user awareness and training on phishing indicators",
-    "blacklisting known phishing domains",
-    "machine learning classification on multi-source datasets"
+    "URL reputation filtering and domain whitelisting",
+    "content-based spam filtering with NLP anomaly detection",
+    "heuristic detection of urgency and call-to-action phrases",
+    "source identifier correlation and spoofing detection",
+    "regular updating of detection rules and domain lists"
   ],
   "detection_approaches": [
-    "flagging emails with multiple suspicious URLs",
-    "keyword and phrase detection combining urgency and call-to-action",
-    "gibberish or filler word detection via token analysis",
-    "subject line pattern monitoring for generic or overly promotional language",
-    "fuzzy matching for brand impersonation detection"
+    "regex pattern matching for phishing URL structures and urgent phrases",
+    "gibberish word ratio thresholds for text anomaly detection",
+    "subject line length and content validation",
+    "whitelist/blacklist domain enforcement",
+    "multi-source metadata correlation"
   ],
   "metadata": {
     "dataset_name": "five_email_phishing",
-    "enrichment_timestamp": "2025-06-25T17:05:46.608263",
+    "enrichment_timestamp": "2025-06-25T18:57:11.597508",
     "domain_discovery_used": true,
     "step": "contextual_enrichment",
     "version": "1.0"
