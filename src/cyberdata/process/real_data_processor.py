@@ -31,7 +31,8 @@ SAMPLES_PER_CLASS = 50   # Number of real-world samples per class for analysis
 TARGET_SEEDS_PER_CLASS = 20  # Target number of seeds per class
 
 # Dataset configuration
-CSV_FILE = "five_email_phishing.csv.gz"  # Raw CSV file
+# CSV_FILE = "five_email_phishing_train.csv.gz"  # Raw CSV file
+CSV_FILE = "email_phishing_CEAS-08_train.csv.gz"  # use only CEAS-08 dataset for now
 DATA_INFO_NAME = "five_email_phishing"   # Dataset name in data_info.yaml
 MODEL_NAME = "gpt-4.1-mini"
 

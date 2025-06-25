@@ -4,31 +4,35 @@
     "social_engineering"
   ],
   "attack_patterns": [
-    "financial scams with detailed backstories and cooperation requests",
-    "online pharmacy promotions with direct suspicious URLs",
-    "short spam-like medication lists with embedded suspicious links"
+    "presence of suspicious or obfuscated URLs in email body",
+    "urgent or enticing subject lines related to health, finance, or job offers",
+    "misspellings, grammatical errors, and nonsensical filler text to evade detection",
+    "calls to action urging clicks or data entry",
+    "brand impersonation of reputable sources",
+    "random filler nonsense word insertion"
   ],
   "attack_sophistication_levels": [
-    "moderate sophistication using social engineering and URL obfuscation",
-    "absence of advanced polymorphic or encrypted payloads"
+    "basic evasion with URL obfuscation and social engineering",
+    "medium sophistication combining multiple evasion techniques",
+    "absence of advanced polymorphic or zero-day exploits"
   ],
   "mitigation_strategies": [
-    "email filtering with URL reputation and domain age checks",
-    "content-based detection using NLP for social engineering narratives",
-    "sender authentication enforcement (SPF, DKIM, DMARC)",
-    "heuristic and blacklist-based detection for suspicious domains and keywords",
-    "continuous monitoring of phishing keyword trends and domain registrations"
+    "email filtering with URL reputation analysis",
+    "content-based detection using NLP and heuristic analysis",
+    "user awareness and training on phishing indicators",
+    "blacklisting known phishing domains",
+    "machine learning classification on multi-source datasets"
   ],
   "detection_approaches": [
-    "pattern matching with regex for monetary and urgent phrases",
-    "URL reputation and blacklist analysis",
-    "NLP models to detect scam narratives and impersonation",
-    "metadata correlation for sender domain consistency",
-    "heuristic thresholds based on spelling errors and URL counts"
+    "flagging emails with multiple suspicious URLs",
+    "keyword and phrase detection combining urgency and call-to-action",
+    "gibberish or filler word detection via token analysis",
+    "subject line pattern monitoring for generic or overly promotional language",
+    "fuzzy matching for brand impersonation detection"
   ],
   "metadata": {
     "dataset_name": "five_email_phishing",
-    "enrichment_timestamp": "2025-06-21T14:56:25.733226",
+    "enrichment_timestamp": "2025-06-25T17:05:46.608263",
     "domain_discovery_used": true,
     "step": "contextual_enrichment",
     "version": "1.0"

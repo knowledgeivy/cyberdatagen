@@ -1,43 +1,43 @@
 {
   "validation_mode": "Parallel Multi-Dimensional Assessment",
   "total_examples": 40,
-  "high_quality_count": 32,
-  "high_quality_ratio": 0.8,
+  "high_quality_count": 30,
+  "high_quality_ratio": 0.75,
   "average_scores": {
-    "technical_accuracy": 0.755,
-    "schema_consistency": 0.825,
-    "realism_assessment": 0.728,
-    "semantic_uniqueness": 0.825,
-    "domain_alignment": 0.72825,
-    "composite_score": 0.76556875
+    "technical_accuracy": 0.703,
+    "schema_consistency": 0.75,
+    "realism_assessment": 0.6719999999999999,
+    "semantic_uniqueness": 0.75,
+    "domain_alignment": 0.677,
+    "composite_score": 0.70475625
   },
   "quality_distribution": {
-    "excellent": 24,
-    "good": 9,
+    "excellent": 27,
+    "good": 3,
     "fair": 0,
-    "poor": 7
+    "poor": 10
   },
   "type_quality_rates": {
-    "benign": 1.0,
-    "malicious": 0.6666666666666666
+    "malicious": 0.5833333333333334,
+    "benign": 1.0
   },
   "top_issues": [
     [
       "Failed to parse validation response",
-      7
+      10
     ],
     [
-      "No issues detected in technical accuracy dimension.",
-      3
+      "No issues detected across all dimensions.",
+      2
     ],
     [
-      "No schema consistency issues found.",
-      3
+      "None identified; example fully meets or exceeds all validation criteria.",
+      2
     ]
   ],
   "performance_metrics": {
-    "total_validation_time": 181.64449882507324,
-    "validation_rate_per_minute": 13.212621442013726,
+    "total_validation_time": 201.26863169670105,
+    "validation_rate_per_minute": 11.924361882762964,
     "successful_validations": 40,
     "failed_validations": 0,
     "total_api_calls": 40,
@@ -56,5 +56,5 @@
       "overall_minimum": 0.75
     }
   },
-  "validation_timestamp": 1750532589.0898647
+  "validation_timestamp": 1750886483.4769309
 }

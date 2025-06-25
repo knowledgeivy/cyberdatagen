@@ -1,42 +1,32 @@
 {
   "attack_indicators": [
-    "presence of suspicious URLs often unrelated to sender domain",
-    "use of urgent or lucrative offers in subject lines (e.g., 'Part-Time opportunity - $2000/week')",
-    "inclusion of financial or personal gain narratives (e.g., inheritance scams, fake job offers)",
-    "presence of misspellings, grammatical errors, and unusual formatting",
-    "inclusion of contact information with free email providers or suspicious domains",
-    "references to well-known brands or institutions to build trust (e.g., Barclays Bank, Canadian Pharmacy)",
-    "use of obfuscated or non-standard URLs with uncommon TLDs or domain names",
-    "inclusion of pharmaceutical product promotions with direct links",
-    "use of social engineering tactics appealing to emotions or urgency"
+    "presence of suspicious or obfuscated URLs in email body",
+    "use of urgent or enticing subject lines related to health, finance, or job offers",
+    "inclusion of misspellings, grammatical errors, and nonsensical filler text to evade detection"
   ],
   "attack_signatures": [
-    "signature pattern 1: Emails containing financial scams referencing large abandoned sums with detailed backstories and requests for cooperation (e.g., 'I am Mr. Tim Kennedy, senior credit officer... abandoned sum of 12.5 million British pounds')",
-    "signature pattern 2: Phishing emails promoting online pharmacies with direct URLs and claims of FDA approval or discounts (e.g., 'fast loading us based online pharmacy http://www.nmedbuy.org/')",
-    "signature pattern 3: Use of short, spam-like bodies with lists of cheap medications and embedded suspicious URLs (e.g., 'Viagra >>>> High Quality... http://adhviw.summerballs.info/?38872604')"
+    "phishing emails often contain calls to action urging users to click links or provide personal information, e.g., 'Click Here!', 'Guaranteed results', 'Update your payment information'",
+    "use of brand impersonation or spoofed reputable sources, e.g., fake CNN newsletter style with embedded URLs",
+    "insertion of random or nonsensical word sequences (e.g., 'epicranium excellente ethylhexyl') to confuse text-based filters"
   ],
   "technical_markers": [
-    "measurable marker 1: URLs with uncommon or newly registered domains, often with numeric or random character strings (e.g., 'http://asterduskyhah.com/')",
-    "measurable marker 2: Subject lines containing monetary amounts or urgent calls to action (e.g., '$2000/week', 'Online Drugstore Announce Discounts')",
-    "measurable marker 3: Email bodies exceeding 500 words with narrative scams or social engineering content, often including personal names and contact details"
+    "URL presence rate: >1 suspicious URL per email body often indicates phishing",
+    "high frequency of health or medication-related keywords in phishing samples (e.g., 'Viagra', 'medications', 'herbal breakthrough')",
+    "subject line length typically short and generic or overly promotional (e.g., 'Job Vacancies', 'Guaranteed Erection Fast')"
   ],
   "normal_indicators": [
-    "benign emails with professional or neutral subject lines related to business, academic, or news content",
-    "email bodies containing structured, coherent, and topic-consistent text without suspicious links",
-    "absence of unsolicited financial offers or urgent calls to action",
-    "presence of legitimate organizational signatures and contact information consistent with sender domain",
-    "use of standard language and formatting with minimal spelling or grammatical errors"
+    "benign emails contain technical, professional, or community discussion content without urgent calls to action",
+    "subjects are descriptive and relevant to the email body content, e.g., mailing list discussions, technical problem reports",
+    "email bodies have coherent, well-structured text with minimal spelling or grammatical errors"
   ],
   "baseline_metrics": [
-    "average email body length typically between 100 to 1000 words depending on context",
-    "URLs, if present, correspond to known or reputable domains matching sender source",
-    "subject lines generally descriptive without monetary or urgent inducements",
-    "low frequency of suspicious or obfuscated URLs (<5% of benign emails)",
-    "absence of repeated suspicious keywords such as 'discount', 'free', 'urgent', or monetary amounts"
+    "average URL count per email body close to zero or only legitimate URLs",
+    "absence of suspicious keywords related to health products, financial urgency, or job offers",
+    "subject line length moderate, typically descriptive and specific (e.g., '[Python-Dev] GSoC student introduction')"
   ],
   "metadata": {
     "dataset_name": "five_email_phishing",
-    "analysis_timestamp": "2025-06-21T14:55:50.168814",
+    "analysis_timestamp": "2025-06-25T17:04:54.755071",
     "samples_analyzed": {
       "malicious": 50,
       "benign": 50
