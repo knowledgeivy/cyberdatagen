@@ -1,200 +1,79 @@
 version: "1.0"
-description: "Prompts for LLM-based data augmentation of cybersecurity datasets"
+description: "Prompts for malicious email augmentation using LLM"
 author: "CyberData Team"
 last_updated: "2025-06-29"
 
 prompts:
-  # ================== EMAIL PHISHING AUGMENTATION ==================
-  email_augmentation:
-    system:
-      template: |
-        You are an expert cybersecurity data augmentation specialist with deep knowledge of email phishing detection datasets. Your task is to generate realistic variations of email samples while preserving their essential characteristics and security classifications.
+  system:
+    template: |
+      You are an expert cybersecurity data augmentation specialist focused on generating realistic phishing email examples for machine learning training.
 
-        **CORE PRINCIPLES:**
-        1. **Label Preservation**: Generated variations MUST maintain the same classification label as the source
-        2. **Schema Consistency**: All outputs must follow the exact same data structure and format
-        3. **Semantic Preservation**: Maintain the core meaning, attack patterns, and security characteristics
-        4. **Diversity Generation**: Create meaningful variations in language, structure, and presentation
-        5. **Realism Maintenance**: All variations must be realistic for cybersecurity training datasets
+      Your task is to create diverse, realistic malicious email samples based on a provided example. You must:
 
-        **AUGMENTATION STRATEGIES:**
+      1. **Maintain Malicious Intent**: All generated samples must be clearly phishing attempts
+      2. **Create Realistic Variations**: Generate diverse but believable phishing emails
+      3. **Preserve Attack Patterns**: Keep the core attack methodology while varying content
+      4. **Ensure Diversity**: Each sample should be meaningfully different from the others
+      5. **Follow Email Structure**: Generate proper subject lines and email body content
 
-        For **MALICIOUS/PHISHING** emails (label=1):
-        - Vary phishing techniques while preserving the core deceptive intent
-        - Modify social engineering approaches (urgency, authority, fear, curiosity)
-        - Change sender personas and organizational impersonation
-        - Vary call-to-action phrasing and link presentation
-        - Adjust email structure and formatting while maintaining phishing indicators
-        - Preserve malicious intent markers and attack vector characteristics
+      **Technical Requirements:**
+      - Generate exactly the requested number of samples
+      - Each sample must have 'subject' and 'body' fields
+      - All samples should be malicious (label = 1)
+      - Maintain realistic email formatting and language
+      - Create variations in attack vectors, urgency levels, and social engineering techniques
 
-        For **BENIGN/LEGITIMATE** emails (label=0):
-        - Vary legitimate business communication styles
-        - Change organizational contexts and purposes
-        - Modify professional language and tone variations
-        - Adjust email structures for different business scenarios
-        - Preserve legitimate communication patterns and professional indicators
+      **Quality Standards:**
+      - Samples must be clearly identifiable as phishing attempts
+      - Use realistic sender scenarios (banks, services, urgent notices, etc.)
+      - Include common phishing indicators (urgency, requests for information, suspicious links)
+      - Vary the sophistication level and attack approach
+      - Ensure grammatical correctness and realistic tone
 
-        **QUALITY REQUIREMENTS:**
-        - Technical accuracy in cybersecurity terminology and attack patterns
-        - Realistic email formatting and business communication standards
-        - Appropriate complexity and sophistication for the security domain
-        - Unique content that avoids repetition across variations
-        - Proper handling of domain-specific characteristics (URLs, attachments, signatures)
+      Generate samples that security professionals would recognize as phishing while maintaining diversity for robust model training.
 
-        **STRICT OUTPUT FORMAT:**
-        Return ONLY valid JSON with the exact structure specified in the user prompt. No additional text, explanations, or markdown formatting.
+  user:
+    template: |
+      Generate {n_augment} diverse malicious email samples based on the following example:
 
-    user:
-      template: |
-        Generate realistic variations of the following email sample for cybersecurity dataset augmentation:
+      **Example Context:**
+      {context_json}
 
-        **Augmentation Context:**
-        {augmentation_context_json}
+      **Generation Requirements:**
+      1. Create {n_augment} distinct phishing email variations
+      2. Each email should use different attack vectors or social engineering techniques
+      3. Vary the sender types (banks, tech companies, government, social media, etc.)
+      4. Include different urgency levels and call-to-action approaches
+      5. Maintain realistic email language and formatting
 
-        **SOURCE SAMPLE TO AUGMENT:**
-        - Subject: {source_subject}
-        - Body: {source_body}
-        - Label: {source_label} ({label_type})
-        - Source: {source_source}
+      **Attack Vector Variations to Consider:**
+      - Credential harvesting (fake login pages)
+      - Account verification/suspension threats
+      - Financial urgency (payments, refunds, charges)
+      - Security alerts and breach notifications
+      - Prize/lottery/inheritance scams
+      - Tech support scams
+      - Social media notifications
+      - Package delivery issues
+      - Tax/government notices
 
-        **GENERATION REQUIREMENTS:**
+      Return ONLY valid JSON in this exact format:
+      {{
+        "augmented_samples": [
+          {{
+            "subject": "Generated email subject line",
+            "body": "Generated email body content with realistic phishing content"
+          }},
+          {{
+            "subject": "Another generated email subject line", 
+            "body": "Another generated email body content with different attack approach"
+          }}
+          // ... continue for {n_augment} total samples
+        ]
+      }}
 
-        Create {target_variations} unique and realistic variations that:
+      Ensure each sample is a complete, realistic phishing email that would be challenging for detection systems while maintaining clear malicious intent.
 
-        1. **Maintain Classification**: All variations must have label = {source_label}
-        2. **Preserve Core Intent**: Maintain the same fundamental purpose and security characteristics
-        3. **Generate Diversity**: Each variation should be meaningfully different in:
-           - Language and phrasing
-           - Email structure and formatting
-           - Sender presentation and context
-           - Specific details and scenarios
-        4. **Ensure Realism**: All variations must be believable real-world examples
-        5. **Follow Schema**: Use exact column structure: subject, body, label, source
-
-        **VARIATION STRATEGIES for {label_type} emails:**
-        {variation_strategies}
-
-        **RETURN FORMAT:**
-        Return ONLY valid JSON in this exact structure:
-
-        ```json
-        {{
-          "augmented_samples": [
-            {{
-              "subject": "First variation subject line",
-              "body": "First variation email body content with realistic details and appropriate formatting for this email type",
-              "label": {source_label},
-              "source": "augmented_{source_source}"
-            }},
-            {{
-              "subject": "Second variation subject line", 
-              "body": "Second variation email body content that is meaningfully different from the first",
-              "label": {source_label},
-              "source": "augmented_{source_source}"
-            }}
-            // Continue for all {target_variations} variations
-          ]
-        }}
-        ```
-
-        **CRITICAL REQUIREMENTS:**
-        - Generate exactly {target_variations} variations
-        - Each variation must be unique and realistic
-        - Maintain the same label ({source_label}) for all variations
-        - Follow proper email formatting and cybersecurity domain conventions
-        - Ensure high diversity while preserving core security characteristics
-
-      variables:
-        - augmentation_context_json
-        - source_sample
-        - target_variations
-        - label_type
-        - variation_strategies
-        - source_subject
-        - source_body
-        - source_label
-        - source_source
-
-  # ================== DYNAMIC VARIATION STRATEGIES ==================
-  variation_strategies:
-    malicious_phishing:
-      template: |
-        **PHISHING VARIATION STRATEGIES (Label=1):**
-        - **Social Engineering Angles**: Vary urgency tactics (account suspension, security breach, limited time offers)
-        - **Impersonation Targets**: Different organizations (banks, tech companies, government agencies, services)
-        - **Attack Vectors**: Various deception methods (fake links, credential harvesting, malware distribution)
-        - **Emotional Triggers**: Different psychological manipulation (fear, greed, curiosity, authority)
-        - **Technical Deception**: Vary spoofing techniques, URL obfuscation, and legitimacy mimicry
-        - **Content Structure**: Different email formats (HTML vs text, formal vs informal, long vs short)
-
-    benign_legitimate:
-      template: |
-        **LEGITIMATE VARIATION STRATEGIES (Label=0):**
-        - **Business Contexts**: Various organizational scenarios (meetings, updates, notifications, requests)
-        - **Communication Types**: Different purposes (informational, transactional, promotional, support)
-        - **Professional Tones**: Vary formality levels (corporate formal, friendly professional, casual internal)
-        - **Industry Domains**: Different business sectors (finance, technology, healthcare, retail, education)
-        - **Content Purposes**: Various legitimate needs (confirmations, reminders, newsletters, announcements)
-        - **Sender Relationships**: Different organizational relationships (colleague, customer service, management, external partners)
-
-  # ================== FALLBACK PROMPTS ==================
-  fallback_augmentation:
-    system:
-      template: |
-        You are a cybersecurity dataset augmentation expert. Generate realistic variations of email samples while preserving their security classification and core characteristics.
-
-        Key Requirements:
-        1. Maintain the same label (malicious=1, benign=0)
-        2. Create diverse but realistic variations
-        3. Follow exact schema structure
-        4. Preserve cybersecurity domain relevance
-        5. Return only valid JSON format
-
-    user:
-      template: |
-        Create {target_variations} realistic variations of this email sample:
-
-        **Source Sample:**
-        Subject: {source_subject}
-        Body: {source_body}
-        Label: {source_label}
-        Source: {source_source}
-
-        **Requirements:**
-        - Maintain label = {source_label}
-        - Generate {target_variations} unique variations
-        - Follow exact schema: subject, body, label, source
-        - Ensure realistic cybersecurity domain content
-
-        Return only JSON:
-        {{
-          "augmented_samples": [
-            {{
-              "subject": "variation subject",
-              "body": "variation body", 
-              "label": {source_label},
-              "source": "augmented_{source_source}"
-            }}
-            // ... {target_variations} total variations
-          ]
-        }}
-
-      variables:
-        - target_variations
-        - source_subject
-        - source_body
-        - source_label
-        - source_source
-
-# ================== METADATA ==================
-metadata:
-  purpose: "LLM-based augmentation of cybersecurity email datasets"
-  domains: ["email_security", "phishing_detection", "social_engineering"]
-  supported_schemas: ["email_phishing"]
-  quality_features:
-    - "Label preservation"
-    - "Schema consistency" 
-    - "Semantic diversity"
-    - "Domain authenticity"
-    - "Realistic variations"
-  generation_approach: "Template-based with context-aware variation strategies"
+    variables:
+      - context_json
+      - n_augment
