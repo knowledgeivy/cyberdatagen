@@ -29,7 +29,7 @@ load_dotenv()
 # Configuration
 MODEL_NAME = "gpt-4.1-mini"
 N_SAMPLE = 1000
-MAX_WORKERS = 8
+MAX_WORKERS = 20
 BATCH_SIZE = 1
 
 # Get config manager instance
@@ -37,15 +37,21 @@ config_manager = get_config_manager()
 
 # File paths
 TRAIN_FILE = config_manager.project_root / "raw" / "email_phishing_CEAS-08_train.csv.gz"
+SAMPLED_DATASET_FILE = config_manager.project_root / "data" / "seeds-augment" / "email_phishing_CEAS-08_sampled_1K+1K.csv.gz"
 SYNTHETIC_FILE = config_manager.project_root / "data" / "seeds-augment" / "email_phishing_CEAS-08_train_malicious_rewrite_1K.csv.gz"
+SYNTHETIC_STRONG_FILE = config_manager.project_root / "data" / "seeds-augment" / "email_phishing_CEAS-08_train_malicious_rewrite_strong_1K.csv.gz"
 
 logger.info(f"Using model: {MODEL_NAME}")
-logger.info(f"Sample size: {N_SAMPLE}")
+logger.info(f"Sample size: {N_SAMPLE} malicious + {N_SAMPLE} benign")
 logger.info(f"Max workers: {MAX_WORKERS}")
 
 
-def load_malicious_data() -> pd.DataFrame:
-    """Load and sample malicious data from training file."""
+def create_consistent_sample():
+    """Create consistent 1K malicious + 1K benign sample and save it."""
+    logger.info("="*60)
+    logger.info("CREATING CONSISTENT SAMPLE DATASET")
+    logger.info("="*60)
+    
     logger.info(f"Loading data from: {TRAIN_FILE}")
     
     try:
@@ -54,31 +60,67 @@ def load_malicious_data() -> pd.DataFrame:
         
         logger.info(f"Loaded {len(df)} total rows")
         
-        # Filter malicious data (label = 1)
+        # Filter malicious and benign data
         malicious_df = df[df['label'] == 1].copy()
+        benign_df = df[df['label'] == 0].copy()
+        
         logger.info(f"Found {len(malicious_df)} malicious rows")
+        logger.info(f"Found {len(benign_df)} benign rows")
         
-        # Sample N_SAMPLE rows
-        if len(malicious_df) > N_SAMPLE:
-            sampled_df = malicious_df.sample(n=N_SAMPLE, random_state=42)
-            logger.info(f"Sampled {N_SAMPLE} malicious rows")
-        else:
-            sampled_df = malicious_df
-            logger.info(f"Using all {len(sampled_df)} malicious rows")
+        # Sample N_SAMPLE from each class
+        sampled_malicious = malicious_df.sample(n=min(N_SAMPLE, len(malicious_df)), random_state=42)
+        sampled_benign = benign_df.sample(n=min(N_SAMPLE, len(benign_df)), random_state=42)
         
-        return sampled_df.reset_index(drop=True)
+        # Combine samples
+        combined_sample = pd.concat([sampled_malicious, sampled_benign], ignore_index=True)
+        combined_sample = combined_sample.sample(frac=1, random_state=42).reset_index(drop=True)  # Shuffle
+        
+        # Create output directory
+        SAMPLED_DATASET_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Save sampled dataset
+        with gzip.open(SAMPLED_DATASET_FILE, 'wt', encoding='utf-8') as f:
+            combined_sample.to_csv(f, index=False)
+        
+        logger.info(f"Saved consistent sample: {len(combined_sample)} rows ({len(sampled_malicious)} malicious, {len(sampled_benign)} benign)")
+        logger.info(f"File: {SAMPLED_DATASET_FILE}")
+        
+        return sampled_malicious, sampled_benign
         
     except Exception as e:
-        logger.error(f"Error loading data: {str(e)}")
+        logger.error(f"Error creating sample: {str(e)}")
         raise
 
 
-def rewrite_single_record(record: Dict, index: int) -> Dict:
-    """Rewrite a single email record using LLM."""
+def load_consistent_sample():
+    """Load the consistent sample dataset."""
+    logger.info(f"Loading consistent sample from: {SAMPLED_DATASET_FILE}")
+    
     try:
-        # Load prompts
-        system_prompt = load_prompt("rewrite_generation", "prompts.rewrite_phishing.system.template")
-        user_prompt = load_prompt("rewrite_generation", "prompts.rewrite_phishing.user.template",
+        with gzip.open(SAMPLED_DATASET_FILE, 'rt', encoding='utf-8') as f:
+            df = pd.read_csv(f)
+        
+        malicious_df = df[df['label'] == 1].copy()
+        benign_df = df[df['label'] == 0].copy()
+        
+        logger.info(f"Loaded consistent sample: {len(df)} rows ({len(malicious_df)} malicious, {len(benign_df)} benign)")
+        
+        return malicious_df, benign_df
+        
+    except FileNotFoundError:
+        logger.info("Consistent sample not found, creating new one...")
+        return create_consistent_sample()
+    except Exception as e:
+        logger.error(f"Error loading sample: {str(e)}")
+        raise
+
+
+def rewrite_single_record(record: Dict, index: int, prompt_file: str) -> Dict:
+    """Rewrite a single email record using specified prompt."""
+    try:
+        # Load prompts from specified file
+        system_prompt = load_prompt(prompt_file, "prompts.rewrite_phishing.system.template")
+        user_prompt = load_prompt(prompt_file, "prompts.rewrite_phishing.user.template",
                                  original_subject=record['subject'],
                                  original_body=record['body'])
         
@@ -100,7 +142,7 @@ def rewrite_single_record(record: Dict, index: int) -> Dict:
                 'source': record.get('source', 'unknown')
             }
             
-            logger.debug(f"Successfully rewrote record {index}")
+            logger.debug(f"Successfully rewrote record {index} with {prompt_file}")
             return rewritten_record
             
         except json.JSONDecodeError:
@@ -112,9 +154,10 @@ def rewrite_single_record(record: Dict, index: int) -> Dict:
         return record
 
 
-def rewrite_data_parallel(df: pd.DataFrame) -> pd.DataFrame:
-    """Rewrite data using parallel processing."""
-    logger.info(f"Starting parallel rewriting with {MAX_WORKERS} workers")
+def rewrite_data_parallel(df: pd.DataFrame, prompt_file: str, output_file: Path) -> pd.DataFrame:
+    """Rewrite data using parallel processing with specified prompt."""
+    logger.info(f"Starting parallel rewriting with {prompt_file}")
+    logger.info(f"Using {MAX_WORKERS} workers, output: {output_file}")
     
     # Convert to records
     records = df.to_dict('records')
@@ -125,7 +168,7 @@ def rewrite_data_parallel(df: pd.DataFrame) -> pd.DataFrame:
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         # Submit all tasks
         future_to_index = {
-            executor.submit(rewrite_single_record, record, i): i 
+            executor.submit(rewrite_single_record, record, i, prompt_file): i 
             for i, record in enumerate(records)
         }
         
@@ -154,45 +197,64 @@ def rewrite_data_parallel(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Parallel rewriting completed in {total_time:.2f} seconds")
     logger.info(f"Average rate: {len(records) / total_time * 60:.1f} records/minute")
     
+    # Save synthetic data
+    logger.info(f"Saving to: {output_file}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    with gzip.open(output_file, 'wt', encoding='utf-8') as f:
+        result_df.to_csv(f, index=False)
+    
+    logger.info(f"Saved {len(result_df)} rewritten records")
+    
     return result_df
 
 
-def save_synthetic_data(df: pd.DataFrame) -> None:
-    """Save synthetic data to file."""
-    logger.info(f"Saving synthetic data to: {SYNTHETIC_FILE}")
-    
-    # Create output directory
-    SYNTHETIC_FILE.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Save as compressed CSV
-    with gzip.open(SYNTHETIC_FILE, 'wt', encoding='utf-8') as f:
-        df.to_csv(f, index=False)
-    
-    logger.info(f"Saved {len(df)} rewritten records")
-
-
 def main():
-    """Main function for data rewriting."""
-    logger.info("="*60)
-    logger.info("MALICIOUS EMAIL DATA REWRITING")
-    logger.info("="*60)
+    """Main function for consistent data rewriting with two prompts."""
+    logger.info("="*80)
+    logger.info("CONSISTENT MALICIOUS EMAIL DATA REWRITING WITH TWO PROMPTS")
+    logger.info("="*80)
     
     try:
-        # Load malicious data
-        malicious_df = load_malicious_data()
+        # Step 1: Load or create consistent sample
+        malicious_df, benign_df = load_consistent_sample()
         
-        # Rewrite data
-        rewritten_df = rewrite_data_parallel(malicious_df)
-        
-        # Save synthetic data
-        save_synthetic_data(rewritten_df)
-        
+        # Step 2: Rewrite with regular prompt
+        logger.info("\n" + "="*60)
+        logger.info("REWRITING WITH REGULAR PROMPT")
         logger.info("="*60)
-        logger.info("DATA REWRITING COMPLETED SUCCESSFULLY")
+        
+        rewritten_regular = rewrite_data_parallel(
+            malicious_df, 
+            "rewrite_generation", 
+            SYNTHETIC_FILE
+        )
+        
+        # Step 3: Rewrite with strong prompt
+        logger.info("\n" + "="*60)
+        logger.info("REWRITING WITH STRONG PROMPT")
         logger.info("="*60)
-        logger.info(f"Input: {len(malicious_df)} malicious records")
-        logger.info(f"Output: {len(rewritten_df)} rewritten records")
-        logger.info(f"File: {SYNTHETIC_FILE}")
+        
+        rewritten_strong = rewrite_data_parallel(
+            malicious_df, 
+            "rewrite_generation_strong", 
+            SYNTHETIC_STRONG_FILE
+        )
+        
+        logger.info("="*80)
+        logger.info("CONSISTENT DATA REWRITING COMPLETED SUCCESSFULLY")
+        logger.info("="*80)
+        logger.info(f"Source malicious records: {len(malicious_df)}")
+        logger.info(f"Source benign records: {len(benign_df)}")
+        logger.info(f"Regular synthetic records: {len(rewritten_regular)}")
+        logger.info(f"Strong synthetic records: {len(rewritten_strong)}")
+        logger.info("")
+        logger.info("Files created:")
+        logger.info(f"  - Consistent sample: {SAMPLED_DATASET_FILE}")
+        logger.info(f"  - Regular synthetic: {SYNTHETIC_FILE}")
+        logger.info(f"  - Strong synthetic: {SYNTHETIC_STRONG_FILE}")
+        logger.info("")
+        logger.info("All datasets are now comparable using the same source data!")
         
     except Exception as e:
         logger.error(f"Error in data rewriting: {str(e)}", exc_info=True)
