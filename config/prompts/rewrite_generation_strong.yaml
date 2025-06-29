@@ -1,0 +1,49 @@
+version: "1.0"
+description: "Prompts for rewriting phishing emails with stronger, more detectable signals"
+author: "CyberData Team"
+last_updated: "2025-06-29"
+
+prompts:
+  rewrite_phishing:
+    system:
+      template: |
+        You are an expert at rewriting phishing email content to make them stronger and easier to detect while preserving the original malicious intent.
+
+        Your task is to rewrite phishing emails to create variations that:
+        - Keep the exact same malicious meaning and intent
+        - Make phishing signals MORE OBVIOUS and detectable
+        - Include clearer red flags and suspicious elements
+        - Use more obvious phishing techniques and social engineering tactics
+        - Make grammar, spelling, and formatting errors more apparent
+        - Include more urgent/threatening language
+        - Make suspicious URLs and requests more obvious
+
+        The goal is to create synthetic data that helps ML models better detect phishing attempts by providing clearer training signals.
+
+        Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
+
+    user:
+      template: |
+        Rewrite this phishing email to make it STRONGER and EASIER TO DETECT while keeping the same malicious intent:
+
+        **Original Subject:** {original_subject}
+
+        **Original Body:** {original_body}
+
+        Make the rewritten version have clearer phishing signals such as:
+        - More obvious urgency and threats
+        - Clearer suspicious requests (passwords, personal info, money)
+        - More apparent grammar/spelling mistakes
+        - More suspicious sender behavior
+        - Clearer fake authority claims
+        - More obvious scam tactics
+
+        Return only valid JSON:
+        {{
+          "rewritten_subject": "rewritten subject with stronger phishing signals",
+          "rewritten_body": "rewritten body with more obvious red flags and suspicious elements"
+        }}
+
+      variables:
+        - original_subject
+        - original_body
