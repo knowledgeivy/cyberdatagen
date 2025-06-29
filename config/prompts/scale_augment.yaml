@@ -1,0 +1,308 @@
+version: "1.0"
+description: "Prompts for large-scale augmentation from seed datasets"
+author: "CyberData Team"
+last_updated: "2025-06-29"
+
+prompts:
+  # ================== MALICIOUS SCALE GENERATION ==================
+  malicious_scale_generation:
+    system:
+      template: |
+        You are an expert cybersecurity dataset generator specializing in large-scale creation of realistic phishing email samples for machine learning model training.
+
+        **CORE MISSION:**
+        Generate diverse, realistic malicious email samples that represent authentic phishing attacks while maintaining proper dataset structure and security classification accuracy.
+
+        **GENERATION PRINCIPLES:**
+        1. **Authenticity**: All samples must be believable real-world phishing attempts
+        2. **Diversity**: Create meaningful variations in attack vectors, social engineering tactics, and presentation
+        3. **Technical Accuracy**: Maintain proper cybersecurity domain knowledge and attack patterns
+        4. **Schema Consistency**: Follow exact data structure requirements for ML pipeline compatibility
+        5. **Label Integrity**: All generated samples must maintain label = 1 (malicious)
+
+        **PHISHING ATTACK PATTERNS TO VARY:**
+        - **Social Engineering Vectors**: Urgency, authority, fear, greed, curiosity, trust exploitation
+        - **Impersonation Targets**: Financial institutions, tech companies, government agencies, popular services
+        - **Attack Techniques**: Credential harvesting, malware distribution, fake updates, account verification
+        - **Communication Styles**: Formal corporate, urgent alerts, friendly notifications, technical support
+        - **Deception Methods**: URL spoofing, logo mimicry, sender impersonation, content manipulation
+
+        **QUALITY REQUIREMENTS:**
+        - Realistic email formatting and business communication standards
+        - Appropriate complexity and sophistication for cybersecurity training
+        - Unique content that avoids repetition and maintains distinctiveness
+        - Proper handling of attack indicators while remaining believable
+        - Technical accuracy in phishing terminology and attack vectors
+
+        **OUTPUT FORMAT:**
+        Return ONLY valid JSON with the exact structure specified in the user prompt. No additional text, explanations, or markdown formatting.
+
+    user:
+      template: |
+        Generate large-scale realistic malicious email samples for cybersecurity dataset training:
+
+        **Scale Generation Context:**
+        {generation_context_json}
+
+        **SEED EXAMPLES FOR INSPIRATION:**
+        The following are high-quality examples to guide your generation style and approach:
+        {seed_examples_formatted}
+
+        **GENERATION REQUIREMENTS:**
+
+        Create {target_samples} unique malicious email samples ({sample_type}) that:
+
+        1. **Maintain Classification**: All samples must have label = {label_value}
+        2. **Preserve Attack Intent**: Each sample must represent a realistic phishing attempt
+        3. **Generate Diversity**: Create meaningful variations across:
+           - Social engineering approaches and psychological triggers
+           - Impersonation targets and organizational contexts
+           - Attack vectors and deception techniques
+           - Email structure, tone, and formatting styles
+           - Technical sophistication and implementation methods
+
+        4. **Ensure Realism**: All samples must be convincing phishing attempts that:
+           - Could realistically appear in corporate email environments
+           - Use appropriate cybersecurity attack patterns and terminology
+           - Maintain believable sender personas and organizational contexts
+           - Include realistic urgency and call-to-action elements
+
+        5. **Follow Schema**: Use exact structure: subject, body, label, source
+
+        **MALICIOUS EMAIL GENERATION STRATEGIES:**
+        - **Account Security Alerts**: Fake security breaches, suspicious activity, account verification
+        - **Financial Urgency**: Payment issues, account suspensions, transaction confirmations
+        - **Technical Support**: Fake IT support, software updates, system maintenance
+        - **Business Communications**: Invoice requests, document sharing, meeting invitations
+        - **Service Notifications**: Subscription renewals, policy updates, feature announcements
+
+        **RETURN FORMAT:**
+        Return ONLY valid JSON in this exact structure:
+
+        ```json
+        {{
+          "samples": [
+            {{
+              "subject": "Urgent: Verify Your Account Security - Action Required",
+              "body": "Dear Valued Customer,\\n\\nWe have detected unusual activity on your account and need immediate verification. Click here to secure your account: [verification link]. Failure to verify within 24 hours will result in account suspension.\\n\\nBest regards,\\nSecurity Team",
+              "label": {label_value},
+              "source": "scale_generated_malicious"
+            }},
+            {{
+              "subject": "Payment Failed - Update Billing Information",
+              "body": "Your recent payment could not be processed. Please update your billing information immediately to avoid service interruption. Login to your account dashboard to resolve this issue.\\n\\nThank you,\\nBilling Department",
+              "label": {label_value},
+              "source": "scale_generated_malicious"
+            }}
+            // Continue for all {target_samples} samples
+          ]
+        }}
+        ```
+
+        **CRITICAL REQUIREMENTS:**
+        - Generate exactly {target_samples} unique malicious samples
+        - Each sample must represent a realistic phishing attack
+        - Maintain label = {label_value} for all samples
+        - Create high diversity while preserving malicious characteristics
+        - Follow proper email formatting and cybersecurity domain conventions
+
+      variables:
+        - generation_context_json
+        - target_samples
+        - sample_type
+        - label_value
+        - label_description
+        - seed_examples_formatted
+
+  # ================== BENIGN SCALE GENERATION ==================
+  benign_scale_generation:
+    system:
+      template: |
+        You are an expert cybersecurity dataset generator specializing in large-scale creation of realistic legitimate email samples for machine learning model training.
+
+        **CORE MISSION:**
+        Generate diverse, realistic benign email samples that represent authentic business communications while maintaining proper dataset structure and security classification accuracy.
+
+        **GENERATION PRINCIPLES:**
+        1. **Authenticity**: All samples must be believable real-world business communications
+        2. **Diversity**: Create meaningful variations in business contexts, communication purposes, and styles
+        3. **Professional Accuracy**: Maintain proper business communication standards and terminology
+        4. **Schema Consistency**: Follow exact data structure requirements for ML pipeline compatibility
+        5. **Label Integrity**: All generated samples must maintain label = 0 (benign)
+
+        **LEGITIMATE COMMUNICATION PATTERNS TO VARY:**
+        - **Business Contexts**: Internal communications, customer service, marketing, operations, HR
+        - **Communication Types**: Informational updates, transactional confirmations, newsletters, announcements
+        - **Professional Tones**: Formal corporate, friendly professional, casual internal, technical documentation
+        - **Industry Domains**: Finance, technology, healthcare, retail, education, manufacturing
+        - **Organizational Relationships**: Colleague communications, customer service, management, external partners
+
+        **QUALITY REQUIREMENTS:**
+        - Professional email formatting and business communication standards
+        - Appropriate formality and tone for different business scenarios
+        - Unique content that represents diverse legitimate business needs
+        - Proper handling of professional terminology and business processes
+        - Technical accuracy in legitimate business communication patterns
+
+        **OUTPUT FORMAT:**
+        Return ONLY valid JSON with the exact structure specified in the user prompt. No additional text, explanations, or markdown formatting.
+
+    user:
+      template: |
+        Generate large-scale realistic benign email samples for cybersecurity dataset training:
+
+        **Scale Generation Context:**
+        {generation_context_json}
+
+        **SEED EXAMPLES FOR INSPIRATION:**
+        The following are high-quality examples to guide your generation style and approach:
+        {seed_examples_formatted}
+
+        **GENERATION REQUIREMENTS:**
+
+        Create {target_samples} unique benign email samples ({sample_type}) that:
+
+        1. **Maintain Classification**: All samples must have label = {label_value}
+        2. **Preserve Legitimate Intent**: Each sample must represent authentic business communication
+        3. **Generate Diversity**: Create meaningful variations across:
+           - Business contexts and organizational scenarios
+           - Communication purposes and professional needs
+           - Industry domains and organizational types
+           - Professional tones and formality levels
+           - Email structures and formatting approaches
+
+        4. **Ensure Realism**: All samples must be convincing legitimate emails that:
+           - Represent actual business communication needs
+           - Use appropriate professional language and terminology
+           - Maintain realistic organizational contexts and relationships
+           - Include proper business etiquette and communication standards
+
+        5. **Follow Schema**: Use exact structure: subject, body, label, source
+
+        **LEGITIMATE EMAIL GENERATION STRATEGIES:**
+        - **Internal Communications**: Team updates, project notifications, meeting invitations, policy announcements
+        - **Customer Service**: Support responses, account information, service confirmations, help documentation
+        - **Business Operations**: Order confirmations, shipping notifications, invoicing, vendor communications
+        - **Marketing Communications**: Newsletters, product announcements, event invitations, promotional content
+        - **Administrative**: HR communications, IT notifications, facility updates, training announcements
+
+        **RETURN FORMAT:**
+        Return ONLY valid JSON in this exact structure:
+
+        ```json
+        {{
+          "samples": [
+            {{
+              "subject": "Weekly Team Meeting - Project Updates and Q3 Planning",
+              "body": "Hi Team,\\n\\nOur weekly meeting is scheduled for Friday at 2 PM in Conference Room B. We'll be discussing Q3 project milestones and upcoming deadlines. Please bring your status reports.\\n\\nBest regards,\\nProject Manager",
+              "label": {label_value},
+              "source": "scale_generated_benign"
+            }},
+            {{
+              "subject": "Order Confirmation #12345 - Thank You for Your Purchase",
+              "body": "Dear Customer,\\n\\nThank you for your recent order. Your items will be shipped within 2-3 business days. You can track your package using the provided tracking number.\\n\\nSincerely,\\nCustomer Service Team",
+              "label": {label_value},
+              "source": "scale_generated_benign"
+            }}
+            // Continue for all {target_samples} samples
+          ]
+        }}
+        ```
+
+        **CRITICAL REQUIREMENTS:**
+        - Generate exactly {target_samples} unique benign samples
+        - Each sample must represent realistic business communication
+        - Maintain label = {label_value} for all samples
+        - Create high diversity while preserving legitimate characteristics
+        - Follow proper email formatting and business communication conventions
+
+      variables:
+        - generation_context_json
+        - target_samples
+        - sample_type
+        - label_value
+        - label_description
+        - seed_examples_formatted
+
+  # ================== FALLBACK GENERATION ==================
+  fallback_scale_generation:
+    system:
+      template: |
+        You are a cybersecurity dataset generator. Create realistic email samples for machine learning training while maintaining proper classification and schema structure.
+
+        Key Requirements:
+        1. Generate samples with correct labels (malicious=1, benign=0)
+        2. Create diverse but realistic variations
+        3. Follow exact schema structure
+        4. Maintain cybersecurity domain relevance
+        5. Return only valid JSON format
+
+    user:
+      template: |
+        Generate {target_samples} realistic {sample_type} email samples:
+
+        **Seed Examples:**
+        {seed_examples_simple}
+
+        **Requirements:**
+        - Generate {target_samples} unique samples
+        - All samples must have label = {label_value}
+        - Follow exact schema: subject, body, label, source
+        - Create diverse but realistic {sample_type} emails
+
+        Return only JSON:
+        {{
+          "samples": [
+            {{
+              "subject": "sample subject",
+              "body": "sample body",
+              "label": {label_value},
+              "source": "scale_generated"
+            }}
+            // ... {target_samples} total samples
+          ]
+        }}
+
+      variables:
+        - target_samples
+        - sample_type
+        - label_value
+        - seed_examples_simple
+
+# ================== HELPER TEMPLATES ==================
+helpers:
+  seed_formatting:
+    detailed:
+      template: |
+        {% for seed in seed_samples %}
+        **Example {{ loop.index }}:**
+        - Subject: {{ seed.subject }}
+        - Body: {{ seed.body[:200] }}...
+        - Label: {{ seed.label }} ({{ "MALICIOUS" if seed.label == 1 else "BENIGN" }})
+        - Source: {{ seed.source }}
+
+        {% endfor %}
+
+    simple:
+      template: |
+        {% for seed in seed_samples %}
+        {{ loop.index }}. Subject: "{{ seed.subject }}" | Body: "{{ seed.body[:100] }}..." | Label: {{ seed.label }}
+        {% endfor %}
+
+# ================== METADATA ==================
+metadata:
+  purpose: "Large-scale dataset generation from augmented seeds"
+  domains: ["email_security", "phishing_detection", "business_communications"]
+  supported_schemas: ["email_phishing"]
+  generation_features:
+    - "Parallel batch processing"
+    - "Seed-guided diversity"
+    - "Label preservation"
+    - "Schema consistency"
+    - "Quality filtering"
+  scalability: "Designed for generating 1000+ samples efficiently"
+  quality_controls:
+    - "Duplicate detection"
+    - "Schema validation"
+    - "Content realism"
+    - "Domain authenticity"
