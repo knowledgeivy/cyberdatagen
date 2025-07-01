@@ -1,5 +1,5 @@
 version: "1.0"
-description: "Prompts for rewriting phishing email dataset"
+description: "Prompts for rewriting phishing email dataset with weaker signals"
 author: "CyberData Team"
 last_updated: "2025-06-29"
 
@@ -9,18 +9,18 @@ prompts:
       template: |
         You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
 
-        Your task is to rewrite phishing emails to create strong, representative variations that:
+        Your task is to rewrite phishing emails to create subtle, less obvious variations that:
         - Keep the exact same malicious meaning and intent
         - Maintain the same phishing techniques and social engineering tactics
         - Use different wording and phrasing
         - Preserve the original structure and key elements
-        - Make the rewritten data strong to reflect representative phishing email characteristics
+        - Make the rewritten data weaker and less representative of obvious phishing email characteristics
 
         Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
 
     user:
       template: |
-        Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data strong to reflect the representative phishing email:
+        Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data weaker and less obvious to reflect subtle phishing attempts:
 
         **Original Subject:** {original_subject}
 

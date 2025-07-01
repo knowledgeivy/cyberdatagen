@@ -1,4 +1,11 @@
 # real_data_rewriter.py
+# Test individual prompts
+# python real_data_rewriter.py --prompt original
+# python real_data_rewriter.py --prompt strong  
+# python real_data_rewriter.py --prompt weak
+
+# Run ALL prompts at once (convenient for comparison)
+# python real_data_rewriter.py --prompt all
 
 import argparse
 import concurrent.futures
@@ -29,7 +36,7 @@ load_dotenv()
 
 # Configuration
 MODEL_NAME = "gpt-4.1-mini"
-MAX_WORKERS = 20
+DEFAULT_MAX_WORKERS = 20
 BATCH_SIZE = 1
 
 # Get config manager instance
@@ -42,8 +49,9 @@ MALICIOUS_SAMPLE_FILE = RAW_REWRITE_DIR / "malicious_sample.csv.gz"
 
 # Available prompts mapping
 AVAILABLE_PROMPTS = {
-    "basic": "rewrite_generation",
-    "strong": "rewrite_generation_strong",
+    "original": "rewrite_generation",
+    "strong": "rewrite_generation_strong", 
+    "weak": "rewrite_generation_weak",
     # Add more prompts as needed
 }
 
@@ -116,15 +124,15 @@ def rewrite_single_record(record: Dict, index: int, prompt_file: str) -> Dict:
         return record
 
 
-def rewrite_malicious_data_parallel(df: pd.DataFrame, prompt_file: str) -> pd.DataFrame:
+def rewrite_malicious_data_parallel(df: pd.DataFrame, prompt_file: str, max_workers: int) -> pd.DataFrame:
     """Rewrite malicious data using parallel processing with specified prompt."""
     logger.info(f"Starting parallel rewriting of malicious data with {prompt_file} prompt...")
-    logger.info(f"Processing {len(df)} malicious records with {MAX_WORKERS} workers")
+    logger.info(f"Processing {len(df)} malicious records with {max_workers} workers")
     
     start_time = time.time()
     rewritten_records = []
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Create futures for all records
         futures = []
         for index, record in df.iterrows():
@@ -176,50 +184,76 @@ def main():
     """Main function to run malicious data rewriting."""
     parser = argparse.ArgumentParser(description="Rewrite malicious data using LLM with specified prompt")
     parser.add_argument("--prompt", "-p", 
-                       choices=list(AVAILABLE_PROMPTS.keys()),
+                       choices=list(AVAILABLE_PROMPTS.keys()) + ["all"],
                        required=True,
-                       help="Prompt to use for rewriting malicious data")
+                       help="Prompt to use for rewriting malicious data, or 'all' to run all prompts")
     parser.add_argument("--max-workers", "-w",
                        type=int,
-                       default=MAX_WORKERS,
+                       default=DEFAULT_MAX_WORKERS,
                        help="Maximum number of worker threads")
     
     args = parser.parse_args()
     
-    # Update global configuration
-    global MAX_WORKERS
-    MAX_WORKERS = args.max_workers
-    
-    # Get prompt file name
-    prompt_file = AVAILABLE_PROMPTS[args.prompt]
+    max_workers = args.max_workers
     
     logger.info("="*80)
-    logger.info(f"MALICIOUS DATA REWRITING WITH {args.prompt.upper()} PROMPT")
+    if args.prompt == "all":
+        logger.info("MALICIOUS DATA REWRITING WITH ALL PROMPTS")
+        prompts_to_run = list(AVAILABLE_PROMPTS.keys())
+    else:
+        logger.info(f"MALICIOUS DATA REWRITING WITH {args.prompt.upper()} PROMPT")
+        prompts_to_run = [args.prompt]
+    
     logger.info("="*80)
-    logger.info(f"Prompt file: {prompt_file}")
-    logger.info(f"Max workers: {MAX_WORKERS}")
+    logger.info(f"Prompts to run: {', '.join(prompts_to_run)}")
+    logger.info(f"Max workers: {max_workers}")
     logger.info(f"Model: {MODEL_NAME}")
     
     try:
         # Create output directories
         create_output_directories()
         
-        # Load malicious data
+        # Load malicious data once
         malicious_df = load_malicious_data()
         
-        # Rewrite malicious data
-        rewritten_malicious = rewrite_malicious_data_parallel(malicious_df, prompt_file)
+        results = []
         
-        # Save rewritten data
-        output_file = save_rewritten_data(rewritten_malicious, args.prompt)
+        # Process each prompt
+        for i, prompt_name in enumerate(prompts_to_run, 1):
+            prompt_file = AVAILABLE_PROMPTS[prompt_name]
+            
+            logger.info(f"\n{'='*60}")
+            logger.info(f"PROCESSING PROMPT {i}/{len(prompts_to_run)}: {prompt_name.upper()}")
+            logger.info(f"{'='*60}")
+            
+            # Rewrite malicious data
+            rewritten_malicious = rewrite_malicious_data_parallel(malicious_df, prompt_file, max_workers)
+            
+            # Save rewritten data
+            output_file = save_rewritten_data(rewritten_malicious, prompt_name)
+            
+            results.append({
+                'prompt': prompt_name,
+                'prompt_file': prompt_file,
+                'input_count': len(malicious_df),
+                'output_count': len(rewritten_malicious),
+                'output_file': output_file
+            })
         
+        # Final summary
         logger.info("="*80)
         logger.info("MALICIOUS DATA REWRITING COMPLETED SUCCESSFULLY")
         logger.info("="*80)
-        logger.info(f"Input: {len(malicious_df)} original malicious records")
-        logger.info(f"Output: {len(rewritten_malicious)} rewritten malicious records")
-        logger.info(f"Saved to: {output_file}")
-        logger.info(f"Prompt used: {args.prompt} ({prompt_file})")
+        
+        for result in results:
+            logger.info(f"Prompt: {result['prompt']} ({result['prompt_file']})")
+            logger.info(f"  Input: {result['input_count']} original malicious records")
+            logger.info(f"  Output: {result['output_count']} rewritten malicious records")
+            logger.info(f"  Saved to: {result['output_file']}")
+            logger.info("")
+        
+        if len(results) > 1:
+            logger.info("All prompts completed! You can now compare the different rewriting approaches.")
         
     except Exception as e:
         logger.error(f"Error in malicious data rewriting: {str(e)}", exc_info=True)
