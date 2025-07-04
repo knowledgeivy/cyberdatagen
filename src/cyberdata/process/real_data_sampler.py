@@ -17,16 +17,20 @@ from cyberdata.utils.logger_config import setup_logger
 logger = setup_logger("cyberdata.scripts.real_data_sampler")
 
 # Configuration
-N_SAMPLE = 1000
+# N_SAMPLE = 1000
+N_SAMPLE = 3000
 
 # Get config manager instance
 config_manager = get_config_manager()
 
 # File paths
-TRAIN_FILE = config_manager.project_root / "raw" / "email_phishing_CEAS-08_train.csv.gz"
+# DATASET_NAME = "email_phishing_CEAS-08"
+DATASET_NAME = "five_email_phishing"
+
+TRAIN_FILE = config_manager.project_root / "raw" / f"{DATASET_NAME}_train.csv.gz"
 RAW_REWRITE_DIR = config_manager.project_root / "raw" / "rewrite"
-MALICIOUS_SAMPLE_FILE = RAW_REWRITE_DIR / "malicious_sample.csv.gz"
-BENIGN_SAMPLE_FILE = RAW_REWRITE_DIR / "benign_sample.csv.gz"
+MALICIOUS_SAMPLE_FILE = RAW_REWRITE_DIR / f"{DATASET_NAME}_malicious_sample.csv.gz"
+BENIGN_SAMPLE_FILE = RAW_REWRITE_DIR / f"{DATASET_NAME}_benign_sample.csv.gz"
 
 
 def create_output_directories():

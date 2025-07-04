@@ -43,9 +43,11 @@ BATCH_SIZE = 1
 config_manager = get_config_manager()
 
 # File paths
+# DATASET_NAME = "email_phishing_CEAS-08"
+DATASET_NAME = "five_email_phishing"
 RAW_REWRITE_DIR = config_manager.project_root / "raw" / "rewrite"
 DATA_REWRITE_DIR = config_manager.project_root / "data" / "rewrite"
-MALICIOUS_SAMPLE_FILE = RAW_REWRITE_DIR / "malicious_sample.csv.gz"
+MALICIOUS_SAMPLE_FILE = RAW_REWRITE_DIR / f"{DATASET_NAME}_malicious_sample.csv.gz"
 
 # Available prompts mapping
 AVAILABLE_PROMPTS = {
@@ -164,7 +166,7 @@ def rewrite_malicious_data_parallel(df: pd.DataFrame, prompt_file: str, max_work
 
 def save_rewritten_data(df: pd.DataFrame, prompt_name: str) -> Path:
     """Save rewritten malicious data to data/rewrite/ directory."""
-    output_file = DATA_REWRITE_DIR / f"malicious_{prompt_name}_rewritten.csv.gz"
+    output_file = DATA_REWRITE_DIR / f"{DATASET_NAME}_malicious_{prompt_name}_rewritten.csv.gz"
     
     logger.info(f"Saving rewritten data to: {output_file}")
     
