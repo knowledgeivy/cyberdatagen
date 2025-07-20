@@ -1,4 +1,4 @@
-# src/cyberdata/scripts/batch1_generate_synthetic.py
+# src/cyberdata/scripts/batch2_generate_synthetic.py
 
 import pandas as pd
 import numpy as np
@@ -24,9 +24,9 @@ load_dotenv()
 client = OpenAI()
 
 # Paths
-BATCH1_DIR = PROJECT_ROOT / 'data/batch1'
-SEED_SAMPLES_DIR = BATCH1_DIR / 'seed_samples'
-SYNTHETIC_DIR = BATCH1_DIR / 'synthetic'
+BATCH2_DIR = PROJECT_ROOT / 'data/batch2'
+ENHANCED_SEEDS_DIR = BATCH2_DIR / 'enhanced_seeds'
+SYNTHETIC_DIR = BATCH2_DIR / 'synthetic'
 
 # Create directories
 SYNTHETIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -35,7 +35,7 @@ SYNTHETIC_DIR.mkdir(parents=True, exist_ok=True)
 MODEL_NAME = "gpt-4o-mini"
 MAX_WORKERS = 10
 
-# Rewrite prompts
+# Rewrite prompts (same as batch1)
 PROMPTS = {
     'rewrite': {
         'system': "You are an expert in email phishing simulation. Rewrite phishing emails to maintain the malicious intent while changing language, structure, and specific details.",
@@ -135,9 +135,9 @@ def generate_synthetic_sample(seed_sample, variant_type, sample_idx):
         response = call_llm(system_prompt, user_prompt)
         subject, body = parse_email_response(response, original_subject, original_body)
         
-        # Generate synthetic ID
+        # Generate synthetic ID for batch2
         seed_idx = original_id.split('_')[-1]
-        synthetic_id = f"CEAS08_SYN1_{variant_type.upper()[:2]}_{seed_idx}_{sample_idx:02d}"
+        synthetic_id = f"CEAS08_SYN2_{variant_type.upper()[:2]}_{seed_idx}_{sample_idx:02d}"
         
         return {
             'data_id': synthetic_id,
@@ -150,7 +150,7 @@ def generate_synthetic_sample(seed_sample, variant_type, sample_idx):
         }
     except Exception as e:
         return {
-            'data_id': f"FAILED_{variant_type}_{sample_idx}",
+            'data_id': f"FAILED_B2_{variant_type}_{sample_idx}",
             'subject': seed_sample['subject'],
             'body': seed_sample['body'],
             'label': 1,
@@ -160,14 +160,14 @@ def generate_synthetic_sample(seed_sample, variant_type, sample_idx):
             'error': str(e)
         }
 
-def generate_variant_batch(seed_samples, variant_type):
-    """Generate one variant type for all seeds"""
-    print(f"Generating {variant_type} variants...")
+def generate_variant_batch(enhanced_seeds, variant_type):
+    """Generate one variant type for all enhanced seeds"""
+    print(f"Generating {variant_type} variants for enhanced seeds...")
     
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
-        for idx, (_, seed_sample) in enumerate(seed_samples.iterrows()):
+        for idx, (_, seed_sample) in enumerate(enhanced_seeds.iterrows()):
             future = executor.submit(generate_synthetic_sample, seed_sample, variant_type, idx)
             futures.append(future)
         
@@ -180,7 +180,7 @@ def generate_variant_batch(seed_samples, variant_type):
     df = pd.DataFrame(results)
     
     # Save results
-    output_file = SYNTHETIC_DIR / f'malicious_{variant_type}_1k.csv'
+    output_file = SYNTHETIC_DIR / f'malicious_{variant_type}_enhanced.csv'
     df.to_csv(output_file, index=False)
     
     success_count = df['generation_success'].sum()
@@ -188,34 +188,50 @@ def generate_variant_batch(seed_samples, variant_type):
     
     return df
 
+def load_enhancement_metadata():
+    """Load enhancement metadata to understand seed selection"""
+    metadata_file = BATCH2_DIR / 'batch2_enhancement_metadata.json'
+    if metadata_file.exists():
+        with open(metadata_file, 'r') as f:
+            return json.load(f)
+    return {}
+
 def main():
-    print("=== BATCH 1: GENERATE SYNTHETIC DATA ===")
+    print("=== BATCH 2: GENERATE SYNTHETIC DATA FROM ENHANCED SEEDS ===")
     
-    # Load seed samples
-    seed_file = SEED_SAMPLES_DIR / 'malicious_seeds_1k.csv'
-    if not seed_file.exists():
-        print(f"Error: Seed file not found: {seed_file}")
-        print("Please run batch1_prepare_base_data.py first")
+    # Load enhanced seed samples
+    enhanced_seed_file = ENHANCED_SEEDS_DIR / 'malicious_enhanced_seeds.csv'
+    if not enhanced_seed_file.exists():
+        print(f"Error: Enhanced seed file not found: {enhanced_seed_file}")
+        print("Please run batch2_prepare_enhanced_data.py first")
         return
     
-    seed_samples = pd.read_csv(seed_file)
-    print(f"Loaded {len(seed_samples)} seed samples")
+    enhanced_seeds = pd.read_csv(enhanced_seed_file)
+    print(f"Loaded {len(enhanced_seeds)} enhanced seed samples")
+    
+    # Load enhancement metadata
+    enhancement_metadata = load_enhancement_metadata()
+    if enhancement_metadata:
+        print(f"Enhancement info:")
+        print(f"  - Uncovered samples: {enhancement_metadata.get('uncovered_count', 'unknown')}")
+        print(f"  - Similar samples: {enhancement_metadata.get('similar_count', 'unknown')}")
     
     # Generate variants
     variant_types = ['rewrite', 'rewrite_strong', 'rewrite_weak']
     results = {}
     
     for variant_type in variant_types:
-        results[variant_type] = generate_variant_batch(seed_samples, variant_type)
+        results[variant_type] = generate_variant_batch(enhanced_seeds, variant_type)
     
     # Save generation metadata
     metadata = {
-        'experiment': 'batch1_synthetic_generation',
+        'experiment': 'batch2_synthetic_generation',
         'model': MODEL_NAME,
-        'seed_count': len(seed_samples),
+        'enhanced_seed_count': len(enhanced_seeds),
         'variant_types': variant_types,
         'max_workers': MAX_WORKERS,
         'generation_timestamp': pd.Timestamp.now().isoformat(),
+        'enhancement_metadata_used': enhancement_metadata,
         'results_summary': {
             variant: {
                 'total_generated': int(len(results[variant])),
@@ -226,10 +242,10 @@ def main():
         }
     }
     
-    with open(SYNTHETIC_DIR / 'generation_metadata.json', 'w') as f:
+    with open(SYNTHETIC_DIR / 'batch2_generation_metadata.json', 'w') as f:
         json.dump(metadata, f, indent=2)
     
-    print(f"\nGeneration complete:")
+    print(f"\nBatch2 generation complete:")
     for variant in variant_types:
         success_rate = results[variant]['generation_success'].mean() * 100
         print(f"- {variant}: {success_rate:.1f}% success rate")

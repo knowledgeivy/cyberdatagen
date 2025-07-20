@@ -1,0 +1,85 @@
+{
+  "analysis_type": "batch1_vs_batch2_comprehensive",
+  "timestamp": "2025-07-20T15:39:27.759682",
+  "embedding_info": {
+    "model_name": "all-MiniLM-L6-v2",
+    "total_samples": 8000,
+    "embedding_dimension": 384,
+    "batch1_samples": 4000,
+    "batch2_samples": 4000
+  },
+  "ml_comparative_results": {
+    "batch1_real_only": {
+      "RandomForest": {
+        "accuracy": 0.98,
+        "f1_macro": 0.9799992799740791,
+        "f1_weighted": 0.9799992799740791,
+        "training_size": 2000
+      },
+      "SVM": {
+        "accuracy": 0.99,
+        "f1_macro": 0.9899998399974399,
+        "f1_weighted": 0.9899998399974399,
+        "training_size": 2000
+      }
+    },
+    "batch1_rewrite": {
+      "RandomForest": {
+        "accuracy": 0.9785,
+        "f1_macro": 0.9784990915866195,
+        "f1_weighted": 0.9784990915866194,
+        "training_size": 3000
+      },
+      "SVM": {
+        "accuracy": 0.9865,
+        "f1_macro": 0.9864997266194641,
+        "f1_weighted": 0.9864997266194641,
+        "training_size": 3000
+      }
+    },
+    "batch2_real_only": {
+      "RandomForest": {
+        "accuracy": 0.981,
+        "f1_macro": 0.9809990689543788,
+        "f1_weighted": 0.9809990689543788,
+        "training_size": 2000
+      },
+      "SVM": {
+        "accuracy": 0.99,
+        "f1_macro": 0.9899998399974399,
+        "f1_weighted": 0.9899998399974399,
+        "training_size": 2000
+      }
+    },
+    "batch2_rewrite": {
+      "RandomForest": {
+        "accuracy": 0.981,
+        "f1_macro": 0.9809984608753309,
+        "f1_weighted": 0.9809984608753309,
+        "training_size": 3000
+      },
+      "SVM": {
+        "accuracy": 0.986,
+        "f1_macro": 0.9859993139663843,
+        "f1_weighted": 0.9859993139663843,
+        "training_size": 3000
+      }
+    }
+  },
+  "coverage_analysis": {
+    "batch1": {
+      "mean_distance_to_synthetic": 0.2860013544559479,
+      "median_distance_to_synthetic": 0.26215124130249023,
+      "max_distance_to_synthetic": 0.7690801620483398,
+      "std_distance_to_synthetic": 0.16980522871017456,
+      "real_samples_count": 1000
+    },
+    "batch2": {
+      "mean_distance_to_synthetic": 0.2860013544559479,
+      "median_distance_to_synthetic": 0.26215124130249023,
+      "max_distance_to_synthetic": 0.7690801620483398,
+      "std_distance_to_synthetic": 0.16980522871017456,
+      "real_samples_count": 1000
+    }
+  }
+}
