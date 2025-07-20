@@ -4,14 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.metrics import classification_report, accuracy_score
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sentence_transformers import SentenceTransformer
-import pickle
 import json
 from pathlib import Path
 
@@ -32,458 +24,432 @@ ANALYSIS_DIR = PROJECT_ROOT / 'data/analysis'
 # Create directories
 ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Configuration
-MODEL_NAME = 'all-MiniLM-L6-v2'
-plt.style.use('default')
+def load_ml_results():
+    """Load ML results from both batches"""
+    print("Loading ML results from both batches...")
+    
+    # Load batch1 results
+    batch1_file = BATCH1_DIR / 'ml_results/batch1_comparison_summary.json'
+    batch2_file = BATCH2_DIR / 'ml_results/batch2_comparison_summary.json'
+    
+    batch1_results = None
+    batch2_results = None
+    
+    if batch1_file.exists():
+        with open(batch1_file, 'r') as f:
+            batch1_results = json.load(f)
+        print(f"Loaded batch1 ML results")
+    else:
+        print(f"Warning: Batch1 ML results not found: {batch1_file}")
+    
+    if batch2_file.exists():
+        with open(batch2_file, 'r') as f:
+            batch2_results = json.load(f)
+        print(f"Loaded batch2 ML results")
+    else:
+        print(f"Warning: Batch2 ML results not found: {batch2_file}")
+    
+    return batch1_results, batch2_results
 
-def load_batch_data(batch_name):
-    """Load data for a specific batch"""
-    print(f"Loading {batch_name} data...")
+def load_embedding_analyses():
+    """Load embedding analysis results from both batches"""
+    print("Loading embedding analysis results...")
     
-    if batch_name == 'batch1':
-        base_dir = BATCH1_DIR
-        seed_file = base_dir / 'seed_samples/malicious_seeds_1k.csv'
-        synthetic_files = {
-            'rewrite': base_dir / 'synthetic/malicious_rewrite_1k.csv',
-            'rewrite_strong': base_dir / 'synthetic/malicious_rewrite_strong_1k.csv',
-            'rewrite_weak': base_dir / 'synthetic/malicious_rewrite_weak_1k.csv'
-        }
-    else:  # batch2
-        base_dir = BATCH2_DIR
-        seed_file = base_dir / 'enhanced_seeds/malicious_enhanced_seeds.csv'
-        synthetic_files = {
-            'rewrite': base_dir / 'synthetic/malicious_rewrite_enhanced.csv',
-            'rewrite_strong': base_dir / 'synthetic/malicious_rewrite_strong_enhanced.csv',
-            'rewrite_weak': base_dir / 'synthetic/malicious_rewrite_weak_enhanced.csv'
-        }
+    # Load batch1 embedding analysis
+    batch1_embed_file = BATCH1_DIR / 'embeddings/batch1_uncovered_analysis.json'
+    batch2_embed_file = BATCH2_DIR / 'embeddings/batch2_uncovered_analysis.json'
     
-    # Load real seeds
-    if not seed_file.exists():
-        print(f"Warning: Seed file not found: {seed_file}")
-        return None
+    batch1_embed = None
+    batch2_embed = None
     
-    real_seeds = pd.read_csv(seed_file)
-    real_seeds['data_type'] = f'{batch_name}_real'
-    real_seeds['batch'] = batch_name
+    if batch1_embed_file.exists():
+        with open(batch1_embed_file, 'r') as f:
+            batch1_embed = json.load(f)
+        print(f"Loaded batch1 embedding analysis")
+    else:
+        print(f"Warning: Batch1 embedding analysis not found: {batch1_embed_file}")
     
-    # Load synthetic variants
-    datasets = [real_seeds]
+    if batch2_embed_file.exists():
+        with open(batch2_embed_file, 'r') as f:
+            batch2_embed = json.load(f)
+        print(f"Loaded batch2 embedding analysis")
+    else:
+        print(f"Warning: Batch2 embedding analysis not found: {batch2_embed_file}")
     
-    for variant, file_path in synthetic_files.items():
-        if file_path.exists():
-            df = pd.read_csv(file_path)
-            df['data_type'] = f'{batch_name}_{variant}'
-            df['batch'] = batch_name
-            datasets.append(df)
-        else:
-            print(f"Warning: {file_path} not found")
-    
-    combined_data = pd.concat(datasets, ignore_index=True)
-    print(f"Loaded {len(combined_data)} {batch_name} samples")
-    
-    return combined_data
+    return batch1_embed, batch2_embed
 
-def generate_comparative_embeddings(batch1_data, batch2_data):
-    """Generate embeddings for both batches"""
-    print("Generating comparative embeddings...")
+def create_ml_comparison_visualization(batch1_results, batch2_results):
+    """Create ML performance comparison visualizations"""
+    print("Creating ML performance comparison...")
     
-    # Check if embeddings already exist
-    embeddings_file = ANALYSIS_DIR / 'comparative_embeddings.pkl'
+    if not batch1_results or not batch2_results:
+        print("Cannot create ML comparison - missing results")
+        return
     
-    if embeddings_file.exists():
-        print("Loading existing comparative embeddings...")
-        with open(embeddings_file, 'rb') as f:
-            return pickle.load(f)
+    # Prepare data for visualization
+    experiments = ['real_only', 'rewrite', 'rewrite_strong', 'rewrite_weak']
+    models = ['RandomForest', 'SVM']
+    metrics = ['accuracy', 'f1_macro', 'f1_weighted']
     
-    # Combine all data
-    all_data = pd.concat([batch1_data, batch2_data], ignore_index=True)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
     
-    # Create text for embedding
-    combined_text = all_data['subject'].fillna('') + ' ' + all_data['body'].fillna('')
-    
-    # Generate embeddings
-    model = SentenceTransformer(MODEL_NAME)
-    embeddings = model.encode(combined_text.tolist(), show_progress_bar=True)
-    
-    # Save embedding data
-    embedding_data = {
-        'embeddings': embeddings,
-        'data_types': all_data['data_type'].values,
-        'batches': all_data['batch'].values,
-        'data_ids': all_data['data_id'].values,
-        'model_name': MODEL_NAME,
-        'data_shape': embeddings.shape,
-        'batch1_count': len(batch1_data),
-        'batch2_count': len(batch2_data)
-    }
-    
-    with open(embeddings_file, 'wb') as f:
-        pickle.dump(embedding_data, f)
-    
-    print(f"Comparative embeddings saved to {embeddings_file}")
-    return embedding_data
-
-def perform_comparative_visualization(embedding_data):
-    """Create comparative visualizations"""
-    print("Creating comparative visualizations...")
-    
-    embeddings = embedding_data['embeddings']
-    data_types = embedding_data['data_types']
-    batches = embedding_data['batches']
-    
-    # Dimensionality reduction
-    pca = PCA(n_components=2, random_state=42)
-    pca_embeddings = pca.fit_transform(embeddings)
-    
-    tsne = TSNE(n_components=2, random_state=42, perplexity=30)
-    tsne_embeddings = tsne.fit_transform(embeddings)
-    
-    # Create comprehensive visualization
-    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
-    
-    # Color mapping
-    batch1_colors = {'batch1_real': 'blue', 'batch1_rewrite': 'orange', 
-                     'batch1_rewrite_strong': 'green', 'batch1_rewrite_weak': 'red'}
-    batch2_colors = {'batch2_real': 'navy', 'batch2_rewrite': 'darkorange', 
-                     'batch2_rewrite_strong': 'darkgreen', 'batch2_rewrite_weak': 'darkred'}
-    all_colors = {**batch1_colors, **batch2_colors}
-    
-    # 1. PCA - Batch1 only
-    ax1 = axes[0, 0]
-    batch1_mask = batches == 'batch1'
-    for data_type, color in batch1_colors.items():
-        type_mask = (data_types == data_type) & batch1_mask
-        if np.any(type_mask):
-            ax1.scatter(pca_embeddings[type_mask, 0], pca_embeddings[type_mask, 1],
-                       label=data_type.replace('batch1_', ''), alpha=0.6, s=20, c=color)
-    ax1.set_title('PCA: Batch1 Only')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
-    
-    # 2. PCA - Batch2 only
-    ax2 = axes[0, 1]
-    batch2_mask = batches == 'batch2'
-    for data_type, color in batch2_colors.items():
-        type_mask = (data_types == data_type) & batch2_mask
-        if np.any(type_mask):
-            ax2.scatter(pca_embeddings[type_mask, 0], pca_embeddings[type_mask, 1],
-                       label=data_type.replace('batch2_', ''), alpha=0.6, s=20, c=color)
-    ax2.set_title('PCA: Batch2 Only')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
-    
-    # 3. PCA - Combined comparison
-    ax3 = axes[0, 2]
-    for data_type, color in all_colors.items():
-        type_mask = data_types == data_type
-        if np.any(type_mask):
-            marker = 'o' if 'batch1' in data_type else '^'
-            ax3.scatter(pca_embeddings[type_mask, 0], pca_embeddings[type_mask, 1],
-                       label=data_type, alpha=0.6, s=20, c=color, marker=marker)
-    ax3.set_title('PCA: Batch1 vs Batch2 Comparison')
-    ax3.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    ax3.grid(True, alpha=0.3)
-    
-    # 4. t-SNE - Batch1 only
-    ax4 = axes[1, 0]
-    for data_type, color in batch1_colors.items():
-        type_mask = (data_types == data_type) & batch1_mask
-        if np.any(type_mask):
-            ax4.scatter(tsne_embeddings[type_mask, 0], tsne_embeddings[type_mask, 1],
-                       label=data_type.replace('batch1_', ''), alpha=0.6, s=20, c=color)
-    ax4.set_title('t-SNE: Batch1 Only')
-    ax4.legend()
-    ax4.grid(True, alpha=0.3)
-    
-    # 5. t-SNE - Batch2 only
-    ax5 = axes[1, 1]
-    for data_type, color in batch2_colors.items():
-        type_mask = (data_types == data_type) & batch2_mask
-        if np.any(type_mask):
-            ax5.scatter(tsne_embeddings[type_mask, 0], tsne_embeddings[type_mask, 1],
-                       label=data_type.replace('batch2_', ''), alpha=0.6, s=20, c=color)
-    ax5.set_title('t-SNE: Batch2 Only')
-    ax5.legend()
-    ax5.grid(True, alpha=0.3)
-    
-    # 6. t-SNE - Combined comparison
-    ax6 = axes[1, 2]
-    for data_type, color in all_colors.items():
-        type_mask = data_types == data_type
-        if np.any(type_mask):
-            marker = 'o' if 'batch1' in data_type else '^'
-            ax6.scatter(tsne_embeddings[type_mask, 0], tsne_embeddings[type_mask, 1],
-                       label=data_type, alpha=0.6, s=20, c=color, marker=marker)
-    ax6.set_title('t-SNE: Batch1 vs Batch2 Comparison')
-    ax6.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    ax6.grid(True, alpha=0.3)
+    for metric_idx, metric in enumerate(metrics):
+        ax = axes[metric_idx]
+        
+        # Prepare data
+        batch1_data = []
+        batch2_data = []
+        exp_labels = []
+        
+        for exp in experiments:
+            for model in models:
+                if exp in batch1_results and model in batch1_results[exp]:
+                    batch1_data.append(batch1_results[exp][model][metric])
+                else:
+                    batch1_data.append(0)
+                
+                if exp in batch2_results and model in batch2_results[exp]:
+                    batch2_data.append(batch2_results[exp][model][metric])
+                else:
+                    batch2_data.append(0)
+                
+                exp_labels.append(f"{exp}\n{model}")
+        
+        # Create bar plot
+        x = np.arange(len(exp_labels))
+        width = 0.35
+        
+        bars1 = ax.bar(x - width/2, batch1_data, width, label='Batch1', alpha=0.8)
+        bars2 = ax.bar(x + width/2, batch2_data, width, label='Batch2', alpha=0.8)
+        
+        ax.set_xlabel('Experiment + Model')
+        ax.set_ylabel(metric.replace('_', ' ').title())
+        ax.set_title(f'{metric.replace("_", " ").title()} Comparison')
+        ax.set_xticks(x)
+        ax.set_xticklabels(exp_labels, rotation=45, ha='right')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        
+        # Add value labels on bars
+        for bar in bars1:
+            height = bar.get_height()
+            if height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + 0.005,
+                       f'{height:.3f}', ha='center', va='bottom', fontsize=8)
+        
+        for bar in bars2:
+            height = bar.get_height()
+            if height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + 0.005,
+                       f'{height:.3f}', ha='center', va='bottom', fontsize=8)
     
     plt.tight_layout()
     
     # Save plot
-    plot_file = ANALYSIS_DIR / 'batch_comparative_analysis.png'
+    plot_file = ANALYSIS_DIR / 'ml_performance_comparison.png'
     plt.savefig(plot_file, dpi=300, bbox_inches='tight')
-    print(f"Comparative visualization saved to {plot_file}")
+    print(f"ML comparison visualization saved to {plot_file}")
     plt.show()
 
-def run_comparative_ml_experiments():
-    """Run ML experiments comparing batch1 vs batch2"""
-    print("Running comparative ML experiments...")
+def create_coverage_comparison(batch1_embed, batch2_embed):
+    """Create coverage comparison visualization"""
+    print("Creating coverage comparison...")
     
-    # Load fixed test set from batch1
-    test_data_file = BATCH1_DIR / 'ml_results/fixed_test_set.csv'
-    if not test_data_file.exists():
-        print(f"Error: Fixed test set not found: {test_data_file}")
-        return None
+    if not batch1_embed or not batch2_embed:
+        print("Cannot create coverage comparison - missing embedding analysis")
+        return
     
-    test_data = pd.read_csv(test_data_file)
-    print(f"Using fixed test set: {len(test_data)} samples")
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     
-    # Define experiments for both batches
-    experiments = {
-        'batch1_real_only': {
-            'batch': 'batch1',
-            'malicious_files': [BATCH1_DIR / 'seed_samples/malicious_seeds_1k.csv'],
-            'data_sources': ['batch1_real']
-        },
-        'batch1_rewrite': {
-            'batch': 'batch1',
-            'malicious_files': [
-                BATCH1_DIR / 'seed_samples/malicious_seeds_1k.csv',
-                BATCH1_DIR / 'synthetic/malicious_rewrite_1k.csv'
-            ],
-            'data_sources': ['batch1_real', 'batch1_rewrite']
-        },
-        'batch2_real_only': {
-            'batch': 'batch2',
-            'malicious_files': [BATCH2_DIR / 'enhanced_seeds/malicious_enhanced_seeds.csv'],
-            'data_sources': ['batch2_real']
-        },
-        'batch2_rewrite': {
-            'batch': 'batch2',
-            'malicious_files': [
-                BATCH2_DIR / 'enhanced_seeds/malicious_enhanced_seeds.csv',
-                BATCH2_DIR / 'synthetic/malicious_rewrite_enhanced.csv'
-            ],
-            'data_sources': ['batch2_real', 'batch2_rewrite']
-        }
+    # Coverage rates comparison
+    ax1 = axes[0]
+    
+    batch_names = []
+    covered_counts = []
+    uncovered_counts = []
+    coverage_rates = []
+    
+    for batch_name, embed_data in [('Batch1', batch1_embed), ('Batch2', batch2_embed)]:
+        if 'uncovered_analysis' in embed_data and 'real' in embed_data['uncovered_analysis']:
+            uncovered_count = embed_data['uncovered_analysis']['real']['count']
+            total_real = embed_data['data_type_counts'].get('real', 0)
+            covered_count = total_real - uncovered_count
+            coverage_rate = (covered_count / total_real * 100) if total_real > 0 else 0
+            
+            batch_names.append(batch_name)
+            covered_counts.append(covered_count)
+            uncovered_counts.append(uncovered_count)
+            coverage_rates.append(coverage_rate)
+    
+    if batch_names:
+        x = np.arange(len(batch_names))
+        width = 0.35
+        
+        bars1 = ax1.bar(x - width/2, covered_counts, width, label='Covered', color='lightgreen', alpha=0.8)
+        bars2 = ax1.bar(x + width/2, uncovered_counts, width, label='Uncovered', color='red', alpha=0.8)
+        
+        ax1.set_xlabel('Batch')
+        ax1.set_ylabel('Number of Real Samples')
+        ax1.set_title('Real Data Coverage by Synthetic Data')
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(batch_names)
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+        
+        # Add count labels
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width()/2., height + 5,
+                        f'{int(height)}', ha='center', va='bottom')
+    
+    # Coverage rate percentage comparison
+    ax2 = axes[1]
+    
+    if coverage_rates:
+        bars = ax2.bar(batch_names, coverage_rates, color=['blue', 'darkblue'], alpha=0.7)
+        ax2.set_xlabel('Batch')
+        ax2.set_ylabel('Coverage Rate (%)')
+        ax2.set_title('Synthetic Data Coverage Rate')
+        ax2.set_ylim(0, 100)
+        ax2.grid(True, alpha=0.3)
+        
+        # Add percentage labels
+        for bar, rate in zip(bars, coverage_rates):
+            ax2.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 1,
+                    f'{rate:.1f}%', ha='center', va='bottom')
+    
+    plt.tight_layout()
+    
+    # Save plot
+    plot_file = ANALYSIS_DIR / 'coverage_comparison.png'
+    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    print(f"Coverage comparison visualization saved to {plot_file}")
+    plt.show()
+
+def calculate_improvement_metrics(batch1_results, batch2_results, batch1_embed, batch2_embed):
+    """Calculate improvement metrics between batches"""
+    print("Calculating improvement metrics...")
+    
+    improvements = {
+        'ml_improvements': {},
+        'coverage_improvements': {},
+        'summary': {}
     }
     
-    # Load benign training data (same for all experiments)
-    benign_data = pd.read_csv(BATCH1_DIR / 'seed_samples/benign_seeds_1k.csv')
+    # ML performance improvements
+    if batch1_results and batch2_results:
+        experiments = ['real_only', 'rewrite', 'rewrite_strong', 'rewrite_weak']
+        models = ['RandomForest', 'SVM']
+        
+        for exp in experiments:
+            if exp in batch1_results and exp in batch2_results:
+                improvements['ml_improvements'][exp] = {}
+                for model in models:
+                    if model in batch1_results[exp] and model in batch2_results[exp]:
+                        batch1_acc = batch1_results[exp][model]['accuracy']
+                        batch2_acc = batch2_results[exp][model]['accuracy']
+                        improvement = (batch2_acc - batch1_acc) * 100  # percentage points
+                        
+                        improvements['ml_improvements'][exp][model] = {
+                            'batch1_accuracy': batch1_acc,
+                            'batch2_accuracy': batch2_acc,
+                            'improvement_pp': improvement  # percentage points
+                        }
     
-    results = {}
-    
-    for exp_name, exp_config in experiments.items():
-        print(f"\n--- Running experiment: {exp_name} ---")
+    # Coverage improvements
+    if batch1_embed and batch2_embed:
+        batch1_uncovered = 0
+        batch1_total = 0
+        batch2_uncovered = 0
+        batch2_total = 0
         
-        # Load malicious training data
-        malicious_datasets = []
-        for file_path in exp_config['malicious_files']:
-            if file_path.exists():
-                df = pd.read_csv(file_path)
-                malicious_datasets.append(df)
-            else:
-                print(f"Warning: {file_path} not found")
+        if 'uncovered_analysis' in batch1_embed and 'real' in batch1_embed['uncovered_analysis']:
+            batch1_uncovered = batch1_embed['uncovered_analysis']['real']['count']
+            batch1_total = batch1_embed['data_type_counts'].get('real', 0)
         
-        if not malicious_datasets:
-            print(f"No data found for {exp_name}")
-            continue
+        if 'uncovered_analysis' in batch2_embed and 'real' in batch2_embed['uncovered_analysis']:
+            batch2_uncovered = batch2_embed['uncovered_analysis']['real']['count']
+            batch2_total = batch2_embed['data_type_counts'].get('real', 0)
         
-        malicious_data = pd.concat(malicious_datasets, ignore_index=True)
-        
-        # Combine training data
-        training_data = pd.concat([malicious_data[['subject', 'body', 'label']], 
-                                 benign_data[['subject', 'body', 'label']]], ignore_index=True)
-        
-        # Prepare features
-        train_text = training_data['subject'].fillna('') + ' ' + training_data['body'].fillna('')
-        test_text = test_data['subject'].fillna('') + ' ' + test_data['body'].fillna('')
-        
-        vectorizer = TfidfVectorizer(max_features=5000, min_df=2, max_df=0.8, 
-                                   stop_words='english', ngram_range=(1, 2))
-        
-        X_train = vectorizer.fit_transform(train_text)
-        X_test = vectorizer.transform(test_text)
-        y_train = training_data['label'].values
-        y_test = test_data['label'].values
-        
-        # Train models
-        models = {
-            'RandomForest': RandomForestClassifier(n_estimators=100, random_state=42),
-            'SVM': SVC(kernel='rbf', random_state=42, probability=True)
-        }
-        
-        exp_results = {}
-        for model_name, model in models.items():
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
+        if batch1_total > 0 and batch2_total > 0:
+            batch1_coverage = (batch1_total - batch1_uncovered) / batch1_total * 100
+            batch2_coverage = (batch2_total - batch2_uncovered) / batch2_total * 100
+            coverage_improvement = batch2_coverage - batch1_coverage
             
-            accuracy = accuracy_score(y_test, y_pred)
-            report = classification_report(y_test, y_pred, output_dict=True)
-            
-            exp_results[model_name] = {
-                'accuracy': float(accuracy),
-                'f1_macro': report['macro avg']['f1-score'],
-                'f1_weighted': report['weighted avg']['f1-score'],
-                'training_size': len(training_data)
+            improvements['coverage_improvements'] = {
+                'batch1_coverage_rate': batch1_coverage,
+                'batch2_coverage_rate': batch2_coverage,
+                'improvement_pp': coverage_improvement,
+                'batch1_uncovered': batch1_uncovered,
+                'batch2_uncovered': batch2_uncovered
             }
-            
-            print(f"  {model_name}: Accuracy = {accuracy:.4f}")
-        
-        results[exp_name] = exp_results
     
-    return results
+    # Generate summary
+    significant_improvements = []
+    if 'ml_improvements' in improvements:
+        for exp, exp_data in improvements['ml_improvements'].items():
+            for model, model_data in exp_data.items():
+                if model_data['improvement_pp'] > 1.0:  # >1% improvement
+                    significant_improvements.append(f"{exp}_{model}: +{model_data['improvement_pp']:.1f}pp")
+    
+    improvements['summary'] = {
+        'significant_ml_improvements': significant_improvements,
+        'coverage_improved': improvements.get('coverage_improvements', {}).get('improvement_pp', 0) > 0
+    }
+    
+    return improvements
 
-def analyze_coverage_improvement(embedding_data):
-    """Analyze how batch2 improved coverage of real data space"""
-    print("Analyzing coverage improvement...")
+def create_improvement_heatmap(improvements):
+    """Create heatmap showing improvements across experiments"""
+    print("Creating improvement heatmap...")
     
-    embeddings = embedding_data['embeddings']
-    data_types = embedding_data['data_types']
+    if 'ml_improvements' not in improvements:
+        print("No ML improvements data available for heatmap")
+        return
     
-    # Separate batch1 and batch2 real data
-    batch1_real_mask = data_types == 'batch1_real'
-    batch2_real_mask = data_types == 'batch2_real'
+    experiments = ['real_only', 'rewrite', 'rewrite_strong', 'rewrite_weak']
+    models = ['RandomForest', 'SVM']
     
-    # Combine all synthetic data from both batches
-    synthetic_masks = [
-        data_types == 'batch1_rewrite',
-        data_types == 'batch1_rewrite_strong', 
-        data_types == 'batch1_rewrite_weak',
-        data_types == 'batch2_rewrite',
-        data_types == 'batch2_rewrite_strong',
-        data_types == 'batch2_rewrite_weak'
-    ]
+    # Create improvement matrix
+    improvement_matrix = np.zeros((len(models), len(experiments)))
     
-    all_synthetic_mask = np.zeros(len(embeddings), dtype=bool)
-    for mask in synthetic_masks:
-        all_synthetic_mask |= mask
+    for i, model in enumerate(models):
+        for j, exp in enumerate(experiments):
+            if exp in improvements['ml_improvements'] and model in improvements['ml_improvements'][exp]:
+                improvement_matrix[i, j] = improvements['ml_improvements'][exp][model]['improvement_pp']
     
-    if not np.any(all_synthetic_mask):
-        print("No synthetic data found for coverage analysis")
-        return {}
+    # Create heatmap
+    fig, ax = plt.subplots(figsize=(10, 6))
     
-    from sklearn.neighbors import NearestNeighbors
+    im = ax.imshow(improvement_matrix, cmap='RdYlGn', aspect='auto', vmin=-5, vmax=5)
     
-    # Get synthetic embeddings
-    synthetic_embeddings = embeddings[all_synthetic_mask]
+    # Set ticks and labels
+    ax.set_xticks(np.arange(len(experiments)))
+    ax.set_yticks(np.arange(len(models)))
+    ax.set_xticklabels(experiments)
+    ax.set_yticklabels(models)
     
-    # Analyze coverage for both batches
-    coverage_analysis = {}
+    # Rotate the tick labels and set their alignment
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     
-    for batch_name, real_mask in [('batch1', batch1_real_mask), ('batch2', batch2_real_mask)]:
-        if not np.any(real_mask):
-            continue
-            
-        real_embeddings = embeddings[real_mask]
-        
-        # Find nearest synthetic neighbor for each real data point
-        nbrs = NearestNeighbors(n_neighbors=1, metric='cosine')
-        nbrs.fit(synthetic_embeddings)
-        distances, _ = nbrs.kneighbors(real_embeddings)
-        distances = distances.flatten()
-        
-        coverage_analysis[batch_name] = {
-            'mean_distance_to_synthetic': float(np.mean(distances)),
-            'median_distance_to_synthetic': float(np.median(distances)),
-            'max_distance_to_synthetic': float(np.max(distances)),
-            'std_distance_to_synthetic': float(np.std(distances)),
-            'real_samples_count': int(np.sum(real_mask))
-        }
+    # Add text annotations
+    for i in range(len(models)):
+        for j in range(len(experiments)):
+            text = ax.text(j, i, f'{improvement_matrix[i, j]:.1f}pp',
+                          ha="center", va="center", color="black", fontweight='bold')
     
-    return coverage_analysis
+    ax.set_title("ML Performance Improvement (Batch2 vs Batch1)\nPercentage Points")
+    fig.tight_layout()
+    
+    # Add colorbar
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label('Improvement (percentage points)', rotation=270, labelpad=20)
+    
+    # Save plot
+    plot_file = ANALYSIS_DIR / 'improvement_heatmap.png'
+    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    print(f"Improvement heatmap saved to {plot_file}")
+    plt.show()
 
-def save_comprehensive_results(ml_results, coverage_analysis, embedding_data):
-    """Save all comparative analysis results"""
-    print("Saving comprehensive comparative results...")
+def save_comprehensive_comparison(batch1_results, batch2_results, batch1_embed, batch2_embed, improvements):
+    """Save comprehensive comparison results"""
+    print("Saving comprehensive comparison results...")
     
     comprehensive_results = {
-        'analysis_type': 'batch1_vs_batch2_comprehensive',
+        'comparison_type': 'batch1_vs_batch2_final',
         'timestamp': pd.Timestamp.now().isoformat(),
-        'embedding_info': {
-            'model_name': embedding_data['model_name'],
-            'total_samples': embedding_data['data_shape'][0],
-            'embedding_dimension': embedding_data['data_shape'][1],
-            'batch1_samples': embedding_data['batch1_count'],
-            'batch2_samples': embedding_data['batch2_count']
-        },
-        'ml_comparative_results': ml_results,
-        'coverage_analysis': coverage_analysis
+        'batch1_ml_results': batch1_results,
+        'batch2_ml_results': batch2_results,
+        'batch1_embedding_analysis': batch1_embed,
+        'batch2_embedding_analysis': batch2_embed,
+        'improvements': improvements
     }
     
     # Save full results
-    with open(ANALYSIS_DIR / 'comprehensive_comparative_results.json', 'w') as f:
+    with open(ANALYSIS_DIR / 'final_comparative_results.json', 'w') as f:
         json.dump(comprehensive_results, f, indent=2)
     
-    # Create summary comparison
-    if ml_results:
-        summary = {}
-        for exp_name, exp_data in ml_results.items():
-            summary[exp_name] = {}
-            for model_name, model_data in exp_data.items():
-                summary[exp_name][model_name] = {
-                    'accuracy': model_data['accuracy'],
-                    'f1_macro': model_data['f1_macro']
-                }
-        
-        with open(ANALYSIS_DIR / 'ml_comparison_summary.json', 'w') as f:
-            json.dump(summary, f, indent=2)
+    # Create executive summary
+    summary = {
+        'experiment_summary': 'Batch1 vs Batch2 LLM Sampling Strategy Comparison',
+        'key_findings': improvements['summary'] if 'summary' in improvements else {},
+        'ml_performance_changes': improvements['ml_improvements'],
+        'coverage_improvements': improvements['coverage_improvements']
+    }
     
-    print(f"Comprehensive results saved to: {ANALYSIS_DIR}")
+    with open(ANALYSIS_DIR / 'executive_summary.json', 'w') as f:
+        json.dump(summary, f, indent=2)
+    
+    print(f"Comprehensive comparison results saved to: {ANALYSIS_DIR}")
 
-def print_comparative_summary(ml_results, coverage_analysis):
-    """Print summary of comparative analysis"""
-    print("\n=== COMPARATIVE ANALYSIS SUMMARY ===")
+def print_final_summary(improvements):
+    """Print final summary of improvements"""
+    print("\n=== FINAL COMPARATIVE SUMMARY ===")
     
-    if ml_results:
-        print("\nML Performance Comparison:")
-        print(f"{'Experiment':<20} {'Model':<12} {'Accuracy':<10} {'F1-Macro':<10}")
-        print("-" * 55)
+    # ML improvements
+    if 'ml_improvements' in improvements:
+        print("\nML Performance Changes (Batch2 vs Batch1):")
+        print(f"{'Experiment':<15} {'Model':<12} {'Batch1':<8} {'Batch2':<8} {'Change':<8}")
+        print("-" * 60)
         
-        for exp_name, exp_data in ml_results.items():
-            for i, (model_name, model_data) in enumerate(exp_data.items()):
-                exp_display = exp_name if i == 0 else ""
-                print(f"{exp_display:<20} {model_name:<12} {model_data['accuracy']:<10.4f} {model_data['f1_macro']:<10.4f}")
+        for exp, exp_data in improvements['ml_improvements'].items():
+            for model, model_data in exp_data.items():
+                batch1_acc = model_data['batch1_accuracy']
+                batch2_acc = model_data['batch2_accuracy']
+                change = model_data['improvement_pp']
+                change_str = f"+{change:.1f}pp" if change >= 0 else f"{change:.1f}pp"
+                
+                print(f"{exp:<15} {model:<12} {batch1_acc:<8.3f} {batch2_acc:<8.3f} {change_str:<8}")
     
-    if coverage_analysis:
-        print("\nCoverage Analysis:")
-        for batch_name, analysis in coverage_analysis.items():
-            print(f"{batch_name}:")
-            print(f"  Mean distance to synthetic: {analysis['mean_distance_to_synthetic']:.4f}")
-            print(f"  Median distance to synthetic: {analysis['median_distance_to_synthetic']:.4f}")
-            print(f"  Real samples: {analysis['real_samples_count']}")
+    # Coverage improvements
+    if 'coverage_improvements' in improvements and improvements['coverage_improvements']:
+        cov_data = improvements['coverage_improvements']
+        print(f"\nCoverage Analysis:")
+        print(f"Batch1 coverage rate: {cov_data['batch1_coverage_rate']:.1f}%")
+        print(f"Batch2 coverage rate: {cov_data['batch2_coverage_rate']:.1f}%")
+        print(f"Coverage improvement: {cov_data['improvement_pp']:+.1f} percentage points")
+    else:
+        print(f"\nCoverage Analysis: No coverage data available")
+    
+    # Key insights
+    if 'summary' in improvements:
+        summary = improvements['summary']
+        print(f"\nKey Insights:")
+        if summary.get('significant_ml_improvements'):
+            print(f"Significant ML improvements: {len(summary['significant_ml_improvements'])}")
+            for imp in summary['significant_ml_improvements']:
+                print(f"  - {imp}")
+        else:
+            print("No significant ML improvements detected")
+        
+        if summary.get('coverage_improved'):
+            print("✓ Coverage improved in batch2")
+        else:
+            print("✗ Coverage did not improve in batch2")
 
 def main():
-    print("=== BATCH2: COMPREHENSIVE COMPARATIVE ANALYSIS ===")
+    print("=== BATCH1 vs BATCH2: FINAL COMPARATIVE ANALYSIS ===")
     
-    # Load batch data
-    batch1_data = load_batch_data('batch1')
-    batch2_data = load_batch_data('batch2')
+    # Load all results
+    batch1_results, batch2_results = load_ml_results()
+    batch1_embed, batch2_embed = load_embedding_analyses()
     
-    if batch1_data is None or batch2_data is None:
-        print("Error: Could not load batch data")
-        return
+    # Calculate improvements
+    improvements = calculate_improvement_metrics(batch1_results, batch2_results, batch1_embed, batch2_embed)
     
-    # Generate comparative embeddings
-    embedding_data = generate_comparative_embeddings(batch1_data, batch2_data)
-    
-    # Create comparative visualizations
-    perform_comparative_visualization(embedding_data)
-    
-    # Run ML experiments
-    ml_results = run_comparative_ml_experiments()
-    
-    # Analyze coverage improvement
-    coverage_analysis = analyze_coverage_improvement(embedding_data)
+    # Create visualizations
+    create_ml_comparison_visualization(batch1_results, batch2_results)
+    create_coverage_comparison(batch1_embed, batch2_embed)
+    create_improvement_heatmap(improvements)
     
     # Save comprehensive results
-    save_comprehensive_results(ml_results, coverage_analysis, embedding_data)
+    save_comprehensive_comparison(batch1_results, batch2_results, batch1_embed, batch2_embed, improvements)
     
-    # Print summary
-    print_comparative_summary(ml_results, coverage_analysis)
+    # Print final summary
+    print_final_summary(improvements)
     
-    print(f"\nComparative analysis complete. Results saved to: {ANALYSIS_DIR}")
+    print(f"\nFinal comparative analysis complete. Results saved to: {ANALYSIS_DIR}")
 
 if __name__ == "__main__":
     main()
