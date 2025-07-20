@@ -119,61 +119,106 @@ def perform_dimensionality_reduction(embeddings):
         }
     }
 
-def identify_outliers(embeddings, data_types, method='distance', threshold_percentile=95):
-    """Identify outliers using distance or clustering methods"""
-    print(f"Identifying outliers using {method} method...")
+def identify_uncovered_real_data(embeddings, data_types, method='nearest_neighbor', k_neighbors=5):
+    """Identify real data points that are poorly covered by synthetic data"""
+    print(f"Identifying uncovered real data using {method} method...")
+    
+    from sklearn.neighbors import NearestNeighbors
+    
+    # Get masks for each data type
+    real_mask = data_types == 'real'
+    synthetic_masks = {
+        'rewrite': data_types == 'rewrite',
+        'rewrite_strong': data_types == 'rewrite_strong', 
+        'rewrite_weak': data_types == 'rewrite_weak'
+    }
+    
+    real_embeddings = embeddings[real_mask]
+    real_indices = np.where(real_mask)[0]
     
     outlier_info = {}
     
-    if method == 'distance':
-        # For each data type, find samples far from centroid
-        for data_type in np.unique(data_types):
-            type_mask = data_types == data_type
-            type_embeddings = embeddings[type_mask]
+    if method == 'nearest_neighbor':
+        # For each synthetic type, find real data points far from synthetic data
+        all_synthetic_mask = np.zeros(len(embeddings), dtype=bool)
+        for syn_mask in synthetic_masks.values():
+            all_synthetic_mask |= syn_mask
+        
+        if np.sum(all_synthetic_mask) == 0:
+            print("No synthetic data found")
+            return {}
             
-            if len(type_embeddings) == 0:
+        synthetic_embeddings = embeddings[all_synthetic_mask]
+        
+        # Find nearest synthetic neighbor for each real data point
+        nbrs = NearestNeighbors(n_neighbors=1, metric='cosine')
+        nbrs.fit(synthetic_embeddings)
+        
+        distances, _ = nbrs.kneighbors(real_embeddings)
+        distances = distances.flatten()
+        
+        # Find real data points that are far from any synthetic data
+        threshold = np.percentile(distances, 80)  # Top 20% most distant
+        outlier_mask = distances > threshold
+        
+        outlier_indices = real_indices[outlier_mask]
+        outlier_distances = distances[outlier_mask]
+        
+        outlier_info['real'] = {
+            'indices': outlier_indices.tolist(),
+            'distances_to_synthetic': outlier_distances.tolist(),
+            'threshold': float(threshold),
+            'count': len(outlier_indices),
+            'method': 'nearest_neighbor_to_synthetic'
+        }
+        
+    elif method == 'coverage_analysis':
+        # Analyze coverage for each synthetic variant separately
+        for syn_type, syn_mask in synthetic_masks.items():
+            if np.sum(syn_mask) == 0:
                 continue
                 
-            # Calculate centroid
-            centroid = np.mean(type_embeddings, axis=0)
+            synthetic_embeddings = embeddings[syn_mask]
             
-            # Calculate distances to centroid
-            distances = cosine_distances(type_embeddings, centroid.reshape(1, -1)).flatten()
+            # Find nearest neighbor distance from each real point to this synthetic type
+            nbrs = NearestNeighbors(n_neighbors=1, metric='cosine')
+            nbrs.fit(synthetic_embeddings)
             
-            # Find outliers (samples in top percentile of distances)
-            threshold = np.percentile(distances, threshold_percentile)
+            distances, _ = nbrs.kneighbors(real_embeddings)
+            distances = distances.flatten()
+            
+            # Find poorly covered real data points
+            threshold = np.percentile(distances, 75)  # Top 25% most distant
             outlier_mask = distances > threshold
             
-            outlier_indices = np.where(type_mask)[0][outlier_mask]
+            outlier_indices = real_indices[outlier_mask]
             
-            outlier_info[data_type] = {
+            outlier_info[f'real_uncovered_by_{syn_type}'] = {
                 'indices': outlier_indices.tolist(),
                 'distances': distances[outlier_mask].tolist(),
                 'threshold': float(threshold),
-                'count': len(outlier_indices)
+                'count': len(outlier_indices),
+                'poorly_covered_by': syn_type
             }
     
-    elif method == 'dbscan':
-        # Use DBSCAN to find noise points as outliers
-        dbscan = DBSCAN(eps=0.1, min_samples=5, metric='cosine')
-        cluster_labels = dbscan.fit_predict(embeddings)
+    # Also identify isolated real clusters using DBSCAN on real data only
+    if len(real_embeddings) > 10:
+        dbscan = DBSCAN(eps=0.15, min_samples=3, metric='cosine')
+        cluster_labels = dbscan.fit_predict(real_embeddings)
         
-        outlier_indices = np.where(cluster_labels == -1)[0]
+        # Find isolated points (noise in DBSCAN)
+        isolated_mask = cluster_labels == -1
+        isolated_indices = real_indices[isolated_mask]
         
-        # Group by data type
-        for data_type in np.unique(data_types):
-            type_mask = data_types == data_type
-            type_outliers = outlier_indices[np.isin(outlier_indices, np.where(type_mask)[0])]
-            
-            outlier_info[data_type] = {
-                'indices': type_outliers.tolist(),
-                'count': len(type_outliers),
-                'method': 'dbscan'
-            }
+        outlier_info['real_isolated'] = {
+            'indices': isolated_indices.tolist(),
+            'count': len(isolated_indices),
+            'method': 'dbscan_isolated'
+        }
     
     return outlier_info
 
-def create_visualizations(reduction_results, data_types, outlier_info):
+def create_visualizations(reduction_results, data_types, uncovered_info):
     """Create visualization plots"""
     print("Creating visualizations...")
     
@@ -212,57 +257,82 @@ def create_visualizations(reduction_results, data_types, outlier_info):
     ax2.legend()
     ax2.grid(True, alpha=0.3)
     
-    # t-SNE with outliers highlighted
+    # t-SNE with uncovered real data highlighted
     ax3 = axes[1, 0]
-    for i, data_type in enumerate(data_type_list):
+    
+    # Plot synthetic data first
+    for i, data_type in enumerate(data_type_list[1:], 1):  # Skip 'real'
         if data_type in data_types:
             type_mask = data_types == data_type
-            # Normal points
-            normal_mask = np.ones(len(tsne_embeddings), dtype=bool)
-            if data_type in outlier_info:
-                outlier_indices = outlier_info[data_type]['indices']
-                normal_mask[outlier_indices] = False
-            
-            combined_mask = type_mask & normal_mask
-            ax3.scatter(tsne_embeddings[combined_mask, 0], tsne_embeddings[combined_mask, 1],
-                       label=f'{data_type} (normal)', alpha=0.6, s=20, c=colors[i])
-            
-            # Outliers
-            if data_type in outlier_info:
-                outlier_indices = outlier_info[data_type]['indices']
-                outlier_mask = np.zeros(len(tsne_embeddings), dtype=bool)
-                outlier_mask[outlier_indices] = True
-                combined_outlier_mask = type_mask & outlier_mask
-                
-                if np.any(combined_outlier_mask):
-                    ax3.scatter(tsne_embeddings[combined_outlier_mask, 0], tsne_embeddings[combined_outlier_mask, 1],
-                               label=f'{data_type} (outlier)', alpha=0.8, s=40, c=colors[i], 
-                               marker='x', linewidths=2)
+            ax3.scatter(tsne_embeddings[type_mask, 0], tsne_embeddings[type_mask, 1],
+                       label=data_type, alpha=0.6, s=20, c=colors[i])
+    
+    # Plot real data
+    real_mask = data_types == 'real'
+    normal_real_mask = np.ones(len(tsne_embeddings), dtype=bool)
+    
+    # Highlight uncovered real data
+    if 'real' in uncovered_info:
+        uncovered_indices = uncovered_info['real']['indices']
+        normal_real_mask[uncovered_indices] = False
+        
+        # Normal real data
+        combined_mask = real_mask & normal_real_mask
+        ax3.scatter(tsne_embeddings[combined_mask, 0], tsne_embeddings[combined_mask, 1],
+                   label='real (covered)', alpha=0.6, s=20, c='lightblue')
+        
+        # Uncovered real data
+        uncovered_mask = np.zeros(len(tsne_embeddings), dtype=bool)
+        uncovered_mask[uncovered_indices] = True
+        combined_uncovered_mask = real_mask & uncovered_mask
+        
+        if np.any(combined_uncovered_mask):
+            ax3.scatter(tsne_embeddings[combined_uncovered_mask, 0], tsne_embeddings[combined_uncovered_mask, 1],
+                       label='real (uncovered)', alpha=0.9, s=40, c='darkblue', 
+                       marker='x', linewidths=2)
+    else:
+        ax3.scatter(tsne_embeddings[real_mask, 0], tsne_embeddings[real_mask, 1],
+                   label='real', alpha=0.6, s=20, c='blue')
     
     ax3.set_xlabel('t-SNE 1')
     ax3.set_ylabel('t-SNE 2')
-    ax3.set_title('t-SNE: Outliers Highlighted')
+    ax3.set_title('t-SNE: Uncovered Real Data Highlighted')
     ax3.legend()
     ax3.grid(True, alpha=0.3)
     
-    # Outlier counts bar plot
+    # Coverage analysis bar plot
     ax4 = axes[1, 1]
-    outlier_counts = [outlier_info.get(dt, {'count': 0})['count'] for dt in data_type_list]
-    bars = ax4.bar(data_type_list, outlier_counts, color=colors)
-    ax4.set_title('Outlier Counts by Data Type')
-    ax4.set_ylabel('Number of Outliers')
-    plt.setp(ax4.xaxis.get_majorticklabels(), rotation=45)
     
-    # Add count labels on bars
-    for bar, count in zip(bars, outlier_counts):
-        if count > 0:
-            ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
-                    str(count), ha='center', va='bottom')
+    coverage_data = []
+    labels = []
+    
+    if 'real' in uncovered_info:
+        total_real = np.sum(data_types == 'real')
+        uncovered_count = uncovered_info['real']['count']
+        covered_count = total_real - uncovered_count
+        
+        coverage_data = [covered_count, uncovered_count]
+        labels = ['Covered by\nSynthetic', 'Uncovered by\nSynthetic']
+        colors_bar = ['lightgreen', 'red']
+        
+        bars = ax4.bar(labels, coverage_data, color=colors_bar)
+        ax4.set_title('Real Data Coverage by Synthetic Data')
+        ax4.set_ylabel('Number of Real Samples')
+        
+        # Add percentage labels
+        for bar, count in zip(bars, coverage_data):
+            percentage = count / total_real * 100
+            ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 5,
+                    f'{count}\n({percentage:.1f}%)', ha='center', va='bottom')
+    else:
+        ax4.text(0.5, 0.5, 'No coverage analysis\navailable', 
+                ha='center', va='center', transform=ax4.transAxes)
+        ax4.set_title('Coverage Analysis')
     
     plt.tight_layout()
     
     # Save plot
-    plot_file = EMBEDDINGS_DIR / 'batch1_embedding_analysis.png'
+    plot_file = EMBEDDINGS_DIR / 'batch1_uncovered_analysis.png'
     plt.savefig(plot_file, dpi=300, bbox_inches='tight')
     print(f"Visualization saved to {plot_file}")
     plt.show()
@@ -279,37 +349,38 @@ def main():
     # Perform dimensionality reduction
     reduction_results = perform_dimensionality_reduction(embedding_data['embeddings'])
     
-    # Identify outliers
-    outlier_info = identify_outliers(
+    # Identify uncovered real data
+    uncovered_info = identify_uncovered_real_data(
         embedding_data['embeddings'], 
         embedding_data['data_types'],
-        method='distance',
-        threshold_percentile=90
+        method='nearest_neighbor'
     )
     
     # Create visualizations
-    create_visualizations(reduction_results, embedding_data['data_types'], outlier_info)
+    create_visualizations(reduction_results, embedding_data['data_types'], uncovered_info)
     
     # Save analysis results
     analysis_results = {
         'embedding_shape': embedding_data['data_shape'],
         'model_name': embedding_data['model_name'],
         'pca_explained_variance': reduction_results['pca']['explained_variance'].tolist(),
-        'outlier_analysis': outlier_info,
+        'uncovered_analysis': uncovered_info,
         'data_type_counts': {
             dt: int(np.sum(embedding_data['data_types'] == dt)) 
             for dt in np.unique(embedding_data['data_types'])
         }
     }
     
-    with open(EMBEDDINGS_DIR / 'batch1_analysis_results.json', 'w') as f:
+    with open(EMBEDDINGS_DIR / 'batch1_uncovered_analysis.json', 'w') as f:
         json.dump(analysis_results, f, indent=2)
     
     print(f"\nAnalysis complete:")
     print(f"- Total samples analyzed: {len(embedding_data['embeddings'])}")
-    print(f"- Outliers found:")
-    for data_type, info in outlier_info.items():
-        print(f"  {data_type}: {info['count']} outliers")
+    if 'real' in uncovered_info:
+        print(f"- Uncovered real data: {uncovered_info['real']['count']} samples")
+        total_real = int(np.sum(embedding_data['data_types'] == 'real'))
+        coverage_rate = (total_real - uncovered_info['real']['count']) / total_real * 100
+        print(f"- Synthetic coverage rate: {coverage_rate:.1f}%")
     print(f"- Results saved to: {EMBEDDINGS_DIR}")
 
 if __name__ == "__main__":
