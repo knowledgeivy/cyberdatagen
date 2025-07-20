@@ -15,7 +15,7 @@ else:
 
 print(f"PROJECT_ROOT: {PROJECT_ROOT}")
 
-def resample_batch_data(batch_name, malicious_per_type=200, benign_count=1000, random_seed=42):
+def resample_batch_data(batch_name, malicious_per_type=100, benign_count=1000, random_seed=42):
     """Resample data for a specific batch"""
     print(f"\n=== RESAMPLING {batch_name.upper()} DATA ===")
     print(f"Target: {malicious_per_type} samples per malicious type, {benign_count} benign samples")
