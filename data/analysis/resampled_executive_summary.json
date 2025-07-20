@@ -1,0 +1,72 @@
+{
+  "experiment_summary": "Resampled Data Analysis: Enhanced vs Random Sampling",
+  "sample_sizes": {
+    "malicious_per_type": 200,
+    "benign_count": 1000
+  },
+  "key_findings": {
+    "significant_ml_improvements": [
+      "real_only_SVM: +3.7pp",
+      "rewrite_SVM: +1.4pp",
+      "rewrite_strong_SVM: +1.9pp",
+      "rewrite_weak_SVM: +1.6pp"
+    ],
+    "coverage_improved": false,
+    "avg_improvement": 1.118749999999999
+  },
+  "ml_improvements": {
+    "real_only": {
+      "RandomForest": {
+        "batch1_accuracy": 0.969,
+        "batch2_accuracy": 0.973,
+        "improvement_pp": 0.40000000000000036
+      },
+      "SVM": {
+        "batch1_accuracy": 0.858,
+        "batch2_accuracy": 0.8955,
+        "improvement_pp": 3.749999999999998
+      }
+    },
+    "rewrite": {
+      "RandomForest": {
+        "batch1_accuracy": 0.9755,
+        "batch2_accuracy": 0.973,
+        "improvement_pp": -0.2500000000000058
+      },
+      "SVM": {
+        "batch1_accuracy": 0.9175,
+        "batch2_accuracy": 0.931,
+        "improvement_pp": 1.3500000000000068
+      }
+    },
+    "rewrite_strong": {
+      "RandomForest": {
+        "batch1_accuracy": 0.9745,
+        "batch2_accuracy": 0.9765,
+        "improvement_pp": 0.20000000000000018
+      },
+      "SVM": {
+        "batch1_accuracy": 0.888,
+        "batch2_accuracy": 0.9075,
+        "improvement_pp": 1.9499999999999962
+      }
+    },
+    "rewrite_weak": {
+      "RandomForest": {
+        "batch1_accuracy": 0.9725,
+        "batch2_accuracy": 0.972,
+        "improvement_pp": -0.050000000000005596
+      },
+      "SVM": {
+        "batch1_accuracy": 0.9,
+        "batch2_accuracy": 0.916,
+        "improvement_pp": 1.6000000000000014
+      }
+    }
+  },
+  "coverage_improvement": {
+    "batch1_coverage": 80.0,
+    "batch2_coverage": 80.0,
+    "improvement_pp": 0.0
+  }
+}
