@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -118,19 +118,6 @@ def load_experiment_data(experiment_type):
         rewrite_weak_data = pd.read_csv(SYNTHETIC_DIR / 'malicious_rewrite_weak_1k.csv')
         rewrite_weak_data['data_source'] = 'rewrite_weak'
         datasets.append(rewrite_weak_data[['subject', 'body', 'label', 'data_source', 'data_id']])
-        
-    elif experiment_type == 'all_synthetic':
-        # Real + all 3 synthetic variants
-        malicious_seeds = pd.read_csv(SEED_SAMPLES_DIR / 'malicious_seeds_1k.csv')
-        malicious_seeds['data_source'] = 'real_malicious'
-        datasets.append(malicious_seeds[['subject', 'body', 'label', 'data_source', 'data_id']])
-        
-        for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
-            file_path = SYNTHETIC_DIR / f'malicious_{variant}_1k.csv'
-            if file_path.exists():
-                df = pd.read_csv(file_path)
-                df['data_source'] = variant
-                datasets.append(df[['subject', 'body', 'label', 'data_source', 'data_id']])
     
     training_data = pd.concat(datasets, ignore_index=True)
     
@@ -173,7 +160,7 @@ def train_and_evaluate_models(X_train, X_test, y_train, y_test, experiment_name)
     
     models = {
         'RandomForest': RandomForestClassifier(n_estimators=100, random_state=42),
-        'LogisticRegression': LogisticRegression(random_state=42, max_iter=1000)
+        'SVM': SVC(kernel='rbf', random_state=42, probability=True)
     }
     
     results = {}
@@ -211,8 +198,7 @@ def run_all_experiments(test_data):
         'real_only',
         'rewrite', 
         'rewrite_strong',
-        'rewrite_weak',
-        'all_synthetic'
+        'rewrite_weak'
     ]
     
     all_results = {}
