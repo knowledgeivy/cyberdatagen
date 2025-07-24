@@ -1,0 +1,612 @@
+{
+  "phase3_info": {
+    "date": "2025-07-24",
+    "total_configs": 20,
+    "data_groups": [
+      "real_only",
+      "core",
+      "inner",
+      "outer",
+      "edge"
+    ],
+    "malicious_ratios": [
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "random_state": 2025
+  },
+  "group_statistics": {
+    "real_only": {
+      "config_count": 4,
+      "config_names": [
+        "real_only_5pct",
+        "real_only_10pct",
+        "real_only_15pct",
+        "real_only_20pct"
+      ]
+    },
+    "core": {
+      "config_count": 4,
+      "config_names": [
+        "core_5pct",
+        "core_10pct",
+        "core_15pct",
+        "core_20pct"
+      ]
+    },
+    "inner": {
+      "config_count": 4,
+      "config_names": [
+        "inner_5pct",
+        "inner_10pct",
+        "inner_15pct",
+        "inner_20pct"
+      ]
+    },
+    "outer": {
+      "config_count": 4,
+      "config_names": [
+        "outer_5pct",
+        "outer_10pct",
+        "outer_15pct",
+        "outer_20pct"
+      ]
+    },
+    "edge": {
+      "config_count": 4,
+      "config_names": [
+        "edge_5pct",
+        "edge_10pct",
+        "edge_15pct",
+        "edge_20pct"
+      ]
+    }
+  },
+  "ratio_statistics": {
+    "5pct": {
+      "config_count": 10,
+      "config_names": [
+        "real_only_5pct",
+        "real_only_15pct",
+        "core_5pct",
+        "core_15pct",
+        "inner_5pct",
+        "inner_15pct",
+        "outer_5pct",
+        "outer_15pct",
+        "edge_5pct",
+        "edge_15pct"
+      ]
+    },
+    "10pct": {
+      "config_count": 5,
+      "config_names": [
+        "real_only_10pct",
+        "core_10pct",
+        "inner_10pct",
+        "outer_10pct",
+        "edge_10pct"
+      ]
+    },
+    "15pct": {
+      "config_count": 5,
+      "config_names": [
+        "real_only_15pct",
+        "core_15pct",
+        "inner_15pct",
+        "outer_15pct",
+        "edge_15pct"
+      ]
+    },
+    "20pct": {
+      "config_count": 5,
+      "config_names": [
+        "real_only_20pct",
+        "core_20pct",
+        "inner_20pct",
+        "outer_20pct",
+        "edge_20pct"
+      ]
+    }
+  },
+  "config_details": {
+    "real_only_5pct": {
+      "config_name": "real_only_5pct",
+      "group_name": "real_only",
+      "malicious_ratio": 0.05,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_5pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_5pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.05,
+        "actual_malicious_ratio": 0.05,
+        "malicious_count": 500,
+        "benign_count": 9500,
+        "available_malicious": 17463,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "real_only_10pct": {
+      "config_name": "real_only_10pct",
+      "group_name": "real_only",
+      "malicious_ratio": 0.1,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_10pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_10pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.1,
+        "actual_malicious_ratio": 0.1,
+        "malicious_count": 1000,
+        "benign_count": 9000,
+        "available_malicious": 17463,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "real_only_15pct": {
+      "config_name": "real_only_15pct",
+      "group_name": "real_only",
+      "malicious_ratio": 0.15,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_15pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_15pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.15,
+        "actual_malicious_ratio": 0.15,
+        "malicious_count": 1500,
+        "benign_count": 8500,
+        "available_malicious": 17463,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "real_only_20pct": {
+      "config_name": "real_only_20pct",
+      "group_name": "real_only",
+      "malicious_ratio": 0.2,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_20pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\real_only_20pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.2,
+        "actual_malicious_ratio": 0.2,
+        "malicious_count": 2000,
+        "benign_count": 8000,
+        "available_malicious": 17463,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "core_5pct": {
+      "config_name": "core_5pct",
+      "group_name": "core",
+      "malicious_ratio": 0.05,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_5pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_5pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.05,
+        "actual_malicious_ratio": 0.05,
+        "malicious_count": 500,
+        "benign_count": 9500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "core_10pct": {
+      "config_name": "core_10pct",
+      "group_name": "core",
+      "malicious_ratio": 0.1,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_10pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_10pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.1,
+        "actual_malicious_ratio": 0.1,
+        "malicious_count": 1000,
+        "benign_count": 9000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "core_15pct": {
+      "config_name": "core_15pct",
+      "group_name": "core",
+      "malicious_ratio": 0.15,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_15pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_15pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.15,
+        "actual_malicious_ratio": 0.15,
+        "malicious_count": 1500,
+        "benign_count": 8500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "core_20pct": {
+      "config_name": "core_20pct",
+      "group_name": "core",
+      "malicious_ratio": 0.2,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_20pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\core_20pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.2,
+        "actual_malicious_ratio": 0.2,
+        "malicious_count": 2000,
+        "benign_count": 8000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "inner_5pct": {
+      "config_name": "inner_5pct",
+      "group_name": "inner",
+      "malicious_ratio": 0.05,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_5pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_5pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.05,
+        "actual_malicious_ratio": 0.05,
+        "malicious_count": 500,
+        "benign_count": 9500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "inner_10pct": {
+      "config_name": "inner_10pct",
+      "group_name": "inner",
+      "malicious_ratio": 0.1,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_10pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_10pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.1,
+        "actual_malicious_ratio": 0.1,
+        "malicious_count": 1000,
+        "benign_count": 9000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "inner_15pct": {
+      "config_name": "inner_15pct",
+      "group_name": "inner",
+      "malicious_ratio": 0.15,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_15pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_15pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.15,
+        "actual_malicious_ratio": 0.15,
+        "malicious_count": 1500,
+        "benign_count": 8500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "inner_20pct": {
+      "config_name": "inner_20pct",
+      "group_name": "inner",
+      "malicious_ratio": 0.2,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_20pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\inner_20pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.2,
+        "actual_malicious_ratio": 0.2,
+        "malicious_count": 2000,
+        "benign_count": 8000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "outer_5pct": {
+      "config_name": "outer_5pct",
+      "group_name": "outer",
+      "malicious_ratio": 0.05,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_5pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_5pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.05,
+        "actual_malicious_ratio": 0.05,
+        "malicious_count": 500,
+        "benign_count": 9500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "outer_10pct": {
+      "config_name": "outer_10pct",
+      "group_name": "outer",
+      "malicious_ratio": 0.1,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_10pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_10pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.1,
+        "actual_malicious_ratio": 0.1,
+        "malicious_count": 1000,
+        "benign_count": 9000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "outer_15pct": {
+      "config_name": "outer_15pct",
+      "group_name": "outer",
+      "malicious_ratio": 0.15,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_15pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_15pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.15,
+        "actual_malicious_ratio": 0.15,
+        "malicious_count": 1500,
+        "benign_count": 8500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "outer_20pct": {
+      "config_name": "outer_20pct",
+      "group_name": "outer",
+      "malicious_ratio": 0.2,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_20pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\outer_20pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.2,
+        "actual_malicious_ratio": 0.2,
+        "malicious_count": 2000,
+        "benign_count": 8000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "edge_5pct": {
+      "config_name": "edge_5pct",
+      "group_name": "edge",
+      "malicious_ratio": 0.05,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_5pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_5pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.05,
+        "actual_malicious_ratio": 0.05,
+        "malicious_count": 500,
+        "benign_count": 9500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "edge_10pct": {
+      "config_name": "edge_10pct",
+      "group_name": "edge",
+      "malicious_ratio": 0.1,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_10pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_10pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.1,
+        "actual_malicious_ratio": 0.1,
+        "malicious_count": 1000,
+        "benign_count": 9000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "edge_15pct": {
+      "config_name": "edge_15pct",
+      "group_name": "edge",
+      "malicious_ratio": 0.15,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_15pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_15pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.15,
+        "actual_malicious_ratio": 0.15,
+        "malicious_count": 1500,
+        "benign_count": 8500,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    },
+    "edge_20pct": {
+      "config_name": "edge_20pct",
+      "group_name": "edge",
+      "malicious_ratio": 0.2,
+      "creation_date": "2025-07-24",
+      "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_20pct\\train.csv",
+      "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\datasets\\edge_20pct\\test.csv",
+      "train_stats": {
+        "target_size": 10000,
+        "actual_size": 10000,
+        "target_malicious_ratio": 0.2,
+        "actual_malicious_ratio": 0.2,
+        "malicious_count": 2000,
+        "benign_count": 8000,
+        "available_malicious": 17763,
+        "available_benign": 13837
+      },
+      "test_stats": {
+        "total_size": 7826,
+        "malicious_count": 4366,
+        "benign_count": 3460,
+        "malicious_ratio": 0.5578839764886276
+      }
+    }
+  },
+  "experiment_matrix": {
+    "groups": [
+      "real_only",
+      "core",
+      "inner",
+      "outer",
+      "edge"
+    ],
+    "ratios": [
+      "5%",
+      "10%",
+      "15%",
+      "20%"
+    ],
+    "total_experiments": 20
+  }
+}
