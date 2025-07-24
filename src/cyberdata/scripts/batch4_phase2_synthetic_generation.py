@@ -278,17 +278,30 @@ class Batch4Phase2Generator:
             
             synthetic_samples = []
             
-            # 为每个种子生成3个变体
+            # 创建所有任务
+            tasks = []
             for seed_idx, (_, seed_row) in enumerate(seeds_df.iterrows()):
                 for prompt_variant in self.prompt_variants:
+                    tasks.append((seed_row, layer_name, prompt_variant, seed_idx))
+            
+            self.logger.info(f"{layer_name}层: 准备并发执行 {len(tasks)} 个API调用任务")
+            
+            # 使用并发处理
+            with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+                # 提交所有任务
+                future_to_task = {
+                    executor.submit(self.generate_single_synthetic, *task): task 
+                    for task in tasks
+                }
+                
+                # 收集结果
+                for future in as_completed(future_to_task):
+                    task = future_to_task[future]
                     try:
-                        synthetic_sample = self.generate_single_synthetic(
-                            seed_row, layer_name, prompt_variant, seed_idx
-                        )
+                        synthetic_sample = future.result()
                         synthetic_samples.append(synthetic_sample)
-                        
                     except Exception as e:
-                        self.logger.error(f"跳过失败的样本: {layer_name}, {prompt_variant}, {seed_idx}")
+                        self.logger.error(f"跳过失败的样本: {task[1]}, {task[2]}, {task[3]} - {str(e)}")
                         continue
             
             self.logger.info(f"{layer_name}层生成完成: {len(synthetic_samples)} 个合成样本")

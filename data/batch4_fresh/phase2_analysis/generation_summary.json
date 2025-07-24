@@ -1,0 +1,46 @@
+{
+  "generation_info": {
+    "date": "2025-07-24",
+    "model": "gpt-4.1-mini",
+    "seeds_per_layer": 100,
+    "prompt_variants": [
+      "rewrite",
+      "rewrite_strong",
+      "rewrite_weak"
+    ],
+    "total_api_calls": 1200,
+    "expected_api_calls": 1200
+  },
+  "layer_statistics": {
+    "core": {
+      "sample_count": 300,
+      "seeds_used": 100,
+      "variants_per_seed": 3
+    },
+    "inner": {
+      "sample_count": 300,
+      "seeds_used": 100,
+      "variants_per_seed": 3
+    },
+    "outer": {
+      "sample_count": 300,
+      "seeds_used": 100,
+      "variants_per_seed": 3
+    },
+    "edge": {
+      "sample_count": 300,
+      "seeds_used": 100,
+      "variants_per_seed": 3
+    }
+  },
+  "prompt_statistics": {
+    "rewrite": 400,
+    "rewrite_strong": 400,
+    "rewrite_weak": 400
+  },
+  "generation_success_rate": 1.0,
+  "id_format": {
+    "pattern": "synth_{layer}_{seed_index:03d}_{prompt_variant}",
+    "example": "synth_core_001_rewrite"
+  }
+}
