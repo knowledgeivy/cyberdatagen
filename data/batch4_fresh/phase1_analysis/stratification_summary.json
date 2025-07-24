@@ -1,0 +1,66 @@
+{
+  "stratification_info": {
+    "date": "2025-07-24",
+    "method": "cosine_distance_quartiles",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "embedding_dimension": 384,
+    "total_samples": 17463
+  },
+  "distance_statistics": {
+    "min_distance": 0.3620375990867615,
+    "max_distance": 1.0621590614318848,
+    "mean_distance": 0.6026367545127869,
+    "std_distance": 0.09981269389390945,
+    "quartiles": {
+      "q25": 0.524637758731842,
+      "q50": 0.5934703350067139,
+      "q75": 0.6598831415176392
+    }
+  },
+  "layer_statistics": {
+    "core": {
+      "sample_count": 4693,
+      "percentage": 26.873962091278703,
+      "distance_range": {
+        "min": 0.3620375990867615,
+        "max": 0.524637758731842,
+        "mean": 0.4917987287044525,
+        "std": 0.025896728038787842
+      }
+    },
+    "inner": {
+      "sample_count": 4039,
+      "percentage": 23.12890110519384,
+      "distance_range": {
+        "min": 0.5246394872665405,
+        "max": 0.5934703350067139,
+        "mean": 0.5616062879562378,
+        "std": 0.020077796652913094
+      }
+    },
+    "outer": {
+      "sample_count": 4365,
+      "percentage": 24.995705205291188,
+      "distance_range": {
+        "min": 0.5934709906578064,
+        "max": 0.6598693132400513,
+        "mean": 0.6248309016227722,
+        "std": 0.018421592190861702
+      }
+    },
+    "edge": {
+      "sample_count": 4366,
+      "percentage": 25.001431598236273,
+      "distance_range": {
+        "min": 0.6598969101905823,
+        "max": 1.0621590614318848,
+        "mean": 0.7375442385673523,
+        "std": 0.07043655961751938
+      }
+    }
+  },
+  "id_format": {
+    "pattern": "train_real_mal_{layer}_{index:06d}",
+    "example": "train_real_mal_core_000001"
+  }
+}
