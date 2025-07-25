@@ -1,0 +1,306 @@
+{
+  "summary": {
+    "total_configs": 20,
+    "data_groups": [
+      "real_only",
+      "core",
+      "inner",
+      "outer",
+      "edge"
+    ],
+    "malicious_ratios": [
+      "5%",
+      "10%",
+      "15%",
+      "20%"
+    ]
+  },
+  "group_comparison": {
+    "real_only": {
+      "configs": [
+        {
+          "ratio": "5%",
+          "inter_class_similarity": 0.36931082606315613,
+          "malicious_count": 500,
+          "benign_count": 9500
+        },
+        {
+          "ratio": "10%",
+          "inter_class_similarity": 0.3782650828361511,
+          "malicious_count": 1000,
+          "benign_count": 9000
+        },
+        {
+          "ratio": "15%",
+          "inter_class_similarity": 0.37503713369369507,
+          "malicious_count": 1500,
+          "benign_count": 8500
+        },
+        {
+          "ratio": "20%",
+          "inter_class_similarity": 0.3723369836807251,
+          "malicious_count": 2000,
+          "benign_count": 8000
+        }
+      ],
+      "avg_similarity": 0.37373750656843185,
+      "std_similarity": 0.0033069979656598406
+    },
+    "core": {
+      "configs": [
+        {
+          "ratio": "5%",
+          "inter_class_similarity": 0.36640724539756775,
+          "malicious_count": 500,
+          "benign_count": 9500
+        },
+        {
+          "ratio": "10%",
+          "inter_class_similarity": 0.37017473578453064,
+          "malicious_count": 1000,
+          "benign_count": 9000
+        },
+        {
+          "ratio": "15%",
+          "inter_class_similarity": 0.3680572509765625,
+          "malicious_count": 1500,
+          "benign_count": 8500
+        },
+        {
+          "ratio": "20%",
+          "inter_class_similarity": 0.3694789409637451,
+          "malicious_count": 2000,
+          "benign_count": 8000
+        }
+      ],
+      "avg_similarity": 0.3685295432806015,
+      "std_similarity": 0.0014435392842357209
+    },
+    "inner": {
+      "configs": [
+        {
+          "ratio": "5%",
+          "inter_class_similarity": 0.36332637071609497,
+          "malicious_count": 500,
+          "benign_count": 9500
+        },
+        {
+          "ratio": "10%",
+          "inter_class_similarity": 0.3666343688964844,
+          "malicious_count": 1000,
+          "benign_count": 9000
+        },
+        {
+          "ratio": "15%",
+          "inter_class_similarity": 0.3643672466278076,
+          "malicious_count": 1500,
+          "benign_count": 8500
+        },
+        {
+          "ratio": "20%",
+          "inter_class_similarity": 0.36616384983062744,
+          "malicious_count": 2000,
+          "benign_count": 8000
+        }
+      ],
+      "avg_similarity": 0.3651229590177536,
+      "std_similarity": 0.0013385294400782384
+    },
+    "outer": {
+      "configs": [
+        {
+          "ratio": "5%",
+          "inter_class_similarity": 0.3634952902793884,
+          "malicious_count": 500,
+          "benign_count": 9500
+        },
+        {
+          "ratio": "10%",
+          "inter_class_similarity": 0.3670654296875,
+          "malicious_count": 1000,
+          "benign_count": 9000
+        },
+        {
+          "ratio": "15%",
+          "inter_class_similarity": 0.3657035529613495,
+          "malicious_count": 1500,
+          "benign_count": 8500
+        },
+        {
+          "ratio": "20%",
+          "inter_class_similarity": 0.3677571415901184,
+          "malicious_count": 2000,
+          "benign_count": 8000
+        }
+      ],
+      "avg_similarity": 0.3660053536295891,
+      "std_similarity": 0.0016266548475769103
+    },
+    "edge": {
+      "configs": [
+        {
+          "ratio": "5%",
+          "inter_class_similarity": 0.36378908157348633,
+          "malicious_count": 500,
+          "benign_count": 9500
+        },
+        {
+          "ratio": "10%",
+          "inter_class_similarity": 0.3682849705219269,
+          "malicious_count": 1000,
+          "benign_count": 9000
+        },
+        {
+          "ratio": "15%",
+          "inter_class_similarity": 0.3679952621459961,
+          "malicious_count": 1500,
+          "benign_count": 8500
+        },
+        {
+          "ratio": "20%",
+          "inter_class_similarity": 0.3698044419288635,
+          "malicious_count": 2000,
+          "benign_count": 8000
+        }
+      ],
+      "avg_similarity": 0.3674684390425682,
+      "std_similarity": 0.002232646809795367
+    }
+  },
+  "ratio_comparison": {
+    "5pct": {
+      "configs": [
+        {
+          "group": "real_only",
+          "inter_class_similarity": 0.36931082606315613,
+          "malicious_count": 500
+        },
+        {
+          "group": "core",
+          "inter_class_similarity": 0.36640724539756775,
+          "malicious_count": 500
+        },
+        {
+          "group": "inner",
+          "inter_class_similarity": 0.36332637071609497,
+          "malicious_count": 500
+        },
+        {
+          "group": "outer",
+          "inter_class_similarity": 0.3634952902793884,
+          "malicious_count": 500
+        },
+        {
+          "group": "edge",
+          "inter_class_similarity": 0.36378908157348633,
+          "malicious_count": 500
+        }
+      ],
+      "avg_similarity": 0.3652657628059387,
+      "std_similarity": 0.002312657405219261
+    },
+    "10pct": {
+      "configs": [
+        {
+          "group": "real_only",
+          "inter_class_similarity": 0.3782650828361511,
+          "malicious_count": 1000
+        },
+        {
+          "group": "core",
+          "inter_class_similarity": 0.37017473578453064,
+          "malicious_count": 1000
+        },
+        {
+          "group": "inner",
+          "inter_class_similarity": 0.3666343688964844,
+          "malicious_count": 1000
+        },
+        {
+          "group": "outer",
+          "inter_class_similarity": 0.3670654296875,
+          "malicious_count": 1000
+        },
+        {
+          "group": "edge",
+          "inter_class_similarity": 0.3682849705219269,
+          "malicious_count": 1000
+        }
+      ],
+      "avg_similarity": 0.3700849175453186,
+      "std_similarity": 0.004270516916953699
+    },
+    "15pct": {
+      "configs": [
+        {
+          "group": "real_only",
+          "inter_class_similarity": 0.37503713369369507,
+          "malicious_count": 1500
+        },
+        {
+          "group": "core",
+          "inter_class_similarity": 0.3680572509765625,
+          "malicious_count": 1500
+        },
+        {
+          "group": "inner",
+          "inter_class_similarity": 0.3643672466278076,
+          "malicious_count": 1500
+        },
+        {
+          "group": "outer",
+          "inter_class_similarity": 0.3657035529613495,
+          "malicious_count": 1500
+        },
+        {
+          "group": "edge",
+          "inter_class_similarity": 0.3679952621459961,
+          "malicious_count": 1500
+        }
+      ],
+      "avg_similarity": 0.36823208928108214,
+      "std_similarity": 0.003680374699322122
+    },
+    "20pct": {
+      "configs": [
+        {
+          "group": "real_only",
+          "inter_class_similarity": 0.3723369836807251,
+          "malicious_count": 2000
+        },
+        {
+          "group": "core",
+          "inter_class_similarity": 0.3694789409637451,
+          "malicious_count": 2000
+        },
+        {
+          "group": "inner",
+          "inter_class_similarity": 0.36616384983062744,
+          "malicious_count": 2000
+        },
+        {
+          "group": "outer",
+          "inter_class_similarity": 0.3677571415901184,
+          "malicious_count": 2000
+        },
+        {
+          "group": "edge",
+          "inter_class_similarity": 0.3698044419288635,
+          "malicious_count": 2000
+        }
+      ],
+      "avg_similarity": 0.36910827159881593,
+      "std_similarity": 0.002075659050219328
+    }
+  },
+  "similarity_matrix": {},
+  "statistical_summary": {
+    "overall_mean_similarity": 0.36817276030778884,
+    "overall_std_similarity": 0.0036886616309842824,
+    "similarity_range": {
+      "min": 0.36332637071609497,
+      "max": 0.3782650828361511
+    },
+    "total_analyzed_configs": 20
+  }
+}
