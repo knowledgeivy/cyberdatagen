@@ -1,0 +1,46 @@
+{
+  "phase5_info": {
+    "date": "2025-07-24 21:57:23",
+    "total_experiments_planned": 40,
+    "total_experiments_completed": 40,
+    "models_used": [
+      "RandomForest",
+      "SVM"
+    ],
+    "data_configurations": 20,
+    "success_rate": 1.0
+  },
+  "performance_summary": {
+    "RandomForest": {
+      "avg_f1_score": 0.8313361761227614,
+      "std_f1_score": 0.08089053177277541,
+      "avg_roc_auc": 0.9975676321099192,
+      "avg_precision": 0.9999864901378006,
+      "avg_recall": 0.7188845625286305,
+      "avg_accuracy": 0.8431638129312548,
+      "avg_training_time": 2.5477875232696534
+    },
+    "SVM": {
+      "avg_f1_score": 0.9834680057874479,
+      "std_f1_score": 0.00964218417104827,
+      "avg_roc_auc": 0.9994146074898254,
+      "avg_precision": 0.9988081057079569,
+      "avg_recall": 0.9687814933577645,
+      "avg_accuracy": 0.9819320214669052,
+      "avg_training_time": 20.854423236846923
+    }
+  },
+  "best_configurations": [
+    "最佳整体性能: real_only_20pct + SVM (F1: 0.992)",
+    "最差整体性能: real_only_5pct + RandomForest (F1: 0.702)",
+    "性能范围: F1 Score从 0.702 到 0.992",
+    "平均性能: F1 Score平均值 0.907 ± 0.096",
+    "合成数据平均降低性能 0.0% (F1: 0.908 → 0.907)"
+  ],
+  "output_locations": {
+    "models": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\phase5_models",
+    "results": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\phase5_results",
+    "visualizations": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\phase5_visualizations",
+    "analysis": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch4_fresh\\phase5_analysis"
+  }
+}

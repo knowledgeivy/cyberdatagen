@@ -1,0 +1,118 @@
+{
+  "experiment_summary": {
+    "total_experiments": 40,
+    "data_groups": [
+      "real_only",
+      "core",
+      "inner",
+      "outer",
+      "edge"
+    ],
+    "malicious_ratios": [
+      "5%",
+      "10%",
+      "15%",
+      "20%"
+    ],
+    "models": [
+      "RandomForest",
+      "SVM"
+    ],
+    "evaluation_date": "2025-07-24 21:57:23"
+  },
+  "performance_analysis": {},
+  "model_comparison": {
+    "RandomForest": {
+      "avg_f1_score": 0.8313361761227614,
+      "std_f1_score": 0.08089053177277541,
+      "avg_roc_auc": 0.9975676321099192,
+      "avg_precision": 0.9999864901378006,
+      "avg_recall": 0.7188845625286305,
+      "avg_accuracy": 0.8431638129312548,
+      "avg_training_time": 2.5477875232696534
+    },
+    "SVM": {
+      "avg_f1_score": 0.9834680057874479,
+      "std_f1_score": 0.00964218417104827,
+      "avg_roc_auc": 0.9994146074898254,
+      "avg_precision": 0.9988081057079569,
+      "avg_recall": 0.9687814933577645,
+      "avg_accuracy": 0.9819320214669052,
+      "avg_training_time": 20.854423236846923
+    }
+  },
+  "data_group_analysis": {
+    "real_only": {
+      "avg_f1_score": 0.9077168468416592,
+      "std_f1_score": 0.10379729887435522,
+      "best_f1_config": "real_only_20pct",
+      "best_f1_score": 0.991931765790687,
+      "avg_roc_auc": 0.9986373992477341
+    },
+    "core": {
+      "avg_f1_score": 0.9068131341032513,
+      "std_f1_score": 0.1005916399129454,
+      "best_f1_config": "core_20pct",
+      "best_f1_score": 0.9898383371824481,
+      "avg_roc_auc": 0.9983844511517004
+    },
+    "inner": {
+      "avg_f1_score": 0.9074347866792933,
+      "std_f1_score": 0.1002076330395715,
+      "best_f1_config": "inner_20pct",
+      "best_f1_score": 0.9901904212348529,
+      "avg_roc_auc": 0.9985794600750943
+    },
+    "outer": {
+      "avg_f1_score": 0.9070061953311606,
+      "std_f1_score": 0.10033570434374867,
+      "best_f1_config": "outer_20pct",
+      "best_f1_score": 0.9903069466882067,
+      "avg_roc_auc": 0.9984013355963978
+    },
+    "edge": {
+      "avg_f1_score": 0.9080394918201591,
+      "std_f1_score": 0.10036500453029111,
+      "best_f1_config": "edge_20pct",
+      "best_f1_score": 0.9907749077490775,
+      "avg_roc_auc": 0.9984529529284355
+    }
+  },
+  "ratio_effect_analysis": {
+    "5%": {
+      "avg_f1_score": 0.8371525683651297,
+      "avg_precision": 0.9999022635791073,
+      "avg_recall": 0.7419147961520843,
+      "best_config": "real_only_5pct",
+      "best_f1_score": 0.9717447610077702
+    },
+    "10%": {
+      "avg_f1_score": 0.9054609333697213,
+      "avg_precision": 0.9995067816951566,
+      "avg_recall": 0.8377920293174531,
+      "best_config": "real_only_10pct",
+      "best_f1_score": 0.9881917110442232
+    },
+    "15%": {
+      "avg_f1_score": 0.9343065423511175,
+      "avg_precision": 0.9992067730382488,
+      "avg_recall": 0.8824782409528172,
+      "best_config": "real_only_15pct",
+      "best_f1_score": 0.9905333641191411
+    },
+    "20%": {
+      "avg_f1_score": 0.9526883197344501,
+      "avg_precision": 0.9989733733790024,
+      "avg_recall": 0.9131470453504352,
+      "best_config": "real_only_20pct",
+      "best_f1_score": 0.991931765790687
+    }
+  },
+  "key_findings": [
+    "最佳整体性能: real_only_20pct + SVM (F1: 0.992)",
+    "最差整体性能: real_only_5pct + RandomForest (F1: 0.702)",
+    "性能范围: F1 Score从 0.702 到 0.992",
+    "平均性能: F1 Score平均值 0.907 ± 0.096",
+    "合成数据平均降低性能 0.0% (F1: 0.908 → 0.907)"
+  ]
+}
