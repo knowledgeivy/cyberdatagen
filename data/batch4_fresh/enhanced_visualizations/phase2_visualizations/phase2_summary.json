@@ -1,0 +1,117 @@
+{
+  "phase2_info": {
+    "date": "2025-07-27",
+    "visualization_type": "Interactive 2D + Static Analysis",
+    "framework_base": "batch3_visualize_results.py",
+    "total_visualizations": 4
+  },
+  "data_summary": {
+    "total_samples": 11200,
+    "data_sources": {
+      "real_malicious": 5000,
+      "real_benign": 5000,
+      "core_synthetic": 300,
+      "inner_synthetic": 300,
+      "outer_synthetic": 300,
+      "edge_synthetic": 300
+    },
+    "prompt_types": {
+      "real": 10000,
+      "rewrite": 400,
+      "rewrite_weak": 400,
+      "rewrite_strong": 400
+    },
+    "density_groups": {
+      "benign": 5000,
+      "5%_dense_core": 1690,
+      "20%_sparse_edge": 1550,
+      "15%_lower_dense": 1550,
+      "10%_medium_dense": 1410
+    }
+  },
+  "distance_analysis": {
+    "real_malicious": {
+      "count": 5000,
+      "mean": 0.6043861041833497,
+      "std": 0.10203262971992509,
+      "min": 0.3620376774545952,
+      "max": 1.062159055526536
+    },
+    "real_benign": {
+      "count": 5000,
+      "mean": 0.8757038648111733,
+      "std": 0.09338724308149295,
+      "min": 0.4831911697945175,
+      "max": 1.122218574637558
+    },
+    "core_synthetic": {
+      "count": 300,
+      "mean": 0.5380885757737176,
+      "std": 0.08054496997054268,
+      "min": 0.371573710435656,
+      "max": 0.8090042163413761
+    },
+    "inner_synthetic": {
+      "count": 300,
+      "mean": 0.5507362430128622,
+      "std": 0.07245894788905054,
+      "min": 0.4130697478584049,
+      "max": 0.7922930484597068
+    },
+    "outer_synthetic": {
+      "count": 300,
+      "mean": 0.5962081466692263,
+      "std": 0.08860079612929887,
+      "min": 0.4050858874305157,
+      "max": 0.8904904549364665
+    },
+    "edge_synthetic": {
+      "count": 300,
+      "mean": 0.6599926394392395,
+      "std": 0.10111399502633207,
+      "min": 0.3793769063043851,
+      "max": 0.9712799081914256
+    }
+  },
+  "visualization_quality": {
+    "pca_variance_explained": {
+      "component_1": 0.115,
+      "component_2": 0.105,
+      "total": 0.22
+    },
+    "embedding_space_coverage": {
+      "pca_x_range": [
+        -0.5507109,
+        0.47295994
+      ],
+      "pca_y_range": [
+        -0.6274791,
+        0.48059994
+      ],
+      "tsne_x_range": [
+        -98.666466,
+        87.677826
+      ],
+      "tsne_y_range": [
+        -117.31087,
+        96.45981
+      ]
+    }
+  },
+  "output_files": {
+    "main_interactive": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase2_visualizations/batch4_interactive_2d.html",
+    "distance_analysis": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase2_visualizations/batch4_distance_analysis.html"
+  },
+  "interactive_features": {
+    "hover_information": true,
+    "layer_filtering": false,
+    "dynamic_color_coding": true,
+    "multi_plot_coordination": true
+  },
+  "next_phase_readiness": {
+    "unified_data_available": true,
+    "distance_calculated": true,
+    "embedding_reduced": true,
+    "metadata_complete": true
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "phase3_info": {
+    "date": "2025-07-27",
+    "visualization_type": "3D Interactive Multi-dimensional Exploration",
+    "total_visualizations": 4,
+    "coordinate_system": {
+      "x_axis": "t-SNE Component 1",
+      "y_axis": "t-SNE Component 2",
+      "z_axis": "Distance to Malicious Centroid"
+    }
+  },
+  "spatial_statistics": {
+    "coordinate_ranges": {
+      "tsne_x": [
+        -98.666466,
+        87.677826
+      ],
+      "tsne_y": [
+        -117.31087,
+        96.45981
+      ],
+      "distance_z": [
+        0.3620376774545952,
+        1.122218574637558
+      ]
+    },
+    "layer_separation": {
+      "real_malicious": {
+        "center": [
+          -24.483766023241998,
+          -20.9792809742086,
+          0.6043861041833497
+        ],
+        "std": [
+          39.6357585761422,
+          41.16197580190437,
+          0.10203262971992509
+        ],
+        "sample_count": 5000
+      },
+      "real_benign": {
+        "center": [
+          27.8744969468712,
+          25.9045057401608,
+          0.8757038648111733
+        ],
+        "std": [
+          24.097854502830543,
+          33.223714222820625,
+          0.09338724308149295
+        ],
+        "sample_count": 5000
+      },
+      "core_synthetic": {
+        "center": [
+          -9.683207788333332,
+          -32.211776725,
+          0.5380885757737176
+        ],
+        "std": [
+          41.050418454680134,
+          28.91842782088357,
+          0.08054496997054268
+        ],
+        "sample_count": 300
+      },
+      "inner_synthetic": {
+        "center": [
+          -37.03999783946667,
+          -16.924814626353335,
+          0.5507362430128622
+        ],
+        "std": [
+          30.68023567518647,
+          32.97934223535478,
+          0.07245894788905054
+        ],
+        "sample_count": 300
+      },
+      "outer_synthetic": {
+        "center": [
+          -19.368730665566666,
+          -20.427217112794334,
+          0.5962081466692263
+        ],
+        "std": [
+          45.380888953717296,
+          26.538713514816667,
+          0.08860079612929887
+        ],
+        "sample_count": 300
+      },
+      "edge_synthetic": {
+        "center": [
+          -28.786936634566665,
+          -2.1617310500753333,
+          0.6599926394392395
+        ],
+        "std": [
+          30.285151795544383,
+          24.430573120001917,
+          0.10111399502633207
+        ],
+        "sample_count": 300
+      }
+    },
+    "density_distribution": {
+      "benign": 5000,
+      "5%_dense_core": 1690,
+      "20%_sparse_edge": 1550,
+      "15%_lower_dense": 1550,
+      "10%_medium_dense": 1410
+    }
+  },
+  "interactive_capabilities": {
+    "hover_information": {
+      "sample_id": true,
+      "data_source": true,
+      "prompt_type": true,
+      "distance_value": true,
+      "text_preview": true
+    },
+    "dynamic_filtering": {
+      "layer_visibility_toggle": true,
+      "real_vs_synthetic_filter": true,
+      "core_edge_comparison": true,
+      "prompt_type_filter": true
+    },
+    "3d_navigation": {
+      "rotation": true,
+      "zoom": true,
+      "pan": true,
+      "camera_presets": false
+    },
+    "distance_controls": {
+      "range_slider": true,
+      "threshold_lines": false
+    }
+  },
+  "quality_assessment": {
+    "data_coverage": {
+      "total_samples_visualized": 11200,
+      "layers_represented": 6,
+      "prompt_types_covered": 4
+    },
+    "spatial_distribution": {
+      "clustering_visible": true,
+      "layer_separation_clear": true,
+      "distance_correlation_obvious": true
+    },
+    "interactive_responsiveness": {
+      "hover_speed": "fast",
+      "filter_speed": "fast",
+      "3d_rendering_quality": "high"
+    }
+  },
+  "scientific_discoveries": {
+    "layer_hierarchy_confirmed": {
+      "core_closest_to_centroid": true,
+      "edge_farthest_from_centroid": true,
+      "progressive_distance_increase": true
+    },
+    "prompt_effect_analysis": {
+      "prompt_types_show_variation": true,
+      "strong_rewrite_effects_visible": true,
+      "weak_rewrite_less_distant": true
+    },
+    "embedding_space_insights": {
+      "tsne_preserves_distance_structure": true,
+      "clear_malicious_benign_separation": true,
+      "synthetic_quality_varies_by_layer": true
+    }
+  },
+  "output_files": {
+    "main_3d": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase3_3d_visualizations/batch4_main_3d_interactive.html",
+    "multi_view_3d": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase3_3d_visualizations/batch4_multi_view_3d.html",
+    "interactive_dashboard": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase3_3d_visualizations/batch4_interactive_dashboard.html",
+    "distance_slider": "/Users/tianyu/Notebooks/cyberdata/data/batch4_fresh/enhanced_visualizations/phase3_3d_visualizations/batch4_distance_slider.html"
+  },
+  "usage_recommendations": {
+    "best_for_exploration": "batch4_interactive_dashboard.html",
+    "best_for_comparison": "batch4_multi_view_3d.html",
+    "best_for_presentation": "batch4_main_3d_interactive.html",
+    "best_for_distance_analysis": "batch4_distance_slider.html"
+  }
+}
