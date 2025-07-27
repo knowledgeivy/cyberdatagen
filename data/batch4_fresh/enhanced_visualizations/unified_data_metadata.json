@@ -1,0 +1,41 @@
+{
+  "total_samples": 11200,
+  "data_sources": {
+    "real_malicious": 5000,
+    "real_benign": 5000,
+    "core_synthetic": 300,
+    "inner_synthetic": 300,
+    "outer_synthetic": 300,
+    "edge_synthetic": 300
+  },
+  "prompt_types": {
+    "real": 10000,
+    "rewrite": 400,
+    "rewrite_weak": 400,
+    "rewrite_strong": 400
+  },
+  "distance_layers": {
+    "mixed": 5000,
+    "benign": 5000,
+    "core": 300,
+    "inner": 300,
+    "outer": 300,
+    "edge": 300
+  },
+  "density_groups": {
+    "benign": 5000,
+    "5%_dense_core": 1690,
+    "20%_sparse_edge": 1550,
+    "15%_lower_dense": 1550,
+    "10%_medium_dense": 1410
+  },
+  "distance_stats": {
+    "min": 0.36203767745459525,
+    "max": 1.1222185746375581,
+    "mean": 0.7235676362893865,
+    "std": 0.168147144112751
+  },
+  "embedding_model": "all-MiniLM-L6-v2",
+  "random_state": 2025,
+  "creation_date": "2025-07-27 13:07:46"
+}
