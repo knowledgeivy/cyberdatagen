@@ -30,6 +30,8 @@ import json
 import time
 
 # 可视化库
+import matplotlib
+matplotlib.use('Agg')  # 设置后端为Agg，避免显示问题
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
@@ -348,7 +350,7 @@ class Batch5Phase2EnhancedVisualization:
             ax4.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')  
             ax4.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
             ax4.set_title(f'K-means Clustering (k={cluster_results["best_k"]})')
-            ax4.legend()
+            ax4.legend(loc='upper right', framealpha=0.9)
             ax4.grid(True, alpha=0.3)
             
             plt.tight_layout()
@@ -358,14 +360,199 @@ class Batch5Phase2EnhancedVisualization:
             plt.close()
             self.logger.info(f"静态总览图已保存: {static_overview_file}")
             
-            # 2. 距离分布分析
+            # 2. 新增：分层对比分析
+            self.create_layer_comparison_plots(metadata_df, dim_results)
+            
+            # 3. 距离分布分析
             self.create_distance_distribution_plots(metadata_df, dim_results)
             
-            # 3. 聚类质量分析
+            # 4. 聚类质量分析
             self.create_clustering_quality_plots(cluster_results)
             
         except Exception as e:
             self.logger.error(f"创建静态可视化失败: {str(e)}")
+            raise
+    
+    def create_layer_comparison_plots(self, metadata_df: pd.DataFrame, 
+                                    dim_results: Dict[str, np.ndarray]) -> None:
+        """创建分层对比分析图 - Synthetic vs Real Malicious"""
+        try:
+            self.logger.info("创建分层对比分析图...")
+            
+            # 定义统一的形状映射 (matplotlib markers)
+            marker_mapping = {
+                'real_malicious_background': 'o',      # circle
+                'real_malicious_seeds': '*',           # star
+                'synthetic_rewrite': 'o',              # circle
+                'synthetic_rewrite_strong': 's',       # square
+                'synthetic_rewrite_weak': 'D',         # diamond
+                'core': 'o',                           # circle
+                'inner': 's',                          # square
+                'outer': 'D',                          # diamond
+                'edge': '^'                            # triangle
+            }
+            
+            # 准备数据
+            pca_2d = dim_results['pca_2d']
+            
+            # 创建大图 (2x2)
+            fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+            fig.suptitle('Synthetic Data Layer vs Real Malicious Comparison Analysis', 
+                        fontsize=16, fontweight='bold')
+            
+            # 获取real malicious数据 (seeds + background)
+            real_seeds_mask = metadata_df['data_source'] == 'real_malicious_seeds'
+            real_bg_mask = metadata_df['data_source'] == 'real_malicious_background'
+            
+            # 1. 各层与种子样本对比
+            ax1 = axes[0, 0]
+            
+            # 先画背景样本 (浅色)
+            if real_bg_mask.any():
+                ax1.scatter(pca_2d[real_bg_mask, 0], pca_2d[real_bg_mask, 1], 
+                           c=self.color_palette['real_malicious_background'], 
+                           alpha=0.2, s=8, label='Real Background',
+                           marker=marker_mapping['real_malicious_background'])
+            
+            # 再画种子样本
+            if real_seeds_mask.any():
+                ax1.scatter(pca_2d[real_seeds_mask, 0], pca_2d[real_seeds_mask, 1], 
+                           c=self.color_palette['real_malicious_seeds'], 
+                           alpha=0.9, s=50, label='Real Seeds', 
+                           marker=marker_mapping['real_malicious_seeds'], 
+                           edgecolors='black', linewidth=0.8)
+            
+            # 画各层合成数据
+            synthetic_sources = ['synthetic_rewrite', 'synthetic_rewrite_strong', 'synthetic_rewrite_weak']
+            synthetic_mask = metadata_df['data_source'].isin(synthetic_sources)
+            
+            if synthetic_mask.any():
+                synthetic_df = metadata_df[synthetic_mask]
+                pca_synthetic = pca_2d[synthetic_mask]
+                
+                for layer in ['core', 'inner', 'outer', 'edge']:
+                    layer_mask = synthetic_df['layer'] == layer
+                    if layer_mask.any():
+                        color = self.color_palette.get(layer, '#888888')
+                        marker = marker_mapping.get(layer, 'o')
+                        ax1.scatter(pca_synthetic[layer_mask, 0], pca_synthetic[layer_mask, 1], 
+                                   c=color, alpha=0.8, s=35, 
+                                   label=f'Synthetic {layer.title()}',
+                                   marker=marker, edgecolors='white', linewidth=0.5)
+            
+            ax1.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
+            ax1.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
+            ax1.set_title('Layer Distribution vs Real Malicious Data')
+            ax1.legend(loc='upper left', bbox_to_anchor=(0, 1), ncol=1, fontsize=8)
+            ax1.grid(True, alpha=0.3)
+            
+            # 2. Prompt策略对比
+            ax2 = axes[0, 1]
+            
+            # 种子样本 (参考点)
+            if real_seeds_mask.any():
+                ax2.scatter(pca_2d[real_seeds_mask, 0], pca_2d[real_seeds_mask, 1], 
+                           c=self.color_palette['real_malicious_seeds'], 
+                           alpha=0.9, s=50, label='Real Seeds', 
+                           marker=marker_mapping['real_malicious_seeds'], 
+                           edgecolors='black', linewidth=0.8)
+            
+            # 各种prompt策略
+            for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                variant_mask = metadata_df['data_source'] == f'synthetic_{variant}'
+                if variant_mask.any():
+                    color = self.color_palette[f'synthetic_{variant}']
+                    marker = marker_mapping[f'synthetic_{variant}']
+                    ax2.scatter(pca_2d[variant_mask, 0], pca_2d[variant_mask, 1], 
+                               c=color, alpha=0.8, s=35, 
+                               label=f'Synthetic {variant.replace("_", " ").title()}',
+                               marker=marker, edgecolors='white', linewidth=0.5)
+            
+            ax2.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
+            ax2.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
+            ax2.set_title('Prompt Strategy Comparison vs Real Data')
+            ax2.legend(loc='upper left', bbox_to_anchor=(0, 1), ncol=1, fontsize=8)
+            ax2.grid(True, alpha=0.3)
+            
+            # 3. 核心层详细对比
+            ax3 = axes[1, 0]
+            
+            # 种子样本
+            if real_seeds_mask.any():
+                ax3.scatter(pca_2d[real_seeds_mask, 0], pca_2d[real_seeds_mask, 1], 
+                           c=self.color_palette['real_malicious_seeds'], 
+                           alpha=0.9, s=60, label='Real Seeds', 
+                           marker=marker_mapping['real_malicious_seeds'], 
+                           edgecolors='black', linewidth=1.0)
+            
+            # 只显示core层的合成数据
+            if synthetic_mask.any():
+                synthetic_df = metadata_df[synthetic_mask]
+                pca_synthetic = pca_2d[synthetic_mask]
+                core_mask = synthetic_df['layer'] == 'core'
+                
+                if core_mask.any():
+                    core_df = synthetic_df[core_mask]
+                    pca_core = pca_synthetic[core_mask]
+                    
+                    for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                        variant_mask = core_df['prompt_variant'] == variant
+                        if variant_mask.any():
+                            color = self.color_palette[f'synthetic_{variant}']
+                            marker = marker_mapping[f'synthetic_{variant}']
+                            ax3.scatter(pca_core[variant_mask, 0], pca_core[variant_mask, 1], 
+                                       c=color, alpha=0.8, s=40, 
+                                       label=f'Core {variant.replace("_", " ").title()}',
+                                       marker=marker, edgecolors='white', linewidth=0.5)
+            
+            ax3.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
+            ax3.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
+            ax3.set_title('Core Layer Detailed Analysis')
+            ax3.legend(loc='upper left', bbox_to_anchor=(0, 1), ncol=1, fontsize=9)
+            ax3.grid(True, alpha=0.3)
+            
+            # 4. 数量统计对比
+            ax4 = axes[1, 1]
+            
+            # 统计各类别数量
+            category_counts = {}
+            category_counts['Real Seeds'] = real_seeds_mask.sum()
+            category_counts['Real Background'] = real_bg_mask.sum()
+            
+            for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                variant_mask = metadata_df['data_source'] == f'synthetic_{variant}'
+                category_counts[f'Synthetic\n{variant.replace("_", " ").title()}'] = variant_mask.sum()
+            
+            colors = [self.color_palette['real_malicious_seeds'], 
+                     self.color_palette['real_malicious_background'],
+                     self.color_palette['synthetic_rewrite'],
+                     self.color_palette['synthetic_rewrite_strong'], 
+                     self.color_palette['synthetic_rewrite_weak']]
+            
+            bars = ax4.bar(range(len(category_counts)), list(category_counts.values()), 
+                          color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+            
+            ax4.set_xticks(range(len(category_counts)))
+            ax4.set_xticklabels(list(category_counts.keys()), rotation=45, ha='right', fontsize=8)
+            ax4.set_ylabel('Sample Count')
+            ax4.set_title('Data Source Sample Distribution')
+            ax4.grid(True, alpha=0.3, axis='y')
+            
+            # 添加数值标签
+            for bar, count in zip(bars, category_counts.values()):
+                ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 50, 
+                        f'{count:,}', ha='center', va='bottom', fontsize=8, fontweight='bold')
+            
+            plt.tight_layout()
+            
+            # 保存图片
+            layer_comparison_file = self.static_dir / "layer_comparison_analysis.png"
+            plt.savefig(layer_comparison_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            self.logger.info(f"分层对比图已保存: {layer_comparison_file}")
+            
+        except Exception as e:
+            self.logger.error(f"创建分层对比图失败: {str(e)}")
             raise
     
     def create_distance_distribution_plots(self, metadata_df: pd.DataFrame, 
@@ -528,10 +715,13 @@ class Batch5Phase2EnhancedVisualization:
             # 1. 3D PCA交互图
             self.create_3d_pca_interactive(metadata_df, dim_results)
             
-            # 2. 数据源对比交互仪表板
+            # 2. 分层对比交互图
+            self.create_layer_comparison_interactive(metadata_df, dim_results)
+            
+            # 3. 数据源对比交互仪表板
             self.create_comparison_dashboard(metadata_df, dim_results, cluster_results)
             
-            # 3. t-SNE交互可视化
+            # 4. t-SNE交互可视化
             self.create_tsne_interactive(metadata_df, dim_results)
             
         except Exception as e:
@@ -586,6 +776,266 @@ class Batch5Phase2EnhancedVisualization:
             
         except Exception as e:
             self.logger.error(f"创建3D PCA交互图失败: {str(e)}")
+    
+    def create_layer_comparison_interactive(self, metadata_df: pd.DataFrame, dim_results: Dict[str, np.ndarray]) -> None:
+        """创建交互式分层对比图"""
+        try:
+            # 定义统一的形状映射
+            shape_mapping = {
+                'real_malicious_background': 'circle',
+                'real_malicious_seeds': 'star',
+                'synthetic_rewrite': 'circle',
+                'synthetic_rewrite_strong': 'square', 
+                'synthetic_rewrite_weak': 'diamond',
+                'core': 'circle',
+                'inner': 'square',
+                'outer': 'diamond',
+                'edge': 'triangle-up'
+            }
+            
+            # 创建Dash应用风格的交互图
+            fig = make_subplots(
+                rows=2, cols=2,
+                subplot_titles=(
+                    'Layer Distribution vs Real Malicious Data',
+                    'Prompt Strategy Comparison', 
+                    'Seeds vs Core Layer Synthetic',
+                    'Sample Count Distribution'
+                ),
+                specs=[[{"type": "scatter"}, {"type": "scatter"}],
+                       [{"type": "scatter"}, {"type": "scatter"}]]
+            )
+            
+            pca_2d = dim_results['pca_2d']
+            
+            # 准备数据掩码
+            real_bg_mask = metadata_df['data_source'] == 'real_malicious_background'
+            real_seeds_mask = metadata_df['data_source'] == 'real_malicious_seeds'
+            synthetic_sources = ['synthetic_rewrite', 'synthetic_rewrite_strong', 'synthetic_rewrite_weak']
+            synthetic_mask = metadata_df['data_source'].isin(synthetic_sources)
+            
+            # 1. 分层分布对比 (左上) - 显示layer分布
+            
+            # 背景数据 (透明显示)
+            if real_bg_mask.any():
+                fig.add_trace(
+                    go.Scatter(
+                        x=pca_2d[real_bg_mask, 0],
+                        y=pca_2d[real_bg_mask, 1],
+                        mode='markers',
+                        marker=dict(
+                            color=self.color_palette['real_malicious_background'],
+                            size=4,
+                            opacity=0.2,
+                            symbol=shape_mapping['real_malicious_background']
+                        ),
+                        name='Real Background',
+                        text=metadata_df.loc[real_bg_mask, 'unique_id'],
+                        hovertemplate="<b>Real Background</b><br>ID: %{text}<br>PC1: %{x:.3f}<br>PC2: %{y:.3f}<extra></extra>"
+                    ),
+                    row=1, col=1
+                )
+            
+            # 种子样本
+            if real_seeds_mask.any():
+                fig.add_trace(
+                    go.Scatter(
+                        x=pca_2d[real_seeds_mask, 0],
+                        y=pca_2d[real_seeds_mask, 1],
+                        mode='markers',
+                        marker=dict(
+                            color=self.color_palette['real_malicious_seeds'],
+                            size=8,
+                            opacity=0.9,
+                            symbol=shape_mapping['real_malicious_seeds'],
+                            line=dict(width=1, color='black')
+                        ),
+                        name='Real Seeds',
+                        text=metadata_df.loc[real_seeds_mask, 'unique_id'],
+                        hovertemplate="<b>Real Seeds</b><br>ID: %{text}<br>PC1: %{x:.3f}<br>PC2: %{y:.3f}<extra></extra>"
+                    ),
+                    row=1, col=1
+                )
+            
+            # 各层合成数据
+            if synthetic_mask.any():
+                synthetic_df = metadata_df[synthetic_mask].copy()
+                for layer in ['core', 'inner', 'outer', 'edge']:
+                    layer_mask = synthetic_df['layer'] == layer
+                    if layer_mask.any():
+                        layer_indices = synthetic_df[layer_mask].index
+                        fig.add_trace(
+                            go.Scatter(
+                                x=pca_2d[layer_indices, 0],
+                                y=pca_2d[layer_indices, 1],
+                                mode='markers',
+                                marker=dict(
+                                    color=self.color_palette.get(layer, '#888888'),
+                                    size=6,
+                                    opacity=0.8,
+                                    symbol=shape_mapping.get(layer, 'circle'),
+                                    line=dict(width=0.5, color='white')
+                                ),
+                                name=f'Synthetic {layer.title()}',
+                                text=synthetic_df.loc[layer_mask, 'unique_id'],
+                                hovertemplate=f"<b>Synthetic {layer.title()}</b><br>ID: %{{text}}<br>PC1: %{{x:.3f}}<br>PC2: %{{y:.3f}}<extra></extra>"
+                            ),
+                            row=1, col=1
+                        )
+            
+            # 2. Prompt策略对比 (右上) - 显示prompt变体
+            
+            # 种子样本 (参考点)
+            if real_seeds_mask.any():
+                fig.add_trace(
+                    go.Scatter(
+                        x=pca_2d[real_seeds_mask, 0],
+                        y=pca_2d[real_seeds_mask, 1],
+                        mode='markers',
+                        marker=dict(
+                            color=self.color_palette['real_malicious_seeds'],
+                            size=8,
+                            opacity=0.9,
+                            symbol=shape_mapping['real_malicious_seeds'],
+                            line=dict(width=1, color='black')
+                        ),
+                        name='Real Seeds',
+                        text=metadata_df.loc[real_seeds_mask, 'unique_id'],
+                        hovertemplate="<b>Real Seeds</b><br>ID: %{text}<br>PC1: %{x:.3f}<br>PC2: %{y:.3f}<extra></extra>"
+                    ),
+                    row=1, col=2
+                )
+            
+            # 各种prompt策略
+            for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                variant_mask = metadata_df['data_source'] == f'synthetic_{variant}'
+                if variant_mask.any():
+                    fig.add_trace(
+                        go.Scatter(
+                            x=pca_2d[variant_mask, 0],
+                            y=pca_2d[variant_mask, 1],
+                            mode='markers',
+                            marker=dict(
+                                color=self.color_palette[f'synthetic_{variant}'],
+                                size=6,
+                                opacity=0.8,
+                                symbol=shape_mapping[f'synthetic_{variant}'],
+                                line=dict(width=0.5, color='white')
+                            ),
+                            name=f'Synthetic {variant.replace("_", " ").title()}',
+                            text=metadata_df.loc[variant_mask, 'unique_id'],
+                            hovertemplate=f"<b>Synthetic {variant.replace('_', ' ').title()}</b><br>ID: %{{text}}<br>PC1: %{{x:.3f}}<br>PC2: %{{y:.3f}}<extra></extra>"
+                        ),
+                        row=1, col=2
+                    )
+            
+            # 3. 种子vs核心层详细对比 (左下) - 专注core层
+            
+            # 种子样本
+            if real_seeds_mask.any():
+                fig.add_trace(
+                    go.Scatter(
+                        x=pca_2d[real_seeds_mask, 0],
+                        y=pca_2d[real_seeds_mask, 1],
+                        mode='markers',
+                        marker=dict(
+                            color=self.color_palette['real_malicious_seeds'],
+                            size=10,
+                            opacity=0.9,
+                            symbol=shape_mapping['real_malicious_seeds'],
+                            line=dict(width=2, color='black')
+                        ),
+                        name='Real Seeds',
+                        text=metadata_df.loc[real_seeds_mask, 'unique_id'],
+                        hovertemplate="<b>Real Seeds</b><br>ID: %{text}<br>PC1: %{x:.3f}<br>PC2: %{y:.3f}<extra></extra>"
+                    ),
+                    row=2, col=1
+                )
+            
+            # 只显示core层的合成数据
+            if synthetic_mask.any():
+                core_mask = (metadata_df['data_source'].isin(synthetic_sources)) & (metadata_df['layer'] == 'core')
+                if core_mask.any():
+                    core_df = metadata_df[core_mask]
+                    for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                        variant_core_mask = core_df['prompt_variant'] == variant
+                        if variant_core_mask.any():
+                            variant_indices = core_df[variant_core_mask].index
+                            fig.add_trace(
+                                go.Scatter(
+                                    x=pca_2d[variant_indices, 0],
+                                    y=pca_2d[variant_indices, 1],
+                                    mode='markers',
+                                    marker=dict(
+                                        color=self.color_palette[f'synthetic_{variant}'],
+                                        size=7,
+                                        opacity=0.8,
+                                        symbol=shape_mapping[f'synthetic_{variant}'],
+                                        line=dict(width=0.5, color='white')
+                                    ),
+                                    name=f'Core {variant.replace("_", " ").title()}',
+                                    text=core_df.loc[variant_core_mask, 'unique_id'],
+                                    hovertemplate=f"<b>Core {variant.replace('_', ' ').title()}</b><br>ID: %{{text}}<br>PC1: %{{x:.3f}}<br>PC2: %{{y:.3f}}<extra></extra>"
+                                ),
+                                row=2, col=1
+                            )
+            
+            # 4. 数量统计 (右下) - 使用bar图
+            categories = ['Real Seeds', 'Real Background', 'Synthetic\nRewrite', 'Synthetic\nStrong', 'Synthetic\nWeak']
+            counts = [
+                real_seeds_mask.sum(),
+                real_bg_mask.sum(),
+                (metadata_df['data_source'] == 'synthetic_rewrite').sum(),
+                (metadata_df['data_source'] == 'synthetic_rewrite_strong').sum(),
+                (metadata_df['data_source'] == 'synthetic_rewrite_weak').sum()
+            ]
+            colors = [
+                self.color_palette['real_malicious_seeds'],
+                self.color_palette['real_malicious_background'],
+                self.color_palette['synthetic_rewrite'],
+                self.color_palette['synthetic_rewrite_strong'],
+                self.color_palette['synthetic_rewrite_weak']
+            ]
+            
+            fig.add_trace(
+                go.Bar(
+                    x=categories,
+                    y=counts,
+                    marker=dict(color=colors, opacity=0.8, line=dict(width=1, color='black')),
+                    name='Sample Counts',
+                    showlegend=False,
+                    text=[f'{count:,}' for count in counts],
+                    textposition='auto',
+                    textfont=dict(color='white', size=10, family='Arial Black')
+                ),
+                row=2, col=2
+            )
+            
+            # 更新布局
+            fig.update_layout(
+                title='Interactive Layer Comparison Analysis - Synthetic vs Real Malicious',
+                height=800,
+                showlegend=True,
+                legend=dict(x=1.02, y=1, xanchor='left', yanchor='top')
+            )
+            
+            # 更新各子图轴标签
+            fig.update_xaxes(title_text=f'PC1 ({dim_results["pca_2d_variance"][0]:.1%})', row=1, col=1)
+            fig.update_yaxes(title_text=f'PC2 ({dim_results["pca_2d_variance"][1]:.1%})', row=1, col=1)
+            fig.update_xaxes(title_text=f'PC1 ({dim_results["pca_2d_variance"][0]:.1%})', row=1, col=2)
+            fig.update_yaxes(title_text=f'PC2 ({dim_results["pca_2d_variance"][1]:.1%})', row=1, col=2)
+            fig.update_xaxes(title_text=f'PC1 ({dim_results["pca_2d_variance"][0]:.1%})', row=2, col=1)
+            fig.update_yaxes(title_text=f'PC2 ({dim_results["pca_2d_variance"][1]:.1%})', row=2, col=1)
+            fig.update_xaxes(title_text='Data Source', row=2, col=2)
+            fig.update_yaxes(title_text='Sample Count', row=2, col=2)
+            
+            # 保存
+            layer_interactive_file = self.interactive_dir / "batch5_layer_comparison_dashboard.html"
+            pyo.plot(fig, filename=str(layer_interactive_file), auto_open=False)
+            self.logger.info(f"交互式分层对比图已保存: {layer_interactive_file}")
+            
+        except Exception as e:
+            self.logger.error(f"创建交互式分层对比图失败: {str(e)}")
     
     def create_comparison_dashboard(self, metadata_df: pd.DataFrame, dim_results: Dict[str, np.ndarray],
                                   cluster_results: Dict[str, Any]) -> None:
