@@ -1,0 +1,544 @@
+version: "2.2"
+description: "Configuration for enhanced scale generation, parallel validation, and seed validation"
+author: "CyberData Team"
+last_updated: "2025-06-20"
+
+# Scale Generation Configuration
+scale_generation:
+  # Default generation parameters
+  defaults:
+    scale_count: 1100
+    malicious_ratio: 0.5
+    max_workers: 12
+    batch_size: 5
+    
+  # Performance settings
+  performance:
+    api_delay: 0.2  # seconds between API calls
+    retry_attempts: 3
+    retry_delay: 2
+    timeout: 300  # 5 minutes per batch
+    
+  # Quality control
+  quality_control:
+    duplicate_similarity_threshold: 0.85
+    context_integration_required: true
+    schema_validation_strict: true
+    
+  # Generation parameters by sample type
+  sample_types:
+    malicious:
+      temperature: 0.8
+      priority: 2
+      diversity_emphasis: high
+    benign:
+      temperature: 0.8
+      priority: 1
+      diversity_emphasis: medium
+
+# Scale Validation Configuration  
+scale_validation:
+  # Parallel processing configuration
+  parallel_processing:
+    max_workers: 12  # Number of parallel validation workers
+    batch_delay: 0.1  # Seconds between batches to avoid rate limiting
+    enable_parallel: true
+    worker_timeout: 300  # Timeout per worker in seconds
+    
+  # Validation strategy
+  validation_strategy:
+    validate_all_data: true  # Default to 100% validation
+    fallback_sample_rate: 0.15  # Fallback sampling rate if needed
+    min_samples: 50
+    max_samples: null  # No maximum for full validation
+    confidence_level: 0.95
+    intelligent_sampling: true  # Use stratified sampling when not validating all
+    
+  # Quality thresholds (higher than seed validation)
+  quality_thresholds:
+    technical_accuracy: 0.75
+    schema_consistency: 0.95
+    realism_assessment: 0.70
+    semantic_uniqueness: 0.65
+    domain_alignment: 0.75
+    overall_minimum: 0.75
+    
+  # Composite score weighting
+  score_weights:
+    technical_accuracy: 0.25
+    schema_consistency: 0.25
+    realism_assessment: 0.20
+    semantic_uniqueness: 0.15
+    domain_alignment: 0.15
+    
+  # Quality tiers
+  quality_tiers:
+    excellent: 0.9
+    good: 0.8
+    fair: 0.7
+    poor: 0.0
+    
+  # Production readiness criteria
+  production_readiness:
+    minimum_quality_rate: 0.75
+    minimum_schema_consistency: 0.95
+    minimum_technical_accuracy: 0.75
+    recommended_quality_rate: 0.80
+    
+  # Performance optimization for parallel validation
+  performance_optimization:
+    enable_progress_logging: true
+    log_every_n_samples: 100
+    enable_performance_metrics: true
+    track_validation_rate: true
+    optimize_memory_usage: true
+
+# Seed Validation Configuration (NEW)
+seed_validation:
+  # Parallel processing configuration
+  parallel_processing:
+    max_workers: 6  # Fewer workers for seed validation (smaller batches)
+    batch_delay: 0.15  # Slightly longer delay for seed validation
+    enable_parallel: true
+    worker_timeout: 300  # Timeout per worker in seconds
+    
+  # Quality thresholds (slightly lower than scale validation for seeds)
+  quality_thresholds:
+    technical_accuracy: 0.7
+    schema_consistency: 0.9
+    realism_assessment: 0.7
+    semantic_uniqueness: 0.6
+    domain_alignment: 0.7
+    overall_minimum: 0.75
+    
+  # Composite score weighting (same as scale validation)
+  score_weights:
+    technical_accuracy: 0.25
+    schema_consistency: 0.25
+    realism_assessment: 0.20
+    semantic_uniqueness: 0.15
+    domain_alignment: 0.15
+    
+  # Quality tiers
+  quality_tiers:
+    excellent: 0.9
+    good: 0.8
+    fair: 0.7
+    poor: 0.0
+    
+  # Performance optimization for parallel seed validation
+  performance_optimization:
+    enable_progress_logging: true
+    log_every_n_samples: 25  # More frequent logging for smaller seed batches
+    enable_performance_metrics: true
+    track_validation_rate: true
+    optimize_memory_usage: true
+    show_eta_estimates: true
+    show_quality_metrics: true
+    progress_bar_enabled: true
+    
+  # Adaptive selection configuration
+  adaptive_selection:
+    enable_diversity_selection: true
+    diversity_weight: 0.3
+    similarity_threshold: 0.7
+    max_examples_per_selection: null  # No limit
+    
+  # Error handling
+  error_handling:
+    max_retries: 3
+    retry_delay: 2
+    continue_on_failure: true
+    log_failed_examples: true
+
+# Context Integration Settings
+context_integration:
+  # Required context sources
+  required_sources:
+    - domain_discovery
+    - data_info_schema
+    
+  # Optional context sources  
+  optional_sources:
+    - contextual_problems
+    - attack_taxonomy
+    - technical_indicators
+    
+  # Context weighting for generation
+  generation_weights:
+    domain_discovery: 0.4
+    contextual_problems: 0.3
+    data_info_schema: 0.2
+    seed_examples: 0.1
+    
+  # Context validation
+  context_validation:
+    require_domain_discovery: true
+    require_schema_info: true
+    validate_context_completeness: true
+
+# Statistical Estimation Settings
+statistical_estimation:
+  # Sampling methodology (for fallback sampling mode)
+  sampling:
+    method: "stratified_random"
+    stratify_by: "sample_type"
+    ensure_representation: true
+    
+  # Confidence intervals
+  confidence_intervals:
+    quality_estimation: 0.95
+    distribution_estimation: 0.90
+    production_readiness: 0.95
+    
+  # Extrapolation methods (mainly for sampling mode)
+  extrapolation:
+    quality_projection_method: "conservative"
+    uncertainty_margin: 0.05
+    validation_requirements: strict
+
+# Adaptive Selection Configuration
+adaptive_selection:
+  # Selection strategy
+  strategy:
+    primary_criterion: "composite_score"
+    secondary_criterion: "diversity"
+    balance_sample_types: true
+    
+  # Quality-weighted selection
+  quality_weighting:
+    excellent_weight: 1.0
+    good_weight: 0.8
+    fair_weight: 0.6
+    poor_weight: 0.0
+    
+  # Diversity optimization
+  diversity_optimization:
+    similarity_threshold: 0.7
+    diversity_weight: 0.3
+    uniqueness_emphasis: medium
+    
+  # Prediction methodology
+  quality_prediction:
+    method: "type_based_averaging"
+    fallback_score: 0.5
+    confidence_threshold: 0.7
+
+# Output Configuration
+output:
+  # Directory structure
+  directories:
+    scaled_raw: "data/scaled-raw"
+    scaled_validation: "data/scaled_validation"
+    scaled_validated: "data/scaled-validated"
+    scaled_filtered: "data/scaled-filtered"
+    seed_validation: "data/seed_validation"  # NEW
+    seeds_validated: "data/seeds-validated"  # NEW
+    seeds_filtered: "data/seeds-filtered"    # NEW
+    
+  # File naming conventions
+  file_naming:
+    scale_data: "{nature}_scale.json"
+    validation_report: "{nature}_scale_validation_report.json"
+    quality_summary: "{nature}_scale_quality_summary.json"
+    seed_validation_report: "{nature}_seeds_validation_report.json"  # NEW
+    seed_quality_summary: "{nature}_quality_summary.json"           # NEW
+    
+  # Metadata inclusion
+  metadata:
+    include_generation_stats: true
+    include_validation_details: true
+    include_context_sources: true
+    include_quality_metrics: true
+    include_performance_metrics: true
+    track_processing_time: true
+    track_parallel_efficiency: true
+
+# Logging Configuration
+logging:
+  # Log levels by component
+  levels:
+    scale_generation: "INFO"
+    scale_validation: "INFO"
+    seed_validation: "INFO"      # NEW
+    parallel_validation: "INFO"
+    context_loading: "INFO"
+    quality_assessment: "DEBUG"
+    
+  # Progress reporting
+  progress_reporting:
+    batch_completion: true
+    validation_progress: true
+    parallel_worker_status: true
+    quality_metrics: true
+    performance_metrics: true
+    detailed_progress_logging: true
+    progress_bar_enabled: true
+    log_every_n_samples: 50
+    show_eta_estimates: true
+    show_quality_metrics: true
+    seed_validation_progress: true  # NEW
+    
+  # Performance metrics
+  performance_tracking:
+    generation_rate: true
+    validation_rate: true
+    parallel_efficiency: true
+    worker_utilization: true
+    context_loading_time: true
+    api_call_metrics: true
+    seed_validation_rate: true     # NEW
+
+# Model Configuration
+models:
+  # Primary model for generation and validation
+  primary:
+    name: "gpt-4.1-mini"
+    max_tokens: 16384
+    
+  # Temperature settings by task
+  temperatures:
+    scale_generation: 0.8
+    scale_validation: 0.0
+    seed_validation: 0.0    # NEW
+    context_analysis: 0.3
+    
+  # Rate limiting for parallel processing
+  rate_limiting:
+    calls_per_minute: 60
+    burst_allowance: 10
+    backoff_strategy: "exponential"
+    parallel_request_limit: 8
+    adaptive_rate_limiting: true
+    seed_validation_limit: 6  # Separate limit for seed validation
+
+# Error Handling
+error_handling:
+  # Retry configuration
+  retry_logic:
+    max_retries: 3
+    base_delay: 2
+    max_delay: 30
+    exponential_backoff: true
+    
+  # Failure thresholds
+  failure_thresholds:
+    max_batch_failures: 5
+    max_validation_failures: 10
+    max_worker_failures: 3
+    min_success_rate: 0.8
+    max_seed_failures: 5      # NEW
+    
+  # Recovery strategies
+  recovery:
+    continue_on_batch_failure: true
+    continue_on_worker_failure: true
+    reduce_batch_size_on_failure: true
+    reduce_workers_on_failure: true
+    skip_problematic_samples: true
+    continue_on_seed_failure: true  # NEW
+    
+  # Fallback behaviors
+  fallbacks:
+    use_simplified_prompts: true
+    reduce_context_complexity: true
+    switch_to_sequential_mode: true
+    lower_quality_thresholds: false
+
+# Validation Enhancement Settings
+validation_enhancements:
+  # Multi-dimensional assessment
+  multi_dimensional:
+    enabled: true
+    dimensions: 5
+    comprehensive_analysis: true
+    
+  # Parallel processing enhancements
+  parallel_enhancements:
+    enabled: true
+    intelligent_task_distribution: true
+    dynamic_worker_scaling: false
+    load_balancing: true
+    
+  # Intelligent sampling (for fallback mode)
+  intelligent_sampling:
+    enabled: true
+    stratification: true
+    representation_analysis: true
+    
+  # Quality prediction
+  quality_prediction:
+    enabled: true
+    prediction_confidence: 0.7
+    type_based_analysis: true
+    
+  # Production assessment
+  production_assessment:
+    enabled: true
+    deployment_readiness: true
+    operational_analysis: true
+    comprehensive_coverage_analysis: true
+
+# Performance Optimization
+performance_optimization:
+  # Parallel processing
+  parallelization:
+    enable_parallel_generation: true
+    enable_parallel_validation: true
+    enable_parallel_seed_validation: true  # NEW
+    thread_pool_optimization: true
+    worker_timeout_handling: true
+    
+  # Memory management
+  memory_management:
+    batch_processing: true
+    context_caching: true
+    result_streaming: true
+    parallel_memory_optimization: true
+    
+  # Caching strategies
+  caching:
+    context_caching: true
+    validation_caching: false
+    result_caching: true
+    
+  # API optimization for parallel processing
+  api_optimization:
+    request_pooling: true
+    connection_reuse: true
+    adaptive_timeouts: true
+    batch_request_optimization: true
+
+# Parallel Validation Specific Settings
+parallel_validation:
+  # Worker configuration
+  workers:
+    default_count: 8
+    min_workers: 1
+    max_workers: 16
+    auto_scaling: false
+    seed_validation_count: 6  # NEW: Specific worker count for seed validation
+    
+  # Task distribution
+  task_distribution:
+    strategy: "round_robin"
+    load_balancing: true
+    priority_scheduling: false
+    dynamic_rebalancing: false
+    
+  # Performance tuning
+  performance_tuning:
+    batch_delay: 0.1
+    seed_batch_delay: 0.15    # NEW: Separate delay for seed validation
+    worker_timeout: 300
+    queue_size: 1000
+    memory_limit_per_worker: "512MB"
+    
+  # Monitoring and metrics
+  monitoring:
+    track_worker_performance: true
+    measure_throughput: true
+    log_bottlenecks: true
+    export_metrics: true
+    track_seed_validation: true  # NEW
+    
+  # Quality assurance
+  quality_assurance:
+    cross_validation: false
+    result_verification: true
+    consistency_checks: true
+    error_aggregation: true
+
+# Validation Modes Configuration
+validation_modes:
+  # Full validation mode (default for both scale and seed)
+  full_validation:
+    enabled: true
+    name: "100% Full Validation"
+    coverage: 1.0
+    parallel_workers: 8
+    seed_parallel_workers: 6    # NEW
+    recommended_for: ["production", "research", "comprehensive_analysis"]
+    
+  # Statistical sampling mode (fallback)
+  sampling_validation:
+    enabled: true
+    name: "Statistical Sampling Validation"
+    coverage: 0.15
+    parallel_workers: 4
+    seed_parallel_workers: 3    # NEW
+    recommended_for: ["development", "quick_assessment", "cost_optimization"]
+    
+  # Fast mode (minimal validation)
+  fast_validation:
+    enabled: false
+    name: "Fast Validation"
+    coverage: 0.05
+    parallel_workers: 2
+    seed_parallel_workers: 1    # NEW
+    recommended_for: ["debugging", "development"]
+
+# Deployment Configuration
+deployment:
+  # Environment settings
+  environments:
+    development:
+      max_workers: 4
+      seed_max_workers: 3       # NEW
+      batch_delay: 0.2
+      validate_all: false
+      sample_rate: 0.1
+    
+    testing:
+      max_workers: 6
+      seed_max_workers: 4       # NEW
+      batch_delay: 0.15
+      validate_all: true
+      sample_rate: 0.15
+      
+    production:
+      max_workers: 8
+      seed_max_workers: 6       # NEW
+      batch_delay: 0.1
+      validate_all: true
+      sample_rate: 0.15
+      
+  # Resource limits
+  resource_limits:
+    max_memory_usage: "4GB"
+    max_api_calls_per_hour: 3600
+    max_concurrent_validations: 2
+    max_concurrent_seed_validations: 1  # NEW
+    
+  # Monitoring and alerting
+  monitoring:
+    enable_performance_alerts: true
+    performance_threshold: 10  # samples per minute minimum
+    seed_performance_threshold: 15  # seeds per minute minimum (NEW)
+    quality_threshold: 0.75
+    alert_on_failures: true
+
+# Advanced Features
+advanced_features:
+  # Experimental features
+  experimental:
+    adaptive_worker_scaling: false
+    predictive_quality_assessment: false
+    cross_dataset_validation: false
+    real_time_quality_monitoring: false
+    seed_quality_prediction: false     # NEW
+    
+  # Research features
+  research:
+    detailed_timing_analysis: true
+    quality_correlation_analysis: true
+    parallel_efficiency_studies: true
+    comparative_validation_modes: true
+    seed_validation_studies: true      # NEW
+    
+  # Integration features
+  integration:
+    webhook_notifications: false
+    external_quality_apis: false
+    cloud_validation_services: false
+    distributed_validation: false

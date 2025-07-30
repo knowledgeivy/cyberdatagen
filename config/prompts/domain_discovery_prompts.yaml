@@ -1,0 +1,325 @@
+version: "2.0"
+description: "Prompts for three-step real-world data analysis pipeline"
+author: "CyberData Team"
+last_updated: "2025-06-19"
+
+prompts:
+  # ================== STEP 1: DOMAIN DISCOVERY ==================
+  domain_analysis:
+    system:
+      template: |
+        You are an elite cybersecurity domain expert and data scientist specializing in extracting actionable intelligence from real-world cybersecurity datasets.
+
+        Your mission is to perform comprehensive DOMAIN DISCOVERY analysis by examining actual malicious and benign samples from a real-world cybersecurity dataset. You will extract:
+
+        1. **Domain Characteristics**: Core cybersecurity domain properties and data nature
+        2. **Attack Patterns**: Specific attack signatures, indicators, and technical markers from malicious samples
+        3. **Normal Baselines**: Typical benign behavior patterns and operational characteristics
+        4. **Domain Terminology**: Technical vocabulary and cybersecurity-specific concepts
+        5. **Threat Landscape**: Current threat environment and emerging patterns
+
+        **CRITICAL ANALYSIS REQUIREMENTS:**
+        - Analyze ACTUAL data samples, not theoretical knowledge
+        - Extract specific technical indicators and signatures
+        - Identify measurable patterns and thresholds
+        - Focus on actionable intelligence for detection systems
+        - Maintain high technical accuracy and specificity
+
+        This domain discovery will be used to inform contextual problem enrichment and high-quality synthetic data generation.
+
+    user:
+      template: |
+        Perform comprehensive domain discovery analysis on this real-world cybersecurity dataset:
+
+        **Dataset Analysis Context:**
+        {analysis_context_json}
+
+        **DOMAIN DISCOVERY REQUIREMENTS:**
+
+        Analyze the provided real samples and extract intelligence in this exact JSON structure:
+
+        {{
+          "domain_characteristics": {{
+            "primary_domain": "specific cybersecurity domain (e.g., network_security, email_security, endpoint_security)",
+            "data_nature": "type of data being analyzed (e.g., network_traffic, email_content, system_logs)",
+            "attack_types": ["list of specific attack types found in malicious samples"],
+            "detection_complexity": "assessment of how difficult these attacks are to detect",
+            "data_characteristics": ["specific technical characteristics of this dataset"]
+          }},
+          "attack_patterns": {{
+            "common_indicators": [
+              "specific technical indicator 1 found in malicious samples",
+              "specific technical indicator 2 found in malicious samples",
+              "specific technical indicator 3 found in malicious samples"
+            ],
+            "attack_signatures": [
+              "signature pattern 1: detailed description with technical specifics",
+              "signature pattern 2: detailed description with technical specifics",
+              "signature pattern 3: detailed description with technical specifics"
+            ],
+            "technical_markers": [
+              "measurable marker 1: specific values/thresholds observed",
+              "measurable marker 2: specific values/thresholds observed",
+              "measurable marker 3: specific values/thresholds observed"
+            ],
+            "attack_vectors": ["primary attack vectors identified in malicious samples"],
+            "exploit_techniques": ["specific exploitation techniques observed"]
+          }},
+          "normal_baselines": {{
+            "typical_behaviors": [
+              "normal behavior pattern 1 from benign samples",
+              "normal behavior pattern 2 from benign samples",
+              "normal behavior pattern 3 from benign samples"
+            ],
+            "baseline_metrics": [
+              "metric 1: typical ranges/values for benign samples",
+              "metric 2: typical ranges/values for benign samples",
+              "metric 3: typical ranges/values for benign samples"
+            ],
+            "operational_patterns": [
+              "operational pattern 1 indicating legitimate activity",
+              "operational pattern 2 indicating legitimate activity",
+              "operational pattern 3 indicating legitimate activity"
+            ],
+            "normal_thresholds": ["threshold values that distinguish normal from suspicious activity"]
+          }},
+          "domain_terminology": {{
+            "technical_terms": ["domain-specific technical terminology found in data"],
+            "attack_vectors": ["specific attack vector terminology"],
+            "defensive_measures": ["relevant defensive/mitigation terminology"],
+            "industry_context": ["industry-specific context and terminology"]
+          }},
+          "threat_landscape": {{
+            "current_threats": ["threats specifically represented in this dataset"],
+            "emerging_patterns": ["patterns that suggest emerging or evolving threats"],
+            "risk_factors": ["key risk factors identified from data analysis"],
+            "threat_sophistication": "assessment of threat sophistication level"
+          }},
+          "actionable_intelligence": {{
+            "detection_rules": ["potential detection rules based on analysis"],
+            "monitoring_recommendations": ["specific monitoring recommendations"],
+            "threshold_suggestions": ["suggested thresholds for alerting/detection"],
+            "pattern_matching": ["pattern matching strategies for this domain"]
+          }}
+        }}
+
+        **ANALYSIS INSTRUCTIONS:**
+        1. Examine the malicious samples carefully for attack patterns, signatures, and technical indicators
+        2. Analyze benign samples to establish normal behavior baselines and operational patterns
+        3. Extract domain-specific terminology and technical vocabulary
+        4. Identify measurable thresholds and detection criteria
+        5. Provide actionable intelligence for detection systems
+        6. Focus on specific, technical, and measurable insights rather than generic cybersecurity knowledge
+
+        Return ONLY valid JSON with comprehensive domain discovery intelligence.
+      
+      variables:
+        - analysis_context_json
+
+  # ================== STEP 2: CONTEXTUAL PROBLEM ENRICHMENT ==================
+  contextual_enrichment:
+    system:
+      template: |
+        You are a cybersecurity threat intelligence analyst specializing in translating real-world domain insights into enriched problem definitions for synthetic data generation.
+
+        Your task is to perform CONTEXTUAL PROBLEM ENRICHMENT by combining domain discovery intelligence with dataset characteristics to create comprehensive, real-world-grounded problem definitions.
+
+        You will create enriched problem definitions that include:
+        1. **Real-World Context**: Grounded in actual data patterns and domain insights
+        2. **Attack Vector Details**: Specific attack methods derived from domain analysis
+        3. **Technical Implementation**: How attacks manifest in real systems
+        4. **Threat Landscape Positioning**: Where this fits in the current threat environment
+        5. **Detection Strategies**: Informed by actual patterns and baselines
+
+        **ENRICHMENT PRINCIPLES:**
+        - Bridge domain discovery insights with practical problem definitions
+        - Maintain technical accuracy and real-world applicability
+        - Create contextual examples that reflect actual attack patterns
+        - Ensure problem definitions support high-quality synthetic data generation
+        - Include specific mitigation and detection strategies
+
+    user:
+      template: |
+        Create enriched problem definitions using domain discovery intelligence:
+
+        **Enrichment Context:**
+        {enrichment_context_json}
+
+        **CONTEXTUAL ENRICHMENT REQUIREMENTS:**
+
+        Generate enriched problem definitions in this exact JSON structure:
+
+        {{
+          "enriched_problems": [
+            {{
+              "area": "high-level threat category based on domain analysis",
+              "nature": "specific threat type derived from attack patterns",
+              "description": "comprehensive description incorporating domain insights and real-world context",
+              "attack_vectors": ["specific attack vectors from domain discovery"],
+              "real_world_context": {{
+                "domain_insights": "key insights from domain discovery analysis",
+                "attack_sophistication": "sophistication level of attacks in this domain",
+                "technical_implementation": "how attacks technically manifest based on real patterns",
+                "threat_landscape": "positioning within current threat environment",
+                "victim_impact": "typical impact on victims based on attack patterns"
+              }},
+              "technical_characteristics": {{
+                "attack_signatures": ["signatures from domain discovery"],
+                "indicators_of_compromise": ["IoCs from real data analysis"],
+                "detection_criteria": ["detection criteria based on baselines"],
+                "normal_vs_malicious": ["key differentiators identified"],
+                "measurable_thresholds": ["specific thresholds for detection"]
+              }},
+              "contextual_examples": {{
+                "attack_scenarios": [
+                  "realistic attack scenario 1 based on real patterns",
+                  "realistic attack scenario 2 based on real patterns",
+                  "realistic attack scenario 3 based on real patterns"
+                ],
+                "legitimate_scenarios": [
+                  "realistic legitimate scenario 1 based on normal baselines",
+                  "realistic legitimate scenario 2 based on normal baselines",
+                  "realistic legitimate scenario 3 based on normal baselines"
+                ]
+              }},
+              "risk_reduction": [
+                "mitigation strategy 1 based on domain analysis",
+                "mitigation strategy 2 based on domain analysis",
+                "mitigation strategy 3 based on domain analysis",
+                "detection strategy based on identified patterns",
+                "monitoring recommendation based on baseline analysis"
+              ],
+              "synthetic_generation_guidance": {{
+                "key_features_to_vary": ["features that should vary in synthetic generation"],
+                "pattern_preservation": ["patterns that must be preserved"],
+                "realism_requirements": ["requirements for maintaining realism"],
+                "diversity_dimensions": ["dimensions along which to create diversity"]
+              }}
+            }}
+          ],
+          "attack_taxonomy": {{
+            "primary_attacks": ["main attack types from domain discovery"],
+            "attack_patterns": ["detailed attack patterns identified"],
+            "attack_sophistication_levels": ["different sophistication levels observed"],
+            "mitigation_strategies": ["comprehensive mitigation approaches"],
+            "detection_approaches": ["detection methodologies based on analysis"]
+          }},
+          "threat_intelligence": {{
+            "current_threat_landscape": "assessment of current threats in this domain",
+            "emerging_trends": ["emerging trends identified from data"],
+            "risk_assessment": "overall risk assessment for this domain",
+            "intelligence_gaps": ["areas where more intelligence is needed"]
+          }},
+          "synthetic_data_requirements": {{
+            "realism_criteria": ["criteria for realistic synthetic data"],
+            "pattern_fidelity": ["patterns that must be maintained"],
+            "diversity_requirements": ["diversity requirements for training data"],
+            "quality_metrics": ["metrics for assessing synthetic data quality"]
+          }}
+        }}
+
+        **ENRICHMENT INSTRUCTIONS:**
+        1. Use domain discovery insights to ground problem definitions in real-world patterns
+        2. Incorporate specific attack signatures and normal baselines from analysis
+        3. Create contextual examples that reflect actual data characteristics
+        4. Ensure technical accuracy and practical applicability
+        5. Provide guidance for high-quality synthetic data generation
+        6. Bridge technical analysis with actionable threat intelligence
+
+        Return ONLY valid JSON with comprehensive contextual enrichment.
+      
+      variables:
+        - enrichment_context_json
+
+  # ================== STEP 3: SCHEMA-AWARE SEED GENERATION ==================
+  schema_aware_generation:
+    system:
+      template: |
+        You are an expert cybersecurity synthetic data generator specializing in creating high-quality seed examples that maintain perfect schema consistency while incorporating comprehensive real-world domain knowledge.
+
+        Your task is to perform SCHEMA-AWARE SEED GENERATION using the complete context from:
+        1. **Domain Discovery**: Real-world attack patterns, normal baselines, and technical indicators
+        2. **Contextual Problems**: Enriched problem definitions with threat intelligence
+        3. **Schema Requirements**: Exact data structure and format requirements
+
+        **GENERATION REQUIREMENTS:**
+        - Maintain EXACT schema consistency with real data structure
+        - Incorporate domain discovery insights for technical accuracy
+        - Use contextual problem enrichment for realistic scenarios
+        - Generate diverse, high-quality examples for both malicious and benign classes
+        - Ensure examples can serve as high-quality seeds for large-scale generation
+
+        **QUALITY STANDARDS:**
+        - Technical accuracy based on real attack patterns
+        - Schema fidelity for ML pipeline compatibility
+        - Realistic diversity for robust training
+        - Domain authenticity from real-world insights
+
+    user:
+      template: |
+        Generate high-quality schema-aware seed examples using comprehensive real-world context:
+
+        **Generation Context:**
+        {generation_context_json}
+
+        **GENERATION REQUIREMENTS:**
+
+        Create {batch_size} diverse, high-quality seed examples (Batch {batch_number}/{total_batches}) that:
+
+        1. **Schema Consistency**: Use EXACT same column names and data types as reference samples
+        2. **Domain Accuracy**: Incorporate attack patterns and normal baselines from domain discovery
+        3. **Contextual Realism**: Reflect enriched problem context and threat intelligence
+        4. **Class Balance**: Include both malicious and benign examples with proper labeling
+        5. **Technical Authenticity**: Use real-world technical indicators and signatures
+
+        Generate examples in this exact JSON structure:
+
+        {{
+          "examples": [
+            {{
+              // {batch_size} examples with EXACT schema as reference samples
+              // Incorporate domain discovery patterns for technical accuracy
+              // Use contextual enrichment for realistic scenarios
+              // Include proper labeling based on label encoding
+              // Maintain high diversity within technical constraints
+            }}
+          ],
+          "batch_metadata": {{
+            "batch_number": {batch_number},
+            "total_batches": {total_batches},
+            "examples_in_batch": {batch_size},
+            "schema_preserved": true,
+            "domain_discovery_incorporated": true,
+            "contextual_enrichment_used": true,
+            "generation_approach": "comprehensive_real_world_grounded"
+          }}
+        }}
+
+        **GENERATION INSTRUCTIONS:**
+        1. Use the reference samples as exact schema templates
+        2. Incorporate attack patterns from domain discovery for malicious examples
+        3. Use normal baselines from domain discovery for benign examples
+        4. Apply contextual problem insights for realistic scenarios
+        5. Ensure proper label encoding according to schema requirements
+        6. Create diverse examples that cover different aspects of the threat landscape
+        7. Maintain technical accuracy and real-world applicability
+
+        **SCHEMA COMPLIANCE:**
+        - Column names must match reference samples exactly
+        - Data types must be consistent with schema template
+        - Label encoding must follow specified format
+        - All required fields must be present
+
+        **DOMAIN INTEGRATION:**
+        - Malicious examples should reflect identified attack patterns
+        - Benign examples should reflect established normal baselines
+        - Technical indicators should be appropriately represented
+        - Attack vectors should be technically accurate
+
+        Return ONLY valid JSON with high-quality schema-aware seed examples.
+      
+      variables:
+        - generation_context_json
+        - batch_size
+        - batch_number
+        - total_batches

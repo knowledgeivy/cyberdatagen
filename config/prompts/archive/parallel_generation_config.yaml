@@ -1,0 +1,216 @@
+version: "1.0"
+description: "Configuration for parallel synthetic data generation"
+author: "CyberData Team"
+last_updated: "2025-06-05"
+
+# Core parallel generation settings
+parallel_generation:
+  # Thread-based generation settings
+  thread_based:
+    max_workers: 4
+    batch_size: 3
+    default_timeout: 300  # seconds
+    retry_attempts: 3
+    retry_delay: 2  # seconds between retries
+  
+  # Async generation settings
+  async_based:
+    max_concurrent: 15
+    batch_size: 3
+    requests_per_minute: 50
+    connection_timeout: 30
+    max_retry_attempts: 3
+    backoff_factor: 2
+  
+  # Rate limiting and API management
+  api_limits:
+    openai_tier_free:
+      max_workers: 2
+      requests_per_minute: 20
+      max_concurrent: 5
+    openai_tier_plus:
+      max_workers: 4
+      requests_per_minute: 50
+      max_concurrent: 10
+    openai_tier_enterprise:
+      max_workers: 10
+      requests_per_minute: 100
+      max_concurrent: 20
+  
+  # Default configuration (can be overridden by problem-specific settings)
+  defaults:
+    method: "thread_based"  # or "async_based"
+    api_tier: "openai_tier_plus"
+    temperature:
+      malicious_generation: 0.7
+      benign_generation: 0.7
+      validation: 0.0
+
+# Duplicate detection configuration
+duplicate_detection:
+  enabled: true
+  check_fields: 
+    - "scenario"
+    - "technical_data"
+    - "indicators"
+  
+  # Advanced duplicate detection options
+  structural_similarity:
+    enabled: true
+    similarity_threshold: 0.85
+    normalize_ips: true
+    normalize_domains: true
+    normalize_hashes: true
+    normalize_numbers: true
+  
+  # Content normalization rules
+  normalization:
+    lowercase: true
+    remove_extra_whitespace: true
+    remove_timestamps: false  # Keep timestamps for uniqueness
+    remove_specific_values: true  # Replace IPs, domains with placeholders
+
+# Problem-specific configurations
+problem_specific:
+  # Social Engineering problems
+  spear_phishing:
+    batch_size: 2  # Smaller batches for higher quality
+    max_workers: 6
+    malicious_ratio: 0.6
+    priority: "high"
+    temperature: 0.8  # Higher creativity for diverse phishing scenarios
+    
+  credential_harvesting:
+    batch_size: 3
+    max_workers: 4
+    malicious_ratio: 0.7
+    priority: "high"
+    temperature: 0.7
+    
+  business_email_compromise:
+    batch_size: 2
+    max_workers: 4
+    malicious_ratio: 0.5
+    priority: "critical"
+    temperature: 0.9  # Very high creativity for sophisticated BEC
+  
+  # Cloud Security problems
+  misconfigured_storage_bucket:
+    batch_size: 4
+    max_workers: 6
+    malicious_ratio: 0.3
+    priority: "medium"
+    temperature: 0.6
+    
+  third_party_software_compromise:
+    batch_size: 3
+    max_workers: 4
+    malicious_ratio: 0.2
+    priority: "high"
+    temperature: 0.7
+
+# Quality control settings
+quality_control:
+  validation:
+    enabled: true
+    sample_rate: 0.1  # Validate 10% of generated samples
+    min_score_threshold: 0.7
+    max_duplicate_rate: 0.05  # Fail if >5% duplicates
+  
+  retry_logic:
+    enabled: true
+    max_failed_batches: 3
+    min_success_rate: 0.8  # 80% of batches must succeed
+    exponential_backoff: true
+    max_backoff_delay: 60  # seconds
+  
+  monitoring:
+    log_progress_interval: 10  # Log progress every N tasks
+    save_intermediate_results: true
+    track_generation_metrics: true
+
+# Performance optimization
+performance:
+  memory_management:
+    clear_cache_interval: 100  # Clear caches every N samples
+    max_samples_in_memory: 1000
+    use_streaming_writes: true
+    
+  batch_optimization:
+    adaptive_batch_size: true
+    min_batch_size: 1
+    max_batch_size: 10
+    adjust_based_on_performance: true
+    
+  load_balancing:
+    distribute_by_complexity: true
+    prioritize_malicious_first: true
+    balance_sample_types: true
+
+# Logging and monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  detailed_progress: true
+  log_duplicate_details: false
+  log_api_calls: false  # Set to true for debugging
+  save_generation_metrics: true
+  
+  metrics_to_track:
+    - "generation_time"
+    - "samples_per_minute"
+    - "duplicate_rate"
+    - "api_call_success_rate"
+    - "batch_failure_rate"
+    - "memory_usage"
+
+# Output configuration
+output:
+  save_format: "json"
+  include_metadata: true
+  include_generation_stats: true
+  include_duplicate_stats: true
+  compress_large_files: false
+  
+  metadata_fields:
+    - "generation_method"
+    - "worker_count"
+    - "batch_size"
+    - "duplicate_rate"
+    - "generation_time"
+    - "api_calls_made"
+    - "success_rate"
+
+# Fallback configurations
+fallbacks:
+  # If parallel generation fails, fall back to linear
+  enable_linear_fallback: true
+  linear_fallback_threshold: 0.5  # If success rate < 50%
+  
+  # If API limits are hit
+  rate_limit_fallback:
+    reduce_workers_by: 0.5
+    increase_delays_by: 2.0
+    max_fallback_attempts: 3
+
+# Environment-specific overrides
+environments:
+  development:
+    max_workers: 2
+    batch_size: 2
+    max_concurrent: 5
+    save_intermediate_results: true
+    detailed_logging: true
+    
+  production:
+    max_workers: 8
+    batch_size: 5
+    max_concurrent: 20
+    save_intermediate_results: false
+    detailed_logging: false
+    
+  testing:
+    max_workers: 1
+    batch_size: 1
+    max_concurrent: 2
+    enable_validation: true
+    detailed_logging: true

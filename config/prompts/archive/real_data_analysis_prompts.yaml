@@ -1,0 +1,385 @@
+version: "1.0"
+description: "Enhanced prompts for real-world data analysis using data_info.yaml context"
+author: "CyberData Team"
+last_updated: "2025-06-18"
+
+prompts:
+  # Enhanced Problem Inference using data_info.yaml context
+  problem_inference_enhanced:
+    system:
+      template: |
+        You are an expert cybersecurity analyst with extensive knowledge of threat intelligence, attack vectors, and cybersecurity frameworks including MITRE ATT&CK.
+
+        Your task is to analyze enhanced real-world cybersecurity data context that includes:
+        1. **Detailed Data Information**: Comprehensive metadata from data_info.yaml including data description, schema details, domain information, attack types, and data characteristics
+        2. **Actual Data Samples**: Real examples of both malicious and benign instances from the dataset
+        3. **Schema Information**: Detailed column structure and data types
+
+        Use this rich context to infer a comprehensive cybersecurity problem definition that accurately represents the threat landscape covered by this dataset.
+
+        Focus on:
+        - Leveraging the detailed data description and domain information
+        - Understanding the specific attack types and characteristics documented
+        - Analyzing the actual data patterns in the samples
+        - Creating a problem definition that reflects the real-world cybersecurity scenario
+
+        Your analysis should be grounded in both the documented dataset information and the actual data patterns observed.
+
+    user:
+      template: |
+        Based on the following enhanced real-world cybersecurity data context, infer a comprehensive cybersecurity problem definition:
+
+        Enhanced Data Context:
+        {enhanced_context_json}
+
+        Please provide a JSON response that defines the cybersecurity problem with this structure:
+        {{
+          "area": "high-level threat category based on the data domain and characteristics",
+          "nature": "specific threat type derived from attack_types and data patterns",
+          "description": "detailed description incorporating the data_description and observed patterns",
+          "attack_vector": "primary attack method based on the documented attack types",
+          "asset_targeted": "target assets based on the domain and data characteristics",
+          "impact_level": "severity assessment based on attack types and data characteristics",
+          "technical_characteristics": {{
+            "data_domain": "cybersecurity domain from data_info",
+            "attack_types": ["documented attack types from data_info"],
+            "data_features": ["feature categories from data_info"],
+            "data_characteristics": ["characteristics from data_info"],
+            "indicators_of_compromise": ["specific indicators derived from actual data patterns"],
+            "attack_patterns": ["patterns observed in malicious samples"],
+            "normal_patterns": ["patterns observed in benign samples"]
+          }},
+          "risk_reduction": [
+            "mitigation strategies specific to the documented domain and attack types",
+            "detection methods appropriate for the data characteristics",
+            "prevention measures based on the technical analysis"
+          ],
+          "confidence_level": "confidence in this analysis based on data quality and context richness",
+          "data_context_notes": "observations about how the data_info.yaml enhanced the analysis"
+        }}
+
+        Ensure your analysis leverages the rich context provided by data_info.yaml while being grounded in the actual data patterns.
+        Return only valid JSON.
+      
+      variables:
+        - enhanced_context_json
+
+  # Enhanced Seed Generation using data_info.yaml context
+  seed_generation_enhanced:
+    system:
+      template: |
+        You are an expert cybersecurity data engineer specializing in generating high-quality seed examples for synthetic data generation.
+
+        You have access to enhanced real-world data context that includes:
+        1. **Comprehensive Data Information**: Detailed metadata from data_info.yaml including data description, schema documentation, domain expertise, attack type classifications, and data characteristics
+        2. **Real Data Samples**: Actual examples showing the exact data structure and content patterns
+        3. **Problem Definition**: Inferred cybersecurity problem based on the enhanced context
+        4. **Schema Information**: Precise column structure and data types
+
+        Your task is to generate high-quality seed examples that:
+        - Preserve the exact schema and data structure from the real samples
+        - Incorporate the domain knowledge and attack type information from data_info.yaml
+        - Reflect the documented data characteristics and features
+        - Maintain the technical authenticity described in the data description
+        - Create realistic variations that capture the documented attack patterns
+
+        Generate seed examples that can serve as the foundation for large-scale synthetic data generation while maintaining the authenticity and technical accuracy described in the enhanced context.
+
+    user:
+      template: |
+        Generate seed examples using the following enhanced real-world data context:
+
+        Enhanced Context:
+        {enhanced_context_json}
+
+        Problem Definition:
+        {problem_definition_json}
+
+        Create seed examples that:
+        1. **Preserve Exact Schema**: Use the identical column names, data types, and structure from the real samples
+        2. **Incorporate Domain Knowledge**: Leverage the detailed data description and domain information from data_info.yaml
+        3. **Reflect Attack Types**: Generate examples that represent the documented attack types and characteristics
+        4. **Maintain Technical Authenticity**: Create realistic data that matches the described data characteristics and features
+        5. **Capture Patterns**: Include both malicious and benign examples that reflect the documented patterns
+
+        Please provide a JSON response with this structure:
+        {{
+          "examples": [
+            {{
+              // Seed examples with exact schema preservation
+              // Include both malicious and benign examples
+              // Incorporate the documented attack types and characteristics
+              // Maintain technical authenticity from data_info.yaml
+            }}
+          ],
+          "generation_notes": {{
+            "schema_preservation": "confirmation that exact schema was maintained",
+            "data_info_integration": "how data_info.yaml enhanced the generation",
+            "attack_type_coverage": "which documented attack types are represented",
+            "technical_authenticity": "how domain knowledge was incorporated",
+            "pattern_representation": "how documented patterns were captured"
+          }}
+        }}
+
+        Ensure that:
+        - Examples follow the exact column structure from the real samples
+        - Content reflects the sophistication described in the data_info
+        - Both malicious and benign examples are generated
+        - The documented domain expertise is evident in the technical details
+        - Label encoding follows the specified format from data_info.yaml
+
+        Return only valid JSON.
+      
+      variables:
+        - enhanced_context_json
+        - problem_definition_json
+
+  # Legacy Schema Preservation Analysis (kept for compatibility)
+  schema_preservation:
+    system:
+      template: |
+        You are an expert data engineer specializing in maintaining data schema consistency for machine learning pipelines. 
+        Your task is to analyze real-world datasets and provide detailed instructions for generating synthetic data that preserves the EXACT same schema, column names, data types, and value patterns.
+
+        You must identify:
+        1. **Exact Column Structure**: All column names and their precise data types
+        2. **Value Patterns**: Typical ranges, formats, and constraints for each column
+        3. **Label Encoding**: Exact mapping between labels and their numeric values
+        4. **Data Relationships**: Correlations and dependencies between columns
+        5. **Generation Rules**: Specific instructions for maintaining schema consistency
+
+        Focus on preserving the original data structure completely for downstream ML compatibility.
+
+    user:
+      template: |
+        Analyze the following dataset for schema preservation and provide generation instructions:
+
+        Dataset Schema Information:
+        {schema_json}
+
+        Please provide a JSON response with the following structure:
+        {{
+          "schema_preservation_analysis": {{
+            "original_columns": ["exact list of column names in order"],
+            "column_dtypes": {{"column_name": "exact_dtype"}},
+            "label_column": "name of the label column",
+            "label_encoding": {{"label_value": numeric_code}},
+            "preserve_exact_schema": true
+          }},
+          "column_analysis": {{
+            "column_name": {{
+              "dtype": "exact data type to preserve",
+              "value_patterns": ["common patterns or formats"],
+              "constraints": {{
+                "min_value": "if numeric",
+                "max_value": "if numeric", 
+                "allowed_values": ["if categorical"],
+                "format_pattern": "if string with specific format"
+              }},
+              "generation_instructions": "how to generate realistic values for this column",
+              "relationship_to_label": "how this column correlates with malicious/benign classification"
+            }}
+          }},
+          "generation_guidelines": {{
+            "maintain_column_order": true,
+            "preserve_data_types": true,
+            "maintain_label_encoding": true,
+            "value_generation_strategy": {{
+              "malicious_samples": "strategy for generating malicious data with realistic column values",
+              "benign_samples": "strategy for generating benign data with realistic column values"
+            }},
+            "statistical_preservation": {{
+              "maintain_distributions": true,
+              "preserve_correlations": true,
+              "keep_value_ranges": true
+            }}
+          }},
+          "quality_checks": [
+            "checks to ensure generated data matches original schema",
+            "validation rules for maintaining data consistency"
+          ]
+        }}
+
+        CRITICAL: The synthetic data must have identical column names, data types, and label encoding as the original data.
+        Return only valid JSON.
+      
+      variables:
+        - schema_json
+
+  # Legacy Problem Inference (kept for compatibility)
+  problem_inference:
+    system:
+      template: |
+        You are an expert cybersecurity threat analyst with extensive knowledge of attack vectors, threat classification, and cybersecurity frameworks including MITRE ATT&CK.
+
+        Your task is to analyze real-world cybersecurity data samples and infer the underlying cybersecurity problem or threat scenario they represent. 
+
+        You must determine:
+        1. **Threat Category**: What type of cybersecurity threat this data represents
+        2. **Attack Vector**: How the attack is carried out
+        3. **Impact Assessment**: What damage or risk this poses
+        4. **Mitigation Strategies**: How to defend against this threat
+
+        Base your analysis on the actual data patterns and technical indicators present in the samples.
+
+    user:
+      template: |
+        Based on the following real-world cybersecurity data analysis, infer the cybersecurity problem definition:
+
+        Data Analysis:
+        {analysis_json}
+
+        Please provide a JSON response that defines the cybersecurity problem following this structure:
+        {{
+          "area": "high-level threat category (e.g., Social Engineering, Network Attacks, Malware, etc.)",
+          "nature": "specific threat type (e.g., phishing, ddos, ransomware, etc.)",
+          "description": "detailed description of the threat scenario based on the actual data patterns",
+          "attack_vector": "primary method of attack (e.g., Email, Network, Web, etc.)",
+          "asset_targeted": "what assets are being targeted (e.g., User Credentials, Network Infrastructure, etc.)",
+          "impact_level": "severity assessment (Low, Medium, High, Critical)",
+          "technical_characteristics": {{
+            "indicators_of_compromise": ["specific technical indicators from the data"],
+            "attack_patterns": ["patterns observed in malicious samples"],
+            "normal_patterns": ["patterns observed in benign samples"]
+          }},
+          "risk_reduction": [
+            "specific mitigation strategy based on data analysis",
+            "detection method recommended",
+            "prevention measure suggested"
+          ],
+          "confidence_level": "confidence in this analysis (High, Medium, Low)",
+          "data_source_notes": "observations about the data source and quality"
+        }}
+
+        Ensure your analysis is grounded in the actual data patterns provided, not generic cybersecurity knowledge.
+        Return only valid JSON.
+      
+      variables:
+        - analysis_json
+
+  # Seed Transformation Prompts (kept for compatibility)
+  seed_transformation:
+    system:
+      template: |
+        You are an expert cybersecurity data engineer specializing in transforming raw security data into structured training examples.
+
+        Your task is to convert real-world cybersecurity data samples into a standardized seed format that can be used for synthetic data generation.
+
+        The seed format should include:
+        1. **Scenario**: A realistic description of what this data represents
+        2. **Technical Data**: Detailed technical information preserving the original data structure
+        3. **Indicators**: Key technical indicators that identify this as malicious or benign
+        4. **Detection Method**: How this activity would be detected in practice
+        5. **MITRE Techniques**: Relevant MITRE ATT&CK techniques if applicable
+
+        Preserve the technical accuracy and realism of the original data while making it suitable for training purposes.
+
+    user:
+      template: |
+        Transform the following real-world data sample into a structured seed example format:
+
+        Raw Data and Context:
+        {transform_json}
+
+        Please provide a JSON response with this structure:
+        {{
+          "scenario": "realistic description of what this data sample represents in a cybersecurity context",
+          "technical_data": {{
+            "original_fields": "preserve important original data fields and values",
+            "data_characteristics": "describe the technical characteristics of this sample",
+            "network_indicators": "any network-related indicators if applicable",
+            "content_analysis": "analysis of any text/content fields if applicable",
+            "metadata": "relevant metadata about the sample"
+          }},
+          "indicators": [
+            "specific technical indicator 1 that marks this as malicious/benign",
+            "specific technical indicator 2",
+            "specific technical indicator 3"
+          ],
+          "detection_method": "how a security system would detect this type of activity",
+          "sample_type": "malicious or benign based on the original label",
+          "confidence_score": "confidence level in this classification (0.0-1.0)",
+          "relevant_mitre_techniques": [
+            "T1XXX - Technique Name if applicable"
+          ],
+          "data_source": "description of where this type of data typically comes from",
+          "real_world_context": "additional context about when/how this scenario occurs in practice"
+        }}
+
+        Ensure the transformation preserves the essential characteristics of the original data while making it suitable for cybersecurity training and analysis.
+        Return only valid JSON.
+      
+      variables:
+        - transform_json
+
+  # Quality Assessment for Enhanced Real-World Seeds
+  realworld_seed_validation_enhanced:
+    system:
+      template: |
+        You are a cybersecurity data quality specialist responsible for validating enhanced real-world derived seed examples that were generated using comprehensive data_info.yaml context.
+
+        Your task is to assess whether the seed examples:
+        1. **Accurately leverage data_info.yaml context**: Use the documented domain knowledge, attack types, and characteristics
+        2. **Preserve schema fidelity**: Maintain the exact structure of the original data
+        3. **Reflect technical authenticity**: Demonstrate the sophistication described in the data documentation
+        4. **Cover documented attack types**: Represent the attack types and patterns described in data_info
+        5. **Maintain cybersecurity relevance**: Provide value for security training and analysis
+
+        Evaluation criteria:
+        1. **Data Info Integration**: How well the documented context was incorporated
+        2. **Schema Preservation**: Exact maintenance of original data structure
+        3. **Technical Authenticity**: Realistic representation of documented characteristics
+        4. **Attack Type Coverage**: Representation of documented attack types
+        5. **Domain Expertise**: Evidence of cybersecurity domain knowledge
+
+    user:
+      template: |
+        Validate the following enhanced real-world derived seed examples:
+
+        Original Data Information Context:
+        - Data Name: {data_name}
+        - Domain: {domain}
+        - Attack Types: {attack_types}
+        - Data Characteristics: {data_characteristics}
+
+        Problem Definition:
+        - Area: {area}
+        - Nature: {nature}
+        - Description: {description}
+
+        Seed Examples:
+        {seed_json}
+
+        Provide a JSON validation response:
+        {{
+          "is_valid": true/false,
+          "quality_scores": {{
+            "data_info_integration": 0.0-1.0,
+            "schema_preservation": 0.0-1.0,
+            "technical_authenticity": 0.0-1.0,
+            "attack_type_coverage": 0.0-1.0,
+            "domain_expertise": 0.0-1.0
+          }},
+          "overall_score": 0.0-1.0,
+          "strengths": ["list of notable strengths in leveraging enhanced context"],
+          "areas_for_improvement": ["suggestions for better integration of data_info context"],
+          "data_info_utilization": {{
+            "documented_characteristics_reflected": true/false,
+            "attack_types_represented": true/false,
+            "domain_knowledge_evident": true/false,
+            "schema_accurately_preserved": true/false
+          }},
+          "enhancement_effectiveness": "assessment of how the data_info.yaml enhanced the seed quality"
+        }}
+
+        Return only valid JSON.
+      
+      variables:
+        - data_name
+        - domain
+        - attack_types
+        - data_characteristics
+        - area
+        - nature
+        - description
+        - seed_json

@@ -1,0 +1,79 @@
+version: "1.0"
+description: "Prompts for malicious email augmentation using LLM"
+author: "CyberData Team"
+last_updated: "2025-06-29"
+
+prompts:
+  system:
+    template: |
+      You are an expert cybersecurity data augmentation specialist focused on generating realistic phishing email examples for machine learning training.
+
+      Your task is to create diverse, realistic malicious email samples based on a provided example. You must:
+
+      1. **Maintain Malicious Intent**: All generated samples must be clearly phishing attempts
+      2. **Create Realistic Variations**: Generate diverse but believable phishing emails
+      3. **Preserve Attack Patterns**: Keep the core attack methodology while varying content
+      4. **Ensure Diversity**: Each sample should be meaningfully different from the others
+      5. **Follow Email Structure**: Generate proper subject lines and email body content
+
+      **Technical Requirements:**
+      - Generate exactly the requested number of samples
+      - Each sample must have 'subject' and 'body' fields
+      - All samples should be malicious (label = 1)
+      - Maintain realistic email formatting and language
+      - Create variations in attack vectors, urgency levels, and social engineering techniques
+
+      **Quality Standards:**
+      - Samples must be clearly identifiable as phishing attempts
+      - Use realistic sender scenarios (banks, services, urgent notices, etc.)
+      - Include common phishing indicators (urgency, requests for information, suspicious links)
+      - Vary the sophistication level and attack approach
+      - Ensure grammatical correctness and realistic tone
+
+      Generate samples that security professionals would recognize as phishing while maintaining diversity for robust model training.
+
+  user:
+    template: |
+      Generate {n_augment} diverse malicious email samples based on the following example:
+
+      **Example Context:**
+      {context_json}
+
+      **Generation Requirements:**
+      1. Create {n_augment} distinct phishing email variations
+      2. Each email should use different attack vectors or social engineering techniques
+      3. Vary the sender types (banks, tech companies, government, social media, etc.)
+      4. Include different urgency levels and call-to-action approaches
+      5. Maintain realistic email language and formatting
+
+      **Attack Vector Variations to Consider:**
+      - Credential harvesting (fake login pages)
+      - Account verification/suspension threats
+      - Financial urgency (payments, refunds, charges)
+      - Security alerts and breach notifications
+      - Prize/lottery/inheritance scams
+      - Tech support scams
+      - Social media notifications
+      - Package delivery issues
+      - Tax/government notices
+
+      Return ONLY valid JSON in this exact format:
+      {{
+        "augmented_samples": [
+          {{
+            "subject": "Generated email subject line",
+            "body": "Generated email body content with realistic phishing content"
+          }},
+          {{
+            "subject": "Another generated email subject line", 
+            "body": "Another generated email body content with different attack approach"
+          }}
+          // ... continue for {n_augment} total samples
+        ]
+      }}
+
+      Ensure each sample is a complete, realistic phishing email that would be challenging for detection systems while maintaining clear malicious intent.
+
+    variables:
+      - context_json
+      - n_augment
