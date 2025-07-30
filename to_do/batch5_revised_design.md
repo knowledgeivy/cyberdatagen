@@ -1,6 +1,23 @@
 # 批次5实验设计方案 - 纯合成数据有效性验证
 *基于批次4问题修正的科学实验重设计*
 
+## 🚀 实验状态更新 (2025-07-30)
+
+### ✅ 已完成阶段
+- **Phase 1: 统一Embedding构建** - 已完成 ✓
+- **Phase 2: 增强可视化分析** - 已完成 ✓
+- **🔧 数据源分类修复** - 已完成 ✓
+
+### 🛠️ 关键修复：数据源分类问题
+**问题发现**：原始设计中`real_malicious_sample`(17,463样本)与`synthetic_*`(400样本)数量不匹配，无法进行公平的1:1对比。
+
+**解决方案**：
+- `real_malicious_background` (15,000样本) - 真实恶意背景数据
+- `real_malicious_seeds` (400样本) - LLM生成时使用的实际种子样本 
+- `synthetic_*` (400样本每个变体) - 对应种子样本的合成数据
+
+**科学意义**：确保了种子样本与合成数据的1:1对应关系，使对比分析更加科学准确。
+
 ## 🎯 实验背景与动机
 
 ### 批次4发现的关键问题
@@ -79,52 +96,70 @@ src/cyberdata/scripts/
 输出: 确认可用的52万真实恶意样本 + 1200个分层合成样本
 ```
 
-### Phase 1: 统一Embedding空间构建 🆕
+### Phase 1: 统一Embedding空间构建 ✅ 已完成
 ```
 目标: 为所有数据建立统一的embedding表示空间
 
 输入数据:
-- 真实恶意样本 (52万，用于采样)
+- 真实恶意背景样本 (15,000样本，用于对比分析)
+- 真实恶意种子样本 (400样本，LLM生成时的实际种子)
 - 1200个分层合成样本 (core/inner/outer/edge × 300)
-- 固定测试集 (26万样本)
-- 真实良性样本 (52万，用于构建训练集)
+- 固定测试集 (7,826样本)
+- 真实良性样本 (13,837样本)
 
 操作:
-1. 对所有数据生成384维embedding向量
-2. 保持ID追踪体系完整性
-3. 计算分层距离和质心信息
-4. 为后续可视化准备数据结构
+1. ✅ 对所有数据生成384维embedding向量
+2. ✅ 保持ID追踪体系完整性
+3. ✅ 计算分层距离和质心信息
+4. ✅ 修复数据源分类问题，确保1:1对应关系
 
-输出:
+输出: (已生成)
 - data/batch5/unified_embeddings/
-  ├── all_embeddings.npy           # 统一embedding矩阵
-  ├── embedding_metadata.csv      # ID和标签对应关系
+  ├── all_embeddings.npy           # 统一embedding矩阵 (38,263样本)
+  ├── embedding_metadata.csv.gz   # ID和标签对应关系 (压缩格式)
   ├── layer_centroids.json        # 各层质心信息
   └── distance_statistics.json    # 距离分布统计
+
+完成时间: 2025-07-30
+样本分布:
+- real_malicious_background: 15,000
+- real_malicious_seeds: 400
+- synthetic_rewrite: 400
+- synthetic_rewrite_strong: 400  
+- synthetic_rewrite_weak: 400
+- real_benign: 13,837
+- test_set: 7,826
 ```
 
-### Phase 2: 增强可视化分析 🆕
+### Phase 2: 增强可视化分析 ✅ 已完成
 ```
 目标: 全面可视化不同数据源在embedding空间的分布
 
 分析维度:
-1. 数据源对比: Real vs Synthetic (按层)
-2. Prompt策略对比: rewrite vs rewrite_strong vs rewrite_weak  
-3. 分层效果对比: core vs inner vs outer vs edge
-4. 聚类特征分析: 自动识别cluster数量和边界
+1. ✅ 数据源对比: 背景数据 vs 种子样本 vs 合成数据
+2. ✅ Prompt策略对比: rewrite vs rewrite_strong vs rewrite_weak  
+3. ✅ 分层效果对比: core vs inner vs outer vs edge
+4. ✅ 聚类特征分析: K-means(k=10) 和 DBSCAN(26簇)
 
-可视化类型:
-1. 2D静态图: PCA/t-SNE降维可视化
-2. 3D交互图: 支持旋转和缩放的立体展示
-3. 聚类分析图: DBSCAN/K-means聚类结果
-4. 距离分布图: 各层到质心的距离分布对比
+可视化类型: (已生成)
+1. ✅ 2D静态图: PCA/t-SNE降维可视化 + 聚类中心标注
+2. ✅ 3D交互图: 支持旋转和缩放的立体展示
+3. ✅ 聚类分析图: 肘部法则 + 轮廓系数分析
+4. ✅ 距离分布图: 各层到质心的距离分布对比
 
-输出:
+输出: (已生成)
 - data/batch5/visualizations/
-  ├── static_plots/              # 静态图表
-  ├── interactive_plots/         # 交互式图表
-  ├── cluster_analysis/          # 聚类分析结果
-  └── distribution_analysis/     # 分布统计图表
+  ├── static_plots/              # embedding_overview_analysis.png
+  ├── interactive_plots/         # 3D PCA + t-SNE交互图
+  ├── cluster_analysis/          # clustering_quality_analysis.png  
+  └── distribution_analysis/     # layer_distance_analysis.png
+
+完成时间: 2025-07-30
+关键发现:
+- PCA-2D解释方差: 13.6%
+- 最佳聚类数: 10 (轮廓系数: 0.109)
+- DBSCAN识别25个有效簇，噪声点占81.7%
+- 种子样本与合成数据呈现明显的分层分布特征
 ```
 
 ### Phase 3: 纯净数据集重构 🆕
@@ -220,23 +255,23 @@ src/cyberdata/scripts/
 
 ## 📋 分步实施计划
 
-### 第一阶段: 基础设施准备 (预计1-2天)
+### 第一阶段: 基础设施准备 ✅ 已完成
 1. **环境验证**
-   - [ ] 确认批次4数据完整性
-   - [ ] 验证代码依赖和路径配置
-   - [ ] 建立批次5项目结构
+   - [x] 确认批次4数据完整性
+   - [x] 验证代码依赖和路径配置
+   - [x] 建立批次5项目结构
 
 2. **代码框架搭建**
-   - [ ] 复制并修改批次4相关脚本
-   - [ ] 创建`batch5_phase1_unified_embedding.py`
-   - [ ] 创建`batch5_phase2_enhanced_visualization.py`
-   - [ ] 创建`batch5_phase3_pure_dataset_construction.py`
-   - [ ] 创建`batch5_phase5_independent_evaluation.py`
+   - [x] 复制并修改批次4相关脚本
+   - [x] 创建`batch5_phase1_unified_embedding.py`
+   - [x] 创建`batch5_phase2_enhanced_visualization.py`
+   - [x] 创建`batch5_phase3_pure_dataset_construction.py`
+   - [x] 创建`batch5_phase4_independent_evaluation.py`
 
-### 第二阶段: 核心实验实施 (预计2-3天)
-1. **Phase 1执行**: 统一embedding空间构建
-2. **Phase 2执行**: 增强可视化分析  
-3. **Phase 3执行**: 纯净数据集重构
+### 第二阶段: 核心实验实施 ✅ 部分完成
+1. **Phase 1执行**: 统一embedding空间构建 ✅
+2. **Phase 2执行**: 增强可视化分析 ✅  
+3. **Phase 3执行**: 纯净数据集重构 ⏳ 待执行
 
 ### 第三阶段: 模型训练评估 (预计1-2天)
 1. **Phase 4执行**: 32个实验点完整训练
@@ -247,6 +282,60 @@ src/cyberdata/scripts/
 1. **科学发现总结**: 验证/拒绝实验假设
 2. **方法论评估**: 纯合成数据方法的优劣
 3. **实践指导**: 为后续研究提供建议
+
+---
+
+## 🛠️ 关键修复记录 (2025-07-30)
+
+### 数据源分类问题修复
+
+#### 问题背景
+原始设计存在数据源分类不合理的问题：
+- `real_malicious_sample`: 17,463个随机样本
+- `synthetic_*`: 每种变体400个样本  
+- **问题**: 合成数据应该与其种子样本1:1对应，而不是与随机样本对比
+
+#### 修复方案
+**1. 重新设计数据源分类**
+```python
+# 修复前 (不合理)
+real_malicious_sample = train_malicious.sample(n=50000)  # 随机样本
+
+# 修复后 (科学合理)
+# 1. 背景数据 - 用于整体对比
+real_malicious_background = train_malicious.sample(n=15000)
+
+# 2. 种子样本 - LLM生成时实际使用的样本
+seed_ids = extract_seed_ids_from_synthetic_data()
+real_malicious_seeds = stratified_samples[seed_mask]  # 400个实际种子
+```
+
+**2. 确保1:1对应关系**
+- 从synthetic数据的`original_id`字段提取种子ID
+- 从stratified_layers中找到对应的实际种子样本
+- 验证数量匹配: 400个种子 → 1200个合成样本 (3个变体)
+
+**3. 更新可视化颜色方案**
+```python
+color_palette = {
+    'real_malicious_background': '#FFB6C1',  # 浅粉 - 背景数据
+    'real_malicious_seeds': '#FF1493',       # 深粉 - 种子样本
+    'synthetic_rewrite': '#4ECDC4',          # 青色 - 基础重写
+    'synthetic_rewrite_strong': '#C44569',   # 深红 - 强化重写  
+    'synthetic_rewrite_weak': '#F8B500',     # 橙色 - 弱化重写
+}
+```
+
+#### 修复验证
+- ✅ 种子样本数量: 400个 (与合成数据1:1对应)
+- ✅ 合成数据数量: 每个变体400个
+- ✅ ID追踪完整性: 所有种子样本都能在stratified_layers中找到
+- ✅ 可视化更新: 新的颜色方案和图例标注
+
+#### 科学意义
+1. **对比公平性**: 种子样本与合成数据数量匹配，消除样本偏差
+2. **分析精确性**: 能够准确分析LLM生成质量相对于原始种子的变化
+3. **实验可重复性**: 明确的ID追踪体系确保结果可验证
 
 ---
 

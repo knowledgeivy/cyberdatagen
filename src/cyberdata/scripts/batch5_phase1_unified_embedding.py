@@ -89,6 +89,14 @@ class Batch5Phase1UnifiedEmbedding:
                     synthetic_dir / f"{layer}_synthetic.csv", logger=self.logger
                 )
             
+            # 4. 加载分层样本数据（用于提取种子样本）
+            self.logger.info("加载分层样本数据...")
+            stratified_dir = self.batch4_dir / "stratified_layers"
+            for layer in ['core', 'inner', 'outer', 'edge']:
+                data[f'{layer}_samples'] = load_csv_data(
+                    stratified_dir / f"{layer}_samples.csv", logger=self.logger
+                )
+            
             # 统计信息
             total_samples = 0
             for name, df in data.items():
@@ -113,37 +121,69 @@ class Batch5Phase1UnifiedEmbedding:
             
             unified_data = []
             
-            # 1. 真实恶意样本（采样用于embedding，避免内存问题）
+            # 1. 真实恶意背景数据（采样用于embedding，避免内存问题）
             real_malicious = data['train_malicious'].copy()
             
             # 采样策略：保持代表性的同时控制数据量
-            if len(real_malicious) > 50000:
-                real_malicious_sample = real_malicious.sample(
-                    n=50000, random_state=self.random_state
+            if len(real_malicious) > 15000:
+                real_malicious_background = real_malicious.sample(
+                    n=15000, random_state=self.random_state
                 ).copy()
-                self.logger.info(f"真实恶意数据采样: {len(real_malicious_sample):,} / {len(real_malicious):,}")
+                self.logger.info(f"真实恶意背景数据采样: {len(real_malicious_background):,} / {len(real_malicious):,}")
             else:
-                real_malicious_sample = real_malicious.copy()
+                real_malicious_background = real_malicious.copy()
             
-            real_malicious_sample['data_source'] = 'real_malicious'
-            real_malicious_sample['prompt_variant'] = 'original'
-            real_malicious_sample['layer'] = 'original'
-            unified_data.append(real_malicious_sample)
+            real_malicious_background['data_source'] = 'real_malicious_background'
+            real_malicious_background['prompt_variant'] = 'original'
+            real_malicious_background['layer'] = 'background'
+            unified_data.append(real_malicious_background)
             
-            # 2. 所有合成数据
+            # 2. 提取种子样本（用于LLM生成的真实恶意样本）
+            all_seed_ids = set()
             for layer in ['core', 'inner', 'outer', 'edge']:
                 synthetic_df = data[f'{layer}_synthetic'].copy()
-                synthetic_df['data_source'] = 'synthetic'
-                synthetic_df['layer'] = layer
+                if 'original_id' in synthetic_df.columns:
+                    seed_ids = synthetic_df['original_id'].unique()
+                    all_seed_ids.update(seed_ids)
+                    self.logger.info(f"{layer}层种子样本: {len(seed_ids):,} 个")
+            
+            # 从分层样本中提取种子样本
+            all_layer_samples = []
+            for layer in ['core', 'inner', 'outer', 'edge']:
+                if f'{layer}_samples' in data:
+                    all_layer_samples.append(data[f'{layer}_samples'])
+            
+            if all_layer_samples:
+                all_stratified_samples = pd.concat(all_layer_samples, ignore_index=True)
+                seed_mask = all_stratified_samples['unique_id'].isin(all_seed_ids)
+                seed_samples = all_stratified_samples[seed_mask].copy()
+                seed_samples['data_source'] = 'real_malicious_seeds'
+                seed_samples['prompt_variant'] = 'seed'
+                seed_samples['layer'] = 'seed'
+                unified_data.append(seed_samples)
+                self.logger.info(f"LLM种子样本: {len(seed_samples):,} 样本")
+            else:
+                self.logger.warning("未找到分层样本数据，无法提取种子样本")
+            
+            # 3. 所有合成数据 - 按prompt变体细化分类
+            for layer in ['core', 'inner', 'outer', 'edge']:
+                synthetic_df = data[f'{layer}_synthetic'].copy()
                 
                 # 确保有prompt_variant列，如果没有从unique_id解析
                 if 'prompt_variant' not in synthetic_df.columns:
                     synthetic_df['prompt_variant'] = synthetic_df['unique_id'].str.split('_').str[-1]
                 
-                unified_data.append(synthetic_df)
-                self.logger.info(f"{layer}层合成数据: {len(synthetic_df):,} 样本")
+                # 按prompt变体细化data_source
+                for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                    variant_mask = synthetic_df['prompt_variant'] == variant
+                    if variant_mask.any():
+                        variant_df = synthetic_df[variant_mask].copy()
+                        variant_df['data_source'] = f'synthetic_{variant}'
+                        variant_df['layer'] = layer
+                        unified_data.append(variant_df)
+                        self.logger.info(f"{layer}层{variant}合成数据: {len(variant_df):,} 样本")
             
-            # 3. 真实良性样本（采样）
+            # 4. 真实良性样本（采样）
             real_benign = data['train_benign'].copy()
             if len(real_benign) > 20000:
                 real_benign_sample = real_benign.sample(
@@ -158,7 +198,7 @@ class Batch5Phase1UnifiedEmbedding:
             real_benign_sample['layer'] = 'original'
             unified_data.append(real_benign_sample)
             
-            # 4. 测试集（采样）
+            # 5. 测试集（采样）
             test_set = data['test_set'].copy()
             if len(test_set) > 10000:
                 test_sample = test_set.sample(
@@ -259,7 +299,8 @@ class Batch5Phase1UnifiedEmbedding:
                 self.logger.info(f"{source} 质心计算完成: {len(source_embeddings):,} 样本")
             
             # 2. 计算合成数据各层的质心和距离分布
-            synthetic_mask = unified_df['data_source'] == 'synthetic'
+            synthetic_sources = ['synthetic_rewrite', 'synthetic_rewrite_strong', 'synthetic_rewrite_weak']
+            synthetic_mask = unified_df['data_source'].isin(synthetic_sources)
             if synthetic_mask.any():
                 synthetic_df = unified_df[synthetic_mask].copy()
                 synthetic_embeddings = embeddings[synthetic_mask]
@@ -300,8 +341,7 @@ class Batch5Phase1UnifiedEmbedding:
             # 3. 计算prompt变体的统计
             if 'prompt_variant' in unified_df.columns:
                 for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
-                    variant_mask = (unified_df['data_source'] == 'synthetic') & \
-                                 (unified_df['prompt_variant'] == variant)
+                    variant_mask = unified_df['data_source'] == f'synthetic_{variant}'
                     if variant_mask.any():
                         variant_embeddings = embeddings[variant_mask]
                         variant_centroid = np.mean(variant_embeddings, axis=0)
@@ -372,19 +412,27 @@ class Batch5Phase1UnifiedEmbedding:
             
             # 合成数据分析
             synthetic_analysis = {}
-            if 'synthetic' in source_stats:
-                synthetic_df = unified_df[unified_df['data_source'] == 'synthetic']
+            synthetic_sources = ['synthetic_rewrite', 'synthetic_rewrite_strong', 'synthetic_rewrite_weak']
+            synthetic_total = sum(source_stats.get(src, 0) for src in synthetic_sources)
+            
+            if synthetic_total > 0:
+                synthetic_df = unified_df[unified_df['data_source'].isin(synthetic_sources)]
                 
                 # 按层统计
                 layer_distribution = synthetic_df['layer'].value_counts().to_dict()
                 
-                # 按prompt变体统计
-                variant_distribution = synthetic_df['prompt_variant'].value_counts().to_dict()
+                # 按prompt变体统计 (基于data_source)
+                variant_distribution = {}
+                for variant in ['rewrite', 'rewrite_strong', 'rewrite_weak']:
+                    variant_count = source_stats.get(f'synthetic_{variant}', 0)
+                    if variant_count > 0:
+                        variant_distribution[variant] = variant_count
                 
                 synthetic_analysis = {
-                    'total_synthetic': source_stats.get('synthetic', 0),
+                    'total_synthetic': synthetic_total,
                     'layer_distribution': layer_distribution,
-                    'variant_distribution': variant_distribution
+                    'variant_distribution': variant_distribution,
+                    'source_breakdown': {src: source_stats.get(src, 0) for src in synthetic_sources}
                 }
             
             summary = {

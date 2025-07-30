@@ -1,28 +1,31 @@
 {
   "phase2_info": {
     "date": "2025-07-30",
-    "total_samples_visualized": 40326,
+    "total_samples_visualized": 38263,
     "embedding_dimension": 2,
     "random_state": 2025
   },
   "dimensionality_reduction": {
-    "pca_2d_variance_explained": 0.13827376067638397,
-    "pca_3d_variance_explained": 0.18264344334602356,
+    "pca_2d_variance_explained": 0.13619136810302734,
+    "pca_3d_variance_explained": 0.1789354532957077,
     "tsne_samples": 5000
   },
   "clustering_analysis": {
     "kmeans_best_k": 10,
-    "kmeans_best_silhouette": 0.11701370775699615,
-    "dbscan_clusters": 26,
-    "dbscan_noise_points": 8170,
-    "dbscan_silhouette": 0.6585666537284851
+    "kmeans_best_silhouette": 0.10939986258745193,
+    "dbscan_clusters": 25,
+    "dbscan_noise_points": 8262,
+    "dbscan_silhouette": 0.6761270761489868
   },
   "data_distribution": {
     "by_source": {
-      "real_malicious": 17463,
+      "real_malicious_background": 15000,
       "real_benign": 13837,
       "test_set": 7826,
-      "synthetic": 1200
+      "synthetic_rewrite": 400,
+      "real_malicious_seeds": 400,
+      "synthetic_rewrite_weak": 400,
+      "synthetic_rewrite_strong": 400
     },
     "synthetic_by_layer": {
       "core": 300,
@@ -32,8 +35,8 @@
     },
     "synthetic_by_prompt": {
       "rewrite": 400,
-      "rewrite_weak": 400,
-      "rewrite_strong": 400
+      "rewrite_strong": 400,
+      "rewrite_weak": 400
     }
   },
   "visualization_files": {

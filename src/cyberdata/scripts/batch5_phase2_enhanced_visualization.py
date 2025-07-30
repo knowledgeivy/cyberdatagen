@@ -76,17 +76,24 @@ class Batch5Phase2EnhancedVisualization:
         
         # 可视化配置
         self.color_palette = {
-            'real_malicious': '#FF6B6B',    # 红色
-            'synthetic': '#4ECDC4',         # 青色
-            'real_benign': '#45B7D1',       # 蓝色  
-            'test_set': '#96CEB4',          # 绿色
-            'core': '#FF8C94',              # 粉红
-            'inner': '#FFD93D',             # 黄色
-            'outer': '#6BCF7F',             # 浅绿
-            'edge': '#A8E6CF',              # 淡绿
-            'rewrite': '#FF6B9D',           # 品红
-            'rewrite_strong': '#C44569',    # 深红
-            'rewrite_weak': '#F8B500'       # 橙色
+            'real_malicious_background': '#FFB6C1',     # 浅粉 - 真实恶意背景数据
+            'real_malicious_seeds': '#FF1493',          # 深粉 - LLM种子样本
+            'synthetic_rewrite': '#4ECDC4',             # 青色 - 基础重写
+            'synthetic_rewrite_strong': '#C44569',      # 深红 - 强化重写
+            'synthetic_rewrite_weak': '#F8B500',        # 橙色 - 弱化重写
+            'real_benign': '#45B7D1',                   # 蓝色 - 真实良性
+            'test_set': '#96CEB4',                      # 绿色 - 测试集
+            'core': '#FF8C94',                          # 粉红 - core层
+            'inner': '#FFD93D',                         # 黄色 - inner层
+            'outer': '#6BCF7F',                         # 浅绿 - outer层
+            'edge': '#A8E6CF',                          # 淡绿 - edge层
+            # 保持向后兼容
+            'real_malicious': '#FF6B6B',
+            'real_malicious_sample': '#FFB6C1',         # 映射到背景数据
+            'synthetic': '#4ECDC4',
+            'rewrite': '#4ECDC4',
+            'rewrite_strong': '#C44569',
+            'rewrite_weak': '#F8B500'
         }
         
         # 随机种子
@@ -284,7 +291,8 @@ class Batch5Phase2EnhancedVisualization:
             
             # 1.2 按合成数据层着色（仅合成数据）
             ax2 = axes[0, 1]
-            synthetic_mask = metadata_df['data_source'] == 'synthetic'
+            synthetic_sources = ['synthetic_rewrite', 'synthetic_rewrite_strong', 'synthetic_rewrite_weak']
+            synthetic_mask = metadata_df['data_source'].isin(synthetic_sources)
             if synthetic_mask.any():
                 synthetic_df = metadata_df[synthetic_mask]
                 pca_synthetic = dim_results['pca_2d'][synthetic_mask]
@@ -747,8 +755,8 @@ class Batch5Phase2EnhancedVisualization:
                 },
                 'data_distribution': {
                     'by_source': metadata_df['data_source'].value_counts().to_dict(),
-                    'synthetic_by_layer': metadata_df[metadata_df['data_source'] == 'synthetic']['layer'].value_counts().to_dict() if (metadata_df['data_source'] == 'synthetic').any() else {},
-                    'synthetic_by_prompt': metadata_df[metadata_df['data_source'] == 'synthetic']['prompt_variant'].value_counts().to_dict() if (metadata_df['data_source'] == 'synthetic').any() else {}
+                    'synthetic_by_layer': metadata_df[metadata_df['data_source'].str.startswith('synthetic_')]['layer'].value_counts().to_dict() if metadata_df['data_source'].str.startswith('synthetic_').any() else {},
+                    'synthetic_by_prompt': metadata_df[metadata_df['data_source'].str.startswith('synthetic_')]['prompt_variant'].value_counts().to_dict() if metadata_df['data_source'].str.startswith('synthetic_').any() else {}
                 },
                 'visualization_files': {
                     'static_plots': {
