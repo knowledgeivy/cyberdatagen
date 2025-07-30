@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-批次5实验 - Phase 4: 模型训练与独立评估
+Batch 5 Experiment - Phase 4: Model Training and Independent Evaluation
 
-独立评估不同纯净数据源的检测性能：
+Independent evaluation of detection performance for different pure data sources:
 
-训练配置:
-- 模型: RandomForest + SVM (与批次4保持一致)
-- 评估指标: Accuracy, Precision, Recall, F1-Score
-- 测试集: 固定的独立测试集(与批次4相同)
+Training Configuration:
+- Models: RandomForest + SVM (consistent with Batch 4)
+- Evaluation Metrics: Accuracy, Precision, Recall, F1-Score
+- Test Set: Fixed independent test set (same as Batch 4)
 
-实验矩阵:
-- 16个数据集配置 × 2个模型 = 32个实验点
+Experiment Matrix:
+- 16 dataset configurations × 2 models = 32 experiment points
 
-性能对比分析:
-1. Baseline Real vs Pure Synthetic 主要对比
-2. 不同Prompt策略性能排序
-3. 不同Malicious Ratio下的性能曲线
-4. 模型敏感性分析 (RF vs SVM)
+Performance Comparison Analysis:
+1. Baseline Real vs Pure Synthetic primary comparison
+2. Different Prompt strategy performance ranking
+3. Performance curves under different Malicious Ratios
+4. Model sensitivity analysis (RF vs SVM)
 
-作者: Claude
-创建时间: 2025-07-30
+Author: Claude
+Created: 2025-07-30
 """
 
 import os
@@ -35,7 +35,7 @@ import time
 import warnings
 warnings.filterwarnings('ignore')
 
-# 机器学习库
+# Machine Learning Libraries
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
@@ -43,11 +43,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 import joblib
 
-# 可视化库
+# Visualization Libraries
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 项目路径设置
+# Project Path Setup
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
@@ -55,25 +55,25 @@ from src.cyberdata.utils.logger_config import setup_logger
 from src.cyberdata.utils.data_loader import load_csv_data
 
 class Batch5Phase4IndependentEvaluation:
-    """批次5 Phase 4: 独立评估器"""
+    """Batch 5 Phase 4: Independent Evaluator"""
     
     def __init__(self, logger=None):
         self.logger = logger or setup_logger("batch5_phase4")
         self.project_root = PROJECT_ROOT
         self.batch5_dir = self.project_root / "data" / "batch5"
         
-        # 输入和输出目录
+        # Input and output directories
         self.datasets_dir = self.batch5_dir / "pure_datasets"
         self.results_dir = self.batch5_dir / "results"
         self.models_dir = self.batch5_dir / "models"
         self.analysis_dir = self.batch5_dir / "phase4_analysis"
         self.viz_dir = self.batch5_dir / "visualizations" / "performance_analysis"
         
-        # 创建输出目录
+        # Create output directories
         for dir_path in [self.results_dir, self.models_dir, self.analysis_dir, self.viz_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
         
-        # 模型配置
+        # Model configuration
         self.models_config = {
             'RandomForest': {
                 'class': RandomForestClassifier,
@@ -93,12 +93,12 @@ class Batch5Phase4IndependentEvaluation:
                     'C': 1.0,
                     'gamma': 'scale',
                     'random_state': 2025,
-                    'probability': True  # 为了支持概率预测
+                    'probability': True  # For probability prediction support
                 }
             }
         }
         
-        # TF-IDF配置
+        # TF-IDF configuration
         self.tfidf_config = {
             'max_features': 10000,
             'max_df': 0.95,
@@ -107,23 +107,23 @@ class Batch5Phase4IndependentEvaluation:
             'ngram_range': (1, 2)
         }
         
-        # 随机种子
+        # Random seed
         self.random_state = 2025
         
-        self.logger.info("Phase 4独立评估初始化完成")
-        self.logger.info(f"模型: {list(self.models_config.keys())}")
+        self.logger.info("Phase 4 independent evaluation initialization completed")
+        self.logger.info(f"Models: {list(self.models_config.keys())}")
     
     def discover_datasets(self) -> List[str]:
-        """发现可用的数据集配置"""
+        """Discover available dataset configurations"""
         try:
-            self.logger.info("发现可用的数据集配置...")
+            self.logger.info("Discovering available dataset configurations...")
             
             dataset_configs = []
             
             if not self.datasets_dir.exists():
-                raise FileNotFoundError(f"数据集目录不存在: {self.datasets_dir}")
+                raise FileNotFoundError(f"Dataset directory does not exist: {self.datasets_dir}")
             
-            # 扫描数据集目录
+            # Scan dataset directory
             for config_dir in self.datasets_dir.iterdir():
                 if config_dir.is_dir():
                     train_file = config_dir / "train.csv"
@@ -133,54 +133,54 @@ class Batch5Phase4IndependentEvaluation:
                     if all(f.exists() for f in [train_file, test_file, config_file]):
                         dataset_configs.append(config_dir.name)
                     else:
-                        self.logger.warning(f"配置 {config_dir.name} 文件不完整，跳过")
+                        self.logger.warning(f"Config {config_dir.name} files incomplete, skipping")
             
-            dataset_configs.sort()  # 排序确保一致性
+            dataset_configs.sort()  # Sort to ensure consistency
             
-            self.logger.info(f"发现 {len(dataset_configs)} 个数据集配置: {dataset_configs}")
+            self.logger.info(f"Found {len(dataset_configs)} dataset configurations: {dataset_configs}")
             
             if len(dataset_configs) == 0:
-                raise ValueError("未发现任何有效的数据集配置")
+                raise ValueError("No valid dataset configurations found")
             
             return dataset_configs
             
         except Exception as e:
-            self.logger.error(f"发现数据集配置失败: {str(e)}")
+            self.logger.error(f"Failed to discover dataset configurations: {str(e)}")
             raise
     
     def load_dataset_config(self, config_name: str) -> Tuple[pd.DataFrame, pd.DataFrame, Dict]:
-        """加载单个数据集配置"""
+        """Load individual dataset configuration"""
         try:
             config_dir = self.datasets_dir / config_name
             
-            # 加载训练和测试数据
+            # Load training and test data
             train_df = load_csv_data(config_dir / "train.csv", logger=self.logger)
             test_df = load_csv_data(config_dir / "test.csv", logger=self.logger)
             
-            # 加载配置信息
+            # Load configuration information
             with open(config_dir / "config.json", 'r', encoding='utf-8') as f:
                 config_info = json.load(f)
             
-            self.logger.info(f"加载配置 {config_name}: 训练{len(train_df):,}样本, 测试{len(test_df):,}样本")
+            self.logger.info(f"Loading config {config_name}: {len(train_df):,} training samples, {len(test_df):,} test samples")
             
             return train_df, test_df, config_info
             
         except Exception as e:
-            self.logger.error(f"加载数据集配置 {config_name} 失败: {str(e)}")
+            self.logger.error(f"Failed to load dataset config {config_name}: {str(e)}")
             raise
     
     def create_ml_pipeline(self, model_name: str) -> Pipeline:
-        """创建机器学习pipeline"""
+        """Create machine learning pipeline"""
         try:
             model_config = self.models_config[model_name]
             
-            # 创建TF-IDF向量化器
+            # Create TF-IDF vectorizer
             tfidf = TfidfVectorizer(**self.tfidf_config)
             
-            # 创建模型
+            # Create model
             model = model_config['class'](**model_config['params'])
             
-            # 创建pipeline
+            # Create pipeline
             pipeline = Pipeline([
                 ('tfidf', tfidf),
                 ('classifier', model)
@@ -189,38 +189,38 @@ class Batch5Phase4IndependentEvaluation:
             return pipeline
             
         except Exception as e:
-            self.logger.error(f"创建{model_name} pipeline失败: {str(e)}")
+            self.logger.error(f"Failed to create {model_name} pipeline: {str(e)}")
             raise
     
     def train_and_evaluate_single(self, config_name: str, model_name: str) -> Dict[str, Any]:
-        """训练和评估单个配置"""
+        """Train and evaluate single configuration"""
         try:
-            self.logger.info(f"训练评估: {config_name} + {model_name}")
+            self.logger.info(f"Training and evaluating: {config_name} + {model_name}")
             
-            # 加载数据
+            # Load data
             train_df, test_df, config_info = self.load_dataset_config(config_name)
             
-            # 准备训练数据
+            # Prepare training data
             X_train = train_df['text'].fillna('').astype(str)
             y_train = train_df['label'].astype(int)
             
-            # 准备测试数据
+            # Prepare test data
             X_test = test_df['text'].fillna('').astype(str)
             y_test = test_df['label'].astype(int)
             
-            # 创建和训练模型
+            # Create and train model
             pipeline = self.create_ml_pipeline(model_name)
             
             train_start = time.time()
             pipeline.fit(X_train, y_train)
             train_time = time.time() - train_start
             
-            # 预测
+            # Predict
             predict_start = time.time()
             y_pred = pipeline.predict(X_test)
             predict_time = time.time() - predict_start
             
-            # 计算评估指标
+            # Calculate evaluation metrics
             metrics = {
                 'accuracy': accuracy_score(y_test, y_pred),
                 'precision': precision_score(y_test, y_pred, average='binary', zero_division=0),
@@ -228,10 +228,10 @@ class Batch5Phase4IndependentEvaluation:
                 'f1_score': f1_score(y_test, y_pred, average='binary', zero_division=0)
             }
             
-            # 详细分类报告
+            # Detailed classification report
             class_report = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
             
-            # 结果汇总
+            # Result summary
             result = {
                 'config_name': config_name,
                 'model_name': model_name,
@@ -252,12 +252,12 @@ class Batch5Phase4IndependentEvaluation:
                 'evaluation_date': '2025-07-30'
             }
             
-            # 保存模型
+            # Save model
             model_file = self.models_dir / f"{config_name}_{model_name}_model.pkl"
             joblib.dump(pipeline, model_file)
             result['model_file'] = str(model_file)
             
-            # 保存单个结果
+            # Save individual result
             result_file = self.results_dir / f"{config_name}_{model_name}_result.json"
             with open(result_file, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
@@ -265,18 +265,18 @@ class Batch5Phase4IndependentEvaluation:
             self.logger.info(f"✅ {config_name} + {model_name}: "
                            f"F1={metrics['f1_score']:.3f}, "
                            f"Acc={metrics['accuracy']:.3f}, "
-                           f"训练耗时={train_time:.1f}s")
+                           f"Training time={train_time:.1f}s")
             
             return result
             
         except Exception as e:
-            self.logger.error(f"训练评估 {config_name} + {model_name} 失败: {str(e)}")
+            self.logger.error(f"Training and evaluation failed {config_name} + {model_name}: {str(e)}")
             raise
     
     def run_all_experiments(self, dataset_configs: List[str]) -> Dict[str, Dict[str, Any]]:
-        """运行所有实验"""
+        """Run all experiments"""
         try:
-            self.logger.info("开始运行所有实验...")
+            self.logger.info("Starting all experiments...")
             
             all_results = {}
             total_experiments = len(dataset_configs) * len(self.models_config)
@@ -285,7 +285,7 @@ class Batch5Phase4IndependentEvaluation:
             for config_name in dataset_configs:
                 for model_name in self.models_config.keys():
                     current_experiment += 1
-                    self.logger.info(f"实验进度: {current_experiment}/{total_experiments}")
+                    self.logger.info(f"Experiment progress: {current_experiment}/{total_experiments}")
                     
                     try:
                         experiment_key = f"{config_name}_{model_name}"
@@ -293,34 +293,34 @@ class Batch5Phase4IndependentEvaluation:
                         all_results[experiment_key] = result
                         
                     except Exception as e:
-                        self.logger.error(f"实验 {config_name} + {model_name} 失败: {str(e)}")
-                        # 继续其他实验
+                        self.logger.error(f"Experiment {config_name} + {model_name} failed: {str(e)}")
+                        # Continue other experiments
                         continue
             
-            self.logger.info(f"完成 {len(all_results)} 个实验 (总计 {total_experiments} 个)")
+            self.logger.info(f"Completed {len(all_results)} experiments (total {total_experiments})")
             
             return all_results
             
         except Exception as e:
-            self.logger.error(f"运行所有实验失败: {str(e)}")
+            self.logger.error(f"Failed to run all experiments: {str(e)}")
             raise
     
     def create_performance_analysis(self, all_results: Dict[str, Dict[str, Any]]) -> None:
-        """创建性能分析图表"""
+        """Create performance analysis charts"""
         try:
-            self.logger.info("创建性能分析图表...")
+            self.logger.info("Creating performance analysis charts...")
             
-            # 准备数据
+            # Prepare data
             results_data = []
             for experiment_key, result in all_results.items():
                 config_name = result['config_name']
                 model_name = result['model_name']
                 
-                # 解析配置名称
+                # Parse configuration name
                 parts = config_name.split('_')
                 if len(parts) >= 2:
-                    group_name = '_'.join(parts[:-1])  # 除了最后一部分的所有部分
-                    ratio_str = parts[-1]  # 最后一部分，如 "5pct"
+                    group_name = '_'.join(parts[:-1])  # All parts except the last one
+                    ratio_str = parts[-1]  # Last part, e.g., "5pct"
                     ratio = float(ratio_str.replace('pct', '')) / 100
                 else:
                     group_name = config_name
@@ -341,34 +341,34 @@ class Batch5Phase4IndependentEvaluation:
             
             results_df = pd.DataFrame(results_data)
             
-            # 1. 性能对比曲线图
+            # 1. Performance comparison curves
             self.create_performance_curves(results_df)
             
-            # 2. 热力图对比
+            # 2. Heatmap comparison
             self.create_performance_heatmaps(results_df)
             
-            # 3. 模型对比分析
+            # 3. Model comparison analysis
             self.create_model_comparison(results_df)
             
-            # 4. 数据组效果对比
+            # 4. Data group performance comparison
             self.create_group_comparison(results_df)
             
         except Exception as e:
-            self.logger.error(f"创建性能分析失败: {str(e)}")
+            self.logger.error(f"Failed to create performance analysis: {str(e)}")
     
     def create_performance_curves(self, results_df: pd.DataFrame) -> None:
-        """创建性能曲线图"""
+        """Create performance curves"""
         try:
             fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-            fig.suptitle('批次5纯净数据性能对比曲线', fontsize=16, fontweight='bold')
+            fig.suptitle('Batch 5 Pure Dataset Performance Comparison Curves', fontsize=16, fontweight='bold')
             
             metrics = ['accuracy', 'precision', 'recall', 'f1_score']
-            metric_names = ['准确率', '精确率', '召回率', 'F1分数']
+            metric_names = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
             
             for idx, (metric, metric_name) in enumerate(zip(metrics, metric_names)):
                 ax = axes[idx//2, idx%2]
                 
-                # 按数据组和模型绘制曲线
+                # Draw curves by data group and model
                 for group in results_df['group_name'].unique():
                     for model in results_df['model_name'].unique():
                         mask = (results_df['group_name'] == group) & (results_df['model_name'] == model)
@@ -380,13 +380,13 @@ class Batch5Phase4IndependentEvaluation:
                                    line_style, marker='o', linewidth=2, markersize=6,
                                    label=f'{group}_{model}')
                 
-                ax.set_xlabel('恶意样本比例 (%)')
+                ax.set_xlabel('Malicious Sample Ratio (%)')
                 ax.set_ylabel(metric_name)
-                ax.set_title(f'{metric_name}性能曲线')
+                ax.set_title(f'{metric_name} Performance Curve')
                 ax.grid(True, alpha=0.3)
                 ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
                 
-                # 设置x轴刻度
+                # Set x-axis ticks
                 ax.set_xticks([5, 10, 15, 20])
             
             plt.tight_layout()
@@ -394,16 +394,16 @@ class Batch5Phase4IndependentEvaluation:
             curves_file = self.viz_dir / "performance_curves.png"
             plt.savefig(curves_file, dpi=300, bbox_inches='tight')
             plt.close()
-            self.logger.info(f"性能曲线图已保存: {curves_file}")
+            self.logger.info(f"Performance curves saved: {curves_file}")
             
         except Exception as e:
-            self.logger.error(f"创建性能曲线图失败: {str(e)}")
+            self.logger.error(f"Failed to create performance curves: {str(e)}")
     
     def create_performance_heatmaps(self, results_df: pd.DataFrame) -> None:
-        """创建性能热力图"""
+        """Create performance heatmaps"""
         try:
             fig, axes = plt.subplots(2, 2, figsize=(20, 16))
-            fig.suptitle('批次5性能热力图对比', fontsize=16, fontweight='bold')
+            fig.suptitle('Batch 5 Performance Heatmap Comparison', fontsize=16, fontweight='bold')
             
             metrics = ['accuracy', 'f1_score']
             models = ['RandomForest', 'SVM']
@@ -412,44 +412,44 @@ class Batch5Phase4IndependentEvaluation:
                 for metric_idx, metric in enumerate(metrics):
                     ax = axes[model_idx, metric_idx]
                     
-                    # 准备热力图数据
+                    # Prepare heatmap data
                     model_data = results_df[results_df['model_name'] == model]
                     
-                    # 创建透视表
+                    # Create pivot table
                     heatmap_data = model_data.pivot(
                         index='group_name', 
                         columns='malicious_ratio', 
                         values=metric
                     )
                     
-                    # 转换比例为百分比
+                    # Convert ratio to percentage
                     heatmap_data.columns = [f'{int(col*100)}%' for col in heatmap_data.columns]
                     
-                    # 绘制热力图
+                    # Draw heatmap
                     sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='YlOrRd',
                                ax=ax, cbar_kws={'label': metric.replace('_', ' ').title()})
                     
                     ax.set_title(f'{model} - {metric.replace("_", " ").title()}')
-                    ax.set_xlabel('恶意样本比例')
-                    ax.set_ylabel('数据组')
+                    ax.set_xlabel('Malicious Sample Ratio')
+                    ax.set_ylabel('Data Group')
             
             plt.tight_layout()
             
             heatmap_file = self.viz_dir / "performance_heatmaps.png"
             plt.savefig(heatmap_file, dpi=300, bbox_inches='tight')
             plt.close()
-            self.logger.info(f"性能热力图已保存: {heatmap_file}")
+            self.logger.info(f"Performance heatmaps saved: {heatmap_file}")
             
         except Exception as e:
-            self.logger.error(f"创建性能热力图失败: {str(e)}")
+            self.logger.error(f"Failed to create performance heatmaps: {str(e)}")
     
     def create_model_comparison(self, results_df: pd.DataFrame) -> None:
-        """创建模型对比分析"""
+        """Create model comparison analysis"""
         try:
             fig, axes = plt.subplots(1, 2, figsize=(16, 6))
-            fig.suptitle('RandomForest vs SVM 模型对比', fontsize=16, fontweight='bold')
+            fig.suptitle('RandomForest vs SVM Model Comparison', fontsize=16, fontweight='bold')
             
-            # 1. F1分数对比
+            # 1. F1 Score Comparison
             ax1 = axes[0]
             for group in results_df['group_name'].unique():
                 group_data = results_df[results_df['group_name'] == group]
@@ -461,24 +461,24 @@ class Batch5Phase4IndependentEvaluation:
                     ax1.scatter(rf_data['f1_score'], svm_data['f1_score'], 
                                label=group, alpha=0.7, s=100)
             
-            # 添加对角线
+            # Add diagonal line
             max_val = max(results_df['f1_score'].max(), results_df['f1_score'].max())
-            ax1.plot([0, max_val], [0, max_val], 'k--', alpha=0.5, label='相等线')
+            ax1.plot([0, max_val], [0, max_val], 'k--', alpha=0.5, label='Equal Line')
             
-            ax1.set_xlabel('RandomForest F1分数')
-            ax1.set_ylabel('SVM F1分数')
-            ax1.set_title('F1分数对比')
+            ax1.set_xlabel('RandomForest F1 Score')
+            ax1.set_ylabel('SVM F1 Score')
+            ax1.set_title('F1 Score Comparison')
             ax1.legend()
             ax1.grid(True, alpha=0.3)
             
-            # 2. 训练时间对比
+            # 2. Training Time Comparison
             ax2 = axes[1]
             rf_times = results_df[results_df['model_name'] == 'RandomForest']['train_time']
             svm_times = results_df[results_df['model_name'] == 'SVM']['train_time']
             
             ax2.boxplot([rf_times, svm_times], labels=['RandomForest', 'SVM'])
-            ax2.set_ylabel('训练时间 (秒)')
-            ax2.set_title('训练时间对比')
+            ax2.set_ylabel('Training Time (seconds)')
+            ax2.set_title('Training Time Comparison')
             ax2.grid(True, alpha=0.3)
             
             plt.tight_layout()
@@ -486,45 +486,45 @@ class Batch5Phase4IndependentEvaluation:
             comparison_file = self.viz_dir / "model_comparison.png"
             plt.savefig(comparison_file, dpi=300, bbox_inches='tight')
             plt.close()
-            self.logger.info(f"模型对比图已保存: {comparison_file}")
+            self.logger.info(f"Model comparison chart saved: {comparison_file}")
             
         except Exception as e:
-            self.logger.error(f"创建模型对比失败: {str(e)}")
+            self.logger.error(f"Failed to create model comparison: {str(e)}")
     
     def create_group_comparison(self, results_df: pd.DataFrame) -> None:
-        """创建数据组效果对比"""
+        """Create data group performance comparison"""
         try:
             fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-            fig.suptitle('纯净数据组效果对比分析', fontsize=16, fontweight='bold')
+            fig.suptitle('Pure Data Group Performance Comparison Analysis', fontsize=16, fontweight='bold')
             
-            # 1. 各组平均F1分数
+            # 1. Average F1 Score by Group
             ax1 = axes[0, 0]
             group_f1 = results_df.groupby('group_name')['f1_score'].mean().sort_values(ascending=False)
             bars1 = ax1.bar(group_f1.index, group_f1.values, alpha=0.7)
-            ax1.set_ylabel('平均F1分数')
-            ax1.set_title('各数据组平均F1分数')
+            ax1.set_ylabel('Average F1 Score')
+            ax1.set_title('Average F1 Score by Data Group')
             ax1.tick_params(axis='x', rotation=45)
             
-            # 添加数值标签
+            # Add value labels
             for bar, value in zip(bars1, group_f1.values):
                 ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                         f'{value:.3f}', ha='center', va='bottom')
             
-            # 2. 按比例的F1分数分布
+            # 2. F1 Score Distribution by Ratio
             ax2 = axes[0, 1]
             results_df.boxplot(column='f1_score', by='malicious_ratio', ax=ax2)
-            ax2.set_xlabel('恶意样本比例')
-            ax2.set_ylabel('F1分数')
-            ax2.set_title('不同比例下F1分数分布')
+            ax2.set_xlabel('Malicious Sample Ratio')
+            ax2.set_ylabel('F1 Score')
+            ax2.set_title('F1 Score Distribution by Ratio')
             
-            # 3. 数据组vs比例热力图
+            # 3. Data Group vs Ratio Heatmap
             ax3 = axes[1, 0]
             group_ratio_f1 = results_df.groupby(['group_name', 'malicious_ratio'])['f1_score'].mean().unstack()
             group_ratio_f1.columns = [f'{int(col*100)}%' for col in group_ratio_f1.columns]
             sns.heatmap(group_ratio_f1, annot=True, fmt='.3f', cmap='viridis', ax=ax3)
-            ax3.set_title('数据组×比例 F1分数热力图')
+            ax3.set_title('Data Group × Ratio F1 Score Heatmap')
             
-            # 4. baseline_real vs synthetic对比
+            # 4. baseline_real vs synthetic comparison
             ax4 = axes[1, 1]
             baseline_data = results_df[results_df['group_name'] == 'baseline_real']['f1_score']
             synthetic_groups = ['pure_rewrite', 'pure_strong', 'pure_weak']
@@ -539,8 +539,8 @@ class Batch5Phase4IndependentEvaluation:
                     labels.append(group)
             
             ax4.boxplot(comparison_data, labels=labels)
-            ax4.set_ylabel('F1分数')
-            ax4.set_title('Baseline vs Pure Synthetic对比')
+            ax4.set_ylabel('F1 Score')
+            ax4.set_title('Baseline vs Pure Synthetic Comparison')
             ax4.tick_params(axis='x', rotation=45)
             
             plt.tight_layout()
@@ -548,25 +548,25 @@ class Batch5Phase4IndependentEvaluation:
             group_comparison_file = self.viz_dir / "group_comparison.png"
             plt.savefig(group_comparison_file, dpi=300, bbox_inches='tight')
             plt.close()
-            self.logger.info(f"数据组对比图已保存: {group_comparison_file}")
+            self.logger.info(f"Group comparison chart saved: {group_comparison_file}")
             
         except Exception as e:
-            self.logger.error(f"创建数据组对比失败: {str(e)}")
+            self.logger.error(f"Failed to create group comparison: {str(e)}")
     
     def generate_comprehensive_analysis(self, all_results: Dict[str, Dict[str, Any]]) -> None:
-        """生成综合分析报告"""
+        """Generate comprehensive analysis report"""
         try:
-            self.logger.info("生成综合分析报告...")
+            self.logger.info("Generating comprehensive analysis report...")
             
-            # 统计摘要
+            # Statistical summary
             total_experiments = len(all_results)
             successful_experiments = len([r for r in all_results.values() if 'metrics' in r])
             
-            # 性能统计
+            # Performance statistics
             f1_scores = [r['metrics']['f1_score'] for r in all_results.values() if 'metrics' in r]
             accuracies = [r['metrics']['accuracy'] for r in all_results.values() if 'metrics' in r]
             
-            # 按组统计
+            # Statistics by group
             group_stats = {}
             model_stats = {}
             
@@ -578,13 +578,13 @@ class Batch5Phase4IndependentEvaluation:
                 model_name = result['model_name']
                 f1_score = result['metrics']['f1_score']
                 
-                # 按组统计
+                # Statistics by group
                 if group_name not in group_stats:
                     group_stats[group_name] = {'f1_scores': [], 'count': 0}
                 group_stats[group_name]['f1_scores'].append(f1_score)
                 group_stats[group_name]['count'] += 1
                 
-                # 按model统计
+                # Statistics by model
                 if model_name not in model_stats:
                     model_stats[model_name] = {'f1_scores': [], 'count': 0}
                 model_stats[model_name]['f1_scores'].append(f1_score)

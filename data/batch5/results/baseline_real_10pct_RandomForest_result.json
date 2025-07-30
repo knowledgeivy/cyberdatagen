@@ -1,0 +1,81 @@
+{
+  "config_name": "baseline_real_10pct",
+  "model_name": "RandomForest",
+  "config_info": {
+    "config_name": "baseline_real_10pct",
+    "group_name": "baseline_real",
+    "malicious_ratio": 0.1,
+    "data_purity": "pure",
+    "creation_date": "2025-07-30",
+    "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\train.csv",
+    "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\test.csv",
+    "train_stats": {
+      "target_size": 10000,
+      "actual_size": 10000,
+      "target_malicious_ratio": 0.1,
+      "actual_malicious_ratio": 0.1,
+      "malicious_count": 1000,
+      "benign_count": 9000,
+      "available_malicious": 17463,
+      "available_benign": 13837,
+      "used_resampling": false
+    },
+    "test_stats": {
+      "total_size": 7826,
+      "malicious_count": 4366,
+      "benign_count": 3460,
+      "malicious_ratio": 0.5578839764886276
+    },
+    "data_composition": {
+      "malicious_source": "real_malicious_training_data",
+      "benign_source": "real_train_benign",
+      "test_source": "fixed_test_set_from_batch4"
+    }
+  },
+  "metrics": {
+    "accuracy": 0.7343470483005367,
+    "precision": 1.0,
+    "recall": 0.5238204306000916,
+    "f1_score": 0.6875093942582293
+  },
+  "classification_report": {
+    "0": {
+      "precision": 0.6246614912439068,
+      "recall": 1.0,
+      "f1-score": 0.7689743304811646,
+      "support": 3460.0
+    },
+    "1": {
+      "precision": 1.0,
+      "recall": 0.5238204306000916,
+      "f1-score": 0.6875093942582293,
+      "support": 4366.0
+    },
+    "accuracy": 0.7343470483005367,
+    "macro avg": {
+      "precision": 0.8123307456219534,
+      "recall": 0.7619102153000459,
+      "f1-score": 0.7282418623696969,
+      "support": 7826.0
+    },
+    "weighted avg": {
+      "precision": 0.8340568310380677,
+      "recall": 0.7343470483005367,
+      "f1-score": 0.723526347916721,
+      "support": 7826.0
+    }
+  },
+  "timing": {
+    "train_time": 6.880722761154175,
+    "predict_time": 1.8084418773651123,
+    "total_time": 8.689164638519287
+  },
+  "data_info": {
+    "train_samples": 10000,
+    "test_samples": 7826,
+    "train_malicious_ratio": 0.1,
+    "test_malicious_ratio": 0.5578839764886276
+  },
+  "evaluation_date": "2025-07-30",
+  "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_10pct_RandomForest_model.pkl"
+}

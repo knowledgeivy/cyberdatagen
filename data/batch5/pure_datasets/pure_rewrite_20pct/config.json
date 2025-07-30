@@ -1,0 +1,31 @@
+{
+  "config_name": "pure_rewrite_20pct",
+  "group_name": "pure_rewrite",
+  "malicious_ratio": 0.2,
+  "data_purity": "pure",
+  "creation_date": "2025-07-30",
+  "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\train.csv",
+  "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\test.csv",
+  "train_stats": {
+    "target_size": 10000,
+    "actual_size": 10000,
+    "target_malicious_ratio": 0.2,
+    "actual_malicious_ratio": 0.2,
+    "malicious_count": 2000,
+    "benign_count": 8000,
+    "available_malicious": 400,
+    "available_benign": 13837,
+    "used_resampling": true
+  },
+  "test_stats": {
+    "total_size": 7826,
+    "malicious_count": 4366,
+    "benign_count": 3460,
+    "malicious_ratio": 0.5578839764886276
+  },
+  "data_composition": {
+    "malicious_source": "synthetic_rewrite_all_layers",
+    "benign_source": "real_train_benign",
+    "test_source": "fixed_test_set_from_batch4"
+  }
+}

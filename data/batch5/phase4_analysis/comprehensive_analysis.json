@@ -1,0 +1,2666 @@
+{
+  "phase4_info": {
+    "date": "2025-07-30",
+    "total_experiments": 32,
+    "successful_experiments": 32,
+    "success_rate": 1.0
+  },
+  "performance_summary": {
+    "f1_score_range": [
+      0.0,
+      0.9813476334809978
+    ],
+    "f1_score_mean": 0.34917854189399167,
+    "f1_score_std": 0.32461828780586893,
+    "accuracy_range": [
+      0.44211602351137236,
+      0.9795553283925377
+    ],
+    "accuracy_mean": 0.5929633593151035
+  },
+  "best_performance": {
+    "config": "baseline_real_20pct",
+    "model": "SVM",
+    "f1_score": 0.9813476334809978,
+    "accuracy": 0.9795553283925377
+  },
+  "worst_performance": {
+    "config": "pure_weak_15pct",
+    "model": "RandomForest",
+    "f1_score": 0.0,
+    "accuracy": 0.44211602351137236
+  },
+  "group_analysis": {
+    "baseline_real": {
+      "avg_f1_score": 0.8416606425234447,
+      "std_f1_score": 0.12998649738689683,
+      "experiment_count": 8
+    },
+    "pure_rewrite": {
+      "avg_f1_score": 0.29810764073921636,
+      "std_f1_score": 0.1727669812938021,
+      "experiment_count": 8
+    },
+    "pure_strong": {
+      "avg_f1_score": 0.25534465534465534,
+      "std_f1_score": 0.0,
+      "experiment_count": 8
+    },
+    "pure_weak": {
+      "avg_f1_score": 0.0016012289686500674,
+      "std_f1_score": 0.001252466867854286,
+      "experiment_count": 8
+    }
+  },
+  "model_analysis": {
+    "RandomForest": {
+      "avg_f1_score": 0.281940778558637,
+      "std_f1_score": 0.2841660425585407,
+      "experiment_count": 16
+    },
+    "SVM": {
+      "avg_f1_score": 0.41641630522934625,
+      "std_f1_score": 0.3477957621592926,
+      "experiment_count": 16
+    }
+  },
+  "key_findings": [
+    "最佳数据组: baseline_real (平均F1: 0.842)",
+    "最差数据组: pure_weak (平均F1: 0.002)",
+    "最佳模型: SVM (平均F1: 0.416)"
+  ],
+  "detailed_results": {
+    "baseline_real_10pct_RandomForest": {
+      "config_name": "baseline_real_10pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "baseline_real_10pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.7343470483005367,
+        "precision": 1.0,
+        "recall": 0.5238204306000916,
+        "f1_score": 0.6875093942582293
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.6246614912439068,
+          "recall": 1.0,
+          "f1-score": 0.7689743304811646,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.5238204306000916,
+          "f1-score": 0.6875093942582293,
+          "support": 4366.0
+        },
+        "accuracy": 0.7343470483005367,
+        "macro avg": {
+          "precision": 0.8123307456219534,
+          "recall": 0.7619102153000459,
+          "f1-score": 0.7282418623696969,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.8340568310380677,
+          "recall": 0.7343470483005367,
+          "f1-score": 0.723526347916721,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.880722761154175,
+        "predict_time": 1.8084418773651123,
+        "total_time": 8.689164638519287
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_10pct_RandomForest_model.pkl"
+    },
+    "baseline_real_10pct_SVM": {
+      "config_name": "baseline_real_10pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "baseline_real_10pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.95284947610529,
+        "precision": 0.9997499374843711,
+        "recall": 0.9157123224919835,
+        "f1_score": 0.9558876270173341
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.9038411288215312,
+          "recall": 0.9997109826589595,
+          "f1-score": 0.9493618773157678,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.9997499374843711,
+          "recall": 0.9157123224919835,
+          "f1-score": 0.9558876270173341,
+          "support": 4366.0
+        },
+        "accuracy": 0.95284947610529,
+        "macro avg": {
+          "precision": 0.9517955331529512,
+          "recall": 0.9577116525754715,
+          "f1-score": 0.952624752166551,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.9573471163786433,
+          "recall": 0.95284947610529,
+          "f1-score": 0.9530024885088471,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 78.9983925819397,
+        "predict_time": 10.011056661605835,
+        "total_time": 89.00944924354553
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_10pct_SVM_model.pkl"
+    },
+    "baseline_real_15pct_RandomForest": {
+      "config_name": "baseline_real_15pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "baseline_real_15pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.7921032455916177,
+        "precision": 0.9996351696461145,
+        "recall": 0.6275767292716445,
+        "f1_score": 0.7710707752919657
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.68023598820059,
+          "recall": 0.9997109826589595,
+          "f1-score": 0.8095962551199531,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.9996351696461145,
+          "recall": 0.6275767292716445,
+          "f1-score": 0.7710707752919657,
+          "support": 4366.0
+        },
+        "accuracy": 0.7921032455916177,
+        "macro avg": {
+          "precision": 0.8399355789233522,
+          "recall": 0.8136438559653021,
+          "f1-score": 0.7903335152059594,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.8584236736326318,
+          "recall": 0.7921032455916177,
+          "f1-score": 0.7881035072373831,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.618436098098755,
+        "predict_time": 1.904649019241333,
+        "total_time": 8.523085117340088
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_15pct_RandomForest_model.pkl"
+    },
+    "baseline_real_15pct_SVM": {
+      "config_name": "baseline_real_15pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "baseline_real_15pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.9698441093789931,
+        "precision": 0.9995162070633768,
+        "recall": 0.9464040311497939,
+        "f1_score": 0.9722352941176471
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.9366197183098591,
+          "recall": 0.999421965317919,
+          "f1-score": 0.9670022371364653,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.9995162070633768,
+          "recall": 0.9464040311497939,
+          "f1-score": 0.9722352941176471,
+          "support": 4366.0
+        },
+        "accuracy": 0.9698441093789931,
+        "macro avg": {
+          "precision": 0.968067962686618,
+          "recall": 0.9729129982338565,
+          "f1-score": 0.9696187656270562,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.9717086615628439,
+          "recall": 0.9698441093789931,
+          "f1-score": 0.9699216757743186,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 91.4409441947937,
+        "predict_time": 10.775919437408447,
+        "total_time": 102.21686363220215
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_15pct_SVM_model.pkl"
+    },
+    "baseline_real_20pct_RandomForest": {
+      "config_name": "baseline_real_20pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "baseline_real_20pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.8728596984410938,
+        "precision": 0.9994074074074074,
+        "recall": 0.7725606962895099,
+        "f1_score": 0.8714636351892521
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.7769040665019097,
+          "recall": 0.999421965317919,
+          "f1-score": 0.8742257615977752,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.9994074074074074,
+          "recall": 0.7725606962895099,
+          "f1-score": 0.8714636351892521,
+          "support": 4366.0
+        },
+        "accuracy": 0.8728596984410938,
+        "macro avg": {
+          "precision": 0.8881557369546585,
+          "recall": 0.8859913308037144,
+          "f1-score": 0.8728446983935136,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.9010351151082734,
+          "recall": 0.8728596984410938,
+          "f1-score": 0.872684815533424,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.385592222213745,
+        "predict_time": 1.7990076541900635,
+        "total_time": 8.184599876403809
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_20pct_RandomForest_model.pkl"
+    },
+    "baseline_real_20pct_SVM": {
+      "config_name": "baseline_real_20pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "baseline_real_20pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.9795553283925377,
+        "precision": 0.9992877492877493,
+        "recall": 0.9640403114979386,
+        "f1_score": 0.9813476334809978
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.95655783065855,
+          "recall": 0.9991329479768786,
+          "f1-score": 0.9773819621147866,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.9992877492877493,
+          "recall": 0.9640403114979386,
+          "f1-score": 0.9813476334809978,
+          "support": 4366.0
+        },
+        "accuracy": 0.9795553283925377,
+        "macro avg": {
+          "precision": 0.9779227899731497,
+          "recall": 0.9815866297374085,
+          "f1-score": 0.9793647977978922,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.9803961675784433,
+          "recall": 0.9795553283925377,
+          "f1-score": 0.9795943466260156,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 92.2837905883789,
+        "predict_time": 11.810158491134644,
+        "total_time": 104.09394907951355
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_20pct_SVM_model.pkl"
+    },
+    "baseline_real_5pct_RandomForest": {
+      "config_name": "baseline_real_5pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "baseline_real_5pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.05,
+          "malicious_count": 500,
+          "benign_count": 9500,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.686429849220547,
+        "precision": 1.0,
+        "recall": 0.4379294548786074,
+        "f1_score": 0.6091111819050653
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5850524179912073,
+          "recall": 1.0,
+          "f1-score": 0.7382120759547685,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.4379294548786074,
+          "f1-score": 0.6091111819050653,
+          "support": 4366.0
+        },
+        "accuracy": 0.686429849220547,
+        "macro avg": {
+          "precision": 0.7925262089956037,
+          "recall": 0.7189647274393037,
+          "f1-score": 0.6736616289299169,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.8165450250766135,
+          "recall": 0.686429849220547,
+          "f1-score": 0.666188755814083,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 7.736954689025879,
+        "predict_time": 1.88200044631958,
+        "total_time": 9.618955135345459
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.05,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_5pct_RandomForest_model.pkl"
+    },
+    "baseline_real_5pct_SVM": {
+      "config_name": "baseline_real_5pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "baseline_real_5pct",
+        "group_name": "baseline_real",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\baseline_real_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.05,
+          "malicious_count": 500,
+          "benign_count": 9500,
+          "available_malicious": 17463,
+          "available_benign": 13837,
+          "used_resampling": false
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "real_malicious_training_data",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.8846153846153846,
+        "precision": 1.0,
+        "recall": 0.7931745304626661,
+        "f1_score": 0.884659598927066
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.7930323172129269,
+          "recall": 1.0,
+          "f1-score": 0.8845711363926883,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.7931745304626661,
+          "f1-score": 0.884659598927066,
+          "support": 4366.0
+        },
+        "accuracy": 0.8846153846153846,
+        "macro avg": {
+          "precision": 0.8965161586064634,
+          "recall": 0.896587265231333,
+          "f1-score": 0.8846153676598771,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.9084962710908161,
+          "recall": 0.8846153846153846,
+          "f1-score": 0.8846204882231371,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 80.87856531143188,
+        "predict_time": 9.099950075149536,
+        "total_time": 89.97851538658142
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.05,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\baseline_real_5pct_SVM_model.pkl"
+    },
+    "pure_rewrite_10pct_RandomForest": {
+      "config_name": "pure_rewrite_10pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_rewrite_10pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.4757219524661385,
+        "precision": 1.0,
+        "recall": 0.060238204306000916,
+        "f1_score": 0.11363145387772737
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.45749041385693506,
+          "recall": 1.0,
+          "f1-score": 0.6277782817744716,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.060238204306000916,
+          "f1-score": 0.11363145387772737,
+          "support": 4366.0
+        },
+        "accuracy": 0.4757219524661385,
+        "macro avg": {
+          "precision": 0.7287452069284676,
+          "recall": 0.5301191021530005,
+          "f1-score": 0.37070486782609946,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7601478190576278,
+          "recall": 0.4757219524661385,
+          "f1-score": 0.34094400492842186,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.838113307952881,
+        "predict_time": 1.8170011043548584,
+        "total_time": 8.65511441230774
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_10pct_RandomForest_model.pkl"
+    },
+    "pure_rewrite_10pct_SVM": {
+      "config_name": "pure_rewrite_10pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_rewrite_10pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.6008177868642985,
+        "precision": 1.0,
+        "recall": 0.2844709115895557,
+        "f1_score": 0.4429386590584879
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5255164034021871,
+          "recall": 1.0,
+          "f1-score": 0.688968538430904,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.2844709115895557,
+          "f1-score": 0.4429386590584879,
+          "support": 4366.0
+        },
+        "accuracy": 0.6008177868642985,
+        "macro avg": {
+          "precision": 0.7627582017010935,
+          "recall": 0.6422354557947778,
+          "f1-score": 0.565953598744696,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7902231990508009,
+          "recall": 0.6008177868642985,
+          "f1-score": 0.5517124109916031,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 86.04230880737305,
+        "predict_time": 9.767733812332153,
+        "total_time": 95.8100426197052
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_10pct_SVM_model.pkl"
+    },
+    "pure_rewrite_15pct_RandomForest": {
+      "config_name": "pure_rewrite_15pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_rewrite_15pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.5015333503705597,
+        "precision": 1.0,
+        "recall": 0.10650480989464041,
+        "f1_score": 0.19250672738563446
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4700448308653716,
+          "recall": 1.0,
+          "f1-score": 0.6394972738194252,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.10650480989464041,
+          "f1-score": 0.19250672738563446,
+          "support": 4366.0
+        },
+        "accuracy": 0.5015333503705597,
+        "macro avg": {
+          "precision": 0.7350224154326858,
+          "recall": 0.5532524049473202,
+          "f1-score": 0.41600200060252984,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7656983279829013,
+          "recall": 0.5015333503705597,
+          "f1-score": 0.3901284103221174,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 7.176999807357788,
+        "predict_time": 1.8949992656707764,
+        "total_time": 9.071999073028564
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_15pct_RandomForest_model.pkl"
+    },
+    "pure_rewrite_15pct_SVM": {
+      "config_name": "pure_rewrite_15pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_rewrite_15pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.6118067978533095,
+        "precision": 1.0,
+        "recall": 0.304168575355016,
+        "f1_score": 0.46645591851071305
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5324715297014466,
+          "recall": 1.0,
+          "f1-score": 0.6949186583651336,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.304168575355016,
+          "f1-score": 0.46645591851071305,
+          "support": 4366.0
+        },
+        "accuracy": 0.6118067978533095,
+        "macro avg": {
+          "precision": 0.7662357648507233,
+          "recall": 0.652084287677508,
+          "f1-score": 0.5806872884379233,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7932981718332489,
+          "recall": 0.6118067978533095,
+          "f1-score": 0.5674629565756625,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 82.45088958740234,
+        "predict_time": 9.292999744415283,
+        "total_time": 91.74388933181763
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_15pct_SVM_model.pkl"
+    },
+    "pure_rewrite_20pct_RandomForest": {
+      "config_name": "pure_rewrite_20pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_rewrite_20pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.5164835164835165,
+        "precision": 1.0,
+        "recall": 0.13330279431974348,
+        "f1_score": 0.23524656426839127
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.47763666482606293,
+          "recall": 1.0,
+          "f1-score": 0.6464872944693573,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.13330279431974348,
+          "f1-score": 0.23524656426839127,
+          "support": 4366.0
+        },
+        "accuracy": 0.5164835164835165,
+        "macro avg": {
+          "precision": 0.7388183324130315,
+          "recall": 0.5666513971598718,
+          "f1-score": 0.4408669293688743,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7690547994247607,
+          "recall": 0.5164835164835165,
+          "f1-score": 0.41706268061075547,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.213549375534058,
+        "predict_time": 1.7620010375976562,
+        "total_time": 7.975550413131714
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_20pct_RandomForest_model.pkl"
+    },
+    "pure_rewrite_20pct_SVM": {
+      "config_name": "pure_rewrite_20pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_rewrite_20pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.6217735752619473,
+        "precision": 1.0,
+        "recall": 0.3220338983050847,
+        "f1_score": 0.48717948717948717
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5389408099688473,
+          "recall": 1.0,
+          "f1-score": 0.7004048582995951,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.3220338983050847,
+          "f1-score": 0.48717948717948717,
+          "support": 4366.0
+        },
+        "accuracy": 0.6217735752619473,
+        "macro avg": {
+          "precision": 0.7694704049844237,
+          "recall": 0.6610169491525424,
+          "f1-score": 0.5937921727395411,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7961583443000525,
+          "recall": 0.6217735752619473,
+          "f1-score": 0.5814498403708458,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 76.41330051422119,
+        "predict_time": 9.396030187606812,
+        "total_time": 85.809330701828
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_20pct_SVM_model.pkl"
+    },
+    "pure_rewrite_5pct_RandomForest": {
+      "config_name": "pure_rewrite_5pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_rewrite_5pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.4441604906721186,
+        "precision": 1.0,
+        "recall": 0.0036646816307833257,
+        "f1_score": 0.00730260155180283
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44302176696542894,
+          "recall": 1.0,
+          "f1-score": 0.614019520851819,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.0036646816307833257,
+          "f1-score": 0.00730260155180283,
+          "support": 4366.0
+        },
+        "accuracy": 0.4441604906721186,
+        "macro avg": {
+          "precision": 0.7215108834827144,
+          "recall": 0.5018323408153916,
+          "f1-score": 0.3106610612018109,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7537509984283649,
+          "recall": 0.4441604906721186,
+          "f1-score": 0.2755418733097962,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 7.023899078369141,
+        "predict_time": 1.7647693157196045,
+        "total_time": 8.788668394088745
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_5pct_RandomForest_model.pkl"
+    },
+    "pure_rewrite_5pct_SVM": {
+      "config_name": "pure_rewrite_5pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_rewrite_5pct",
+        "group_name": "pure_rewrite",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.5992844364937389,
+        "precision": 1.0,
+        "recall": 0.2817224003664682,
+        "f1_score": 0.4395997140814868
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5245603395997575,
+          "recall": 1.0,
+          "f1-score": 0.6881463802704852,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.2817224003664682,
+          "f1-score": 0.4395997140814868,
+          "support": 4366.0
+        },
+        "accuracy": 0.5992844364937389,
+        "macro avg": {
+          "precision": 0.7622801697998787,
+          "recall": 0.6408612001832341,
+          "f1-score": 0.5638730471759861,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7898005079242475,
+          "recall": 0.5992844364937389,
+          "f1-score": 0.5494861777939752,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 75.09840703010559,
+        "predict_time": 8.494209051132202,
+        "total_time": 83.5926160812378
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_5pct_SVM_model.pkl"
+    },
+    "pure_strong_10pct_RandomForest": {
+      "config_name": "pure_strong_10pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_strong_10pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.889843702316284,
+        "predict_time": 1.8070082664489746,
+        "total_time": 8.696851968765259
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_10pct_RandomForest_model.pkl"
+    },
+    "pure_strong_10pct_SVM": {
+      "config_name": "pure_strong_10pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_strong_10pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 59.898998975753784,
+        "predict_time": 6.970969915390015,
+        "total_time": 66.8699688911438
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_10pct_SVM_model.pkl"
+    },
+    "pure_strong_15pct_RandomForest": {
+      "config_name": "pure_strong_15pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_strong_15pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.692306041717529,
+        "predict_time": 1.8359954357147217,
+        "total_time": 8.528301477432251
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_15pct_RandomForest_model.pkl"
+    },
+    "pure_strong_15pct_SVM": {
+      "config_name": "pure_strong_15pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_strong_15pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 64.21983790397644,
+        "predict_time": 7.569000005722046,
+        "total_time": 71.78883790969849
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_15pct_SVM_model.pkl"
+    },
+    "pure_strong_20pct_RandomForest": {
+      "config_name": "pure_strong_20pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_strong_20pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.430161952972412,
+        "predict_time": 1.831991195678711,
+        "total_time": 8.262153148651123
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_20pct_RandomForest_model.pkl"
+    },
+    "pure_strong_20pct_SVM": {
+      "config_name": "pure_strong_20pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_strong_20pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 66.52502942085266,
+        "predict_time": 7.900001049041748,
+        "total_time": 74.42503046989441
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_20pct_SVM_model.pkl"
+    },
+    "pure_strong_5pct_RandomForest": {
+      "config_name": "pure_strong_5pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_strong_5pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.972001791000366,
+        "predict_time": 1.7822744846343994,
+        "total_time": 8.754276275634766
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_5pct_RandomForest_model.pkl"
+    },
+    "pure_strong_5pct_SVM": {
+      "config_name": "pure_strong_5pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_strong_5pct",
+        "group_name": "pure_strong",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_strong_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_strong_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.523766930743675,
+        "precision": 1.0,
+        "recall": 0.14635822262940906,
+        "f1_score": 0.25534465534465534
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4814247947683317,
+          "recall": 1.0,
+          "f1-score": 0.6499483422560346,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.14635822262940906,
+          "f1-score": 0.25534465534465534,
+          "support": 4366.0
+        },
+        "accuracy": 0.523766930743675,
+        "macro avg": {
+          "precision": 0.7407123973841658,
+          "recall": 0.5731791113147046,
+          "f1-score": 0.45264649880034497,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7707295923713811,
+          "recall": 0.523766930743675,
+          "f1-score": 0.4298052682648409,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 53.3599693775177,
+        "predict_time": 6.209369897842407,
+        "total_time": 59.56933927536011
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_strong_5pct_SVM_model.pkl"
+    },
+    "pure_weak_10pct_RandomForest": {
+      "config_name": "pure_weak_10pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_weak_10pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44237158190646564,
+        "precision": 1.0,
+        "recall": 0.0004580852038479157,
+        "f1_score": 0.0009157509157509158
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44222903885480574,
+          "recall": 1.0,
+          "f1-score": 0.6132577100319035,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.0004580852038479157,
+          "f1-score": 0.0009157509157509158,
+          "support": 4366.0
+        },
+        "accuracy": 0.44237158190646564,
+        "macro avg": {
+          "precision": 0.7211145194274029,
+          "recall": 0.5002290426019239,
+          "f1-score": 0.30708673047382723,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7534005206283706,
+          "recall": 0.44237158190646564,
+          "f1-score": 0.2716419429093476,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.86038064956665,
+        "predict_time": 1.7774319648742676,
+        "total_time": 8.637812614440918
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_10pct_RandomForest_model.pkl"
+    },
+    "pure_weak_10pct_SVM": {
+      "config_name": "pure_weak_10pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_weak_10pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.1,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_10pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_10pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.1,
+          "actual_malicious_ratio": 0.1,
+          "malicious_count": 1000,
+          "benign_count": 9000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.4426271403015589,
+        "precision": 1.0,
+        "recall": 0.0009161704076958314,
+        "f1_score": 0.0018306636155606408
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44234211199181794,
+          "recall": 1.0,
+          "f1-score": 0.6133664243928382,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.0009161704076958314,
+          "f1-score": 0.0018306636155606408,
+          "support": 4366.0
+        },
+        "accuracy": 0.4426271403015589,
+        "macro avg": {
+          "precision": 0.721171055995909,
+          "recall": 0.5004580852038479,
+          "f1-score": 0.3075985440041994,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7534505120740723,
+          "recall": 0.4426271403015589,
+          "f1-score": 0.2722004224054124,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 44.73999834060669,
+        "predict_time": 5.418278694152832,
+        "total_time": 50.15827703475952
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.1,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_10pct_SVM_model.pkl"
+    },
+    "pure_weak_15pct_RandomForest": {
+      "config_name": "pure_weak_15pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_weak_15pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44211602351137236,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44211602351137236,
+          "recall": 1.0,
+          "f1-score": 0.6131490342016658,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 4366.0
+        },
+        "accuracy": 0.44211602351137236,
+        "macro avg": {
+          "precision": 0.22105801175568618,
+          "recall": 0.5,
+          "f1-score": 0.3065745171008329,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.19546657824550837,
+          "recall": 0.44211602351137236,
+          "f1-score": 0.2710830128210789,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.3840131759643555,
+        "predict_time": 1.7800772190093994,
+        "total_time": 8.164090394973755
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_15pct_RandomForest_model.pkl"
+    },
+    "pure_weak_15pct_SVM": {
+      "config_name": "pure_weak_15pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_weak_15pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.15,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_15pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_15pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.15,
+          "actual_malicious_ratio": 0.15,
+          "malicious_count": 1500,
+          "benign_count": 8500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44301047789419884,
+        "precision": 1.0,
+        "recall": 0.001603298213467705,
+        "f1_score": 0.003201463526183398
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4425118301573091,
+          "recall": 1.0,
+          "f1-score": 0.6135295682241333,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.001603298213467705,
+          "f1-score": 0.003201463526183398,
+          "support": 4366.0
+        },
+        "accuracy": 0.44301047789419884,
+        "macro avg": {
+          "precision": 0.7212559150786546,
+          "recall": 0.5008016491067339,
+          "f1-score": 0.30836551587515837,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7535255471945169,
+          "recall": 0.44301047789419884,
+          "f1-score": 0.2730372982124736,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 47.78630757331848,
+        "predict_time": 5.877032279968262,
+        "total_time": 53.66333985328674
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.15,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_15pct_SVM_model.pkl"
+    },
+    "pure_weak_20pct_RandomForest": {
+      "config_name": "pure_weak_20pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_weak_20pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44237158190646564,
+        "precision": 1.0,
+        "recall": 0.0004580852038479157,
+        "f1_score": 0.0009157509157509158
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44222903885480574,
+          "recall": 1.0,
+          "f1-score": 0.6132577100319035,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.0004580852038479157,
+          "f1-score": 0.0009157509157509158,
+          "support": 4366.0
+        },
+        "accuracy": 0.44237158190646564,
+        "macro avg": {
+          "precision": 0.7211145194274029,
+          "recall": 0.5002290426019239,
+          "f1-score": 0.30708673047382723,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7534005206283706,
+          "recall": 0.44237158190646564,
+          "f1-score": 0.2716419429093476,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 6.049166679382324,
+        "predict_time": 1.7730042934417725,
+        "total_time": 7.822170972824097
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_20pct_RandomForest_model.pkl"
+    },
+    "pure_weak_20pct_SVM": {
+      "config_name": "pure_weak_20pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_weak_20pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.2,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_20pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_20pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 10000,
+          "target_malicious_ratio": 0.2,
+          "actual_malicious_ratio": 0.2,
+          "malicious_count": 2000,
+          "benign_count": 8000,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44301047789419884,
+        "precision": 1.0,
+        "recall": 0.001603298213467705,
+        "f1_score": 0.003201463526183398
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4425118301573091,
+          "recall": 1.0,
+          "f1-score": 0.6135295682241333,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.001603298213467705,
+          "f1-score": 0.003201463526183398,
+          "support": 4366.0
+        },
+        "accuracy": 0.44301047789419884,
+        "macro avg": {
+          "precision": 0.7212559150786546,
+          "recall": 0.5008016491067339,
+          "f1-score": 0.30836551587515837,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7535255471945169,
+          "recall": 0.44301047789419884,
+          "f1-score": 0.2730372982124736,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 49.03902864456177,
+        "predict_time": 6.393969774246216,
+        "total_time": 55.43299841880798
+      },
+      "data_info": {
+        "train_samples": 10000,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.2,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_20pct_SVM_model.pkl"
+    },
+    "pure_weak_5pct_RandomForest": {
+      "config_name": "pure_weak_5pct",
+      "model_name": "RandomForest",
+      "config_info": {
+        "config_name": "pure_weak_5pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.44211602351137236,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.44211602351137236,
+          "recall": 1.0,
+          "f1-score": 0.6131490342016658,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 4366.0
+        },
+        "accuracy": 0.44211602351137236,
+        "macro avg": {
+          "precision": 0.22105801175568618,
+          "recall": 0.5,
+          "f1-score": 0.3065745171008329,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.19546657824550837,
+          "recall": 0.44211602351137236,
+          "f1-score": 0.2710830128210789,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 8.118494987487793,
+        "predict_time": 1.9028964042663574,
+        "total_time": 10.02139139175415
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_5pct_RandomForest_model.pkl"
+    },
+    "pure_weak_5pct_SVM": {
+      "config_name": "pure_weak_5pct",
+      "model_name": "SVM",
+      "config_info": {
+        "config_name": "pure_weak_5pct",
+        "group_name": "pure_weak",
+        "malicious_ratio": 0.05,
+        "data_purity": "pure",
+        "creation_date": "2025-07-30",
+        "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_5pct\\train.csv",
+        "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_weak_5pct\\test.csv",
+        "train_stats": {
+          "target_size": 10000,
+          "actual_size": 9900,
+          "target_malicious_ratio": 0.05,
+          "actual_malicious_ratio": 0.04040404040404041,
+          "malicious_count": 400,
+          "benign_count": 9500,
+          "available_malicious": 400,
+          "available_benign": 13837,
+          "used_resampling": true
+        },
+        "test_stats": {
+          "total_size": 7826,
+          "malicious_count": 4366,
+          "benign_count": 3460,
+          "malicious_ratio": 0.5578839764886276
+        },
+        "data_composition": {
+          "malicious_source": "synthetic_rewrite_weak_all_layers",
+          "benign_source": "real_train_benign",
+          "test_source": "fixed_test_set_from_batch4"
+        }
+      },
+      "metrics": {
+        "accuracy": 0.4428826986966522,
+        "precision": 1.0,
+        "recall": 0.001374255611543747,
+        "f1_score": 0.0027447392497712718
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.4424552429667519,
+          "recall": 1.0,
+          "f1-score": 0.6134751773049646,
+          "support": 3460.0
+        },
+        "1": {
+          "precision": 1.0,
+          "recall": 0.001374255611543747,
+          "f1-score": 0.0027447392497712718,
+          "support": 4366.0
+        },
+        "accuracy": 0.4428826986966522,
+        "macro avg": {
+          "precision": 0.7212276214833759,
+          "recall": 0.5006871278057718,
+          "f1-score": 0.3081099582773679,
+          "support": 7826.0
+        },
+        "weighted avg": {
+          "precision": 0.7535005290908461,
+          "recall": 0.4428826986966522,
+          "f1-score": 0.27275845196009185,
+          "support": 7826.0
+        }
+      },
+      "timing": {
+        "train_time": 40.68089771270752,
+        "predict_time": 5.381371974945068,
+        "total_time": 46.06226968765259
+      },
+      "data_info": {
+        "train_samples": 9900,
+        "test_samples": 7826,
+        "train_malicious_ratio": 0.04040404040404041,
+        "test_malicious_ratio": 0.5578839764886276
+      },
+      "evaluation_date": "2025-07-30",
+      "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_weak_5pct_SVM_model.pkl"
+    }
+  }
+}

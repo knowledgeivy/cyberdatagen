@@ -1,0 +1,81 @@
+{
+  "config_name": "pure_rewrite_15pct",
+  "model_name": "SVM",
+  "config_info": {
+    "config_name": "pure_rewrite_15pct",
+    "group_name": "pure_rewrite",
+    "malicious_ratio": 0.15,
+    "data_purity": "pure",
+    "creation_date": "2025-07-30",
+    "train_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\train.csv",
+    "test_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\pure_datasets\\pure_rewrite_15pct\\test.csv",
+    "train_stats": {
+      "target_size": 10000,
+      "actual_size": 10000,
+      "target_malicious_ratio": 0.15,
+      "actual_malicious_ratio": 0.15,
+      "malicious_count": 1500,
+      "benign_count": 8500,
+      "available_malicious": 400,
+      "available_benign": 13837,
+      "used_resampling": true
+    },
+    "test_stats": {
+      "total_size": 7826,
+      "malicious_count": 4366,
+      "benign_count": 3460,
+      "malicious_ratio": 0.5578839764886276
+    },
+    "data_composition": {
+      "malicious_source": "synthetic_rewrite_all_layers",
+      "benign_source": "real_train_benign",
+      "test_source": "fixed_test_set_from_batch4"
+    }
+  },
+  "metrics": {
+    "accuracy": 0.6118067978533095,
+    "precision": 1.0,
+    "recall": 0.304168575355016,
+    "f1_score": 0.46645591851071305
+  },
+  "classification_report": {
+    "0": {
+      "precision": 0.5324715297014466,
+      "recall": 1.0,
+      "f1-score": 0.6949186583651336,
+      "support": 3460.0
+    },
+    "1": {
+      "precision": 1.0,
+      "recall": 0.304168575355016,
+      "f1-score": 0.46645591851071305,
+      "support": 4366.0
+    },
+    "accuracy": 0.6118067978533095,
+    "macro avg": {
+      "precision": 0.7662357648507233,
+      "recall": 0.652084287677508,
+      "f1-score": 0.5806872884379233,
+      "support": 7826.0
+    },
+    "weighted avg": {
+      "precision": 0.7932981718332489,
+      "recall": 0.6118067978533095,
+      "f1-score": 0.5674629565756625,
+      "support": 7826.0
+    }
+  },
+  "timing": {
+    "train_time": 82.45088958740234,
+    "predict_time": 9.292999744415283,
+    "total_time": 91.74388933181763
+  },
+  "data_info": {
+    "train_samples": 10000,
+    "test_samples": 7826,
+    "train_malicious_ratio": 0.15,
+    "test_malicious_ratio": 0.5578839764886276
+  },
+  "evaluation_date": "2025-07-30",
+  "model_file": "C:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch5\\models\\pure_rewrite_15pct_SVM_model.pkl"
+}
