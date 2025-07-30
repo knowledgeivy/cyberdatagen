@@ -1,0 +1,98 @@
+{
+  "phase1_info": {
+    "date": "2025-07-30",
+    "model": "all-MiniLM-L6-v2",
+    "embedding_dimension": 384,
+    "random_state": 2025,
+    "total_samples": 40326,
+    "embedding_shape": [
+      40326,
+      384
+    ]
+  },
+  "data_distribution": {
+    "by_source": {
+      "real_malicious": 17463,
+      "real_benign": 13837,
+      "test_set": 7826,
+      "synthetic": 1200
+    },
+    "by_label": {
+      "1": 23029,
+      "0": 17297
+    },
+    "synthetic_analysis": {
+      "total_synthetic": 1200,
+      "layer_distribution": {
+        "core": 300,
+        "inner": 300,
+        "outer": 300,
+        "edge": 300
+      },
+      "variant_distribution": {
+        "rewrite": 400,
+        "rewrite_weak": 400,
+        "rewrite_strong": 400
+      }
+    }
+  },
+  "quality_metrics": {
+    "layer_analysis": {
+      "core": {
+        "sample_count": 300,
+        "mean_distance": 0.45475637912750244,
+        "std_distance": 0.14247170090675354,
+        "min_distance": 0.22258269786834717,
+        "max_distance": 0.826529860496521,
+        "quartiles": [
+          0.3167210817337036,
+          0.46868738532066345,
+          0.5624009370803833
+        ]
+      },
+      "inner": {
+        "sample_count": 300,
+        "mean_distance": 0.48544180393218994,
+        "std_distance": 0.10625305026769638,
+        "min_distance": 0.2639228105545044,
+        "max_distance": 0.7747949957847595,
+        "quartiles": [
+          0.4047327935695648,
+          0.46537166833877563,
+          0.5651594400405884
+        ]
+      },
+      "outer": {
+        "sample_count": 300,
+        "mean_distance": 0.5339840650558472,
+        "std_distance": 0.10753104835748672,
+        "min_distance": 0.30949145555496216,
+        "max_distance": 0.8206378817558289,
+        "quartiles": [
+          0.4513218104839325,
+          0.5215891003608704,
+          0.6115991473197937
+        ]
+      },
+      "edge": {
+        "sample_count": 300,
+        "mean_distance": 0.5542179346084595,
+        "std_distance": 0.12467385828495026,
+        "min_distance": 0.26756560802459717,
+        "max_distance": 1.0398447513580322,
+        "quartiles": [
+          0.4655799865722656,
+          0.5387886762619019,
+          0.6305760145187378
+        ]
+      }
+    },
+    "centroids_computed": 12
+  },
+  "file_outputs": {
+    "embeddings": "all_embeddings.npy",
+    "metadata": "embedding_metadata.csv",
+    "centroids": "layer_centroids.json",
+    "statistics": "distance_statistics.json"
+  }
+}

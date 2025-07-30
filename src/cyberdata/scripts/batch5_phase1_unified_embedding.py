@@ -326,9 +326,9 @@ class Batch5Phase1UnifiedEmbedding:
             np.save(embeddings_file, embeddings)
             self.logger.info(f"Embedding矩阵已保存: {embeddings_file}")
             
-            # 2. 保存元数据
-            metadata_file = self.unified_dir / "embedding_metadata.csv"
-            save_csv_data(unified_df, metadata_file, compress=False, logger=self.logger)
+            # 2. 保存元数据 (压缩格式以适应GitHub限制)
+            metadata_file = self.unified_dir / "embedding_metadata.csv.gz"
+            save_csv_data(unified_df, metadata_file, compress=True, logger=self.logger)
             self.logger.info(f"元数据已保存: {metadata_file}")
             
             # 3. 保存质心信息
@@ -407,7 +407,7 @@ class Batch5Phase1UnifiedEmbedding:
                 },
                 'file_outputs': {
                     'embeddings': 'all_embeddings.npy',
-                    'metadata': 'embedding_metadata.csv',
+                    'metadata': 'embedding_metadata.csv.gz',
                     'centroids': 'layer_centroids.json',
                     'statistics': 'distance_statistics.json'
                 }

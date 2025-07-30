@@ -99,8 +99,8 @@ class Batch5Phase2EnhancedVisualization:
         try:
             self.logger.info("加载统一embedding数据...")
             
-            # 加载元数据
-            metadata_file = self.unified_dir / "embedding_metadata.csv"
+            # 加载元数据 (压缩格式)
+            metadata_file = self.unified_dir / "embedding_metadata.csv.gz"
             metadata_df = load_csv_data(metadata_file, logger=self.logger)
             
             # 加载embedding矩阵
@@ -255,7 +255,7 @@ class Batch5Phase2EnhancedVisualization:
             raise
     
     def create_static_visualizations(self, metadata_df: pd.DataFrame, dim_results: Dict[str, np.ndarray],
-                                   cluster_results: Dict[str, Any]) -> None:
+                                   cluster_results: Dict[str, Any], embeddings: np.ndarray) -> None:
         """创建静态可视化图表"""
         try:
             self.logger.info("创建静态可视化图表...")
@@ -266,7 +266,7 @@ class Batch5Phase2EnhancedVisualization:
             
             # 1. PCA 2D散点图 - 按数据源着色
             fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-            fig.suptitle('批次5统一Embedding空间可视化分析', fontsize=16, fontweight='bold')
+            fig.suptitle('Batch 5 Unified Embedding Space Visualization Analysis', fontsize=16, fontweight='bold')
             
             # 1.1 按数据源着色
             ax1 = axes[0, 0]
@@ -278,7 +278,7 @@ class Batch5Phase2EnhancedVisualization:
             
             ax1.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
             ax1.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
-            ax1.set_title('PCA降维 - 按数据源分类')
+            ax1.set_title('PCA Dimensionality Reduction - By Data Source')
             ax1.legend()
             ax1.grid(True, alpha=0.3)
             
@@ -293,11 +293,11 @@ class Batch5Phase2EnhancedVisualization:
                     layer_mask = synthetic_df['layer'] == layer
                     color = self.color_palette.get(layer, '#888888')
                     ax2.scatter(pca_synthetic[layer_mask, 0], pca_synthetic[layer_mask, 1], 
-                               c=color, label=f'{layer}层', alpha=0.7, s=25)
+                               c=color, label=f'{layer} layer', alpha=0.7, s=25)
             
             ax2.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
             ax2.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
-            ax2.set_title('PCA降维 - 合成数据分层分析')
+            ax2.set_title('PCA Dimensionality Reduction - Synthetic Data Layer Analysis')
             ax2.legend()
             ax2.grid(True, alpha=0.3)
             
@@ -313,7 +313,7 @@ class Batch5Phase2EnhancedVisualization:
             
             ax3.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')
             ax3.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
-            ax3.set_title('PCA降维 - Prompt变体分析')
+            ax3.set_title('PCA Dimensionality Reduction - Prompt Variant Analysis')
             ax3.legend()
             ax3.grid(True, alpha=0.3)
             
@@ -326,15 +326,20 @@ class Batch5Phase2EnhancedVisualization:
             scatter = ax4.scatter(sample_pca[:, 0], sample_pca[:, 1], 
                                  c=kmeans_labels, cmap='tab10', alpha=0.6, s=20)
             
-            # 绘制聚类中心
-            centers_pca = PCA(n_components=2, random_state=self.random_state).fit(
-                dim_results['pca_2d']).transform(cluster_results['kmeans_centers'])
+            # 绘制聚类中心（需要用原始PCA转换器变换到2D空间）
+            # 创建临时PCA来转换聚类中心到2D空间
+            temp_pca = PCA(n_components=2, random_state=self.random_state)
+            # 先用采样数据拟合PCA
+            sample_indices = cluster_results['sample_indices']
+            sample_embeddings = embeddings[sample_indices]  # 需要传入embeddings参数
+            temp_pca.fit(sample_embeddings)
+            centers_pca = temp_pca.transform(cluster_results['kmeans_centers'])
             ax4.scatter(centers_pca[:, 0], centers_pca[:, 1], 
-                       c='red', marker='x', s=200, linewidths=3, label='聚类中心')
+                       c='red', marker='x', s=200, linewidths=3, label='Cluster Centers')
             
             ax4.set_xlabel(f'PC1 ({dim_results["pca_2d_variance"][0]:.1%} variance)')  
             ax4.set_ylabel(f'PC2 ({dim_results["pca_2d_variance"][1]:.1%} variance)')
-            ax4.set_title(f'K-means聚类 (k={cluster_results["best_k"]})')
+            ax4.set_title(f'K-means Clustering (k={cluster_results["best_k"]})')
             ax4.legend()
             ax4.grid(True, alpha=0.3)
             
@@ -374,7 +379,7 @@ class Batch5Phase2EnhancedVisualization:
             
             # 创建距离分布对比图
             fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-            fig.suptitle('合成数据分层距离分布分析', fontsize=16, fontweight='bold')
+            fig.suptitle('Synthetic Data Layer Distance Distribution Analysis', fontsize=16, fontweight='bold')
             
             layers = ['core', 'inner', 'outer', 'edge']
             colors = [self.color_palette.get(layer, '#888888') for layer in layers]
@@ -383,8 +388,8 @@ class Batch5Phase2EnhancedVisualization:
             ax1 = axes[0, 0]
             mean_distances = [layer_analysis[layer]['mean_distance'] for layer in layers]
             bars1 = ax1.bar(layers, mean_distances, color=colors, alpha=0.7)
-            ax1.set_ylabel('平均余弦距离')
-            ax1.set_title('各层到质心的平均距离')
+            ax1.set_ylabel('Average Cosine Distance')
+            ax1.set_title('Average Distance to Centroid by Layer')
             ax1.grid(True, alpha=0.3)
             
             # 添加数值标签
@@ -396,8 +401,8 @@ class Batch5Phase2EnhancedVisualization:
             ax2 = axes[0, 1]
             std_distances = [layer_analysis[layer]['std_distance'] for layer in layers]
             bars2 = ax2.bar(layers, std_distances, color=colors, alpha=0.7)
-            ax2.set_ylabel('距离标准差')
-            ax2.set_title('各层距离分布的标准差')
+            ax2.set_ylabel('Distance Standard Deviation')
+            ax2.set_title('Standard Deviation of Distance Distribution by Layer')
             ax2.grid(True, alpha=0.3)
             
             for bar, std in zip(bars2, std_distances):
@@ -410,11 +415,11 @@ class Batch5Phase2EnhancedVisualization:
             max_distances = [layer_analysis[layer]['max_distance'] for layer in layers]
             
             x_pos = np.arange(len(layers))
-            ax3.bar(x_pos - 0.2, min_distances, 0.4, label='最小距离', alpha=0.7)
-            ax3.bar(x_pos + 0.2, max_distances, 0.4, label='最大距离', alpha=0.7)
-            ax3.set_xlabel('分层')
-            ax3.set_ylabel('余弦距离')
-            ax3.set_title('各层距离范围对比')
+            ax3.bar(x_pos - 0.2, min_distances, 0.4, label='Min Distance', alpha=0.7)
+            ax3.bar(x_pos + 0.2, max_distances, 0.4, label='Max Distance', alpha=0.7)
+            ax3.set_xlabel('Layer')
+            ax3.set_ylabel('Cosine Distance')
+            ax3.set_title('Distance Range Comparison by Layer')
             ax3.set_xticks(x_pos)
             ax3.set_xticklabels(layers)
             ax3.legend()
@@ -424,8 +429,8 @@ class Batch5Phase2EnhancedVisualization:
             ax4 = axes[1, 1]
             sample_counts = [layer_analysis[layer]['sample_count'] for layer in layers]
             bars4 = ax4.bar(layers, sample_counts, color=colors, alpha=0.7)
-            ax4.set_ylabel('样本数量')
-            ax4.set_title('各层样本数量分布')
+            ax4.set_ylabel('Sample Count')
+            ax4.set_title('Sample Count Distribution by Layer')
             ax4.grid(True, alpha=0.3)
             
             for bar, count in zip(bars4, sample_counts):
@@ -448,7 +453,7 @@ class Batch5Phase2EnhancedVisualization:
             self.logger.info("创建聚类质量分析图...")
             
             fig, axes = plt.subplots(1, 3, figsize=(18, 6))
-            fig.suptitle('聚类分析质量评估', fontsize=16, fontweight='bold')
+            fig.suptitle('Clustering Analysis Quality Assessment', fontsize=16, fontweight='bold')
             
             # 1. K-means肘部法则
             ax1 = axes[0]
@@ -456,15 +461,15 @@ class Batch5Phase2EnhancedVisualization:
             inertias = list(cluster_results['inertias'].values())
             
             ax1.plot(k_values, inertias, 'bo-', markersize=8, linewidth=2)
-            ax1.set_xlabel('聚类数量 (k)')
-            ax1.set_ylabel('惯性 (Inertia)')
-            ax1.set_title('K-means肘部法则')
+            ax1.set_xlabel('Number of Clusters (k)')
+            ax1.set_ylabel('Inertia')
+            ax1.set_title('K-means Elbow Method')
             ax1.grid(True, alpha=0.3)
             
             # 标记最佳k值
             best_k = cluster_results['best_k']
             best_inertia = cluster_results['inertias'][best_k]
-            ax1.plot(best_k, best_inertia, 'ro', markersize=12, label=f'最佳k={best_k}')
+            ax1.plot(best_k, best_inertia, 'ro', markersize=12, label=f'Optimal k={best_k}')
             ax1.legend()
             
             # 2. 轮廓系数
@@ -472,15 +477,15 @@ class Batch5Phase2EnhancedVisualization:
             silhouette_scores = list(cluster_results['silhouette_scores'].values())
             
             ax2.plot(k_values, silhouette_scores, 'go-', markersize=8, linewidth=2)
-            ax2.set_xlabel('聚类数量 (k)')
-            ax2.set_ylabel('轮廓系数')
-            ax2.set_title('K-means轮廓系数')
+            ax2.set_xlabel('Number of Clusters (k)')
+            ax2.set_ylabel('Silhouette Score')
+            ax2.set_title('K-means Silhouette Score')
             ax2.grid(True, alpha=0.3)
             
             # 标记最佳轮廓系数
             best_silhouette = max(silhouette_scores)
             ax2.plot(best_k, best_silhouette, 'ro', markersize=12, 
-                    label=f'最佳轮廓系数={best_silhouette:.3f}')
+                    label=f'Best Silhouette Score={best_silhouette:.3f}')
             ax2.legend()
             
             # 3. DBSCAN结果
@@ -490,11 +495,11 @@ class Batch5Phase2EnhancedVisualization:
                 cluster_results['dbscan_n_noise'],
                 len(cluster_results['dbscan_labels']) - cluster_results['dbscan_n_clusters'] - cluster_results['dbscan_n_noise']
             ]
-            labels = ['有效簇', '噪声点', '聚类点']
+            labels = ['Valid Clusters', 'Noise Points', 'Clustered Points']
             colors = ['#2E8B57', '#DC143C', '#4682B4']
             
             ax3.pie(dbscan_data, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-            ax3.set_title(f'DBSCAN聚类结果\n({cluster_results["dbscan_n_clusters"]}个簇)')
+            ax3.set_title(f'DBSCAN Clustering Results\n({cluster_results["dbscan_n_clusters"]} clusters)')
             
             plt.tight_layout()
             
@@ -556,7 +561,7 @@ class Batch5Phase2EnhancedVisualization:
             
             # 更新布局
             fig.update_layout(
-                title='批次5统一Embedding空间 - 3D PCA可视化',
+                title='Batch 5 Unified Embedding Space - 3D PCA Visualization',
                 scene=dict(
                     xaxis_title=f'PC1 ({dim_results["pca_3d_variance"][0]:.1%})',
                     yaxis_title=f'PC2 ({dim_results["pca_3d_variance"][1]:.1%})',
@@ -581,7 +586,7 @@ class Batch5Phase2EnhancedVisualization:
             # 创建子图
             fig = make_subplots(
                 rows=2, cols=2,
-                subplot_titles=('按数据源分类', '按合成数据层分类', '按Prompt变体分类', 'K-means聚类'),
+                subplot_titles=('By Data Source', 'By Synthetic Data Layer', 'By Prompt Variant', 'K-means Clustering'),
                 specs=[[{"type": "scatter"}, {"type": "scatter"}],
                        [{"type": "scatter"}, {"type": "scatter"}]]
             )
@@ -668,7 +673,7 @@ class Batch5Phase2EnhancedVisualization:
             
             # 更新布局
             fig.update_layout(
-                title_text="批次5统一Embedding空间 - 多维度对比分析",
+                title_text="Batch 5 Unified Embedding Space - Multi-dimensional Comparative Analysis",
                 height=800,
                 width=1200
             )
@@ -698,8 +703,8 @@ class Batch5Phase2EnhancedVisualization:
                 x=tsne_data[:, 0],
                 y=tsne_data[:, 1],
                 color=valid_df['data_source'],
-                title='批次5统一Embedding空间 - t-SNE可视化',
-                labels={'x': 't-SNE 1', 'y': 't-SNE 2', 'color': '数据源'},
+                title='Batch 5 Unified Embedding Space - t-SNE Visualization',
+                labels={'x': 't-SNE 1', 'y': 't-SNE 2', 'color': 'Data Source'},
                 hover_data={'unique_id': valid_df['unique_id']},
                 color_discrete_map=self.color_palette
             )
@@ -793,7 +798,7 @@ class Batch5Phase2EnhancedVisualization:
             
             # Step 4: 创建静态可视化
             self.logger.info("Step 4: 创建静态可视化")
-            self.create_static_visualizations(metadata_df, dim_results, cluster_results)
+            self.create_static_visualizations(metadata_df, dim_results, cluster_results, embeddings)
             
             # Step 5: 创建交互式可视化
             self.logger.info("Step 5: 创建交互式可视化")

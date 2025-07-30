@@ -1,0 +1,51 @@
+{
+  "phase2_info": {
+    "date": "2025-07-30",
+    "total_samples_visualized": 40326,
+    "embedding_dimension": 2,
+    "random_state": 2025
+  },
+  "dimensionality_reduction": {
+    "pca_2d_variance_explained": 0.13827376067638397,
+    "pca_3d_variance_explained": 0.18264344334602356,
+    "tsne_samples": 5000
+  },
+  "clustering_analysis": {
+    "kmeans_best_k": 10,
+    "kmeans_best_silhouette": 0.11701370775699615,
+    "dbscan_clusters": 26,
+    "dbscan_noise_points": 8170,
+    "dbscan_silhouette": 0.6585666537284851
+  },
+  "data_distribution": {
+    "by_source": {
+      "real_malicious": 17463,
+      "real_benign": 13837,
+      "test_set": 7826,
+      "synthetic": 1200
+    },
+    "synthetic_by_layer": {
+      "core": 300,
+      "inner": 300,
+      "outer": 300,
+      "edge": 300
+    },
+    "synthetic_by_prompt": {
+      "rewrite": 400,
+      "rewrite_weak": 400,
+      "rewrite_strong": 400
+    }
+  },
+  "visualization_files": {
+    "static_plots": {
+      "overview": "static_plots/embedding_overview_analysis.png",
+      "distance_analysis": "distribution_analysis/layer_distance_analysis.png",
+      "clustering_quality": "cluster_analysis/clustering_quality_analysis.png"
+    },
+    "interactive_plots": {
+      "3d_pca": "interactive_plots/batch5_3d_pca_interactive.html",
+      "dashboard": "interactive_plots/batch5_comparison_dashboard.html",
+      "tsne": "interactive_plots/batch5_tsne_interactive.html"
+    }
+  }
+}
