@@ -1,0 +1,42 @@
+{
+  "phase5a_completion": {
+    "status": "completed",
+    "completion_date": "2025-07-31T17:14:20.280890",
+    "data_shape": {
+      "embeddings": [
+        47126,
+        384
+      ],
+      "metadata_records": 47126
+    }
+  },
+  "dimensionality_reduction": {
+    "pca_2d_variance_explained": 0.15033352375030518,
+    "pca_3d_variance_explained": 0.19662365317344666,
+    "methods_completed": [
+      "PCA_2D",
+      "PCA_3D",
+      "t-SNE_2D"
+    ]
+  },
+  "clustering_analysis": {
+    "optimal_k": 19,
+    "best_silhouette_score": 0.16018657386302948,
+    "k_values_tested": 28,
+    "k_range": "2-29"
+  },
+  "data_sources": {
+    "background": 17463,
+    "training": 13837,
+    "test_set": 7826,
+    "batch6_synthetic": 6000,
+    "seeds": 2000
+  },
+  "output_files": {
+    "embeddings": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase5a_processed_data\\embeddings.npy",
+    "metadata": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase5a_processed_data\\metadata.csv.gz",
+    "dimensionality_reduction": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase5a_processed_data\\dimensionality_reduction_results.pkl",
+    "clustering_results": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase5a_processed_data\\clustering_results.json",
+    "distance_statistics": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase5a_processed_data\\distance_statistics.json"
+  }
+}

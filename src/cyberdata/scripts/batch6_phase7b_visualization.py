@@ -72,16 +72,30 @@ class Batch6Phase7bVisualizer:
         """Load visualization configurations"""
         self.config = {
             'color_schemes': {
+                'performance_curves': {
+                    'baseline_real': '#2C3E50',      # Dark Gray-Blue (professional)
+                    'pure_original': '#3498DB',       # Blue (academic standard)
+                    'pure_strong': '#E67E22',         # Orange (distinct)
+                    'pure_weak': '#9B59B6'            # Purple (colorblind-friendly)
+                },
                 'dataset_types': {
-                    'baseline_real': '#FF4444',
-                    'pure_original': '#4444FF', 
-                    'pure_strong': '#44FF44',
-                    'pure_weak': '#FFAA44'
+                    'baseline_real': '#2C3E50',
+                    'pure_original': '#3498DB', 
+                    'pure_strong': '#E67E22',
+                    'pure_weak': '#9B59B6'
                 },
                 'models': {
-                    'RandomForest': '#1f77b4',
-                    'SVM': '#ff7f0e', 
-                    'DeepLearning': '#2ca02c'
+                    'RandomForest': '#34495E',        # Dark Slate
+                    'SVM': '#E67E22',                 # Orange
+                    'DeepLearning': '#27AE60'         # Green
+                }
+            },
+            'academic_legends': {
+                'performance_curves': {
+                    'baseline_real': 'Real (Baseline)',
+                    'pure_original': 'Rewrite Original',
+                    'pure_strong': 'Rewrite Strong',
+                    'pure_weak': 'Rewrite Weak'
                 }
             },
             'reference_lines': {
@@ -234,7 +248,8 @@ class Batch6Phase7bVisualizer:
             fig, axes = plt.subplots(2, 2, figsize=(16, 12))
             fig.suptitle('Batch 6 Performance Curves: Dataset Type Comparison', fontsize=16, fontweight='bold')
             
-            colors = self.config['color_schemes']['dataset_types']
+            colors = self.config['color_schemes']['performance_curves']
+            legends = self.config['academic_legends']['performance_curves']
             
             for i, (metric, title) in enumerate(zip(self.config['metrics'], self.config['metric_titles'])):
                 ax = axes[i//2, i%2]
@@ -247,19 +262,22 @@ class Batch6Phase7bVisualizer:
                         
                         ax.plot(curve['malicious_ratio_numeric'], curve['mean'], 
                                color=colors[dataset_type], linewidth=3, marker='o', markersize=8,
-                               label=dataset_type.replace('_', ' ').title())
+                               label=legends[dataset_type])
                         
                         # Add error bars (std)
                         ax.fill_between(curve['malicious_ratio_numeric'], 
                                        curve['mean'] - curve['std'].fillna(0),
                                        curve['mean'] + curve['std'].fillna(0),
-                                       color=colors[dataset_type], alpha=0.2)
+                                       color=colors[dataset_type], alpha=0.15)
                 
                 ax.set_xlabel('Malicious Data Ratio (%)', fontsize=12)
                 ax.set_ylabel(title, fontsize=12)
                 ax.set_title(f'{title} vs Malicious Ratio', fontsize=12)
                 ax.legend(fontsize=10)
                 ax.grid(True, alpha=0.3)
+                
+                # Set consistent y-axis range for better comparison
+                ax.set_ylim(0.45, 1.05)  # 0.5-1.0 with margins
                 
                 # Add reference lines for F1
                 if metric == 'f1':
@@ -304,6 +322,9 @@ class Batch6Phase7bVisualizer:
                 ax.set_title(f'{title} vs Malicious Ratio (All Models)', fontsize=12)
                 ax.legend(fontsize=10)
                 ax.grid(True, alpha=0.3)
+                
+                # Set consistent y-axis range for better comparison
+                ax.set_ylim(0.45, 1.05)  # 0.5-1.0 with margins
             
             plt.tight_layout()
             plt.savefig(self.output_dir / 'plots' / 'batch6_performance_curves_models.png', 
@@ -328,7 +349,8 @@ class Batch6Phase7bVisualizer:
                 horizontal_spacing=0.10
             )
             
-            colors = self.config['color_schemes']['dataset_types']
+            colors = self.config['color_schemes']['performance_curves']
+            legends = self.config['academic_legends']['performance_curves']
             
             for i, metric in enumerate(self.config['metrics']):
                 row = i // 2 + 1
@@ -346,12 +368,12 @@ class Batch6Phase7bVisualizer:
                                 x=curve['malicious_ratio_numeric'],
                                 y=curve['mean'],
                                 mode='lines+markers',
-                                name=f"{dataset_type.replace('_', ' ').title()}",
+                                name=legends[dataset_type],
                                 line=dict(color=colors[dataset_type], width=3),
                                 marker=dict(size=10),
                                 showlegend=(i == 0),  # Only show legend for first subplot
                                 legendgroup=dataset_type,
-                                hovertemplate=f'<b>{dataset_type.replace("_", " ").title()}</b><br>' +\
+                                hovertemplate=f'<b>{legends[dataset_type]}</b><br>' +\
                                             f'Ratio: %{{x}}%<br>' +\
                                             f'{metric.title()}: %{{y:.4f}}<br>' +\
                                             f'Std: %{{customdata:.4f}}<br>' +\
@@ -361,29 +383,7 @@ class Batch6Phase7bVisualizer:
                             row=row, col=col
                         )
                         
-                        # Individual data points
-                        for _, point in subset.iterrows():
-                            fig.add_trace(
-                                go.Scatter(
-                                    x=[point['malicious_ratio_numeric']],
-                                    y=[point[metric]],
-                                    mode='markers',
-                                    marker=dict(
-                                        color=colors[dataset_type],
-                                        size=6,
-                                        opacity=0.6,
-                                        symbol='circle-open',
-                                        line=dict(width=1)
-                                    ),
-                                    showlegend=False,
-                                    legendgroup=dataset_type,
-                                    hovertemplate=f'<b>{point["model_name"]}</b><br>' +\
-                                                f'Dataset: {dataset_type}<br>' +\
-                                                f'Ratio: {point["malicious_ratio_numeric"]}%<br>' +\
-                                                f'{metric.title()}: {point[metric]:.4f}<extra></extra>'
-                                ),
-                                row=row, col=col
-                            )
+                        # Remove individual scattered points - only show averaged curves for cleaner visualization
                 
                 # Add reference lines for F1
                 if metric == 'f1':
