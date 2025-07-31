@@ -1,0 +1,84 @@
+{
+  "phase1_completion": {
+    "status": "completed",
+    "completion_date": "2025-07-30",
+    "total_runtime_minutes": "TBD"
+  },
+  "input_data_analysis": {
+    "source": "batch4_fresh/stratified_layers",
+    "available_layers": {
+      "core": 4693,
+      "inner": 4039,
+      "outer": 4365,
+      "edge": 4366
+    },
+    "target_layers": [
+      "core",
+      "edge"
+    ],
+    "sufficiency_check": "passed"
+  },
+  "extraction_results": {
+    "total_seeds_extracted": 2000,
+    "seeds_per_layer": 1000,
+    "layer_distribution": {
+      "core": 1000,
+      "edge": 1000
+    },
+    "sampling_method": "random_sampling_seed_2025"
+  },
+  "quality_validation": {
+    "unique_id_duplicates": 0,
+    "missing_values": {
+      "sender": 0,
+      "receiver": 0,
+      "date": 0,
+      "subject": 0,
+      "body": 0,
+      "label": 0,
+      "urls": 0,
+      "text": 0,
+      "unique_id": 0,
+      "distance_to_centroid": 0,
+      "layer": 0,
+      "seed_layer": 0,
+      "batch6_seed_id": 0,
+      "extraction_date": 0,
+      "source_batch": 0
+    },
+    "data_integrity": "validated"
+  },
+  "output_files": {
+    "main_seeds_file": "real_malicious_seeds_with_layers.csv",
+    "layer_statistics": "seed_layer_distribution.json",
+    "id_mapping": "seed_id_mapping.json"
+  },
+  "next_phase_readiness": {
+    "ready_for_phase2": true,
+    "synthetic_generation_input": "2000 seed samples",
+    "expected_synthetic_output": "6000 samples (3 prompt variants)"
+  },
+  "distance_analysis": {
+    "core_layer_distance_range": {
+      "count": 1000.0,
+      "mean": 0.49184163693999994,
+      "std": 0.02572433017470457,
+      "min": 0.3771993,
+      "25%": 0.48328596,
+      "50%": 0.48844862,
+      "75%": 0.514481585,
+      "max": 0.52463776
+    },
+    "edge_layer_distance_range": {
+      "count": 1000.0,
+      "mean": 0.7362368732800001,
+      "std": 0.0687433716881047,
+      "min": 0.6598969,
+      "25%": 0.6826529475,
+      "50%": 0.7171930099999999,
+      "75%": 0.7707260125000001,
+      "max": 1.0358293
+    },
+    "distance_separation_confirmed": true
+  }
+}
