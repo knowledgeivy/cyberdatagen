@@ -220,17 +220,19 @@ class Batch6Phase5EnhancedVisualization:
                 'quality_metrics': {}
             }
             
-            # K-means clustering with different k values
+            # K-means clustering with different k values 
             self.logger.info("Performing K-means clustering...")
-            k_values = [2, 3, 4, 5, 6, 8, 10]  # Test different cluster numbers
+            
+            # Simple K range: 2 to 19 (much more reasonable!)
+            k_values = list(range(2, 20))
             
             # Ensure k values don't exceed sample size
             max_k = min(len(embeddings) - 1, max(k_values))
             k_values = [k for k in k_values if k <= max_k]
             if not k_values:
-                k_values = [2]  # Fallback to minimum clusters
+                k_values = [2, 3, 4, 5]  # Fallback to basic clusters
             
-            self.logger.info(f"Testing k values: {k_values}")
+            self.logger.info(f"Testing K values: {k_values}")
             
             for k in k_values:
                 try:
@@ -840,14 +842,25 @@ class Batch6Phase5EnhancedVisualization:
             
             # 1. K-means silhouette scores
             ax1 = axes[0]
-            k_values = list(cluster_results['kmeans'].keys())
+            k_values = sorted(list(cluster_results['kmeans'].keys()))
             silhouette_scores = [cluster_results['kmeans'][k]['silhouette_score'] for k in k_values]
             
-            ax1.plot(k_values, silhouette_scores, 'bo-', linewidth=2, markersize=8)
+            ax1.plot(k_values, silhouette_scores, 'bo-', linewidth=2, markersize=6)
             ax1.set_xlabel('Number of Clusters (k)')
             ax1.set_ylabel('Silhouette Score')
             ax1.set_title('K-means Clustering Quality')
             ax1.grid(True, alpha=0.3)
+            
+            # Add annotation for best K
+            if silhouette_scores:
+                best_k_idx = np.argmax(silhouette_scores)
+                best_k = k_values[best_k_idx]
+                best_score = silhouette_scores[best_k_idx]
+                ax1.annotate(f'Best K={best_k}\n({best_score:.3f})', 
+                           xy=(best_k, best_score), xytext=(10, 10),
+                           textcoords='offset points', fontsize=10,
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.7),
+                           arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0'))
             
             # Highlight optimal k
             optimal_k = cluster_results['optimal_k']
@@ -860,7 +873,7 @@ class Batch6Phase5EnhancedVisualization:
             ax2 = axes[1]
             inertia_values = [cluster_results['kmeans'][k]['inertia'] for k in k_values]
             
-            ax2.plot(k_values, inertia_values, 'go-', linewidth=2, markersize=8)
+            ax2.plot(k_values, inertia_values, 'go-', linewidth=2, markersize=6)
             ax2.set_xlabel('Number of Clusters (k)')
             ax2.set_ylabel('Inertia')
             ax2.set_title('K-means Inertia (Elbow Method)')
