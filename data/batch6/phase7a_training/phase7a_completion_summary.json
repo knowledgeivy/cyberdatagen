@@ -1,0 +1,68 @@
+{
+  "phase7a_training_completion": {
+    "status": "completed",
+    "completion_date": "2025-07-31T15:03:35.575960",
+    "total_experiments": 48,
+    "successful_experiments": 48,
+    "models_trained": 48,
+    "output_files": {
+      "detailed_results": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase7a_training\\results\\detailed_results.csv",
+      "structured_results": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase7a_training\\results\\structured_results.json",
+      "models_directory": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase7a_training\\models",
+      "vectorizers_directory": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase7a_training\\vectorizers",
+      "predictions_directory": "c:\\Users\\Tianyu Wang\\Documents\\Notebooks\\cyberdata\\data\\batch6\\phase7a_training\\predictions"
+    }
+  },
+  "performance_summary": {
+    "overall_avg_f1": 0.8279200262868497,
+    "overall_avg_accuracy": 0.8370336059289546,
+    "best_f1_experiment": {
+      "dataset": "baseline_real_20pct",
+      "model": "DeepLearning",
+      "f1_score": 0.9894049772224651
+    },
+    "by_dataset_type": {
+      "baseline_real": {
+        "avg_f1": 0.9045073136082303,
+        "avg_accuracy": 0.9065401652610955,
+        "best_f1": 0.9894049772224651,
+        "worst_f1": 0.6848594708440104
+      },
+      "pure_original": {
+        "avg_f1": 0.8299133920204214,
+        "avg_accuracy": 0.8394880313484965,
+        "best_f1": 0.9774290657998038,
+        "worst_f1": 0.5177382900246001
+      },
+      "pure_strong": {
+        "avg_f1": 0.8176034053730937,
+        "avg_accuracy": 0.8266568702615213,
+        "best_f1": 0.9687766115079868,
+        "worst_f1": 0.5596319449227903
+      },
+      "pure_weak": {
+        "avg_f1": 0.7596559941456534,
+        "avg_accuracy": 0.7754493568447057,
+        "best_f1": 0.9300762926426656,
+        "worst_f1": 0.44815610467616895
+      }
+    },
+    "by_model": {
+      "RandomForest": {
+        "avg_f1": 0.676205527932574,
+        "avg_accuracy": 0.7009886915410171,
+        "best_f1": 0.8846372553932286
+      },
+      "SVM": {
+        "avg_f1": 0.8686940260191919,
+        "avg_accuracy": 0.8712784308714541,
+        "best_f1": 0.9808681756404146
+      },
+      "DeepLearning": {
+        "avg_f1": 0.9388605249087831,
+        "avg_accuracy": 0.938833695374393,
+        "best_f1": 0.9894049772224651
+      }
+    }
+  }
+}
