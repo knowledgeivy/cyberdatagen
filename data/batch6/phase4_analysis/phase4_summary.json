@@ -1,0 +1,121 @@
+{
+  "phase4_completion": {
+    "status": "completed",
+    "completion_date": "2025-07-31",
+    "total_runtime_minutes": "TBD"
+  },
+  "embedding_configuration": {
+    "model_name": "all-MiniLM-L6-v2",
+    "embedding_dimension": 384,
+    "batch_size": 1000,
+    "methodology": "batch5_compatible"
+  },
+  "input_data_summary": {
+    "total_samples_processed": 47126,
+    "data_sources": {
+      "background": 17463,
+      "training": 13837,
+      "test_set": 7826,
+      "batch6_synthetic": 6000,
+      "seeds": 2000
+    },
+    "data_categories": {
+      "real_malicious": 19463,
+      "real_benign": 13837,
+      "synthetic": 6000,
+      "test_malicious": 4366,
+      "test_benign": 3460
+    },
+    "layer_distribution": {
+      "background": 17463,
+      "benign": 13837,
+      "test": 7826,
+      "edge": 4000,
+      "core": 4000
+    }
+  },
+  "embedding_results": {
+    "embeddings_generated": 47126,
+    "embedding_shape": [
+      47126,
+      384
+    ],
+    "centroids_calculated": 2,
+    "distance_calculations_complete": true
+  },
+  "data_quality_analysis": {
+    "synthetic_quality": {
+      "total_synthetic_samples": 6000,
+      "core_synthetic_samples": 3000,
+      "edge_synthetic_samples": 3000,
+      "avg_distance_to_core": 0.6329174041748047,
+      "avg_distance_to_edge": 0.6812890768051147
+    }
+  },
+  "layer_analysis": {
+    "real_malicious": {
+      "total_samples": 19463,
+      "layer_distribution": {
+        "background": 17463,
+        "core": 1000,
+        "edge": 1000
+      },
+      "distance_stats": {
+        "mean_distance_to_core": 0.652087926864624,
+        "mean_distance_to_edge": 0.660627543926239
+      }
+    },
+    "synthetic": {
+      "total_samples": 6000,
+      "layer_distribution": {
+        "core": 3000,
+        "edge": 3000
+      },
+      "distance_stats": {
+        "mean_distance_to_core": 0.6329174041748047,
+        "mean_distance_to_edge": 0.6812890768051147
+      }
+    },
+    "real_benign": {
+      "total_samples": 13837,
+      "layer_distribution": {
+        "benign": 13837
+      },
+      "distance_stats": {
+        "mean_distance_to_core": 0.902005672454834,
+        "mean_distance_to_edge": 0.8529825210571289
+      }
+    },
+    "test_malicious": {
+      "total_samples": 4366,
+      "layer_distribution": {
+        "test": 4366
+      },
+      "distance_stats": {
+        "mean_distance_to_core": 0.649993896484375,
+        "mean_distance_to_edge": 0.6609266996383667
+      }
+    },
+    "test_benign": {
+      "total_samples": 3460,
+      "layer_distribution": {
+        "test": 3460
+      },
+      "distance_stats": {
+        "mean_distance_to_core": 0.9023664593696594,
+        "mean_distance_to_edge": 0.8526628017425537
+      }
+    }
+  },
+  "output_files": {
+    "embeddings_array": "all_embeddings.npy",
+    "metadata_file": "embedding_metadata.csv.gz",
+    "centroids_file": "layer_centroids.json",
+    "distance_stats_file": "distance_statistics.json"
+  },
+  "next_phase_readiness": {
+    "ready_for_phase5": true,
+    "visualization_data_prepared": true,
+    "improved_synthetic_quality_expected": true
+  }
+}
