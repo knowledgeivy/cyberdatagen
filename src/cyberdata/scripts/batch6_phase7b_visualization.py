@@ -385,14 +385,7 @@ class Batch6Phase7bVisualizer:
                         
                         # Remove individual scattered points - only show averaged curves for cleaner visualization
                 
-                # Add reference lines for F1
-                if metric == 'f1':
-                    fig.add_hline(y=self.config['reference_lines']['batch6_target'], 
-                                 line_dash="dash", line_color="red", line_width=2,
-                                 annotation_text="Target (0.75)", row=row, col=col)
-                    fig.add_hline(y=self.config['reference_lines']['batch5_baseline'], 
-                                 line_dash="dash", line_color="orange", line_width=2,
-                                 annotation_text="Batch5 Baseline (0.60)", row=row, col=col)
+                # Reference lines removed for cleaner visualization
             
             fig.update_xaxes(title_text="Malicious Data Ratio (%)")
             fig.update_yaxes(title_text="Score")
