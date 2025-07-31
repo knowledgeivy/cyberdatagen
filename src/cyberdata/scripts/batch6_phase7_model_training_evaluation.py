@@ -26,6 +26,7 @@ from sklearn.svm import SVC
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import defaultdict
@@ -51,8 +52,8 @@ class Batch6Phase7ModelEvaluator:
             'batch5_results': current_dir / "data" / "batch5" / "results"  # For comparison
         }
         
-        # Output directories
-        self.output_dir = self.base_dir / "results"
+        # Output directories - consistent naming with other phases
+        self.output_dir = self.base_dir / "phase7_analysis"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Create subdirectories
@@ -84,7 +85,7 @@ class Batch6Phase7ModelEvaluator:
                         'n_estimators': 100,
                         'max_depth': 20,
                         'random_state': 42,
-                        'n_jobs': -1
+                        'n_jobs': -1  # Already enabled for parallel processing
                     }
                 },
                 'SVM': {
@@ -93,7 +94,25 @@ class Batch6Phase7ModelEvaluator:
                         'kernel': 'rbf',
                         'C': 1.0,
                         'random_state': 42,
-                        'probability': True
+                        'probability': True,
+                        'cache_size': 1000  # Increase cache for better performance
+                    }
+                },
+                'DeepLearning': {
+                    'classifier': MLPClassifier,
+                    'params': {
+                        'hidden_layer_sizes': (100, 50),
+                        'activation': 'relu',
+                        'solver': 'adam',
+                        'alpha': 0.001,
+                        'batch_size': 'auto',
+                        'learning_rate': 'constant',
+                        'learning_rate_init': 0.001,
+                        'max_iter': 500,
+                        'random_state': 42,
+                        'early_stopping': True,
+                        'validation_fraction': 0.1,
+                        'n_iter_no_change': 10
                     }
                 }
             },

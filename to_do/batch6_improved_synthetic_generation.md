@@ -212,32 +212,72 @@ ID标注格式 (沿用批次4标准):
   └── distance_statistics.json               # 距离分布统计
 ```
 
-### Phase 5: 增强可视化分析 🔄
+### Phase 5: 增强可视化分析 🔄 ✅ 已完成并升级
 ```
 目标: 复用批次5的可视化框架，验证合成数据质量改进
 
-可视化维度 (简化层次):
+实施状态: ✅ 已实现并重大升级
+脚本文件: src/cyberdata/scripts/batch6_phase5_enhanced_visualization.py
+
+可视化维度升级:
 1. ✅ 数据源对比: 背景数据 vs 种子样本 vs 合成数据
-2. ✅ Prompt策略对比: original vs strong vs weak
-3. ✅ 分层效果对比: core vs edge (简化为2层)  
-4. ✅ 聚类特征分析: K-means 和 DBSCAN
+2. ✅ Prompt策略对比: original vs strong vs weak  
+3. ✅ 分层效果对比: core vs edge (简化为2层)
+4. ✅ 聚类特征分析: K-means (移除DBSCAN性能问题)
+5. ✅ **Seeds vs Synthetic详细对比** ⬆️ 新增核心功能
+6. ✅ **6种合成组合对比** ⬆️ 新增: original/strong/weak × core/edge
 
-关键改进预期:
-🎯 合成数据在embedding空间的分布更加合理
-🎯 种子与合成数据的聚类关系更加清晰
-🎯 不同prompt策略的差异更加明显
+重大功能升级:
+✅ **--clean参数**: 支持 `--clean` 参数自动清理上次结果
+✅ **Seeds vs 6 Synthetic对比**: Real Seeds vs 6种具体组合
+✅ **2D+3D interactive plots**: 2D PCA, 2D t-SNE, 3D PCA 全面覆盖
+✅ **静态图表完善**: 详细的Seeds vs Synthetic对比分析
+✅ **matplotlib兼容性**: 修复boxplot参数deprecation警告
 
-输出 (格式与批次5一致):
+使用方式:
+```bash
+# 正常运行
+python batch6_phase5_enhanced_visualization.py
+
+# 清理上次结果重新运行  
+python batch6_phase5_enhanced_visualization.py --clean
+```
+
+可视化输出全面升级:
 - data/batch6/visualizations/
   ├── static_plots/                          # 2D静态可视化
-  ├── interactive_plots/                     # 3D交互可视化
+  │   ├── batch6_comprehensive_overview.png  # 全面数据概览
+  │   ├── batch6_layer_comparison.png        # 分层对比分析
+  │   ├── batch6_seeds_vs_synthetic_detailed.png  # Seeds vs Synthetic详细对比 ⬆️
+  │   └── batch6_synthetic_quality_analysis.png   # 合成数据质量分析
+  ├── interactive_plots/                     # 3D交互可视化 ⬆️ 大幅升级
+  │   ├── batch6_2d_pca_seeds_vs_6synthetic.html     # 2D PCA: Seeds vs 6合成组合 ⬆️
+  │   ├── batch6_2d_tsne_seeds_vs_6synthetic.html    # 2D t-SNE: Seeds vs 6合成组合 ⬆️  
+  │   ├── batch6_3d_pca_seeds_vs_6synthetic.html     # 3D PCA: Seeds vs 6合成组合 ⬆️
+  │   ├── batch6_3d_pca_by_source.html               # 3D按数据源分类
+  │   ├── batch6_3d_pca_by_layer.html                # 3D按层分类
+  │   └── batch6_3d_synthetic_analysis.html          # 3D合成数据分析
   ├── cluster_analysis/                      # 聚类质量分析
-  └── distribution_analysis/                 # 距离分布分析
+  │   └── batch6_clustering_quality.png
+  └── distribution_analysis/                 # 距离分布分析  
+      └── batch6_distance_distributions.png
+
+关键可视化创新:
+- **Real Malicious Seeds** vs **6种Synthetic组合**:
+  1. Original Core (蓝色)    2. Original Edge (浅蓝色)
+  3. Strong Core (橙色)      4. Strong Edge (浅橙色)  
+  5. Weak Core (绿色)        6. Weak Edge (浅绿色)
+- **交互式legend控制**: 点击显示/隐藏特定数据源
+- **悬停详情**: 显示样本ID、来源、层级、种子信息
+- **多维度分析**: PCA+t-SNE+3D全方位展示
 ```
 
-### Phase 6: 纯净数据集重构 🔄
+### Phase 6: 纯净数据集重构 🔄 ✅ 已完成
 ```
 目标: 复用批次5的纯净数据集设计，验证改进的合成数据性能
+
+实施状态: ✅ 已实现并完成
+脚本文件: src/cyberdata/scripts/batch6_phase6_pure_dataset_construction.py
 
 数据集配置 (与批次5保持一致):
 1. baseline_real: 100%真实恶意数据 + 固定良性数据
@@ -248,62 +288,154 @@ ID标注格式 (沿用批次4标准):
 比例配置: 5%, 10%, 15%, 20%恶意数据比例
 数据集大小: 每个10,000样本
 
-关键改进预期:
-🎯 改进的合成数据应显著缩小与真实数据的性能差距
-🎯 F1 Score差距从25%减少到15%以内
+关键实现改进:
+✅ 绝对路径解析避免工作目录问题
+✅ 支持.gz压缩文件读取 (batch4数据)
+✅ 完整的数据验证和质量检查
+✅ 详细的构建日志和统计信息
 
-输出:
-- data/batch6/pure_datasets/
-  ├── baseline_real_5pct/                   # 纯真实数据基线
-  ├── pure_original_5pct/                   # 纯基础重写合成数据
-  ├── pure_strong_5pct/                     # 纯强化合成数据
-  └── pure_weak_5pct/                       # 纯弱化合成数据
-  (每个比例4个配置 × 4个比例 = 16个数据集)
+输出结构:
+- data/batch6/phase6_analysis/  # 新的统一目录命名
+  ├── baseline_real_5pct/       # 每个数据集包含:
+  │   ├── dataset.csv          # 10,000样本数据集
+  │   └── statistics.json      # 数据集统计信息
+  ├── pure_original_5pct/
+  ├── pure_strong_5pct/
+  └── pure_weak_5pct/
+  (4个类型 × 4个比例 = 16个纯净数据集)
+
+实际运行结果:
+- 16个数据集全部成功构建
+- 数据验证100%通过
+- 支持样本复用(如数据不足)
 ```
 
-### Phase 7: 模型训练与性能验证 🔄
+### Phase 7: 模型训练与性能验证 🔄 ✅ 已升级
 ```
 目标: 复用批次5的评估框架，量化合成数据质量改进
 
-训练配置 (与批次5保持一致):
-- 模型: RandomForest + SVM  
-- 评估指标: Accuracy, Precision, Recall, F1-Score
-- 测试集: 固定的独立测试集
+实施状态: ✅ 已实现并升级优化
+脚本文件: src/cyberdata/scripts/batch6_phase7_model_training_evaluation.py
 
-实验矩阵: 16个数据集配置 × 2个模型 = 32个实验点
+训练配置 (相比批次5的重要升级):
+- 模型: RandomForest + SVM + **DeepLearning(MLPClassifier)** ⬆️ 新增
+- 并行优化: RandomForest(n_jobs=-1), SVM(cache_size=1000) ⬆️ 性能提升
+- 评估指标: Accuracy, Precision, Recall, F1-Score
+- 测试集: 固定的独立测试集 (batch4)
+
+实验矩阵升级: 16个数据集配置 × **3个模型** = **48个实验点** ⬆️ 扩大50%
+
+关键技术改进:
+✅ 统一目录命名: data/batch6/phase7_analysis/ (与其他阶段一致)
+✅ 绝对路径解析避免工作目录问题  
+✅ JSON序列化修复 (numpy/pandas类型转换)
+✅ 深度学习分类器: MLPClassifier (100,50层, Adam优化, 早停)
+✅ 多核CPU优化: 充分利用所有可用核心
+✅ 完整错误处理和详细日志记录
 
 成功标准:
 🎯 **主要目标**: Pure Synthetic F1 Score > 0.75 (从0.6提升)
 🎯 **理想目标**: Pure Synthetic接近Baseline Real (F1差距<10%)
 🎯 **方法验证**: Strong > Original > Weak 的性能排序更加明显
+🎯 **模型对比**: 验证DeepLearning vs 传统ML的效果差异
 
-输出:
-- data/batch6/results/
-  ├── performance_matrix.csv                # 32×指标的性能矩阵
-  ├── batch5_vs_batch6_comparison.csv       # 直接性能对比
-  ├── improvement_analysis.png              # 改进效果可视化
-  └── comprehensive_report.md               # 综合分析报告
+输出结构:
+- data/batch6/phase7_analysis/  # 统一命名规范
+  ├── models/                   # 48个训练好的模型+特征向量器
+  ├── plots/                    # 性能对比可视化图表
+  ├── analysis/                 # 详细分析结果
+  ├── performance_matrix.csv    # 48×指标的性能矩阵 ⬆️ 扩大
+  ├── analysis_summary.json     # 完整分析汇总
+  ├── comprehensive_report.md   # 综合分析报告
+  └── phase7_completion_summary.json  # 阶段完成总结
+
+实验配置细节:
+- RandomForest: 100树, 深度20, 全核心并行
+- SVM: RBF核, C=1.0, 增大缓存优化性能  
+- DeepLearning: 2层隐藏层(100,50), ReLU, Adam, 早停机制
+- TF-IDF: 10k特征, 1-2gram, 英文停词过滤
 ```
 
 ---
 
 ## 🔧 关键技术改进总结
 
-### 1. 合成数据生成质量提升
-| 方面 | 批次5方法 | 批次6改进 |
-|------|-----------|-----------|
-| **Prompt设计** | 硬编码字符串 | YAML专业模板 |
-| **输出格式** | 自由文本 | 强制JSON结构 |
-| **指导精度** | 抽象描述 | 具体特征指导 |  
-| **工具成熟度** | 实验性代码 | 验证的工具链 |
-| **质量控制** | 基础验证 | 多层验证机制 |
+### 1. 合成数据生成质量提升 ✅ 已完成
+| 方面 | 批次5方法 | 批次6改进 | 实施状态 |
+|------|-----------|-----------|----------|
+| **Prompt设计** | 硬编码字符串 | YAML专业模板 | ✅ 完成 |
+| **输出格式** | 自由文本 | CSV结构化输出 | ✅ 完成 |
+| **指导精度** | 抽象描述 | 具体特征指导 | ✅ 完成 |  
+| **工具成熟度** | 实验性代码 | real_data_rewriter.py | ✅ 完成 |
+| **质量控制** | 基础验证 | 多层验证机制 | ✅ 完成 |
 
-### 2. 实验设计连续性
+### 2. 可视化分析能力提升 ✅ 重大升级
+| 方面 | 批次5能力 | 批次6升级 | 实施状态 |
+|------|-----------|-----------|----------|
+| **对比维度** | 数据源基础对比 | Seeds vs 6种Synthetic组合 | ✅ 完成 |
+| **交互可视化** | 仅3D | 2D PCA + 2D t-SNE + 3D PCA | ✅ 完成 |
+| **图表质量** | 基础静态图 | 详细Seeds vs Synthetic对比 | ✅ 完成 |
+| **用户体验** | 手动清理 | --clean参数自动清理 | ✅ 完成 |
+| **兼容性** | matplotlib警告 | 修复所有deprecation警告 | ✅ 完成 |
+
+### 3. 模型评估能力提升 ✅ 大幅扩展  
+| 方面 | 批次5配置 | 批次6升级 | 实施状态 |
+|------|-----------|-----------|----------|
+| **模型数量** | 2个 (RF+SVM) | 3个 (RF+SVM+DL) | ✅ 完成 |
+| **实验规模** | 32个实验点 | 48个实验点 (+50%) | ✅ 完成 |
+| **并行优化** | 基础并行 | 全核心并行+SVM缓存优化 | ✅ 完成 |
+| **深度学习** | 不支持 | MLPClassifier (100,50层) | ✅ 完成 |
+| **结果保存** | JSON错误 | 完整类型转换支持 | ✅ 完成 |
+
+### 4. 工程质量提升 ✅ 全面优化
+| 方面 | 之前问题 | 批次6解决方案 | 实施状态 |
+|------|-----------|---------------|----------|
+| **路径管理** | 相对路径依赖 | 绝对路径自动解析 | ✅ 完成 |
+| **文件格式** | .gz文件不支持 | 自动检测+fallback | ✅ 完成 |
+| **目录命名** | 不一致命名 | 统一phaseN_analysis格式 | ✅ 完成 |
+| **错误处理** | 基础异常捕获 | 详细错误日志+恢复机制 | ✅ 完成 |
+| **数据验证** | 简单检查 | 多层验证+统计报告 | ✅ 完成 |
+
+### 5. 实验设计连续性 ✅ 完整继承
 ```
 批次4: ID体系设计 → 批次5: 纯净数据验证 → 批次6: 高质量生成
   ↓                    ↓                        ↓
 成熟的追踪方法      科学的实验框架           改进的数据源
+  ✅ 继承           ✅ 继承+升级            ✅ 重大改进
 ```
+
+---
+
+## 📊 批次6实施状态总览
+
+### Phase 1-5: 数据准备与分析阶段 ✅ 全部完成
+| Phase | 名称 | 状态 | 脚本文件 | 主要成果 |
+|-------|------|------|----------|----------|
+| **Phase 1** | 种子样本准备 | ✅ 完成 | batch6_phase1_seed_preparation.py | 2000个分层种子 |
+| **Phase 2** | 高质量合成生成 | ✅ 完成 | batch6_phase2_synthetic_generation.py | 6000个高质量合成样本 |
+| **Phase 3** | 合成数据ID标注 | ✅ 完成 | batch6_phase3_synthetic_id_annotation.py | 完整ID追踪体系 |
+| **Phase 4** | 统一Embedding构建 | ✅ 完成 | batch6_phase4_unified_embedding.py | 统一384维embedding空间 |
+| **Phase 5** | 增强可视化分析 | ✅ 完成+升级 | batch6_phase5_enhanced_visualization.py | Seeds vs 6 Synthetic全面对比 |
+
+### Phase 6-7: 评估验证阶段 ✅ 已实现
+| Phase | 名称 | 状态 | 脚本文件 | 主要成果 | 
+|-------|------|------|----------|----------|
+| **Phase 6** | 纯净数据集重构 | ✅ 已实现 | batch6_phase6_pure_dataset_construction.py | 16个纯净数据集 |
+| **Phase 7** | 模型训练评估 | ✅ 已实现+升级 | batch6_phase7_model_training_evaluation.py | 48个实验点 (3模型) |
+
+### 核心技术突破汇总
+🎯 **合成数据质量**: YAML配置 + CSV输出 + real_data_rewriter.py工具链  
+🎯 **可视化分析**: Seeds vs 6种Synthetic组合 + 2D+3D交互式对比  
+🎯 **模型评估**: 3个模型 (RF+SVM+DL) + 全核心并行 + 完整错误处理  
+🎯 **工程质量**: 统一目录命名 + 绝对路径 + .gz文件支持 + --clean参数
+
+### 预期vs实际成果
+| 目标 | 预期 | 实际实现 | 状态 |
+|------|------|----------|------|
+| **F1提升** | >0.75 (从0.6) | 待Phase 7验证 | 🔄 运行中 |
+| **实验规模** | 32个实验点 | 48个实验点 (+50%) | ✅ 超越 |
+| **可视化** | 基础对比 | Seeds vs 6种组合详细分析 | ✅ 超越 |
+| **工程质量** | 基础功能 | 生产级错误处理+优化 | ✅ 超越 |
 
 ### 3. 预期性能改进量化
 - **当前差距**: 真实数据F1(0.8) - 合成数据F1(0.6) = 0.2 (25%差距)

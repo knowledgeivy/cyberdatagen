@@ -1342,11 +1342,36 @@ class Batch6Phase5EnhancedVisualization:
 
 def main():
     """Main function to run Batch 6 Phase 5"""
+    import argparse
+    
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Batch 6 Phase 5: Enhanced Visualization Analysis')
+    parser.add_argument('--clean', action='store_true', help='Clean previous visualization results before running')
+    args = parser.parse_args()
+    
     logger = setup_logger("batch6_phase5")
     
     try:
-        # Check if Phase 5 already completed
+        # Handle clean option
         batch6_dir = PROJECT_ROOT / "data" / "batch6"
+        if args.clean:
+            logger.info("🧹 Cleaning previous Phase 5 results...")
+            
+            # Directories to clean
+            dirs_to_clean = [
+                batch6_dir / "phase5_analysis",
+                batch6_dir / "visualizations"
+            ]
+            
+            for dir_path in dirs_to_clean:
+                if dir_path.exists():
+                    import shutil
+                    shutil.rmtree(dir_path)
+                    logger.info(f"   Removed: {dir_path}")
+                    
+            logger.info("✅ Cleanup completed!")
+        
+        # Check if Phase 5 already completed
         phase5_summary = batch6_dir / "phase5_analysis" / "phase5_summary.json"
         
         if phase5_summary.exists():
