@@ -1,0 +1,61 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Experimental Setup}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Experimental Setup}
+
+Our experimental setup is designed to be a reproducible and rigorous evaluation of our synthetic data generation methodology. The experiment is conducted as a 7-phase pipeline, with each phase building upon the results of the previous one. All scripts and data are containerized to ensure reproducibility.
+
+\subsection*{1. Datasets}
+
+We use a combination of real and synthetic data in our experiments:
+
+\begin{itemize}
+    \item \textbf{Real Data:} We use the \texttt{batch4_fresh} dataset, which contains a large number of real-world malicious and benign samples. This dataset is used for seed selection and as a baseline for model training.
+    \item \textbf{Synthetic Data:} We generate a total of \textbf{6,000} synthetic malicious samples using our methodology. These samples are generated from a seed set of \textbf{2,000} real malicious samples, with \textbf{3} synthetic variants (original, strong, and weak) generated for each seed.
+\end{itemize}
+
+\subsection*{2. Experimental Pipeline}
+
+The experiment is executed as a 7-phase pipeline, with each phase corresponding to a script in the \texttt{src/cyberdata/scripts/} directory.
+
+\begin{itemize}
+    \item \textbf{Phase 1: Seed Preparation:} We select 2,000 seed samples from the \texttt{batch4_fresh} dataset using our core/edge stratification methodology. The output of this phase is a high-quality, diverse set of seed samples.
+    \item \textbf{Phase 2: Synthetic Data Generation:} We generate 6,000 synthetic samples from the 2,000 seed samples using our multi-prompt generation strategy. The output of this phase is a large and diverse synthetic dataset.
+    \item \textbf{Phase 3: ID Annotation:} We assign unique, traceable IDs to all synthetic samples. This allows us to track the lineage of each synthetic sample back to its original seed and prompt strategy.
+    \item \textbf{Phase 4: Embedding:} We generate 384-dimensional embeddings for all our data (real and synthetic) using the \texttt{all-MiniLM-L6-v2} model. The output of this phase is a unified embedding space containing all our data.
+    \item \textbf{Phase 5: Visualization and Analysis:} We perform a comprehensive analysis of the unified embedding space, including dimensionality reduction, clustering, and distance analysis. The output of this phase is a set of visualizations and a detailed analysis of the synthetic data's quality.
+    \item \textbf{Phase 6: Dataset Construction:} We construct 16 pure datasets for model training. These datasets contain varying proportions of malicious data and different types of malicious data (real vs. synthetic).
+    \item \textbf{Phase 7: Model Training and Evaluation:} We train three machine learning models (RandomForest, SVM, and DeepLearning) on each of the 16 pure datasets and evaluate their performance on a fixed, independent test set. The output of this phase is a detailed performance report for each model and dataset combination.
+\end{itemize}
+
+\subsection*{3. Evaluation Metrics}
+
+We use a range of metrics to evaluate the quality of our synthetic data and the performance of our machine learning models:
+
+\begin{itemize}
+    \item \textbf{Embedding Space Metrics:}
+    \begin{itemize}
+        \item \textbf{PCA and t-SNE Variance Explained:} To measure the amount of information captured by our dimensionality reduction techniques.
+        \item \textbf{Silhouette Score:} To measure the quality of our clustering results. The best silhouette score achieved was \textbf{0.16} with \textbf{19} clusters.
+        \item \textbf{Distance to Centroid:} To measure the distance of data points from the class centroid, which is used for our core/edge stratification.
+    \end{itemize}
+    \item \textbf{Classification Metrics:}
+    \begin{itemize}
+        \item \textbf{Accuracy:} The proportion of correctly classified samples.
+        \item \textbf{Precision:} The proportion of true positives among all positive predictions.
+        \item \textbf{Recall:} The proportion of true positives that were correctly identified.
+        \item \textbf{F1-Score:} The harmonic mean of precision and recall.
+    \end{itemize}
+\end{itemize}
+
+\end{document}
