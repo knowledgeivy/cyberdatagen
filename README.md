@@ -10,6 +10,32 @@ CyberData extracts patterns from real cybersecurity datasets and generates synth
 - Large-scale production generation
 - Domain-specific intelligence integration
 
+## Research Experiment: Batch 6
+
+The `batch6` experiment is a comprehensive research pipeline designed to generate high-quality synthetic data and evaluate its impact on machine learning model performance. The experiment is structured into seven distinct phases, from seed sample preparation to model training and performance visualization.
+
+### Research Goal
+
+The primary goal of the `batch6` experiment is to investigate whether high-quality synthetic data can be used to train robust machine learning models for malicious content detection, achieving performance comparable to or better than models trained on real data.
+
+### Workflow: The 7 Phases of Batch 6
+
+The `batch6` experiment follows a structured 7-phase workflow:
+
+1.  **Phase 1: Enhanced Seed Preparation:** Selects a diverse set of 2,000 high-quality "seed" samples from a larger dataset, using a 2-layer stratification method (core and edge) to ensure representation of the full spectrum of malicious data.
+
+2.  **Phase 2: High-Quality Synthetic Data Generation:** Generates 6,000 synthetic samples from the 2,000 seeds using a sophisticated "real_data_rewriter.py" methodology with three different prompt strategies (original, strong, and weak).
+
+3.  **Phase 3: Synthetic Data ID Annotation:** Assigns unique, traceable IDs to all synthetic samples, linking them back to their original seed, layer, and prompt strategy.
+
+4.  **Phase 4: Unified Embedding Space Construction:** Creates a unified embedding space for all data (seeds, synthetic, background, etc.) using the `all-MiniLM-L6-v2` model to represent text data in a way that captures its meaning.
+
+5.  **Phase 5 & 5a/5b: Enhanced Visualization and Analysis:** Performs a comprehensive visualization of the embedding space to analyze the quality and distribution of the synthetic data, the effects of different prompt strategies, and the quality of data clusters.
+
+6.  **Phase 6: Pure Dataset Construction:** Constructs 16 "pure" datasets with varying proportions of malicious data (5%, 10%, 15%, 20%) and different types of malicious data (real only, or purely synthetic from each of the three prompt strategies).
+
+7.  **Phase 7a & 7b: Model Training and Performance Evaluation:** Trains three different machine learning models (RandomForest, SVM, and a Deep Learning model) on each of the 16 pure datasets and evaluates their performance on a fixed, independent test set.
+
 ## Installation
 
 ### Requirements
@@ -33,129 +59,67 @@ cp .env.example .env
 # Add your OpenAI API key to .env
 ```
 
-## Workflow
-
-### Phase 1: Real-World Analysis
-1. **Domain Discovery**: Extract attack patterns and normal baselines from real data
-2. **Contextual Enrichment**: Create threat landscape context and problem definitions  
-3. **Schema-Aware Seeds**: Generate high-quality seed examples
-
-### Phase 2: Scale Generation
-4. **Scale Generation**: Generate large datasets using extracted intelligence
-5. **Scale Validation**: Validate quality and filter for production use
-
-<img src="reference/image/flowchart_2.png" alt="CyberData Flowchart" width="800">
-
-
 ## Usage
 
-### Basic Workflow
+To run the `batch6` experiment, you can execute the scripts in the `src/cyberdata/scripts/` directory in the order of the phases. For example:
 
 ```bash
-cd src/cyberdata/process
+# Run Phase 1: Enhanced Seed Preparation
+python src/cyberdata/scripts/batch6_phase1_seed_preparation.py
 
-# Step 1: Process real data and extract patterns
-python real_data_processor.py --csv-file your_data.csv.gz --data-info-name dataset_name
+# Run Phase 2: High-Quality Synthetic Data Generation
+python src/cyberdata/scripts/batch6_phase2_synthetic_generation.py
 
-# Step 2: Validate seed quality
-python seed_validator.py
-
-# Step 3: Generate scale dataset
-python scale_generation.py --scale-count 1000 --malicious-ratio 0.3
-
-# Step 4: Validate scale quality
-python scale_validation.py
-```
-
-### Configuration
-
-Configure your dataset in `config/data_info.yaml`:
-```yaml
-datasets:
-  your_dataset:
-    data_name: your_dataset
-    domain: network_security
-    label_column: label
-    label_encoding:
-      malicious: 1
-      benign: 0
-```
-
-### Example Use Cases
-
-**Generate email phishing dataset:**
-```bash
-python real_data_processor.py --csv-file email_data.csv.gz --data-info-name email_phishing
-python seed_validator.py
-python scale_generation.py --scale-count 5000 --malicious-ratio 0.15
-```
-
-**Generate network intrusion dataset:**
-```bash
-python real_data_processor.py --csv-file network_data.csv.gz --data-info-name nsl_kdd_rare
-python seed_validator.py  
-python scale_generation.py --scale-count 10000 --malicious-ratio 0.05
-```
-
-**Mix real and synthetic data:**
-```bash
-python data_mixer.py your_real_data.csv.gz --n-raw-samples 500 --n-synthetic-samples 500
+# ... and so on for the remaining phases.
 ```
 
 ## File Structure
 
+The `batch6` experiment generates a comprehensive set of artifacts in the `data/batch6/` directory:
+
 ```
 cyberdata/
 ├── src/cyberdata/
-│   ├── process/
-│   │   ├── real_data_processor.py    # Step 1-3: Real-world analysis
-│   │   ├── seed_validator.py         # Seed quality validation
-│   │   ├── scale_generation.py       # Large-scale generation
-│   │   ├── scale_validation.py       # Scale quality validation
-│   │   └── data_mixer.py             # Mix real and synthetic data
-│   └── utils/                        # Configuration and utilities
+│   ├── scripts/
+│   │   ├── batch6_phase1_seed_preparation.py
+│   │   ├── batch6_phase2_synthetic_generation.py
+│   │   ├── batch6_phase3_synthetic_id_annotation.py
+│   │   ├── batch6_phase4_unified_embedding.py
+│   │   ├── batch6_phase5a_data_processing.py
+│   │   ├── batch6_phase5b_visualization.py
+│   │   ├── batch6_phase6_pure_dataset_construction.py
+│   │   ├── batch6_phase7a_model_training.py
+│   │   └── batch6_phase7b_visualization.py
+│   └── utils/
 ├── config/
-│   ├── data_info.yaml               # Dataset schemas and metadata
-│   ├── scale_config.yaml            # Generation parameters
-│   ├── domain_discovery/            # Extracted domain patterns
-│   ├── contextual_problems/         # Enriched problem contexts
-│   └── prompts/                     # LLM prompt templates
 ├── data/
-│   ├── seeds-raw/                   # Raw seed examples
-│   ├── seeds-validated/             # Validated high-quality seeds
-│   ├── scaled-raw/                  # Raw scale generation output
-│   ├── scaled-validated/            # Production-ready datasets
-│   └── scaled_validation/           # Quality reports
-├── raw/                             # Input datasets
-└── logs/                            # Execution logs
+│   └── batch6/
+│       ├── phase1_analysis/
+│       ├── phase2_analysis/
+│       ├── phase3_analysis/
+│       ├── phase4_analysis/
+│       ├── phase5a_processed_data/
+│       ├── phase5b_analysis/
+│       ├── phase7a_training/
+│       ├── phase7b_analysis/
+│       ├── pure_datasets/
+│       ├── seed_preparation/
+│       ├── synthetic_generation/
+│       ├── synthetic_with_ids/
+│       └── unified_embeddings/
+├── raw/
+└── logs/
 ```
 
 ## Output
 
-Generated datasets include:
-- **Production datasets**: `data/scaled-validated/` - High-quality, deployment-ready data
-- **Quality reports**: `data/scaled_validation/` - Comprehensive validation metrics
-- **Raw datasets**: `data/scaled-raw/` - Unfiltered generation output
+The `batch6` experiment generates a wide range of outputs, including:
 
-## Command Line Options
-
-### Scale Generation
-```bash
-python scale_generation.py \
-    --scale-count 10000 \
-    --malicious-ratio 0.1 \
-    --max-workers 8 \
-    --batch-size 10
-```
-
-### Real Data Processing  
-```bash
-python real_data_processor.py \
-    --csv-file data.csv.gz \
-    --data-info-name dataset_name \
-    --samples-per-class 200
-```
-
+-   **High-quality synthetic data:** `data/batch6/synthetic_with_ids/`
+-   **Unified embeddings:** `data/batch6/unified_embeddings/`
+-   **Pure datasets for model training:** `data/batch6/pure_datasets/`
+-   **Trained machine learning models:** `data/batch6/phase7a_training/models/`
+-   **Comprehensive performance results and visualizations:** `data/batch6/phase7b_analysis/`
 
 ## Version
 
