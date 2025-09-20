@@ -1,0 +1,57 @@
+\section{Discussion}
+
+Our experimental findings establish several fundamental principles for synthetic cybersecurity data generation while revealing both the potential and limitations of current LLM-based approaches. The systematic evaluation across multiple dimensions provides insights that extend beyond immediate performance metrics to address broader questions about the role of synthetic data in cybersecurity research and operational deployment.
+
+\subsection{Theoretical Implications for Synthetic Data Generation}
+
+The strong correlation between embedding space similarity and classification performance validates the distributional hypothesis as applied to cybersecurity synthetic data generation. This relationship suggests that effective synthetic generation depends not merely on surface-level text similarity but on preservation of deeper semantic relationships that manifest in high-dimensional representation spaces. The finding that synthetic original variants achieve 73\% co-clustering rates with their seed samples while maintaining superior classification performance indicates that semantic fidelity, rather than lexical diversity, drives synthetic data utility.
+
+The differential performance across core and edge layer samples reveals fundamental limitations in current LLM understanding of cybersecurity domain boundaries. While LLMs demonstrate remarkable capability in generating variations of prototypical malicious content, their reduced effectiveness for edge cases suggests that boundary conditions in cybersecurity domains require specialized treatment. This observation has profound implications for future research directions, indicating that advances in synthetic generation may require domain-specific fine-tuning or specialized prompting strategies rather than relying solely on general-purpose language models.
+
+The systematic performance degradation as synthetic samples deviate from real data distributions provides empirical support for the importance of distributional alignment in synthetic data generation. Our results demonstrate that successful synthetic generation requires careful balance between diversity and fidelity, challenging approaches that prioritize either extreme diversity or strict fidelity without considering their interaction effects.
+
+\subsection{Practical Insights for Seed Sampling Strategies}
+
+Our stratification approach demonstrates that systematic seed selection significantly impacts synthetic data quality, with implications extending beyond cybersecurity to other domains requiring synthetic data augmentation. The core/edge stratification reveals that different types of seed samples contribute differently to overall synthetic data utility, suggesting that future sampling strategies should explicitly account for the representational role of individual samples rather than treating all seeds equivalently.
+
+The finding that edge layer samples are more challenging to synthesize effectively indicates that seed sampling strategies should be tailored to specific application requirements. Applications requiring robust detection of novel or emerging threats may benefit from oversampling edge cases during seed selection, even though the resulting synthetic data may be less reliable. Conversely, applications focused on standard threat detection may achieve better results by emphasizing core layer samples that generate more reliable synthetic variants.
+
+The distance-based stratification approach provides a generalizable framework for seed selection across different cybersecurity domains. By adapting the distance thresholds and embedding models to specific threat types or attack categories, researchers can systematically curate seed sets that balance representational completeness with generation reliability. This approach offers particular value for domains where expert annotation is expensive or where the boundary between normal and malicious behavior is poorly defined.
+
+\subsection{Advances in LLM Prompt Engineering for Cybersecurity}
+
+The consistent superiority of the original prompt strategy across all experimental conditions challenges common assumptions about prompt engineering effectiveness. Rather than supporting the intuitive hypothesis that more aggressive or more conservative prompting would enhance synthetic data utility, our results suggest that balanced approaches that preserve semantic content while enabling controlled variation produce the most effective synthetic data.
+
+This finding has significant implications for prompt engineering research in cybersecurity contexts. The systematic performance degradation observed with both strong and weak prompting strategies indicates that effective prompt design requires careful consideration of domain-specific constraints rather than applying general-purpose prompting principles. The cybersecurity domain appears to require prompts that maintain semantic authenticity while enabling sufficient variation to support model training.
+
+The relationship between prompt strategy and embedding space distribution provides a foundation for prompt optimization based on distributional objectives rather than solely on performance metrics. Future prompt engineering research could leverage embedding space analysis to develop prompts that systematically target specific regions of the semantic space, enabling more controlled and predictable synthetic data generation.
+
+Our results suggest that prompt engineering for cybersecurity synthetic data generation should prioritize semantic preservation over surface-level variation. This insight challenges approaches that focus on lexical diversity or syntactic transformation without considering their impact on underlying semantic relationships that drive classification performance.
+
+\subsection{Implications for LLM-Based Synthetic Generation in Cybersecurity}
+
+The demonstrated effectiveness of synthetic data under low-resource conditions has immediate implications for cybersecurity applications where real malicious samples are scarce or difficult to obtain. Our finding that synthetic data maintains 93.4\% of real data performance under 5\% malicious ratio conditions suggests that LLM-based generation can provide substantial value in scenarios where traditional data collection approaches are impractical.
+
+However, the reduced effectiveness for edge cases and boundary conditions indicates that LLM-based synthetic generation should be viewed as complementary to, rather than replacement for, traditional data collection efforts. This observation is particularly relevant for operational cybersecurity systems that must detect novel or sophisticated attacks that may not be well-represented in the training data used for LLM development.
+
+The architecture-dependent performance patterns reveal that the benefits of synthetic data are not uniformly distributed across all machine learning approaches. The superior performance of deep learning models with synthetic data suggests that the complexity of synthetic patterns requires sophisticated feature extraction capabilities to fully leverage. This finding has implications for system design decisions in operational environments where model complexity must be balanced against computational constraints.
+
+The strong performance of synthetic data in imbalanced scenarios addresses a critical challenge in operational cybersecurity systems. Real-world attack detection often operates under severe class imbalance, making our demonstration of synthetic data effectiveness under these conditions particularly relevant for practical deployment. The convergence of synthetic and real data performance as balance improves suggests that synthetic data provides proportionally greater value under the challenging conditions most common in operational environments.
+
+\subsection{Limitations and Future Research Directions}
+
+While our results demonstrate the potential of LLM-based synthetic generation, several limitations suggest important directions for future research. The reduced effectiveness for edge cases indicates that current general-purpose LLMs may lack the specialized knowledge necessary for generating high-quality synthetic variants of sophisticated or novel attack patterns. Future research should investigate domain-specific fine-tuning approaches that could enhance LLM understanding of cybersecurity concepts and attack methodologies.
+
+The dependence of synthetic data effectiveness on model architecture suggests that advances in synthetic generation may require co-evolution with advances in classification models. This observation indicates that future research should consider the synthetic data generation and model training problems jointly rather than treating them as independent optimization challenges.
+
+The embedding space analysis reveals systematic patterns in synthetic data quality that could inform automated quality assessment approaches. Future research could leverage these patterns to develop real-time quality metrics that enable adaptive prompt engineering or generation strategy selection based on observed distributional properties.
+
+Our framework focuses primarily on text-based cybersecurity data, leaving open questions about the applicability of similar approaches to other data modalities common in cybersecurity applications. Future research should investigate whether the principles demonstrated in our work extend to network traffic data, system logs, or other structured data types that are prevalent in cybersecurity applications.
+
+\subsection{Broader Impact on Cybersecurity Research}
+
+The systematic framework we present establishes a foundation for rigorous evaluation of synthetic data approaches in cybersecurity research. By providing standardized metrics and evaluation protocols, our work enables meaningful comparison across different synthetic generation approaches and facilitates cumulative progress in this rapidly evolving field.
+
+The demonstration that synthetic data can achieve near-real performance under controlled conditions has implications for privacy-preserving cybersecurity research. Organizations that cannot share real attack data due to privacy or legal constraints may be able to contribute to cybersecurity research through carefully generated synthetic datasets that preserve essential characteristics while protecting sensitive information.
+
+Our findings suggest that the cybersecurity research community should develop specialized evaluation frameworks that account for the unique characteristics of cybersecurity data and the operational constraints of cybersecurity applications. The systematic approach we demonstrate provides a template for such frameworks while highlighting the importance of comprehensive evaluation across multiple dimensions rather than relying solely on traditional performance metrics.

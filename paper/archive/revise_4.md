@@ -1,0 +1,155 @@
+# Paper Revision 4: Methodology and Experiment Restructuring
+
+**Date:** September 20, 2025
+**Reviewer:** Claude
+**Focus:** Clear separation of Methodology and Experiment sections per ACM standards
+**Status:** Ready for review
+
+---
+
+## 3. Methodology
+
+Our methodology presents a novel framework for systematic evaluation of Large Language Model (LLM)-generated synthetic data in cybersecurity applications. The approach is grounded in the hypothesis that strategic prompt engineering combined with embedding-based quality assessment can produce synthetic data that rivals real-world datasets for training robust cybersecurity classifiers.
+
+### 3.1 Theoretical Framework
+
+The foundation of our approach rests on three key theoretical principles:
+
+**Stratified Seed Selection Theory**: We hypothesize that the effectiveness of synthetic data generation is fundamentally dependent on the diversity and representativeness of seed samples. Drawing from statistical sampling theory, we propose a dual-layer stratification strategy that captures both central tendencies and boundary cases within the malicious data distribution. This ensures that the LLM encounters both prototypical and edge-case examples during generation, potentially improving the coverage and realism of synthetic variants.
+
+**Multi-Strategy Prompt Engineering**: Our methodology employs a differentiated prompt strategy framework based on the principle that varied linguistic instruction can elicit different aspects of semantic understanding from LLMs. We theorize that systematic variation in prompt intensity—from conservative preservation to aggressive amplification—enables controlled exploration of the semantic space around each seed sample, thereby generating synthetic data with tunable characteristics.
+
+**Embedding-Based Quality Assessment**: Central to our methodology is the use of unified embedding spaces for quality evaluation. This approach is grounded in the distributional hypothesis from computational linguistics, which posits that semantic similarity correlates with distributional proximity in high-dimensional vector spaces. By analyzing synthetic data distribution in embedding space, we can quantitatively assess both fidelity (proximity to seed samples) and diversity (coverage of semantic regions).
+
+### 3.2 Methodological Design Principles
+
+**Reproducibility and Configurability**: Our framework prioritizes systematic reproducibility through modular design and parameter externalization. This design philosophy ensures that researchers can systematically vary experimental conditions while maintaining rigorous control over confounding variables.
+
+**Robustness Under Class Imbalance**: The methodology explicitly addresses the challenge of class imbalance prevalent in cybersecurity domains. By designing experiments that systematically vary malicious data ratios, we aim to understand model behavior across the spectrum of operational conditions encountered in real-world deployments.
+
+**Multi-Model Validation**: To ensure generalizability of findings, our methodology incorporates evaluation across diverse model architectures. This approach recognizes that synthetic data quality may interact differently with various learning algorithms, necessitating comprehensive validation across multiple model types.
+
+### 3.3 Conceptual Pipeline Architecture
+
+Our methodology conceptualizes the synthetic data generation and evaluation process as a multi-phase pipeline:
+
+**Phase I - Seed Curation**: Systematic selection of high-quality seed samples using density-based stratification in embedding space. This phase establishes the foundation for subsequent synthetic generation by ensuring comprehensive coverage of the target domain.
+
+**Phase II - Controlled Generation**: Application of systematic prompt engineering strategies to generate synthetic variants. Each strategy is designed to explore different aspects of the semantic space around seed samples.
+
+**Phase III - Quality Assessment**: Comprehensive evaluation of synthetic data through embedding space analysis, including distributional alignment, semantic coherence, and diversity metrics.
+
+**Phase IV - Performance Validation**: Systematic evaluation of machine learning models trained on synthetic data across varying operational conditions, particularly under different levels of class imbalance.
+
+This pipeline architecture ensures that each phase builds upon the previous one while maintaining clear separation of concerns and enabling systematic analysis of each component's contribution to overall performance.
+
+### 3.4 Evaluation Framework Design
+
+Our evaluation methodology is designed around the principle of comparative analysis under controlled conditions. By constructing matched datasets that vary only in their synthetic data characteristics, we can isolate the impact of different generation strategies on model performance.
+
+The framework emphasizes sensitivity analysis across multiple dimensions: data scarcity, class imbalance, and prompt strategy selection. This multi-dimensional approach enables comprehensive understanding of synthetic data effectiveness across the operational parameter space typically encountered in cybersecurity applications.
+
+---
+
+## 4. Experimental Setup
+
+### 4.1 Dataset and Data Sources
+
+**Primary Dataset**: We utilize the CEAS-08 Dataset as our primary source of real-world malicious and benign samples. This dataset provides a substantial corpus of labeled cybersecurity events suitable for both seed selection and baseline comparison.
+
+**Seed Sample Selection**: From the CEAS-08 dataset, we extract 2,000 malicious samples using our stratified sampling approach. The stratification process employs embedding-based distance measurements to identify samples across the core-edge spectrum of the malicious class distribution.
+
+**Synthetic Data Generation Scale**: We generate 6,000 synthetic malicious samples (3 variants per seed sample) using GPT-4.1-mini, creating a comprehensive synthetic corpus for evaluation.
+
+### 4.2 Embedding Model Configuration
+
+**Embedding Architecture**: We employ the all-MiniLM-L6-v2 model to generate 384-dimensional embeddings for all data samples. This model is selected for its balance of representational capacity and computational efficiency in processing large corpora.
+
+**Unified Embedding Space**: All real and synthetic data points are mapped into a shared 384-dimensional vector space, enabling direct distributional comparison and quality assessment across data sources.
+
+### 4.3 Stratification Implementation
+
+**Core Layer Definition**: Samples with embedding distances ≤ 0.49 from the malicious class centroid are classified as core layer, representing prototypical malicious examples.
+
+**Edge Layer Definition**: Samples with embedding distances ≥ 0.74 from the malicious class centroid are classified as edge layer, representing boundary cases and novel attack patterns.
+
+**Stratification Rationale**: This dual-layer approach ensures that synthetic generation encompasses both common attack patterns (core) and unusual or emerging threats (edge).
+
+### 4.4 Prompt Engineering Configuration
+
+**Original Strategy**: Baseline prompt instructing the LLM to rewrite seed samples while preserving malicious intent and semantic content.
+
+**Strong Strategy**: Enhanced prompt encouraging amplification of malicious characteristics and aggressive rewriting that emphasizes threat indicators.
+
+**Weak Strategy**: Subtle prompt promoting conservative rewriting that maintains malicious intent while reducing overtness of threat indicators.
+
+**Generation Parameters**: Each prompt strategy is applied systematically to all 2,000 seed samples, ensuring balanced representation across strategies and stratification layers.
+
+### 4.5 Experimental Pipeline Implementation
+
+**Phase 1 - Seed Preparation**: Systematic extraction and stratification of 2,000 seed samples from CEAS-08 dataset using embedding-based distance metrics.
+
+**Phase 2 - Synthetic Generation**: Application of three prompt strategies to generate 6,000 synthetic samples with full provenance tracking.
+
+**Phase 3 - ID Annotation**: Assignment of unique identifiers enabling complete traceability from synthetic samples to original seeds and prompt strategies.
+
+**Phase 4 - Unified Embedding**: Generation of 384-dimensional embeddings for all samples (real and synthetic) creating a unified analytical space.
+
+**Phase 5 - Quality Analysis**: Comprehensive embedding space analysis including PCA, t-SNE visualization, K-means clustering (optimal K=19, silhouette score=0.160), and distance distribution measurement.
+
+**Phase 6 - Dataset Construction**: Creation of 16 pure datasets with systematic variation across data sources (4 types) and malicious ratios (5%, 10%, 15%, 20%).
+
+**Phase 7 - Model Training and Evaluation**: Training and evaluation of three model architectures (RandomForest, SVM, DeepLearning) across all 16 dataset configurations.
+
+### 4.6 Model Architecture Specifications
+
+**RandomForest Configuration**: Ensemble method selected for its interpretability and robustness to overfitting in cybersecurity applications.
+
+**Support Vector Machine (SVM)**: Linear classifier chosen for its effectiveness in high-dimensional spaces and strong theoretical foundations.
+
+**Deep Learning Architecture**: Multi-layer neural network designed to capture complex patterns in synthetic data representations.
+
+### 4.7 Evaluation Metrics and Protocols
+
+**Primary Performance Metrics**: Accuracy, Precision, Recall, and F1-Score measured across all model-dataset combinations.
+
+**Embedding Space Metrics**: PCA variance explained, t-SNE visualization quality, silhouette scores for clustering analysis, and distance-to-centroid measurements for stratification validation.
+
+**Statistical Analysis**: Comprehensive performance comparison across data sources, malicious ratios, and model architectures with focus on identifying systematic patterns and significant differences.
+
+### 4.8 Experimental Controls and Validation
+
+**Fixed Test Set**: All model evaluations performed on identical, held-out test set to ensure fair comparison across experimental conditions.
+
+**Reproducibility Measures**: All experimental phases containerized with fixed random seeds to ensure complete reproducibility of results.
+
+**Cross-Validation Protocol**: Systematic validation across multiple experimental dimensions to ensure robustness of findings and minimize overfitting to specific experimental configurations.
+
+This experimental setup enables rigorous evaluation of our methodology while maintaining strict controls for fair comparison across different synthetic data generation strategies and operational conditions.
+
+---
+
+## Key Changes Made
+
+### Methodology Section (3)
+- **Removed all specific parameters and datasets** - now focuses purely on theoretical framework and design principles
+- **Added theoretical justification** for each design choice
+- **Emphasized the "why" behind each methodological decision**
+- **Structured around conceptual foundations** rather than implementation details
+- **Used ACM academic writing style** with formal theoretical grounding
+
+### Experiment Section (4)
+- **Moved all specific configurations** from methodology to experiment
+- **Added precise parameter specifications** (embeddings dimensions, model names, sample sizes)
+- **Detailed the exact experimental pipeline** with phase-by-phase implementation
+- **Included specific dataset names and metrics**
+- **Provided complete reproducibility information**
+
+### Academic Style Improvements
+- Used formal ACM conference paper language
+- Structured arguments with clear theoretical foundations
+- Separated conceptual framework from implementation details
+- Added proper academic justification for methodological choices
+- Maintained clear logical flow from theory to implementation
+
+This restructuring now clearly separates the conceptual framework (methodology) from the practical implementation (experiment), following standard ACM academic paper conventions.

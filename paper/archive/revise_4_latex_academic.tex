@@ -1,0 +1,61 @@
+\section{Methodology}
+
+Our methodology presents a novel framework for systematic evaluation of Large Language Model (LLM)-generated synthetic data in cybersecurity applications. The approach is grounded in the hypothesis that strategic prompt engineering combined with embedding-based quality assessment can produce synthetic data that rivals real-world datasets for training robust cybersecurity classifiers.
+
+\subsection{Theoretical Framework}
+
+The foundation of our approach rests on three key theoretical principles that address fundamental challenges in synthetic cybersecurity data generation. First, we establish that the effectiveness of synthetic data generation is fundamentally dependent on the diversity and representativeness of seed samples. Drawing from statistical sampling theory, we propose a dual-layer stratification strategy that captures both central tendencies and boundary cases within the malicious data distribution. This ensures that the LLM encounters both prototypical and edge-case examples during generation, potentially improving the coverage and realism of synthetic variants.
+
+Our methodology employs a differentiated prompt strategy framework based on the principle that varied linguistic instruction can elicit different aspects of semantic understanding from LLMs. We theorize that systematic variation in prompt intensity—from conservative preservation to aggressive amplification—enables controlled exploration of the semantic space around each seed sample, thereby generating synthetic data with tunable characteristics. This multi-strategy approach recognizes that different operational contexts may require synthetic data with varying degrees of subtlety or overtness in malicious characteristics.
+
+Central to our methodology is the use of unified embedding spaces for quality evaluation. This approach is grounded in the distributional hypothesis from computational linguistics, which posits that semantic similarity correlates with distributional proximity in high-dimensional vector spaces. By analyzing synthetic data distribution in embedding space, we can quantitatively assess both fidelity (proximity to seed samples) and diversity (coverage of semantic regions), providing objective measures of synthetic data quality that complement traditional performance-based evaluations.
+
+\subsection{Methodological Design Principles}
+
+Our framework prioritizes systematic reproducibility through modular design and parameter externalization. This design philosophy ensures that researchers can systematically vary experimental conditions while maintaining rigorous control over confounding variables. The methodology explicitly addresses the challenge of class imbalance prevalent in cybersecurity domains by designing experiments that systematically vary malicious data ratios, enabling us to understand model behavior across the spectrum of operational conditions encountered in real-world deployments.
+
+To ensure generalizability of findings, our methodology incorporates evaluation across diverse model architectures. This approach recognizes that synthetic data quality may interact differently with various learning algorithms, necessitating comprehensive validation across multiple model types. The evaluation framework is designed around the principle of comparative analysis under controlled conditions, allowing us to isolate the impact of different generation strategies on model performance by constructing matched datasets that vary only in their synthetic data characteristics.
+
+\subsection{Conceptual Pipeline Architecture}
+
+Our methodology conceptualizes the synthetic data generation and evaluation process as a multi-phase pipeline where each phase builds upon the previous one while maintaining clear separation of concerns. The pipeline begins with systematic selection of high-quality seed samples using density-based stratification in embedding space, establishing the foundation for subsequent synthetic generation by ensuring comprehensive coverage of the target domain. This is followed by the application of systematic prompt engineering strategies to generate synthetic variants, with each strategy designed to explore different aspects of the semantic space around seed samples.
+
+The quality assessment phase provides comprehensive evaluation of synthetic data through embedding space analysis, including distributional alignment, semantic coherence, and diversity metrics. Finally, systematic evaluation of machine learning models trained on synthetic data across varying operational conditions, particularly under different levels of class imbalance, validates the practical utility of the generated data. This pipeline architecture enables systematic analysis of each component's contribution to overall performance while maintaining the flexibility to adapt individual phases based on specific research requirements.
+
+\section{Experimental Setup}
+
+\subsection{Dataset and Data Sources}
+
+Our experimental evaluation utilizes the CEAS-08 Dataset as the primary source of real-world malicious and benign samples, providing a substantial corpus of labeled cybersecurity events suitable for both seed selection and baseline comparison. From this dataset, we extract 2,000 malicious samples using our stratified sampling approach, where the stratification process employs embedding-based distance measurements to identify samples across the core-edge spectrum of the malicious class distribution. This selection strategy ensures that our seed set encompasses both typical malicious examples and boundary cases that represent novel or unusual attack patterns.
+
+Using these carefully selected seeds, we generate 6,000 synthetic malicious samples through our multi-strategy prompt engineering approach, creating three variants per seed sample using GPT-4.1-mini. This generation scale provides sufficient data for comprehensive evaluation while maintaining computational feasibility and ensuring that each synthetic sample can be traced back to its original seed and generation strategy for detailed provenance analysis.
+
+\subsection{Embedding Model Configuration}
+
+We employ the all-MiniLM-L6-v2 model to generate 384-dimensional embeddings for all data samples, chosen for its balance of representational capacity and computational efficiency in processing large corpora. All real and synthetic data points are mapped into this shared 384-dimensional vector space, enabling direct distributional comparison and quality assessment across data sources. This unified embedding approach allows us to apply consistent distance metrics and clustering algorithms across all data types, facilitating objective comparison of synthetic data quality relative to real samples.
+
+The embedding space serves as the foundation for our stratification strategy and quality assessment metrics. By representing all samples in this common semantic space, we can quantify relationships between synthetic and real data, measure the diversity of generated samples, and assess whether synthetic data fills gaps or merely duplicates existing patterns in the real data distribution.
+
+\subsection{Stratification Implementation}
+
+Our dual-layer stratification strategy classifies samples based on their distance from the malicious class centroid in the embedding space. Samples with embedding distances of 0.49 or less from the centroid are classified as core layer, representing prototypical malicious examples that exhibit characteristics typical of the majority of malicious samples. Conversely, samples with distances of 0.74 or greater are classified as edge layer, representing boundary cases and novel attack patterns that may be less common but potentially more challenging for detection systems.
+
+This stratification approach ensures that synthetic generation encompasses both common attack patterns and unusual or emerging threats, providing a comprehensive evaluation of the LLM's ability to generate diverse malicious content. The distance thresholds were determined through empirical analysis of the embedding distribution to achieve balanced representation while maintaining meaningful separation between core and edge samples.
+
+\subsection{Prompt Engineering Configuration}
+
+Our prompt engineering strategy employs three distinct approaches to explore different aspects of synthetic data generation. The original strategy serves as a baseline, instructing the LLM to rewrite seed samples while preserving malicious intent and semantic content. The strong strategy encourages amplification of malicious characteristics through aggressive rewriting that emphasizes threat indicators, while the weak strategy promotes conservative rewriting that maintains malicious intent while reducing the overtness of threat indicators.
+
+Each prompt strategy is applied systematically to all 2,000 seed samples, ensuring balanced representation across strategies and stratification layers. This systematic application allows us to isolate the impact of prompt variation on synthetic data quality and model performance, providing insights into how different generation approaches affect the utility of synthetic data for training cybersecurity classifiers.
+
+\subsection{Experimental Pipeline Implementation}
+
+Our experimental pipeline consists of seven sequential phases that build upon each other to provide comprehensive evaluation of synthetic data quality and utility. The pipeline begins with systematic extraction and stratification of seed samples from the CEAS-08 dataset using embedding-based distance metrics, followed by the application of our three prompt strategies to generate synthetic samples with full provenance tracking. Unique identifiers are assigned to enable complete traceability from synthetic samples to their original seeds and generation strategies.
+
+The unified embedding phase maps all samples into our 384-dimensional analytical space, enabling comprehensive quality analysis including PCA and t-SNE visualization, K-means clustering with optimal configuration (K=19, silhouette score=0.160), and distance distribution measurement. Dataset construction creates 16 pure datasets with systematic variation across four data sources and four malicious ratios (5%, 10%, 15%, 20%), while the final phase trains and evaluates three model architectures (RandomForest, SVM, DeepLearning) across all dataset configurations.
+
+\subsection{Model Architecture and Evaluation}
+
+We evaluate three distinct model architectures to ensure comprehensive assessment of synthetic data utility across different learning paradigms. RandomForest serves as our ensemble method, selected for its interpretability and robustness to overfitting in cybersecurity applications. Support Vector Machine provides a linear classifier chosen for its effectiveness in high-dimensional spaces and strong theoretical foundations, while our Deep Learning architecture employs a multi-layer neural network designed to capture complex patterns in synthetic data representations.
+
+Performance evaluation employs standard metrics including Accuracy, Precision, Recall, and F1-Score measured across all model-dataset combinations. Additionally, we assess embedding space quality through PCA variance explained, t-SNE visualization quality, silhouette scores for clustering analysis, and distance-to-centroid measurements for stratification validation. All model evaluations are performed on an identical, held-out test set to ensure fair comparison across experimental conditions, with complete experimental reproducibility ensured through containerization and fixed random seeds.

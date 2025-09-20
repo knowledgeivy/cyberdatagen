@@ -1,0 +1,35 @@
+\section{Introduction}\label{sec:introduction}
+
+% Machine learning models have become essential to cybersecurity operations, enabling automated detection of intrusions, anomalies, and advanced persistent threats. However, the effectiveness and reliability of these models depend heavily on the availability of rich, labeled, and realistic datasets. In real-world security systems, malicious events are rare, dynamic, and context-specific, making it difficult to collect sufficient training data. While several public datasets exist 
+
+% Several benchmark datasets exist (e.g., CICIDS2017~\cite{sharafaldin2018toward}, UNSW-NB15~\cite{moustafa2015unsw}), they are often static, lack configurability, and fail to support systematic robustness testing under varying threat levels or class imbalance scenarios. \textbf{CyberDataGen} is designed to close this gap. It is a configurable, open-source framework for generating synthetic cybersecurity datasets with tunable attack prevalence, customizable event types, and time-span control. The system produces labeled time-series records that simulate both normal and malicious behaviors, supporting multiple learning paradigms including supervised classification, anomaly detection, and explainable AI. Our benchmark suite enables researchers to evaluate the sensitivity and robustness of models as the ratio of adversarial events varies from 0\% to 50\%. We provide datasets, configuration files, evaluation protocols, and baseline results for a wide range of models including logistic regression, random forest, XGBoost, LSTM, and Transformer-based architectures.
+
+% To systematically evaluate model robustness, CyberDataGen uses a modular generation pipeline driven by user-defined YAML configuration files. The workflow includes attack ratio specification, simulation of labeled sequences, and evaluation scripts to measure model performance under different levels of class imbalance. This enables fine-grained analysis of degradation curves for precision, recall, F1-score, and ROC-AUC as attack conditions intensify. The framework supports explainability integrations (e.g., SHAP, LIME) to evaluate how model interpretation shifts under adversarial stress. Critically, CyberDataGen provides a reproducible and privacy-compliant alternative to operational logs, which are often inaccessible due to confidentiality and legal constraints.
+
+% To validate the quality of generated data, we employ both statistical and task-based metrics. Our validation pipeline assesses feature distribution similarity, temporal coherence, and label fidelity. Furthermore, we benchmark the performance of models trained on CyberDataGen data against those trained on established datasets such as CICIDS2017 and UNSW-NB15. Results show that CyberDataGen datasets yield comparable or superior robustness, with the added benefits of configurability and reproducibility. This confirms the utility of CyberDataGen as a research-grade surrogate for evaluating models in threat-rich or data-sparse environments.
+
+% In addition to core data generation, CyberDataGen incorporates advanced techniques for increasing realism and application breadth. It supports anomaly injection based on conformal prediction methods and integrates knowledge extraction agents via the LangChain ReAct framework to simulate semantic-level cybersecurity narratives. These extensions enable broader use cases, including event forecasting, predictive maintenance, system behavior modeling, and the evaluation of autonomous defensive agents.
+
+% The remainder of this paper presents the design of the CyberDataGen framework, our dataset generation procedures, benchmarking protocols, and empirical evaluations of robustness across a diverse set of machine learning models. All resources are released under an open license to support transparent benchmarking and community adoption.
+
+Cybersecurity machine learning systems face a persistent challenge: the scarcity of high-quality, labeled data for training robust detection models. Real cybersecurity data is often sensitive, proprietary, or legally restricted, making it difficult for researchers and practitioners to develop and evaluate detection systems. While existing datasets such as UNSW-NB15 \cite{moustafa2015unsw} and CICIDS2017 \cite{cicids2017} provide valuable benchmarks, they remain static and lack the flexibility needed for comprehensive robustness evaluation \cite{sharafaldin2018toward}. Synthetic data generation offers a promising solution, yet the application of Large Language Models (LLMs) to cybersecurity domains introduces unique challenges that remain poorly understood.
+
+Current approaches to LLM-based cybersecurity synthetic data generation rely on ad-hoc prompt design without systematic evaluation of prompt strategy effectiveness. While recent work by \cite{rahman2025leveraging}. explores GANs for synthetic attack sample generation and \cite{razmyslovich2025eltex}. introduces LLM-based frameworks like ELTEX for domain-driven text generation, researchers typically employ single prompt configurations based on intuition rather than empirical evidence, leading to inconsistent results and limited reproducibility [?]. This gap between promising LLM capabilities and systematic prompt engineering represents a critical bottleneck in scaling synthetic data solutions for cybersecurity applications.
+
+The cybersecurity domain presents particular challenges for LLM synthetic data generation. Unlike general text generation tasks, cybersecurity data requires precise preservation of attack patterns, social engineering techniques, and domain-specific characteristics that determine malicious intent [?]. Prompt strategies must balance between maintaining semantic authenticity and introducing sufficient variation to improve model generalization. However, the relationship between prompt design choices and resulting synthetic data quality has not been systematically studied.
+
+To address these methodological gaps, this paper investigates the fundamental research question: How do different prompt engineering strategies affect the quality and effectiveness of LLM-generated cybersecurity synthetic data?
+
+Specifically, we examine three hypotheses:
+\begin{enumerate}
+    \item Balanced prompt strategies that preserve semantic meaning while introducing variation will outperform extreme approaches
+    \item Over-amplification of attack characteristics will degrade performance due to unrealistic patterns
+    \item Over-subtle prompts will lose critical attack indicators, reducing detection effectiveness
+\end{enumerate}
+
+Our research makes four key contributions:
+\begin{enumerate}
+    \item First Systematic Prompt Strategy Comparison: Comprehensive evaluation of Original, Strong, and Weak prompt strategies for cybersecurity synthetic data generation
+    \item Performance Quantification: Empirical measurement of prompt strategy impact with statistical analysis
+    \item Evidence-based recommendations for cybersecurity prompt engineering based on 8.3\% to 16.1\% performance gap analysis.
+\end{enumerate}
