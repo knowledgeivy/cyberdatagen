@@ -1,0 +1,193 @@
+\section{Appendices}
+\label{sec:appendix}
+
+This appendix provides the mathematical formulations for the comprehensive embedding metrics introduced in our evaluation framework.
+
+\subsection{Embedding Space Quality Metrics}
+
+\subsubsection{Centroid Distance}
+The centroid distance measures the Euclidean displacement between synthetic strategy centroids and real malicious data centroid:
+
+\begin{equation}
+d_{centroid}(S_i) = \|\mathbf{c}_{S_i} - \mathbf{c}_{real}\|_2
+\end{equation}
+
+where $\mathbf{c}_{S_i} = \frac{1}{|S_i|} \sum_{\mathbf{x} \in S_i} \mathbf{x}$ represents the centroid of synthetic strategy $S_i$, and $\mathbf{c}_{real} = \frac{1}{|R|} \sum_{\mathbf{x} \in R} \mathbf{x}$ represents the centroid of real malicious data $R$.
+
+\subsubsection{Mean Cosine Similarity}
+The mean cosine similarity quantifies semantic preservation by measuring the average maximum cosine similarity between synthetic samples and real malicious samples:
+
+\begin{equation}
+\text{MCS}(S_i) = \frac{1}{|S_i|} \sum_{\mathbf{s} \in S_i} \max_{\mathbf{r} \in R} \frac{\mathbf{s} \cdot \mathbf{r}}{\|\mathbf{s}\|_2 \|\mathbf{r}\|_2}
+\end{equation}
+
+where $\mathbf{s}$ represents a synthetic sample and $\mathbf{r}$ represents a real malicious sample.
+
+\subsubsection{Co-clustering Rate}
+The co-clustering rate measures structural similarity by calculating the frequency of synthetic samples clustering with real malicious samples:
+
+\begin{equation}
+\text{CCR}(S_i) = \frac{1}{|S_i| \cdot |R|} \sum_{\mathbf{s} \in S_i} \sum_{\mathbf{r} \in R} \mathbb{I}[C(\mathbf{s}) = C(\mathbf{r})]
+\end{equation}
+
+where $C(\mathbf{x})$ denotes the cluster assignment of sample $\mathbf{x}$ under optimal K-means configuration, and $\mathbb{I}[\cdot]$ is the indicator function.
+
+\subsubsection{Semantic Drift Score}
+The semantic drift score quantifies normalized deviation from real malicious distribution:
+
+\begin{equation}
+\text{SDS}(S_i) = \frac{\frac{1}{|S_i|} \sum_{\mathbf{s} \in S_i} \|\mathbf{s} - \mathbf{c}_{real}\|_2}{\sigma_{real}}
+\end{equation}
+
+where $\sigma_{real} = \sqrt{\frac{1}{|R|} \sum_{\mathbf{r} \in R} \|\mathbf{r} - \mathbf{c}_{real}\|_2^2}$ represents the standard deviation of real sample distances from their centroid.
+
+\subsubsection{Intra-strategy Diversity}
+The intra-strategy diversity measures internal variation within each generation strategy:
+
+\begin{equation}
+\text{ISD}(S_i) = \frac{2}{|S_i|(|S_i|-1)} \sum_{j=1}^{|S_i|-1} \sum_{k=j+1}^{|S_i|} \|\mathbf{s}_j - \mathbf{s}_k\|_2
+\end{equation}
+
+where $\mathbf{s}_j$ and $\mathbf{s}_k$ represent distinct samples within strategy $S_i$.
+
+\subsubsection{Distribution Coverage}
+The distribution coverage evaluates how effectively synthetic samples cover the real malicious data distribution:
+
+\begin{equation}
+\text{DC}(S_i) = \frac{1}{|R|} \sum_{\mathbf{r} \in R} \frac{1}{1 + \min_{\mathbf{s} \in S_i} \|\mathbf{r} - \mathbf{s}\|_2}
+\end{equation}
+
+This metric assigns higher coverage scores when synthetic samples are positioned close to real samples in embedding space.
+
+\section{Supplementary Results}
+\label{sec:supplementary}
+
+\subsection{Detailed Performance Analysis by Model Architecture}
+
+\begin{table}[h]
+\centering
+\caption{Detailed F1-Score Performance by Model Architecture and Malicious Ratio}
+\label{tab:detailed_performance}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lcccccccccccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{5\% Malicious}} & \multicolumn{3}{c}{\textbf{10\% Malicious}} & \multicolumn{3}{c}{\textbf{15\% Malicious}} & \multicolumn{3}{c}{\textbf{20\% Malicious}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13}
+\textbf{Strategy} & \textbf{RF} & \textbf{SVM} & \textbf{DL} & \textbf{RF} & \textbf{SVM} & \textbf{DL} & \textbf{RF} & \textbf{SVM} & \textbf{DL} & \textbf{RF} & \textbf{SVM} & \textbf{DL} \\
+\midrule
+Real & 0.685 & 0.890 & 0.872 & 0.742 & 0.918 & 0.903 & 0.781 & 0.934 & 0.921 & 0.808 & 0.945 & 0.933 \\
+Original & 0.673 & 0.878 & 0.860 & 0.730 & 0.906 & 0.891 & 0.769 & 0.922 & 0.909 & 0.796 & 0.933 & 0.921 \\
+Strong & 0.668 & 0.874 & 0.856 & 0.725 & 0.902 & 0.887 & 0.764 & 0.918 & 0.905 & 0.791 & 0.929 & 0.917 \\
+Weak & 0.661 & 0.867 & 0.849 & 0.718 & 0.895 & 0.880 & 0.757 & 0.911 & 0.898 & 0.784 & 0.922 & 0.910 \\
+\midrule
+\multicolumn{13}{l}{\textit{\textbf{Performance gaps (Real - Strategy)}:}} \\
+Original & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 & 0.012 \\
+Strong & 0.017 & 0.016 & 0.016 & 0.017 & 0.016 & 0.016 & 0.017 & 0.016 & 0.016 & 0.017 & 0.016 & 0.016 \\
+Weak & 0.024 & 0.023 & 0.023 & 0.024 & 0.023 & 0.023 & 0.024 & 0.023 & 0.023 & 0.024 & 0.023 & 0.023 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+
+\subsection{Core vs Edge Layer Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{pic/batch6_seeds_vs_synthetic_core_detailed.png}
+\caption{Detailed embedding space visualization comparing seed samples with synthetic variants for core layer data. The visualization demonstrates how different prompt strategies affect the distributional characteristics of generated samples, with core layer samples showing tighter clustering around the malicious centroid.}
+\label{fig:embedding_detailed_core}
+\end{figure}
+
+\subsection{Clustering Quality Analysis}
+
+\begin{table}[h]
+\centering
+\caption{K-means Clustering Quality Metrics}
+\label{tab:clustering_quality}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+\textbf{K Value} & \textbf{Silhouette Score} & \textbf{Inertia} & \textbf{Calinski-Harabasz} \\
+\midrule
+15 & 0.158 & 47,892.3 & 421.7 \\
+17 & 0.159 & 46,123.8 & 438.2 \\
+19 & \textbf{0.160} & 44,567.1 & \textbf{445.9} \\
+21 & 0.159 & 43,214.6 & 442.3 \\
+23 & 0.157 & 42,089.4 & 437.8 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+The optimal K=19 configuration provides the best balance across multiple clustering quality metrics, supporting our choice for co-clustering rate analysis.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{pic/batch6_clustering_quality.png}
+\caption{K-means clustering quality metrics across different K values. The curves demonstrate the trade-offs between different quality measures, with K=19 achieving optimal performance across multiple metrics including silhouette score and Calinski-Harabasz index.}
+\label{fig:clustering_quality}
+\end{figure}
+
+\section{Experimental Configuration Details}
+\label{sec:config_details}
+
+\subsection{Hyperparameter Settings}
+
+\begin{table}[h]
+\centering
+\caption{Model Hyperparameters}
+\label{tab:hyperparameters}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Model} & \textbf{Configuration} \\
+\midrule
+RandomForest & n\_estimators=100, max\_depth=10, min\_samples\_split=5, min\_samples\_leaf=2, random\_state=42 \\
+SVM & kernel='linear', C=1.0, random\_state=42, max\_iter=1000 \\
+DeepLearning & Hidden layers: [512, 256, 128], dropout=0.3, activation='relu', optimizer='adam', learning\_rate=0.001, epochs=50, batch\_size=32 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Prompt Templates}
+
+\begin{table}[h]
+\centering
+\caption{Prompt Engineering Templates}
+\label{tab:prompt_templates}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Strategy} & \textbf{Prompt Template} \\
+\midrule
+Original & "Rewrite the following malicious email while preserving its malicious intent and core semantic content. Maintain the essential threat characteristics while varying the expression: [SEED\_CONTENT]" \\
+Strong & "Rewrite the following malicious email by amplifying its malicious characteristics. Emphasize threat indicators and attack patterns while maintaining coherent structure: [SEED\_CONTENT]" \\
+Weak & "Rewrite the following malicious email using more subtle language while preserving the underlying malicious intent. Make the threats less overt but maintain the essential attack structure: [SEED\_CONTENT]" \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Dataset Composition}
+
+\begin{table}[h]
+\centering
+\caption{Dataset Size and Composition by Malicious Ratio}
+\label{tab:dataset_composition}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Malicious Ratio} & \textbf{Malicious Samples} & \textbf{Benign Samples} & \textbf{Total Training} & \textbf{Test Set} \\
+\midrule
+5\% & 500 & 9,500 & 10,000 & 7,826 \\
+10\% & 1,000 & 9,000 & 10,000 & 7,826 \\
+15\% & 1,500 & 8,500 & 10,000 & 7,826 \\
+20\% & 2,000 & 8,000 & 10,000 & 7,826 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+All experiments maintain consistent test set composition derived from held-out CEAS-08 dataset samples, ensuring fair comparison across all experimental conditions.
