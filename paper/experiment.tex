@@ -1,18 +1,18 @@
-\section{Experimental Setup}
-
+\section{Experiment}
+\label{sec:experiment}
 Our experimental implementation follows the four-stage framework illustrated in Figure~\ref{fig:framework}, progressing from raw cybersecurity data to comprehensive performance analysis. Each stage employs specific configurations and protocols designed to ensure reproducible and rigorous evaluation of synthetic data quality across multiple dimensions.
 
 \subsection{Data Preparation Stage}
 
-The data preparation stage establishes the foundation for synthetic generation through systematic seed selection and stratification from the CEAS-08 Dataset. This dataset provides a substantial corpus of real-world malicious and benign cybersecurity events, offering sufficient diversity for comprehensive seed curation while maintaining the authenticity necessary for realistic synthetic generation.
+The data preparation stage establishes the foundation for synthetic generation through systematic seed selection and stratification from the \textit{CEAS-08} Dataset. This dataset provides a substantial corpus of real-world malicious and benign cybersecurity events, offering sufficient diversity for comprehensive seed curation while maintaining the authenticity necessary for realistic synthetic generation.
 
-Our seed selection process extracts 2,000 malicious samples through stratified sampling based on embedding-space characteristics. We employ the all-MiniLM-L6-v2 model to generate 384-dimensional embeddings for all candidate samples, enabling distance-based analysis relative to the malicious class centroid. This embedding approach provides an objective foundation for stratification decisions while ensuring that selected seeds represent the full spectrum of malicious patterns.
+Our seed selection process extracts 2,000 malicious samples through stratified sampling based on embedding-space characteristics. We employ the \textit{all-MiniLM-L6-v2} model to generate 384-dimensional embeddings for all candidate samples, enabling distance-based analysis relative to the malicious class centroid. This embedding approach provides an objective foundation for stratification decisions while ensuring that selected seeds represent the full spectrum of malicious patterns.
 
 The core/edge stratification divides seed samples based on their proximity to the malicious class centroid in embedding space. Core layer samples, defined as those with distances of 0.49 or less from the centroid, represent prototypical malicious examples that exhibit characteristics typical of the majority of malicious samples. Edge layer samples, with distances of 0.74 or greater, represent boundary cases and novel attack patterns that challenge traditional detection approaches. This dual-layer approach ensures that synthetic generation encompasses both common attack patterns and unusual threat variants.
 
 \subsection{Synthetic Generation Stage}
 
-The synthetic generation stage applies systematic prompt engineering to create diverse synthetic variants from our curated seed samples. Using GPT-4.1-mini, we generate three synthetic variants per seed sample, resulting in 6,000 total synthetic samples with complete provenance tracking to their original seeds and generation strategies.
+The synthetic generation stage applies systematic prompt engineering to create diverse synthetic variants from our curated seed samples. Using \textit{GPT-4.1-mini}, we generate three synthetic variants per seed sample, resulting in 6,000 total synthetic samples with complete provenance tracking to their original seeds and generation strategies.
 
 Our three-strategy prompt engineering approach explores different aspects of the semantic space around each seed sample. The original strategy serves as our baseline, instructing the LLM to rewrite seed samples while preserving malicious intent and core semantic content. The strong strategy encourages amplification of malicious characteristics through aggressive rewriting that emphasizes threat indicators and attack patterns. The weak strategy promotes conservative rewriting that maintains malicious intent while reducing the overtness of threat indicators, potentially creating more subtle variants that could evade simple detection methods.
 
@@ -24,7 +24,7 @@ The evaluation stage encompasses three critical components: embedding space anal
 
 \subsubsection{Embedding Space Analysis}
 
-All samples, both real and synthetic, are mapped into our unified 384-dimensional embedding space using the all-MiniLM-L6-v2 model. This shared representation enables direct distributional comparison and quality assessment across all data sources. We conduct comprehensive analysis including PCA visualization to examine global distributional patterns, t-SNE analysis to explore local neighborhood structures, and K-means clustering to identify natural groupings within the data.
+All samples, both real and synthetic, are mapped into our unified 384-dimensional embedding space using the \textit{all-MiniLM-L6-v2} model. This shared representation enables direct distributional comparison and quality assessment across all data sources. We conduct comprehensive analysis including PCA visualization to examine global distributional patterns, t-SNE analysis to explore local neighborhood structures, and K-means clustering to identify natural groupings within the data.
 
 Our clustering analysis employs systematic evaluation across K values from 2 to 20, identifying optimal configuration at K=19 with a silhouette score of 0.160. This clustering provides insights into semantic coherence by measuring co-clustering rates between synthetic samples and their corresponding seed samples. Distance distribution analysis quantifies semantic drift by measuring the displacement of synthetic samples from their seed centroids in embedding space.
 
@@ -48,7 +48,7 @@ This 4×4 experimental design enables comprehensive analysis of synthetic data e
 
 We evaluate three distinct model architectures to ensure comprehensive assessment across different learning paradigms. RandomForest serves as our ensemble method, selected for its interpretability and robustness in cybersecurity applications. Support Vector Machine provides a linear classifier chosen for its effectiveness in high-dimensional spaces and strong theoretical foundations. Our Deep Learning architecture employs a multi-layer neural network designed to capture complex patterns in high-dimensional data representations.
 
-All models are trained on the 16 dataset configurations using identical hyperparameters and training protocols to ensure fair comparison. Model evaluation employs a fixed, held-out test set derived from the CEAS-08 dataset, maintaining consistency across all experimental conditions and preventing any bias from test set variation.
+All models are trained on the 16 dataset configurations using identical hyperparameters and training protocols to ensure fair comparison. Model evaluation employs a fixed, held-out test set derived from the \textit{CEAS-08} dataset, maintaining consistency across all experimental conditions and preventing any bias from test set variation.
 
 \subsection{Performance Assessment}
 

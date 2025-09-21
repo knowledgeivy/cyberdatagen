@@ -1,4 +1,5 @@
-\section{Evaluation and Results}
+\section{Evaluation}
+\label{sec:evaluation}
 
 Our evaluation demonstrates the effectiveness of the four-stage framework in generating high-quality synthetic cybersecurity data. The results reveal systematic patterns that validate our theoretical foundations while providing practical insights for deploying synthetic data in operational cybersecurity environments. Through comprehensive analysis across embedding space characteristics and classifier performance, we establish clear relationships between generation strategies and practical utility.
 
@@ -12,6 +13,7 @@ Table~\ref{tab:performance_summary} presents the performance summary across all 
 \centering
 \caption{Classification Performance Summary Across All Experimental Conditions}
 \label{tab:performance_summary}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lccc}
 \toprule
 \textbf{Data Source} & \textbf{Best F1-Score} & \textbf{Average F1-Score} & \textbf{Std Deviation} \\
@@ -22,6 +24,7 @@ Synthetic Strong & 0.969 & 0.886 & 0.036 \\
 Synthetic Weak & 0.930 & 0.843 & 0.037 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 Model architecture analysis reveals that DeepLearning models demonstrate the smallest performance gaps between real and synthetic data, followed by SVM and RandomForest architectures. This pattern suggests that more complex models are better able to leverage the subtle patterns present in synthetic data, potentially due to their enhanced capacity for feature extraction and pattern recognition in high-dimensional spaces.
@@ -32,7 +35,7 @@ The systematic variation of malicious data ratios from 5\% to 20\% provides crit
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{data/batch6/paper/performance_f1_score_vs_ratio.png}
+\includegraphics[width=\columnwidth]{pic/performance_f1_score_vs_ratio.png}
 \caption{F1-Score Performance Across Malicious Data Ratios. Synthetic original data shows remarkable resilience under low-resource conditions while converging toward real data performance as malicious samples increase.}
 \label{fig:performance_curves}
 \end{figure}
@@ -45,6 +48,7 @@ Table~\ref{tab:ratio_performance} details the F1-scores across different malicio
 \centering
 \caption{F1-Scores by Malicious Ratio (DeepLearning Model)}
 \label{tab:ratio_performance}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Ratio} & \textbf{Real Data} & \textbf{Syn. Original} & \textbf{Syn. Strong} & \textbf{Syn. Weak} & \textbf{Gap (Original)} \\
@@ -55,6 +59,7 @@ Table~\ref{tab:ratio_performance} details the F1-scores across different malicio
 20\% & 0.989 & 0.977 & 0.952 & 0.930 & 0.012 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \subsection{Embedding Space Analysis and Quality Correlation}
@@ -65,7 +70,7 @@ Figure~\ref{fig:core_pca} presents PCA analysis of the core layer, demonstrating
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{data/batch6/paper/core_layer_pca_analysis.png}
+\includegraphics[width=\columnwidth]{pic/core_layer_pca_analysis.png}
 \caption{PCA Analysis of Core Layer Samples. Real malicious seeds (red squares) cluster with synthetic original variants (purple circles), while strong (orange) and weak (green) variants show different distributional patterns that correlate with their classification performance.}
 \label{fig:core_pca}
 \end{figure}
@@ -75,7 +80,6 @@ Our K-means clustering analysis with optimal configuration (K=19, silhouette sco
 Distance distribution analysis quantifies these observations, revealing that weak synthetic samples have mean distances of 0.62 from their corresponding seed centroids, compared to 0.31 for original variants and 0.47 for strong variants. This systematic relationship between embedding space similarity and classification performance validates our approach of using distributional analysis as a proxy for synthetic data quality assessment.
 
 \subsection{Layer-Specific Performance Patterns}
-
 Analysis across our core and edge layer stratification reveals additional insights into synthetic data effectiveness across different types of malicious content. Core layer samples, representing prototypical malicious examples, show consistent performance patterns where synthetic original variants achieve near-real performance across all experimental conditions.
 
 Edge layer samples, representing boundary cases and novel attack patterns, demonstrate more variable synthetic data effectiveness. The performance gap between real and synthetic data increases significantly in edge layer analysis, with synthetic original achieving 0.923 F1-score compared to 0.967 for real data in the 20\% malicious ratio condition. This larger gap suggests that LLM-based generation may be less effective at capturing the subtle characteristics that define edge cases in cybersecurity data.
@@ -90,18 +94,20 @@ Our comprehensive embedding metrics framework provides quantitative assessment o
 \centering
 \caption{Comprehensive Embedding Quality Metrics by Generation Strategy}
 \label{tab:comprehensive_metrics}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Strategy} & \textbf{Centroid} & \textbf{Cosine} & \textbf{Co-cluster} & \textbf{Semantic} & \textbf{Diversity} & \textbf{Coverage} \\
 & \textbf{Distance} & \textbf{Similarity} & \textbf{Rate} & \textbf{Drift} & \textbf{Score} & \textbf{Score} \\
 \midrule
-Original & 0.062 & 0.881 & 0.085 & 12.12 & 1.280 & 0.699 \\
+Original & \textbf{0.062} & \textbf{0.881} & \textbf{0.085} & \textbf{12.12} & \textbf{1.280} & \textbf{0.699} \\
 Strong & 0.070 & 0.868 & 0.084 & 12.10 & 1.277 & 0.685 \\
 Weak & 0.125 & 0.775 & 0.085 & 12.34 & 1.299 & 0.629 \\
 \midrule
 Real (Ref.) & 0.000 & 1.000 & 1.000 & 1.00 & 1.277 & 1.000 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The centroid distance analysis reveals that the original strategy maintains the smallest deviation from real malicious data, with a distance of 0.062 compared to 0.070 for strong and 0.125 for weak strategies. This pattern indicates that balanced prompt engineering preserves the central tendency of malicious characteristics more effectively than either amplification or attenuation approaches. The substantially larger distance for the weak strategy suggests that conservative rewriting produces synthetic samples that drift further from prototypical malicious patterns.
