@@ -16,7 +16,7 @@ The synthetic generation stage applies systematic prompt engineering to create d
 
 Our three-strategy prompt engineering approach explores different aspects of the semantic space around each seed sample. The original strategy serves as our baseline, instructing the LLM to rewrite seed samples while preserving malicious intent and core semantic content. The strong strategy encourages amplification of malicious characteristics through aggressive rewriting that emphasizes threat indicators and attack patterns. The weak strategy promotes conservative rewriting that maintains malicious intent while reducing the overtness of threat indicators, potentially creating more subtle variants that could evade simple detection methods.
 
-Each prompt strategy is applied systematically to all 2,000 seed samples, ensuring balanced representation across both strategies and stratification layers. This systematic application enables us to isolate the impact of prompt variation on synthetic data quality and subsequent classifier performance. Unique identifiers are assigned to each synthetic sample, enabling complete traceability from generated content back to original seeds and specific generation strategies.
+Each prompt strategy is applied systematically to all 2,000 seed samples, ensuring balanced representation across both strategies and stratification layers. This systematic application enables us to isolate the impact of prompt variation on synthetic data quality and subsequent classifier performance. Unique identifiers are assigned to each synthetic sample, enabling complete traceability from generated content back to original seeds and specific generation strategies. The complete prompt templates for all three generation strategies are provided in Appendix~\ref{tab:prompt_templates}.
 
 \subsection{Evaluation Stage}
 
@@ -26,20 +26,20 @@ The evaluation stage encompasses three critical components: embedding space anal
 
 All samples, both real and synthetic, are mapped into our unified 384-dimensional embedding space using the \textit{all-MiniLM-L6-v2} model. This shared representation enables direct distributional comparison and quality assessment across all data sources. We conduct comprehensive analysis including PCA visualization to examine global distributional patterns, t-SNE analysis to explore local neighborhood structures, and K-means clustering to identify natural groupings within the data.
 
-Our clustering analysis employs systematic evaluation across K values from 2 to 20, identifying optimal configuration at K=19 with a silhouette score of 0.160. This clustering provides insights into semantic coherence by measuring co-clustering rates between synthetic samples and their corresponding seed samples. Distance distribution analysis quantifies semantic drift by measuring the displacement of synthetic samples from their seed centroids in embedding space.
+Our clustering analysis employs systematic evaluation across K values from 2 to 20, identifying optimal configuration at K=19 with a silhouette score of 0.160. This clustering provides insights into semantic coherence by measuring co-clustering rates between synthetic samples and their corresponding seed samples. Distance distribution analysis quantifies semantic drift by measuring the displacement of synthetic samples from their seed centroids in embedding space. The detailed clustering quality analysis supporting our K=19 selection is presented in Appendix~\ref{tab:clustering_quality} and Figure~\ref{fig:clustering_quality}.
 
 
 \subsubsection{Dataset Construction}
 
 We construct 16 pure datasets through systematic variation across two critical dimensions: data source and malicious ratio. Four data sources include real malicious samples (baseline), synthetic original variants, synthetic strong variants, and synthetic weak variants. Four malicious ratios (5\%, 10\%, 15\%, 20\%) simulate different operational conditions, from severe class imbalance typical of real-world cybersecurity applications to more balanced scenarios.
 
-This 4×4 experimental design enables comprehensive analysis of synthetic data effectiveness across varying operational conditions while maintaining rigorous experimental control. Each dataset combines the selected malicious samples with benign samples from the CEAS-08 dataset to achieve the target malicious ratio, ensuring consistent baseline conditions across all experimental configurations.
+This 4×4 experimental design enables comprehensive analysis of synthetic data effectiveness across varying operational conditions while maintaining rigorous experimental control. Each dataset combines the selected malicious samples with benign samples from the CEAS-08 dataset to achieve the target malicious ratio, ensuring consistent baseline conditions across all experimental configurations. Detailed dataset composition and size specifications are provided in Appendix~\ref{tab:dataset_composition}.
 
 \subsubsection{Model Training}
 
 We evaluate three distinct model architectures to ensure comprehensive assessment across different learning paradigms. RandomForest serves as our ensemble method, selected for its interpretability and robustness in cybersecurity applications. Support Vector Machine provides a linear classifier chosen for its effectiveness in high-dimensional spaces and strong theoretical foundations. Our Deep Learning architecture employs a multi-layer neural network designed to capture complex patterns in high-dimensional data representations.
 
-All models are trained on the 16 dataset configurations using identical hyperparameters and training protocols to ensure fair comparison. Model evaluation employs a fixed, held-out test set derived from the \textit{CEAS-08} dataset, maintaining consistency across all experimental conditions and preventing any bias from test set variation.
+All models are trained on the 16 dataset configurations using identical hyperparameters and training protocols to ensure fair comparison. Model evaluation employs a fixed, held-out test set derived from the \textit{CEAS-08} dataset, maintaining consistency across all experimental conditions and preventing any bias from test set variation. Complete hyperparameter specifications for all models are detailed in Appendix~\ref{tab:hyperparameters}.
 
 \subsection{Performance Assessment}
 

@@ -84,7 +84,7 @@ Analysis across our core and edge layer stratification reveals additional insigh
 
 Edge layer samples, representing boundary cases and novel attack patterns, demonstrate more variable synthetic data effectiveness. The performance gap between real and synthetic data increases significantly in edge layer analysis, with synthetic original achieving 0.923 F1-score compared to 0.967 for real data in the 20\% malicious ratio condition. This larger gap suggests that LLM-based generation may be less effective at capturing the subtle characteristics that define edge cases in cybersecurity data.
 
-The embedding space characteristics of edge layer samples show greater dispersion and less coherent clustering patterns compared to core layer samples. This increased complexity in the edge layer distribution explains the reduced effectiveness of synthetic generation for boundary cases, as the LLM must capture more subtle and variable patterns that define the edge of the malicious class distribution.
+The embedding space characteristics of edge layer samples show greater dispersion and less coherent clustering patterns compared to core layer samples. This increased complexity in the edge layer distribution explains the reduced effectiveness of synthetic generation for boundary cases, as the LLM must capture more subtle and variable patterns that define the edge of the malicious class distribution. Detailed embedding space visualizations illustrating these core-edge distributional differences are provided in Appendix~\ref{fig:embedding_detailed_core}.
 
 \subsection{Comprehensive Embedding Metrics Analysis}
 
@@ -126,7 +126,7 @@ The comprehensive metrics analysis establishes strong correlations with observed
 
 \subsection{Key Findings and Implications}
 
-Our comprehensive evaluation reveals several critical findings that have practical implications for deploying synthetic data in cybersecurity applications. First, synthetic data can achieve F1-scores within 0.012 of real data performance under optimal conditions, demonstrating substantial potential for operational deployment. The original prompt strategy consistently outperforms both strong and weak variants across all experimental conditions, indicating that balanced approaches to prompt engineering are more effective than extreme modifications.
+Our comprehensive evaluation reveals several critical findings that have practical implications for deploying synthetic data in cybersecurity applications. First, synthetic data can achieve F1-scores within 0.012 of real data performance under optimal conditions, demonstrating substantial potential for operational deployment. The original prompt strategy consistently outperforms both strong and weak variants across all experimental conditions, indicating that balanced approaches to prompt engineering are more effective than extreme modifications. Detailed performance breakdowns across all model architectures and malicious ratios are provided in Appendix~\ref{tab:detailed_performance}.
 
 The demonstrated effectiveness under low-resource conditions suggests particular value for scenarios where collecting sufficient real malicious samples is challenging. However, the reduced effectiveness for edge cases indicates that synthetic data should be viewed as complementary to, rather than replacement for, real data collection efforts.
 

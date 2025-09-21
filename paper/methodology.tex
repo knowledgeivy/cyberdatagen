@@ -70,12 +70,12 @@ The embedding space metrics provide intrinsic quality assessment through distrib
 \item \textbf{Distribution Coverage}: Proximity-based measure of how effectively synthetic samples cover the real malicious data distribution space.
 \end{itemize}
 
-This dual-metrics framework enables correlation analysis between embedding space characteristics and classification performance, providing insights into the mechanisms underlying synthetic data effectiveness across different prompt engineering strategies.
+This dual-metrics framework enables correlation analysis between embedding space characteristics and classification performance, providing insights into the mechanisms underlying synthetic data effectiveness across different prompt engineering strategies. The complete mathematical formulations for all embedding space quality metrics are provided in Appendix~\ref{sec:appendix}.
 
 \subsection{Quality Assurance and Validation}
 
 Our methodology incorporates multiple quality assurance mechanisms to ensure reliable and reproducible results. The stratified sampling approach guarantees that seed samples represent both central tendencies and boundary cases within the malicious data distribution. The systematic prompt engineering ensures balanced exploration of semantic variations around each seed sample. The embedding-based quality assessment provides objective measures that complement subjective evaluation approaches.
 
-The framework's emphasis on reproducibility through containerization, fixed random seeds, and comprehensive documentation enables other researchers to validate our findings and extend our approach to new domains. This transparency is essential for building confidence in synthetic data approaches and facilitating broader adoption in cybersecurity applications.
+The framework's emphasis on reproducibility through containerization, fixed random seeds, and comprehensive documentation enables other researchers to validate our findings and extend our approach to new domains. Detailed experimental configurations, hyperparameter settings, and prompt templates are provided in Appendix~\ref{sec:config_details}. This transparency is essential for building confidence in synthetic data approaches and facilitating broader adoption in cybersecurity applications.
 
 By providing a systematic framework that combines theoretical rigor with practical utility, our methodology establishes a foundation for advancing synthetic data research in cybersecurity while addressing the critical need for robust evaluation approaches that account for real-world operational constraints.
