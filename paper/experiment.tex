@@ -28,15 +28,6 @@ All samples, both real and synthetic, are mapped into our unified 384-dimensiona
 
 Our clustering analysis employs systematic evaluation across K values from 2 to 20, identifying optimal configuration at K=19 with a silhouette score of 0.160. This clustering provides insights into semantic coherence by measuring co-clustering rates between synthetic samples and their corresponding seed samples. Distance distribution analysis quantifies semantic drift by measuring the displacement of synthetic samples from their seed centroids in embedding space.
 
-\subsubsection{Comprehensive Embedding Metrics}
-
-To provide rigorous quantitative assessment of synthetic data quality, we implement a comprehensive metrics framework that evaluates synthetic generation strategies across six distinct dimensions. This multi-faceted approach enables systematic comparison of prompt engineering effectiveness while providing predictive indicators for classification performance.
-
-Our metric framework encompasses centroid distance analysis, which measures the Euclidean distance between each strategy's centroid and the real malicious data centroid to quantify overall distributional shift. Cosine similarity analysis calculates the mean maximum cosine similarity between synthetic samples and real malicious samples, providing direct assessment of semantic preservation. Co-clustering rate analysis leverages our optimal K-means configuration to measure the frequency of synthetic samples clustering with real malicious samples, indicating structural similarity in embedding space.
-
-Semantic drift scoring quantifies the normalized deviation of synthetic samples from the real malicious distribution by comparing distances to the real centroid against the baseline spread of real samples. Intra-strategy diversity measurement calculates average pairwise distances within each generation strategy to assess internal variation and sample diversity. Distribution coverage analysis evaluates how effectively synthetic samples cover the real malicious data distribution by measuring proximity relationships between synthetic and real samples.
-
-This comprehensive framework enables quality assessment without expensive classifier training, providing early indicators for synthetic generation optimization. The metrics are designed to correlate with downstream classification performance while offering interpretable insights into the mechanisms underlying synthetic data effectiveness across different prompt engineering strategies.
 
 \subsubsection{Dataset Construction}
 

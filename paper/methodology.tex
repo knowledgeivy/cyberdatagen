@@ -42,6 +42,36 @@ The systematic variation of experimental conditions, particularly the manipulati
 
 The framework's modular design enables researchers to adapt individual components based on specific research requirements while maintaining overall methodological rigor. This flexibility is crucial for advancing synthetic data research across diverse cybersecurity domains, from malware detection to intrusion analysis.
 
+\subsection{Evaluation Metrics Framework}
+
+Our methodology employs a comprehensive dual-metrics approach that captures synthetic data quality from both traditional machine learning performance perspectives and novel embedding space analysis dimensions. This framework enables systematic assessment of synthetic data effectiveness while providing predictive indicators for classifier performance optimization.
+
+\subsubsection{Classification Performance Metrics}
+
+The classification metrics provide standard machine learning assessment across all model-dataset combinations, ensuring comprehensive evaluation of synthetic data utility for downstream cybersecurity applications:
+
+\begin{itemize}
+\item \textbf{Accuracy}: Overall correctness rate measuring the proportion of correctly classified samples across both malicious and benign categories.
+\item \textbf{Precision}: True positive rate for malicious class detection, quantifying the reliability of positive malicious classifications.
+\item \textbf{Recall}: Sensitivity measure capturing the ability to identify malicious samples, critical for cybersecurity threat detection.
+\item \textbf{F1-Score}: Harmonic mean of precision and recall, providing balanced assessment particularly important under class imbalance conditions.
+\end{itemize}
+
+\subsubsection{Embedding Space Quality Metrics}
+
+The embedding space metrics provide intrinsic quality assessment through distributional analysis in high-dimensional semantic space, enabling synthetic data optimization without expensive classifier training:
+
+\begin{itemize}
+\item \textbf{Centroid Distance}: Euclidean distance between synthetic strategy centroids and real malicious data centroid, measuring overall distributional shift.
+\item \textbf{Mean Cosine Similarity}: Average maximum cosine similarity between synthetic samples and real malicious samples, quantifying semantic preservation.
+\item \textbf{Co-clustering Rate}: Frequency of synthetic samples clustering with real malicious samples using optimal K-means configuration, indicating structural similarity.
+\item \textbf{Semantic Drift Score}: Normalized deviation of synthetic samples from real malicious distribution baseline, measuring generation fidelity.
+\item \textbf{Intra-strategy Diversity}: Average pairwise distances within each generation strategy, assessing internal sample variation and coverage.
+\item \textbf{Distribution Coverage}: Proximity-based measure of how effectively synthetic samples cover the real malicious data distribution space.
+\end{itemize}
+
+This dual-metrics framework enables correlation analysis between embedding space characteristics and classification performance, providing insights into the mechanisms underlying synthetic data effectiveness across different prompt engineering strategies.
+
 \subsection{Quality Assurance and Validation}
 
 Our methodology incorporates multiple quality assurance mechanisms to ensure reliable and reproducible results. The stratified sampling approach guarantees that seed samples represent both central tendencies and boundary cases within the malicious data distribution. The systematic prompt engineering ensures balanced exploration of semantic variations around each seed sample. The embedding-based quality assessment provides objective measures that complement subjective evaluation approaches.
