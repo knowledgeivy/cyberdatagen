@@ -82,6 +82,42 @@ Edge layer samples, representing boundary cases and novel attack patterns, demon
 
 The embedding space characteristics of edge layer samples show greater dispersion and less coherent clustering patterns compared to core layer samples. This increased complexity in the edge layer distribution explains the reduced effectiveness of synthetic generation for boundary cases, as the LLM must capture more subtle and variable patterns that define the edge of the malicious class distribution.
 
+\subsection{Comprehensive Embedding Metrics Analysis}
+
+Our comprehensive embedding metrics framework provides quantitative assessment of synthetic data quality across multiple dimensions, revealing systematic differences in generation strategy effectiveness and establishing predictive relationships with classification performance. Table~\ref{tab:comprehensive_metrics} presents the complete metrics analysis across all synthetic generation strategies.
+
+\begin{table}[t]
+\centering
+\caption{Comprehensive Embedding Quality Metrics by Generation Strategy}
+\label{tab:comprehensive_metrics}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Strategy} & \textbf{Centroid} & \textbf{Cosine} & \textbf{Co-cluster} & \textbf{Semantic} & \textbf{Diversity} & \textbf{Coverage} \\
+& \textbf{Distance} & \textbf{Similarity} & \textbf{Rate} & \textbf{Drift} & \textbf{Score} & \textbf{Score} \\
+\midrule
+Original & 0.062 & 0.881 & 0.085 & 12.12 & 1.280 & 0.699 \\
+Strong & 0.070 & 0.868 & 0.084 & 12.10 & 1.277 & 0.685 \\
+Weak & 0.125 & 0.775 & 0.085 & 12.34 & 1.299 & 0.629 \\
+\midrule
+Real (Ref.) & 0.000 & 1.000 & 1.000 & 1.00 & 1.277 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The centroid distance analysis reveals that the original strategy maintains the smallest deviation from real malicious data, with a distance of 0.062 compared to 0.070 for strong and 0.125 for weak strategies. This pattern indicates that balanced prompt engineering preserves the central tendency of malicious characteristics more effectively than either amplification or attenuation approaches. The substantially larger distance for the weak strategy suggests that conservative rewriting produces synthetic samples that drift further from prototypical malicious patterns.
+
+Cosine similarity measurements demonstrate similar trends, with the original strategy achieving 0.881 mean similarity to real samples, compared to 0.868 for strong and 0.775 for weak variants. This 13.6\% performance gap between original and weak strategies quantifies the semantic preservation advantages of balanced prompt engineering. The strong strategy's intermediate performance suggests that aggressive amplification, while maintaining reasonable semantic alignment, introduces some distortion relative to the baseline original approach.
+
+Co-clustering rate analysis reveals remarkably consistent performance across all synthetic strategies, with rates between 0.084-0.085. This consistency indicates that all prompt strategies produce synthetic samples that integrate similarly into the overall clustering structure, suggesting that the K-means algorithm captures higher-level semantic organization that remains stable across generation approaches. The uniform co-clustering performance contrasts with the variation observed in other metrics, highlighting the complementary insights provided by different quality assessment dimensions.
+
+Semantic drift scoring quantifies the normalized displacement from real malicious distribution patterns. The weak strategy exhibits the highest drift score of 12.34, indicating greater deviation from baseline malicious characteristics, while original and strong strategies show similar drift scores of 12.12 and 12.10 respectively. These results suggest that conservative prompt engineering may inadvertently move synthetic samples away from core malicious patterns, potentially reducing their effectiveness for training robust detection models.
+
+Diversity analysis within each generation strategy reveals interesting patterns in synthetic sample variation. The weak strategy produces the highest intra-strategy diversity (1.299), suggesting that conservative prompt engineering introduces more varied interpretations of malicious content. The original and strong strategies show similar diversity scores (1.280 and 1.277), indicating comparable levels of internal variation despite their different prompt approaches.
+
+Distribution coverage analysis demonstrates clear performance ranking across strategies, with original achieving 0.699 coverage, strong reaching 0.685, and weak obtaining 0.629. This 11.1\% gap between best and worst performing strategies indicates substantial differences in how effectively each approach covers the real malicious data distribution. The superior coverage of the original strategy aligns with its advantages across other metrics, reinforcing the effectiveness of balanced prompt engineering.
+
+The comprehensive metrics analysis establishes strong correlations with observed classification performance patterns. Strategies demonstrating superior embedding space characteristics consistently achieve better F1-scores in downstream classification tasks. The original strategy's advantages across centroid distance, cosine similarity, and distribution coverage directly correspond to its superior classification performance across all experimental conditions. This relationship validates the use of embedding-based metrics as predictive indicators for synthetic data quality, enabling efficient optimization without expensive classifier training.
+
 \subsection{Key Findings and Implications}
 
 Our comprehensive evaluation reveals several critical findings that have practical implications for deploying synthetic data in cybersecurity applications. First, synthetic data can achieve F1-scores within 0.012 of real data performance under optimal conditions, demonstrating substantial potential for operational deployment. The original prompt strategy consistently outperforms both strong and weak variants across all experimental conditions, indicating that balanced approaches to prompt engineering are more effective than extreme modifications.
