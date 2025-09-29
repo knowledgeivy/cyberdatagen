@@ -1,0 +1,218 @@
+# Pilot Study Configuration for CEAS-08 Dataset
+# Based on discussion_real.md design framework
+
+# Basic experiment information
+experiment:
+  name: "pilot_ceas08_v1"
+  description: "Pilot study using CEAS-08 dataset to validate multi-sample evaluation framework"
+  dataset: "CEAS-08"
+  random_seed: 42
+
+# Data configuration
+data:
+  # Data paths
+  raw_data_path: "./raw/"
+  processed_data_path: "./data/paper/processed/"
+  synthetic_data_path: "./data/paper/synthetic/"
+  datasets_path: "./data/paper/datasets/"
+
+  # Sampling parameters (following discussion_real.md design)
+  n_groups: 3                     # R value - minimal for pilot testing
+  sample_size_per_group: 200      # N value - minimal viable for testing
+  spam_ratio: 0.1                 # spam:non-spam = 1:9 (realistic imbalance)
+  test_split: 0.2                 # Test set proportion
+
+  # Synthetic ratio configuration (from discussion_real.md)
+  synthetic_ratios: [0, 25, 50, 75, 100]  # Key pilot study points
+
+  # Experiment repetitions
+  trials_per_config: 5
+
+# LLM configuration
+llm:
+  # Supported engines
+  engines: ["gpt-4.1-mini"]
+
+  # API configuration
+  api_config:
+    openai:
+      model: "gpt-4o-mini"
+      max_tokens: 1000
+      temperature: 0.7
+      top_p: 1.0
+      frequency_penalty: 0.0
+      presence_penalty: 0.0
+
+  # Batch processing configuration
+  batch_size: 10
+  max_retries: 3
+  retry_delay: 1.0
+  save_checkpoint_every: 100
+
+# Prompt configuration (optimized based on previous batch experience)
+prompts:
+  original:
+    name: "Original Rewrite"
+    description: "Direct rewrite maintaining malicious intent and structure"
+    template: |
+      Please rewrite the following spam email while maintaining its original malicious intent and content structure.
+      Ensure the generated email retains clear spam characteristics but uses different vocabulary and expressions.
+
+      Original email subject: {subject}
+      Original email content: {body}
+
+      Generate:
+      Rewritten subject:
+      Rewritten content:
+
+  strong:
+    name: "Strong Spam Features"
+    description: "Enhanced spam characteristics with obvious marketing language"
+    template: |
+      Based on the following spam email content, generate an email with stronger spam characteristics.
+      Add urgency, exaggerated promotional language, and obvious persuasive keywords.
+
+      Reference email subject: {subject}
+      Reference email content: {body}
+
+      Generate an email with stronger spam characteristics:
+      Generated subject:
+      Generated content:
+
+  weak:
+    name: "Subtle Spam Features"
+    description: "Subtle spam that appears more legitimate while retaining spam nature"
+    template: |
+      Based on the following spam email, generate an email that appears more like legitimate communication
+      but still maintains its spam essence. Reduce obvious spam keywords and make it more subtle and concealed.
+
+      Reference email subject: {subject}
+      Reference email content: {body}
+
+      Generate a more subtle spam email:
+      Generated subject:
+      Generated content:
+
+# Classifier configuration
+classifiers:
+  svm:
+    name: "Support Vector Machine"
+    enabled: true
+    params:
+      C: 1.0
+      kernel: "rbf"
+      class_weight: "balanced"  # Handle class imbalance
+      random_state: 42
+
+  random_forest:
+    name: "Random Forest"
+    enabled: true
+    params:
+      n_estimators: 100
+      max_depth: 10
+      min_samples_split: 5
+      min_samples_leaf: 2
+      class_weight: "balanced"  # Handle class imbalance
+      random_state: 42
+
+  deep_learning:
+    name: "Neural Network"
+    enabled: true
+    params:
+      hidden_layers: [128, 64, 32]
+      dropout_rate: 0.3
+      learning_rate: 0.001
+      batch_size: 32
+      epochs: 50
+      early_stopping_patience: 10
+      class_weight: "balanced"  # Handle class imbalance
+
+# Feature extraction configuration
+feature_extraction:
+  # TF-IDF configuration
+  tfidf:
+    max_features: 10000
+    ngram_range: [1, 2]
+    stop_words: "english"
+    lowercase: true
+
+  # Embedding configuration (simplified - remove complex embedding analysis)
+  embeddings:
+    model_name: "all-MiniLM-L6-v2"
+    max_seq_length: 512
+    batch_size: 32
+
+# Evaluation metrics configuration
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "auc_roc"
+    - "auc_pr"
+
+  # Statistical testing configuration (following discussion_real.md)
+  statistical_tests:
+    alpha: 0.05
+    multiple_comparison_method: "fdr_bh"  # Benjamini-Hochberg FDR correction
+    effect_size_threshold: 0.3  # Cohen's d threshold
+
+# Output configuration
+output:
+  results_path: "./output/results/"
+  plots_path: "./output/plots/"
+  reports_path: "./output/reports/"
+  logs_path: "./logs/"
+
+  # Save formats
+  save_formats:
+    - "json"
+    - "csv"
+    - "pkl"
+
+  # Visualization configuration
+  visualization:
+    dpi: 300
+    figure_size: [12, 8]
+    style: "seaborn-v0_8"
+    color_palette: "husl"
+
+# Parallel processing configuration
+parallel:
+  n_jobs: -1  # Use all available CPUs
+  backend: "loky"
+  verbose: 1
+
+# Quality control configuration
+quality_control:
+  # Generation quality checks
+  min_length_ratio: 0.3  # Generated text cannot be less than 30% of original
+  max_length_ratio: 3.0  # Generated text cannot exceed 300% of original
+
+  # Similarity checks
+  max_similarity_threshold: 0.95  # Similarity with original cannot exceed 95%
+  min_similarity_threshold: 0.1   # Similarity with original cannot be below 10%
+
+  # Language quality checks
+  check_language_quality: true
+  min_language_score: 0.8
+
+# Experiment strategy configuration (following discussion_real.md design)
+strategies:
+  # Within-group generation strategy
+  within_group:
+    name: "Within-group Generation"
+    description: "Generate synthetic data using spam from the same group"
+
+  # Cross-group mixing strategy
+  cross_group:
+    name: "Cross-group Mixing"
+    description: "Generate synthetic data using spam from other groups"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "100 MB"
+  retention: "30 days"
