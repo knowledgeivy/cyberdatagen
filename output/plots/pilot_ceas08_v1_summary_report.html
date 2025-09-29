@@ -1,0 +1,149 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Experiment Analysis Report - pilot_ceas08_v1</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { background-color: #f0f0f0; padding: 20px; border-radius: 10px; }
+            .section { margin: 20px 0; padding: 15px; border-left: 4px solid #007acc; }
+            .metric { margin: 10px 0; padding: 10px; background-color: #f9f9f9; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .significant { color: #d9534f; font-weight: bold; }
+            .not-significant { color: #5cb85c; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Synthetic Spam Email Data Generation - Analysis Report</h1>
+            <p><strong>Experiment:</strong> pilot_ceas08_v1</p>
+            <p><strong>Analysis Date:</strong> 2025-09-28T20:54:18.093097</p>
+            <p><strong>Total Experiments:</strong> 75</p>
+        </div>
+    
+        <div class="section">
+            <h2>Baseline Performance (0% Synthetic)</h2>
+            <table>
+                <tr><th>Classifier</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>AUC-ROC</th></tr>
+        
+                <tr>
+                    <td>random_forest</td>
+                    <td>0.9556</td>
+                    <td>0.8090</td>
+                    <td>0.7778</td>
+                    <td>0.7783</td>
+                    <td>0.9850</td>
+                </tr>
+            </table></div>
+        <div class="section">
+            <h2>Significant Performance Degradations</h2>
+            <table>
+                <tr><th>Ratio</th><th>Classifier</th><th>Metric</th><th>Degradation</th><th>P-value</th><th>Effect Size</th></tr>
+        
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>accuracy</td>
+                    <td>0.0194</td>
+                    <td>0.0000</td>
+                    <td>1.5122</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>recall</td>
+                    <td>0.1319</td>
+                    <td>0.0003</td>
+                    <td>0.9392</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>f1_score</td>
+                    <td>0.1098</td>
+                    <td>0.0000</td>
+                    <td>5.8091</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>auc_roc</td>
+                    <td>0.0071</td>
+                    <td>0.0024</td>
+                    <td>1.8366</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>auc_pr</td>
+                    <td>0.0479</td>
+                    <td>0.0003</td>
+                    <td>2.1177</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>25%</td>
+                    <td>random_forest</td>
+                    <td>balanced_accuracy</td>
+                    <td>0.0694</td>
+                    <td>0.0000</td>
+                    <td>1.2409</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>50%</td>
+                    <td>random_forest</td>
+                    <td>accuracy</td>
+                    <td>0.0236</td>
+                    <td>0.0000</td>
+                    <td>3.7433</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>50%</td>
+                    <td>random_forest</td>
+                    <td>precision</td>
+                    <td>-0.0620</td>
+                    <td>0.0248</td>
+                    <td>-0.3934</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>50%</td>
+                    <td>random_forest</td>
+                    <td>recall</td>
+                    <td>0.2917</td>
+                    <td>0.0000</td>
+                    <td>1.6663</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>50%</td>
+                    <td>random_forest</td>
+                    <td>f1_score</td>
+                    <td>0.2147</td>
+                    <td>0.0000</td>
+                    <td>3.1709</td>
+                </tr>
+            </table></div>
+        <div class="section">
+            <h2>Critical Degradation Ratios</h2>
+            <p>The synthetic ratio at which performance degradation exceeds acceptable threshold (5%):</p>
+        <div class='metric'><strong>random_forest:</strong> precision: 100%, recall: 25%, f1_score: 25%, auc_pr: 25%, balanced_accuracy: 25%</div></div>
+        <div class="section">
+            <h2>Optimal Synthetic Ratios</h2>
+            <p>The synthetic ratio with minimal performance degradation:</p>
+        <div class='metric'><strong>random_forest:</strong> accuracy: 25% (degradation: 0.0203), precision: 25% (degradation: 0.0375), recall: 25% (degradation: 0.1696), f1_score: 25% (degradation: 0.1411), auc_roc: 25% (degradation: 0.0072), auc_pr: 25% (degradation: 0.0528), balanced_accuracy: 25% (degradation: 0.0792)</div></div>
+        <div class="section">
+            <h2>Overall Conclusions</h2>
+            <ul>
+        <li>Baseline performance established across 1 classifiers</li><li>Found 26 significant performance degradations</li><li>Critical degradation thresholds identified for multiple classifier-metric combinations</li></ul></div>
+    </body>
+    </html>
+    

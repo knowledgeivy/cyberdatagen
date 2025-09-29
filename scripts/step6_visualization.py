@@ -86,12 +86,16 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     classifiers = sorted(list(classifiers))
 
     fig, axes = plt.subplots(len(classifiers), len(metrics), figsize=(20, 5 * len(classifiers)))
-    if len(classifiers) == 1:
+    if len(classifiers) == 1 and len(metrics) == 1:
+        axes = np.array([[axes]])
+    elif len(classifiers) == 1:
         axes = axes.reshape(1, -1)
+    elif len(metrics) == 1:
+        axes = axes.reshape(-1, 1)
 
     for i, classifier in enumerate(classifiers):
         for j, metric in enumerate(metrics):
-            ax = axes[i, j] if len(classifiers) > 1 else axes[j]
+            ax = axes[i, j]
 
             # 收集数据
             ratios = []
@@ -417,14 +421,21 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
             f1_score = metrics.get('f1_score', 'N/A')
             auc_roc = metrics.get('auc_roc', 'N/A')
 
+            # Format values
+            accuracy_str = f"{accuracy:.4f}" if isinstance(accuracy, float) else str(accuracy)
+            precision_str = f"{precision:.4f}" if isinstance(precision, float) else str(precision)
+            recall_str = f"{recall:.4f}" if isinstance(recall, float) else str(recall)
+            f1_score_str = f"{f1_score:.4f}" if isinstance(f1_score, float) else str(f1_score)
+            auc_roc_str = f"{auc_roc:.4f}" if isinstance(auc_roc, float) else str(auc_roc)
+
             html_content += f"""
                 <tr>
                     <td>{classifier}</td>
-                    <td>{accuracy:.4f if isinstance(accuracy, float) else accuracy}</td>
-                    <td>{precision:.4f if isinstance(precision, float) else precision}</td>
-                    <td>{recall:.4f if isinstance(recall, float) else recall}</td>
-                    <td>{f1_score:.4f if isinstance(f1_score, float) else f1_score}</td>
-                    <td>{auc_roc:.4f if isinstance(auc_roc, float) else auc_roc}</td>
+                    <td>{accuracy_str}</td>
+                    <td>{precision_str}</td>
+                    <td>{recall_str}</td>
+                    <td>{f1_score_str}</td>
+                    <td>{auc_roc_str}</td>
                 </tr>
             """
 
