@@ -67,9 +67,20 @@ def load_analysis_results(analysis_file: str) -> dict:
     return results
 
 
-def create_performance_curves(analysis_results: dict, output_dir: str, experiment_name: str):
+def create_performance_curves(analysis_results: dict, output_dir: str, experiment_name: str, config=None):
     """创建性能曲线图"""
     logger.info("创建性能曲线图")
+
+    # 获取模型和prompt信息用于标题
+    model_info = "GPT-4o-mini"  # 默认值
+    prompt_info = "Original"   # 默认值
+
+    if config and hasattr(config, 'llm'):
+        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
+
+    # 简化标题信息
+    title_suffix = f" ({model_info}, {prompt_info} Prompt)"
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -117,7 +128,7 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
 
             if not ratios:
                 ax.text(0.5, 0.5, 'No Data', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(f'{classifier} - {metric}')
+                ax.set_title(f'{classifier} - {metric}{title_suffix}')
                 continue
 
             # 绘制曲线
@@ -125,7 +136,7 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
             ax.fill_between(ratios, ci_lowers, ci_uppers, alpha=0.3)
 
             # 设置标题和标签
-            ax.set_title(f'{classifier} - {metric}')
+            ax.set_title(f'{classifier} - {metric}{title_suffix}')
             ax.set_xlabel('Synthetic Ratio (%)')
             ax.set_ylabel(metric.replace('_', ' ').title())
             ax.grid(True, alpha=0.3)
@@ -142,9 +153,15 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     logger.info("性能曲线图创建完成")
 
 
-def create_degradation_heatmap(analysis_results: dict, output_dir: str, experiment_name: str):
+def create_degradation_heatmap(analysis_results: dict, output_dir: str, experiment_name: str, config=None):
     """创建性能衰减热力图"""
     logger.info("创建性能衰减热力图")
+
+    # 获取模型信息
+    model_info = "GPT-4o-mini"
+    if config and hasattr(config, 'llm'):
+        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     degradation_analysis = analysis_results.get('performance_degradation', {})
     if not degradation_analysis:
@@ -189,7 +206,7 @@ def create_degradation_heatmap(analysis_results: dict, output_dir: str, experime
 
         sns.heatmap(data_df, annot=True, fmt='.2f', cmap='RdYlBu_r', center=0,
                     ax=axes[i], cbar_kws={'label': 'Performance Degradation (%)'})
-        axes[i].set_title(f'Performance Degradation - {metric.replace("_", " ").title()}')
+        axes[i].set_title(f'Performance Degradation - {metric.replace("_", " ").title()} ({model_info})')
         axes[i].set_xlabel('Synthetic Ratio')
         axes[i].set_ylabel('Classifier')
 
@@ -201,9 +218,15 @@ def create_degradation_heatmap(analysis_results: dict, output_dir: str, experime
     logger.info("性能衰减热力图创建完成")
 
 
-def create_statistical_significance_plot(analysis_results: dict, output_dir: str, experiment_name: str):
+def create_statistical_significance_plot(analysis_results: dict, output_dir: str, experiment_name: str, config=None):
     """创建统计显著性图"""
     logger.info("创建统计显著性图")
+
+    # 获取模型信息
+    model_info = "GPT-4o-mini"
+    if config and hasattr(config, 'llm'):
+        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     hypothesis_tests = analysis_results.get('hypothesis_tests', {})
     if not hypothesis_tests:
@@ -251,7 +274,7 @@ def create_statistical_significance_plot(analysis_results: dict, output_dir: str
     ax1.axvline(x=0.5, color='orange', linestyle='--', alpha=0.5, label='Medium Effect')
     ax1.set_xlabel('Effect Size (|Cohen\'s d|)')
     ax1.set_ylabel('-log10(p-value)')
-    ax1.set_title('Statistical Significance vs Effect Size')
+    ax1.set_title(f'Statistical Significance vs Effect Size ({model_info})')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
 
@@ -264,7 +287,7 @@ def create_statistical_significance_plot(analysis_results: dict, output_dir: str
     pivot_sig = sig_counts.pivot(index='classifier', columns='ratio', values='significant')
 
     sns.heatmap(pivot_sig, annot=True, fmt='d', cmap='Reds', ax=ax2)
-    ax2.set_title('Number of Significant Tests by Ratio and Classifier')
+    ax2.set_title(f'Number of Significant Tests by Ratio and Classifier ({model_info})')
     ax2.set_xlabel('Synthetic Ratio (%)')
     ax2.set_ylabel('Classifier')
 
@@ -276,9 +299,15 @@ def create_statistical_significance_plot(analysis_results: dict, output_dir: str
     logger.info("统计显著性图创建完成")
 
 
-def create_interactive_dashboard(analysis_results: dict, output_dir: str, experiment_name: str):
+def create_interactive_dashboard(analysis_results: dict, output_dir: str, experiment_name: str, config=None):
     """创建交互式仪表板"""
     logger.info("创建交互式仪表板")
+
+    # 获取模型信息
+    model_info = "GPT-4o-mini"
+    if config and hasattr(config, 'llm'):
+        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -360,7 +389,7 @@ def create_interactive_dashboard(analysis_results: dict, output_dir: str, experi
 
     fig.update_layout(
         height=300 * len(metrics),
-        title_text=f"Performance Metrics Dashboard - {experiment_name}",
+        title_text=f"Performance Metrics Dashboard - {experiment_name} ({model_info})",
         hovermode='x unified'
     )
 
@@ -371,9 +400,17 @@ def create_interactive_dashboard(analysis_results: dict, output_dir: str, experi
     logger.info(f"交互式仪表板创建完成: {html_file}")
 
 
-def create_summary_report(analysis_results: dict, output_dir: str, experiment_name: str):
+def create_summary_report(analysis_results: dict, output_dir: str, experiment_name: str, config=None):
     """创建总结报告"""
     logger.info("创建总结报告")
+
+    # 获取模型和prompt信息
+    model_info = "GPT-4o-mini"
+    prompt_info = "Original"
+
+    if config and hasattr(config, 'llm'):
+        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     findings = analysis_results.get('summary_findings', {})
     experiment_info = analysis_results.get('experiment_info', {})
@@ -400,6 +437,8 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
         <div class="header">
             <h1>Synthetic Spam Email Data Generation - Analysis Report</h1>
             <p><strong>Experiment:</strong> {experiment_info.get('experiment_name', experiment_name)}</p>
+            <p><strong>LLM Model:</strong> {model_info}</p>
+            <p><strong>Prompt Strategy:</strong> {prompt_info}</p>
             <p><strong>Analysis Date:</strong> {experiment_info.get('analysis_timestamp', 'N/A')}</p>
             <p><strong>Total Experiments:</strong> {experiment_info.get('total_experiments', 'N/A')}</p>
         </div>
@@ -597,19 +636,19 @@ def main():
 
         # 生成各种图表
         if 'curves' in args.plot_types:
-            create_performance_curves(analysis_results, output_dir, experiment_name)
+            create_performance_curves(analysis_results, output_dir, experiment_name, config)
 
         if 'heatmap' in args.plot_types:
-            create_degradation_heatmap(analysis_results, output_dir, experiment_name)
+            create_degradation_heatmap(analysis_results, output_dir, experiment_name, config)
 
         if 'significance' in args.plot_types:
-            create_statistical_significance_plot(analysis_results, output_dir, experiment_name)
+            create_statistical_significance_plot(analysis_results, output_dir, experiment_name, config)
 
         if 'dashboard' in args.plot_types:
-            create_interactive_dashboard(analysis_results, output_dir, experiment_name)
+            create_interactive_dashboard(analysis_results, output_dir, experiment_name, config)
 
         if 'report' in args.plot_types:
-            create_summary_report(analysis_results, output_dir, experiment_name)
+            create_summary_report(analysis_results, output_dir, experiment_name, config)
 
         logger.info("=" * 50)
         logger.info("可视化创建完成")

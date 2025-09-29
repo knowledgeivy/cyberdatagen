@@ -8,12 +8,25 @@
   },
   "results": [
     {
-      "experiment_id": "swithin_group_r0_g0_t0",
+      "experiment_id": "scross_group_r0_g0_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6733217592592593,
+            "auc_pr": 0.5587701977320632,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9604166666666667,
@@ -26,20 +39,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.96875,
+            "precision": 0.9714285714285714,
+            "recall": 0.7083333333333334,
+            "f1_score": 0.8192771084337349,
+            "auc_roc": 0.9747781635802468,
+            "auc_pr": 0.8931887151783788,
+            "balanced_accuracy": 0.8530092592592593
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 0,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r0_g0_t1",
+      "experiment_id": "scross_group_r0_g0_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6733217592592593,
+            "auc_pr": 0.5587701977320632,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9604166666666667,
@@ -52,20 +91,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9645833333333333,
+            "precision": 0.8604651162790697,
+            "recall": 0.7708333333333334,
+            "f1_score": 0.8131868131868132,
+            "auc_roc": 0.9821566358024691,
+            "auc_pr": 0.9081067327428809,
+            "balanced_accuracy": 0.8784722222222223
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 0,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r0_g0_t2",
+      "experiment_id": "scross_group_r0_g0_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6733217592592593,
+            "auc_pr": 0.5587701977320632,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9604166666666667,
@@ -78,20 +143,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.972608024691358,
+            "auc_pr": 0.8901357824582115,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 0,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r0_g0_t3",
+      "experiment_id": "scross_group_r0_g0_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6733217592592593,
+            "auc_pr": 0.5587701977320632,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9604166666666667,
@@ -104,20 +195,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.94375,
+            "precision": 0.6666666666666666,
+            "recall": 0.875,
+            "f1_score": 0.7567567567567568,
+            "auc_roc": 0.9662905092592593,
+            "auc_pr": 0.8789021560592207,
+            "balanced_accuracy": 0.9131944444444444
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 0,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r0_g0_t4",
+      "experiment_id": "scross_group_r0_g0_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6733217592592593,
+            "auc_pr": 0.5587701977320632,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9604166666666667,
@@ -130,20 +247,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.9310344827586207,
+            "recall": 0.5625,
+            "f1_score": 0.7012987012987013,
+            "auc_roc": 0.9825424382716049,
+            "auc_pr": 0.917005058593242,
+            "balanced_accuracy": 0.7789351851851851
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 0,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r0_g1_t0",
+      "experiment_id": "scross_group_r0_g1_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.7504340277777778,
+            "auc_pr": 0.5950278943296242,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.94375,
@@ -156,20 +299,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9708333333333333,
+            "precision": 0.9722222222222222,
+            "recall": 0.7291666666666666,
+            "f1_score": 0.8333333333333334,
+            "auc_roc": 0.9701485339506173,
+            "auc_pr": 0.8980182330360714,
+            "balanced_accuracy": 0.8634259259259259
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 1,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r0_g1_t1",
+      "experiment_id": "scross_group_r0_g1_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.7504340277777778,
+            "auc_pr": 0.5950278943296242,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.94375,
@@ -182,20 +351,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.96875,
+            "precision": 1.0,
+            "recall": 0.6875,
+            "f1_score": 0.8148148148148148,
+            "auc_roc": 0.9868827160493827,
+            "auc_pr": 0.9356852805583548,
+            "balanced_accuracy": 0.84375
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 1,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r0_g1_t2",
+      "experiment_id": "scross_group_r0_g1_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.7504340277777778,
+            "auc_pr": 0.5950278943296242,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.94375,
@@ -208,20 +403,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9645833333333333,
+            "precision": 0.918918918918919,
+            "recall": 0.7083333333333334,
+            "f1_score": 0.8,
+            "auc_roc": 0.9669656635802469,
+            "auc_pr": 0.90702402469656,
+            "balanced_accuracy": 0.8506944444444444
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 1,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r0_g1_t3",
+      "experiment_id": "scross_group_r0_g1_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.7504340277777778,
+            "auc_pr": 0.5950278943296242,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.94375,
@@ -234,20 +455,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95625,
+            "precision": 0.9655172413793104,
+            "recall": 0.5833333333333334,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9671103395061729,
+            "auc_pr": 0.8717251015321001,
+            "balanced_accuracy": 0.7905092592592593
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 1,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r0_g1_t4",
+      "experiment_id": "scross_group_r0_g1_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.7504340277777778,
+            "auc_pr": 0.5950278943296242,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.94375,
@@ -260,20 +507,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9583333333333334,
+            "precision": 0.9666666666666667,
+            "recall": 0.6041666666666666,
+            "f1_score": 0.7435897435897436,
+            "auc_roc": 0.9810474537037037,
+            "auc_pr": 0.8948611583877465,
+            "balanced_accuracy": 0.8009259259259259
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 1,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r0_g2_t0",
+      "experiment_id": "scross_group_r0_g2_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5832851080246912,
+            "auc_pr": 0.44892920149087706,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9625,
@@ -286,20 +559,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.8484848484848485,
+            "recall": 0.5833333333333334,
+            "f1_score": 0.691358024691358,
+            "auc_roc": 0.9332079475308642,
+            "auc_pr": 0.7979420707698327,
+            "balanced_accuracy": 0.7858796296296297
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 2,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r0_g2_t1",
+      "experiment_id": "scross_group_r0_g2_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5832851080246912,
+            "auc_pr": 0.44892920149087706,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9625,
@@ -312,20 +611,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.96,
+            "recall": 0.5,
+            "f1_score": 0.6575342465753424,
+            "auc_roc": 0.9515817901234567,
+            "auc_pr": 0.8079898899612371,
+            "balanced_accuracy": 0.7488425925925926
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 2,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r0_g2_t2",
+      "experiment_id": "scross_group_r0_g2_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5832851080246912,
+            "auc_pr": 0.44892920149087706,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9625,
@@ -338,20 +663,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 1.0,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.684931506849315,
+            "auc_roc": 0.9642650462962963,
+            "auc_pr": 0.8393455255740894,
+            "balanced_accuracy": 0.7604166666666667
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 2,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r0_g2_t3",
+      "experiment_id": "scross_group_r0_g2_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5832851080246912,
+            "auc_pr": 0.44892920149087706,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9625,
@@ -364,20 +715,46 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.9310344827586207,
+            "recall": 0.5625,
+            "f1_score": 0.7012987012987013,
+            "auc_roc": 0.937596450617284,
+            "auc_pr": 0.8220906824211313,
+            "balanced_accuracy": 0.7789351851851851
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 2,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r0_g2_t4",
+      "experiment_id": "scross_group_r0_g2_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5832851080246912,
+            "auc_pr": 0.44892920149087706,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.9625,
@@ -390,1569 +767,3142 @@
           },
           "success": true,
           "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 0.7741935483870968,
+            "recall": 0.5,
+            "f1_score": 0.6075949367088608,
+            "auc_roc": 0.9506655092592593,
+            "auc_pr": 0.7747221563728661,
+            "balanced_accuracy": 0.7418981481481481
+          },
+          "success": true,
+          "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 0,
       "group_id": 2,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r25_g0_t0",
+      "experiment_id": "scross_group_r25_g0_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
-            "accuracy": 0.94375,
-            "precision": 0.8620689655172413,
-            "recall": 0.5208333333333334,
-            "f1_score": 0.6493506493506493,
-            "auc_roc": 0.9734760802469136,
-            "auc_pr": 0.8333959660808676,
-            "balanced_accuracy": 0.755787037037037
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6008873456790124,
+            "auc_pr": 0.49894582861274717,
+            "balanced_accuracy": 0.6666666666666666
           },
           "success": true,
           "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 0,
-      "trial": 0
-    },
-    {
-      "experiment_id": "swithin_group_r25_g0_t1",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.94375,
-            "precision": 0.8620689655172413,
-            "recall": 0.5208333333333334,
-            "f1_score": 0.6493506493506493,
-            "auc_roc": 0.9734760802469136,
-            "auc_pr": 0.8333959660808676,
-            "balanced_accuracy": 0.755787037037037
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 0,
-      "trial": 1
-    },
-    {
-      "experiment_id": "swithin_group_r25_g0_t2",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.94375,
-            "precision": 0.8620689655172413,
-            "recall": 0.5208333333333334,
-            "f1_score": 0.6493506493506493,
-            "auc_roc": 0.9734760802469136,
-            "auc_pr": 0.8333959660808676,
-            "balanced_accuracy": 0.755787037037037
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 0,
-      "trial": 2
-    },
-    {
-      "experiment_id": "swithin_group_r25_g0_t3",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.94375,
-            "precision": 0.8620689655172413,
-            "recall": 0.5208333333333334,
-            "f1_score": 0.6493506493506493,
-            "auc_roc": 0.9734760802469136,
-            "auc_pr": 0.8333959660808676,
-            "balanced_accuracy": 0.755787037037037
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 0,
-      "trial": 3
-    },
-    {
-      "experiment_id": "swithin_group_r25_g0_t4",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.94375,
-            "precision": 0.8620689655172413,
-            "recall": 0.5208333333333334,
-            "f1_score": 0.6493506493506493,
-            "auc_roc": 0.9734760802469136,
-            "auc_pr": 0.8333959660808676,
-            "balanced_accuracy": 0.755787037037037
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 0,
-      "trial": 4
-    },
-    {
-      "experiment_id": "swithin_group_r25_g1_t0",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9145833333333333,
-            "precision": 0.5454545454545454,
-            "recall": 0.875,
-            "f1_score": 0.672,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8919227028443424,
-            "balanced_accuracy": 0.8969907407407407
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 1,
-      "trial": 0
-    },
-    {
-      "experiment_id": "swithin_group_r25_g1_t1",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9145833333333333,
-            "precision": 0.5454545454545454,
-            "recall": 0.875,
-            "f1_score": 0.672,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8919227028443424,
-            "balanced_accuracy": 0.8969907407407407
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 1,
-      "trial": 1
-    },
-    {
-      "experiment_id": "swithin_group_r25_g1_t2",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9145833333333333,
-            "precision": 0.5454545454545454,
-            "recall": 0.875,
-            "f1_score": 0.672,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8919227028443424,
-            "balanced_accuracy": 0.8969907407407407
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 1,
-      "trial": 2
-    },
-    {
-      "experiment_id": "swithin_group_r25_g1_t3",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9145833333333333,
-            "precision": 0.5454545454545454,
-            "recall": 0.875,
-            "f1_score": 0.672,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8919227028443424,
-            "balanced_accuracy": 0.8969907407407407
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 1,
-      "trial": 3
-    },
-    {
-      "experiment_id": "swithin_group_r25_g1_t4",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9145833333333333,
-            "precision": 0.5454545454545454,
-            "recall": 0.875,
-            "f1_score": 0.672,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8919227028443424,
-            "balanced_accuracy": 0.8969907407407407
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 1,
-      "trial": 4
-    },
-    {
-      "experiment_id": "swithin_group_r25_g2_t0",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.95,
             "precision": 0.9285714285714286,
             "recall": 0.5416666666666666,
             "f1_score": 0.6842105263157895,
-            "auc_roc": 0.9798418209876544,
-            "auc_pr": 0.8526880030322626,
+            "auc_roc": 0.974826388888889,
+            "auc_pr": 0.8319350682333814,
             "balanced_accuracy": 0.7685185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 1.0,
+            "recall": 0.4791666666666667,
+            "f1_score": 0.647887323943662,
+            "auc_roc": 0.9376446759259258,
+            "auc_pr": 0.880465004900614,
+            "balanced_accuracy": 0.7395833333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 25,
-      "group_id": 2,
+      "group_id": 0,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r25_g2_t1",
+      "experiment_id": "scross_group_r25_g0_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6008873456790124,
+            "auc_pr": 0.49894582861274717,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.95,
             "precision": 0.9285714285714286,
             "recall": 0.5416666666666666,
             "f1_score": 0.6842105263157895,
-            "auc_roc": 0.9798418209876544,
-            "auc_pr": 0.8526880030322626,
+            "auc_roc": 0.974826388888889,
+            "auc_pr": 0.8319350682333814,
             "balanced_accuracy": 0.7685185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 1.0,
+            "recall": 0.4791666666666667,
+            "f1_score": 0.647887323943662,
+            "auc_roc": 0.955054012345679,
+            "auc_pr": 0.8707418914268216,
+            "balanced_accuracy": 0.7395833333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 25,
-      "group_id": 2,
+      "group_id": 0,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r25_g2_t2",
+      "experiment_id": "scross_group_r25_g0_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6008873456790124,
+            "auc_pr": 0.49894582861274717,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.95,
             "precision": 0.9285714285714286,
             "recall": 0.5416666666666666,
             "f1_score": 0.6842105263157895,
-            "auc_roc": 0.9798418209876544,
-            "auc_pr": 0.8526880030322626,
+            "auc_roc": 0.974826388888889,
+            "auc_pr": 0.8319350682333814,
             "balanced_accuracy": 0.7685185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9458333333333333,
+            "precision": 1.0,
+            "recall": 0.4583333333333333,
+            "f1_score": 0.6285714285714286,
+            "auc_roc": 0.9455536265432098,
+            "auc_pr": 0.8481037763681036,
+            "balanced_accuracy": 0.7291666666666666
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 25,
-      "group_id": 2,
+      "group_id": 0,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r25_g2_t3",
+      "experiment_id": "scross_group_r25_g0_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6008873456790124,
+            "auc_pr": 0.49894582861274717,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.95,
             "precision": 0.9285714285714286,
             "recall": 0.5416666666666666,
             "f1_score": 0.6842105263157895,
-            "auc_roc": 0.9798418209876544,
-            "auc_pr": 0.8526880030322626,
+            "auc_roc": 0.974826388888889,
+            "auc_pr": 0.8319350682333814,
             "balanced_accuracy": 0.7685185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 1.0,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.684931506849315,
+            "auc_roc": 0.9745370370370371,
+            "auc_pr": 0.8893429111195336,
+            "balanced_accuracy": 0.7604166666666667
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 25,
-      "group_id": 2,
+      "group_id": 0,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r25_g2_t4",
+      "experiment_id": "scross_group_r25_g0_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1_score": 0.5,
+            "auc_roc": 0.6008873456790124,
+            "auc_pr": 0.49894582861274717,
+            "balanced_accuracy": 0.6666666666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.95,
             "precision": 0.9285714285714286,
             "recall": 0.5416666666666666,
             "f1_score": 0.6842105263157895,
-            "auc_roc": 0.9798418209876544,
-            "auc_pr": 0.8526880030322626,
+            "auc_roc": 0.974826388888889,
+            "auc_pr": 0.8319350682333814,
+            "balanced_accuracy": 0.7685185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9583333333333334,
+            "precision": 0.8888888888888888,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7619047619047619,
+            "auc_roc": 0.9724151234567902,
+            "auc_pr": 0.8794379993269501,
+            "balanced_accuracy": 0.8287037037037037
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 0,
+      "trial": 4
+    },
+    {
+      "experiment_id": "scross_group_r25_g1_t0",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.7441165123456791,
+            "auc_pr": 0.5896281790156551,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 0.6027397260273972,
+            "recall": 0.9166666666666666,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9800347222222222,
+            "auc_pr": 0.873592836026737,
+            "balanced_accuracy": 0.9247685185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.96875,
+            "precision": 0.9230769230769231,
+            "recall": 0.75,
+            "f1_score": 0.8275862068965517,
+            "auc_roc": 0.9761284722222223,
+            "auc_pr": 0.9007599682431844,
+            "balanced_accuracy": 0.8715277777777778
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 1,
+      "trial": 0
+    },
+    {
+      "experiment_id": "scross_group_r25_g1_t1",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.7441165123456791,
+            "auc_pr": 0.5896281790156551,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 0.6027397260273972,
+            "recall": 0.9166666666666666,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9800347222222222,
+            "auc_pr": 0.873592836026737,
+            "balanced_accuracy": 0.9247685185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 1.0,
+            "recall": 0.625,
+            "f1_score": 0.7692307692307693,
+            "auc_roc": 0.9782021604938272,
+            "auc_pr": 0.9133264594422594,
+            "balanced_accuracy": 0.8125
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 1,
+      "trial": 1
+    },
+    {
+      "experiment_id": "scross_group_r25_g1_t2",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.7441165123456791,
+            "auc_pr": 0.5896281790156551,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 0.6027397260273972,
+            "recall": 0.9166666666666666,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9800347222222222,
+            "auc_pr": 0.873592836026737,
+            "balanced_accuracy": 0.9247685185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9583333333333334,
+            "precision": 0.9666666666666667,
+            "recall": 0.6041666666666666,
+            "f1_score": 0.7435897435897436,
+            "auc_roc": 0.9403452932098765,
+            "auc_pr": 0.8720788327573079,
+            "balanced_accuracy": 0.8009259259259259
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 1,
+      "trial": 2
+    },
+    {
+      "experiment_id": "scross_group_r25_g1_t3",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.7441165123456791,
+            "auc_pr": 0.5896281790156551,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 0.6027397260273972,
+            "recall": 0.9166666666666666,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9800347222222222,
+            "auc_pr": 0.873592836026737,
+            "balanced_accuracy": 0.9247685185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.96875,
+            "precision": 0.9714285714285714,
+            "recall": 0.7083333333333334,
+            "f1_score": 0.8192771084337349,
+            "auc_roc": 0.9756944444444444,
+            "auc_pr": 0.9108433025263929,
+            "balanced_accuracy": 0.8530092592592593
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 1,
+      "trial": 3
+    },
+    {
+      "experiment_id": "scross_group_r25_g1_t4",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.7441165123456791,
+            "auc_pr": 0.5896281790156551,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 0.6027397260273972,
+            "recall": 0.9166666666666666,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9800347222222222,
+            "auc_pr": 0.873592836026737,
+            "balanced_accuracy": 0.9247685185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.96875,
+            "precision": 0.9230769230769231,
+            "recall": 0.75,
+            "f1_score": 0.8275862068965517,
+            "auc_roc": 0.9772858796296298,
+            "auc_pr": 0.9064855788815607,
+            "balanced_accuracy": 0.8715277777777778
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 1,
+      "trial": 4
+    },
+    {
+      "experiment_id": "scross_group_r25_g2_t0",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.5006510416666667,
+            "auc_pr": 0.35885462837129595,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.9830488040123456,
+            "auc_pr": 0.8892935077736233,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.9259259259259259,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.9372106481481481,
+            "auc_pr": 0.7863466601611033,
+            "balanced_accuracy": 0.7581018518518519
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 2,
+      "trial": 0
+    },
+    {
+      "experiment_id": "scross_group_r25_g2_t1",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.5006510416666667,
+            "auc_pr": 0.35885462837129595,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.9830488040123456,
+            "auc_pr": 0.8892935077736233,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.8709677419354839,
+            "recall": 0.5625,
+            "f1_score": 0.6835443037974683,
+            "auc_roc": 0.9300733024691359,
+            "auc_pr": 0.7939939215594282,
+            "balanced_accuracy": 0.7766203703703703
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 2,
+      "trial": 1
+    },
+    {
+      "experiment_id": "scross_group_r25_g2_t2",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.5006510416666667,
+            "auc_pr": 0.35885462837129595,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.9830488040123456,
+            "auc_pr": 0.8892935077736233,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.96,
+            "recall": 0.5,
+            "f1_score": 0.6575342465753424,
+            "auc_roc": 0.9236111111111109,
+            "auc_pr": 0.8297562256020449,
+            "balanced_accuracy": 0.7488425925925926
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 2,
+      "trial": 2
+    },
+    {
+      "experiment_id": "scross_group_r25_g2_t3",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.5006510416666667,
+            "auc_pr": 0.35885462837129595,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.9830488040123456,
+            "auc_pr": 0.8892935077736233,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 0.9,
+            "recall": 0.5625,
+            "f1_score": 0.6923076923076923,
+            "auc_roc": 0.9510995370370371,
+            "auc_pr": 0.8228814890356215,
+            "balanced_accuracy": 0.7777777777777778
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 2,
+      "trial": 3
+    },
+    {
+      "experiment_id": "scross_group_r25_g2_t4",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.5006510416666667,
+            "auc_pr": 0.35885462837129595,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.9411764705882353,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.7804878048780488,
+            "auc_roc": 0.9830488040123456,
+            "auc_pr": 0.8892935077736233,
+            "balanced_accuracy": 0.8310185185185185
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.94375,
+            "precision": 1.0,
+            "recall": 0.4375,
+            "f1_score": 0.6086956521739131,
+            "auc_roc": 0.9095775462962963,
+            "auc_pr": 0.7957103803976386,
+            "balanced_accuracy": 0.71875
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 25,
+      "group_id": 2,
+      "trial": 4
+    },
+    {
+      "experiment_id": "scross_group_r50_g0_t0",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5870949074074074,
+            "auc_pr": 0.46589156879807414,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.9737172067901234,
+            "auc_pr": 0.8543479913078613,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 1.0,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.684931506849315,
+            "auc_roc": 0.949170524691358,
+            "auc_pr": 0.8603587815506684,
+            "balanced_accuracy": 0.7604166666666667
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 0,
+      "trial": 0
+    },
+    {
+      "experiment_id": "scross_group_r50_g0_t1",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5870949074074074,
+            "auc_pr": 0.46589156879807414,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.9737172067901234,
+            "auc_pr": 0.8543479913078613,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.9614197530864198,
+            "auc_pr": 0.8602822948017574,
+            "balanced_accuracy": 0.75
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 0,
+      "trial": 1
+    },
+    {
+      "experiment_id": "scross_group_r50_g0_t2",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5870949074074074,
+            "auc_pr": 0.46589156879807414,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.9737172067901234,
+            "auc_pr": 0.8543479913078613,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9541666666666667,
+            "precision": 1.0,
+            "recall": 0.5416666666666666,
+            "f1_score": 0.7027027027027027,
+            "auc_roc": 0.9638310185185185,
+            "auc_pr": 0.834332219547605,
+            "balanced_accuracy": 0.7708333333333333
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 0,
+      "trial": 2
+    },
+    {
+      "experiment_id": "scross_group_r50_g0_t3",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5870949074074074,
+            "auc_pr": 0.46589156879807414,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.9737172067901234,
+            "auc_pr": 0.8543479913078613,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.8787878787878788,
+            "recall": 0.6041666666666666,
+            "f1_score": 0.7160493827160493,
+            "auc_roc": 0.924093364197531,
+            "auc_pr": 0.7757349797539884,
+            "balanced_accuracy": 0.7974537037037037
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 0,
+      "trial": 3
+    },
+    {
+      "experiment_id": "scross_group_r50_g0_t4",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.93125,
+            "precision": 1.0,
+            "recall": 0.3125,
+            "f1_score": 0.47619047619047616,
+            "auc_roc": 0.5870949074074074,
+            "auc_pr": 0.46589156879807414,
+            "balanced_accuracy": 0.65625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 1.0,
+            "recall": 0.3541666666666667,
+            "f1_score": 0.5230769230769231,
+            "auc_roc": 0.9737172067901234,
+            "auc_pr": 0.8543479913078613,
+            "balanced_accuracy": 0.6770833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 1.0,
+            "recall": 0.4791666666666667,
+            "f1_score": 0.647887323943662,
+            "auc_roc": 0.953028549382716,
+            "auc_pr": 0.8469784550110705,
+            "balanced_accuracy": 0.7395833333333334
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 0,
+      "trial": 4
+    },
+    {
+      "experiment_id": "scross_group_r50_g1_t0",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.7492766203703703,
+            "auc_pr": 0.5942549772470807,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.7450980392156863,
+            "recall": 0.7916666666666666,
+            "f1_score": 0.7676767676767676,
+            "auc_roc": 0.9754050925925926,
+            "auc_pr": 0.8237414656496518,
+            "balanced_accuracy": 0.880787037037037
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9625,
+            "precision": 0.8409090909090909,
+            "recall": 0.7708333333333334,
+            "f1_score": 0.8043478260869565,
+            "auc_roc": 0.9728973765432098,
+            "auc_pr": 0.8844778896917174,
+            "balanced_accuracy": 0.8773148148148149
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 1,
+      "trial": 0
+    },
+    {
+      "experiment_id": "scross_group_r50_g1_t1",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.7492766203703703,
+            "auc_pr": 0.5942549772470807,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.7450980392156863,
+            "recall": 0.7916666666666666,
+            "f1_score": 0.7676767676767676,
+            "auc_roc": 0.9754050925925926,
+            "auc_pr": 0.8237414656496518,
+            "balanced_accuracy": 0.880787037037037
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9708333333333333,
+            "precision": 0.925,
+            "recall": 0.7708333333333334,
+            "f1_score": 0.8409090909090909,
+            "auc_roc": 0.9746334876543209,
+            "auc_pr": 0.902126075291627,
+            "balanced_accuracy": 0.8819444444444444
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 1,
+      "trial": 1
+    },
+    {
+      "experiment_id": "scross_group_r50_g1_t2",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.7492766203703703,
+            "auc_pr": 0.5942549772470807,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.7450980392156863,
+            "recall": 0.7916666666666666,
+            "f1_score": 0.7676767676767676,
+            "auc_roc": 0.9754050925925926,
+            "auc_pr": 0.8237414656496518,
+            "balanced_accuracy": 0.880787037037037
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9645833333333333,
+            "precision": 0.8297872340425532,
+            "recall": 0.8125,
+            "f1_score": 0.8210526315789474,
+            "auc_roc": 0.9688946759259259,
+            "auc_pr": 0.9000686433336743,
+            "balanced_accuracy": 0.8969907407407407
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 1,
+      "trial": 2
+    },
+    {
+      "experiment_id": "scross_group_r50_g1_t3",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.7492766203703703,
+            "auc_pr": 0.5942549772470807,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.7450980392156863,
+            "recall": 0.7916666666666666,
+            "f1_score": 0.7676767676767676,
+            "auc_roc": 0.9754050925925926,
+            "auc_pr": 0.8237414656496518,
+            "balanced_accuracy": 0.880787037037037
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9791666666666666,
+            "precision": 0.9130434782608695,
+            "recall": 0.875,
+            "f1_score": 0.8936170212765957,
+            "auc_roc": 0.9802276234567902,
+            "auc_pr": 0.9248361197388977,
+            "balanced_accuracy": 0.9328703703703703
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 1,
+      "trial": 3
+    },
+    {
+      "experiment_id": "scross_group_r50_g1_t4",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.7492766203703703,
+            "auc_pr": 0.5942549772470807,
+            "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.7450980392156863,
+            "recall": 0.7916666666666666,
+            "f1_score": 0.7676767676767676,
+            "auc_roc": 0.9754050925925926,
+            "auc_pr": 0.8237414656496518,
+            "balanced_accuracy": 0.880787037037037
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9604166666666667,
+            "precision": 0.8717948717948718,
+            "recall": 0.7083333333333334,
+            "f1_score": 0.7816091954022989,
+            "auc_roc": 0.9762731481481481,
+            "auc_pr": 0.8879032226138042,
+            "balanced_accuracy": 0.8483796296296297
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 1,
+      "trial": 4
+    },
+    {
+      "experiment_id": "scross_group_r50_g2_t0",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9166666666666666,
+            "precision": 1.0,
+            "recall": 0.16666666666666666,
+            "f1_score": 0.2857142857142857,
+            "auc_roc": 0.5155044367283951,
+            "auc_pr": 0.37190764032204016,
+            "balanced_accuracy": 0.5833333333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9807822145061729,
+            "auc_pr": 0.8904019756667513,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9416666666666667,
+            "precision": 1.0,
+            "recall": 0.4166666666666667,
+            "f1_score": 0.5882352941176471,
+            "auc_roc": 0.9421296296296298,
+            "auc_pr": 0.8323132167795532,
+            "balanced_accuracy": 0.7083333333333334
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 2,
+      "trial": 0
+    },
+    {
+      "experiment_id": "scross_group_r50_g2_t1",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9166666666666666,
+            "precision": 1.0,
+            "recall": 0.16666666666666666,
+            "f1_score": 0.2857142857142857,
+            "auc_roc": 0.5155044367283951,
+            "auc_pr": 0.37190764032204016,
+            "balanced_accuracy": 0.5833333333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9807822145061729,
+            "auc_pr": 0.8904019756667513,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.8978105709876544,
+            "auc_pr": 0.7526129142584665,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 2,
+      "trial": 1
+    },
+    {
+      "experiment_id": "scross_group_r50_g2_t2",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9166666666666666,
+            "precision": 1.0,
+            "recall": 0.16666666666666666,
+            "f1_score": 0.2857142857142857,
+            "auc_roc": 0.5155044367283951,
+            "auc_pr": 0.37190764032204016,
+            "balanced_accuracy": 0.5833333333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9807822145061729,
+            "auc_pr": 0.8904019756667513,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9541666666666667,
+            "precision": 1.0,
+            "recall": 0.5416666666666666,
+            "f1_score": 0.7027027027027027,
+            "auc_roc": 0.9299768518518517,
+            "auc_pr": 0.8407268297482446,
+            "balanced_accuracy": 0.7708333333333333
+          },
+          "success": true,
+          "error": null
+        }
+      },
+      "strategy": "cross_group",
+      "synthetic_ratio": 50,
+      "group_id": 2,
+      "trial": 2
+    },
+    {
+      "experiment_id": "scross_group_r50_g2_t3",
+      "train_size": 200,
+      "test_size": 480,
+      "train_spam_ratio": 0.1,
+      "test_spam_ratio": 0.1,
+      "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9166666666666666,
+            "precision": 1.0,
+            "recall": 0.16666666666666666,
+            "f1_score": 0.2857142857142857,
+            "auc_roc": 0.5155044367283951,
+            "auc_pr": 0.37190764032204016,
+            "balanced_accuracy": 0.5833333333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9807822145061729,
+            "auc_pr": 0.8904019756667513,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 0.9285714285714286,
+            "recall": 0.5416666666666666,
+            "f1_score": 0.6842105263157895,
+            "auc_roc": 0.9391396604938271,
+            "auc_pr": 0.7713259187891062,
             "balanced_accuracy": 0.7685185185185185
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
-      "synthetic_ratio": 25,
-      "group_id": 2,
-      "trial": 4
-    },
-    {
-      "experiment_id": "swithin_group_r50_g0_t0",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8710168437775271,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 0,
-      "trial": 0
-    },
-    {
-      "experiment_id": "swithin_group_r50_g0_t1",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8710168437775271,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 0,
-      "trial": 1
-    },
-    {
-      "experiment_id": "swithin_group_r50_g0_t2",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8710168437775271,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 0,
-      "trial": 2
-    },
-    {
-      "experiment_id": "swithin_group_r50_g0_t3",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8710168437775271,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 0,
-      "trial": 3
-    },
-    {
-      "experiment_id": "swithin_group_r50_g0_t4",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9803240740740741,
-            "auc_pr": 0.8710168437775271,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 0,
-      "trial": 4
-    },
-    {
-      "experiment_id": "swithin_group_r50_g1_t0",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9291666666666667,
-            "precision": 0.6129032258064516,
-            "recall": 0.7916666666666666,
-            "f1_score": 0.6909090909090909,
-            "auc_roc": 0.9658082561728394,
-            "auc_pr": 0.8152530230019311,
-            "balanced_accuracy": 0.8680555555555556
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 1,
-      "trial": 0
-    },
-    {
-      "experiment_id": "swithin_group_r50_g1_t1",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9291666666666667,
-            "precision": 0.6129032258064516,
-            "recall": 0.7916666666666666,
-            "f1_score": 0.6909090909090909,
-            "auc_roc": 0.9658082561728394,
-            "auc_pr": 0.8152530230019311,
-            "balanced_accuracy": 0.8680555555555556
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 1,
-      "trial": 1
-    },
-    {
-      "experiment_id": "swithin_group_r50_g1_t2",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9291666666666667,
-            "precision": 0.6129032258064516,
-            "recall": 0.7916666666666666,
-            "f1_score": 0.6909090909090909,
-            "auc_roc": 0.9658082561728394,
-            "auc_pr": 0.8152530230019311,
-            "balanced_accuracy": 0.8680555555555556
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 1,
-      "trial": 2
-    },
-    {
-      "experiment_id": "swithin_group_r50_g1_t3",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9291666666666667,
-            "precision": 0.6129032258064516,
-            "recall": 0.7916666666666666,
-            "f1_score": 0.6909090909090909,
-            "auc_roc": 0.9658082561728394,
-            "auc_pr": 0.8152530230019311,
-            "balanced_accuracy": 0.8680555555555556
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 1,
-      "trial": 3
-    },
-    {
-      "experiment_id": "swithin_group_r50_g1_t4",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9291666666666667,
-            "precision": 0.6129032258064516,
-            "recall": 0.7916666666666666,
-            "f1_score": 0.6909090909090909,
-            "auc_roc": 0.9658082561728394,
-            "auc_pr": 0.8152530230019311,
-            "balanced_accuracy": 0.8680555555555556
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 1,
-      "trial": 4
-    },
-    {
-      "experiment_id": "swithin_group_r50_g2_t0",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8558740161824981,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 2,
-      "trial": 0
-    },
-    {
-      "experiment_id": "swithin_group_r50_g2_t1",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8558740161824981,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 2,
-      "trial": 1
-    },
-    {
-      "experiment_id": "swithin_group_r50_g2_t2",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8558740161824981,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
-      "synthetic_ratio": 50,
-      "group_id": 2,
-      "trial": 2
-    },
-    {
-      "experiment_id": "swithin_group_r50_g2_t3",
-      "train_size": 200,
-      "test_size": 480,
-      "train_spam_ratio": 0.1,
-      "test_spam_ratio": 0.1,
-      "classifiers": {
-        "random_forest": {
-          "metrics": {
-            "accuracy": 0.9333333333333333,
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8558740161824981,
-            "balanced_accuracy": 0.6666666666666666
-          },
-          "success": true,
-          "error": null
-        }
-      },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 50,
       "group_id": 2,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r50_g2_t4",
+      "experiment_id": "scross_group_r50_g2_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9166666666666666,
+            "precision": 1.0,
+            "recall": 0.16666666666666666,
+            "f1_score": 0.2857142857142857,
+            "auc_roc": 0.5155044367283951,
+            "auc_pr": 0.37190764032204016,
+            "balanced_accuracy": 0.5833333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9333333333333333,
+            "accuracy": 0.9395833333333333,
             "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1_score": 0.5,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8558740161824981,
-            "balanced_accuracy": 0.6666666666666666
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9807822145061729,
+            "auc_pr": 0.8904019756667513,
+            "balanced_accuracy": 0.6979166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9416666666666667,
+            "precision": 0.7272727272727273,
+            "recall": 0.6666666666666666,
+            "f1_score": 0.6956521739130435,
+            "auc_roc": 0.9237075617283952,
+            "auc_pr": 0.7836716954087608,
+            "balanced_accuracy": 0.8194444444444444
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 50,
       "group_id": 2,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r75_g0_t0",
+      "experiment_id": "scross_group_r75_g0_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
             "accuracy": 0.9229166666666667,
             "precision": 1.0,
             "recall": 0.22916666666666666,
             "f1_score": 0.3728813559322034,
-            "auc_roc": 0.9710165895061729,
-            "auc_pr": 0.8258328440992945,
+            "auc_roc": 0.6218171296296297,
+            "auc_pr": 0.5021414750722055,
             "balanced_accuracy": 0.6145833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.9640721450617284,
+            "auc_pr": 0.7999092798873416,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 1.0,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.684931506849315,
+            "auc_roc": 0.9214409722222222,
+            "auc_pr": 0.8405835839011611,
+            "balanced_accuracy": 0.7604166666666667
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 0,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r75_g0_t1",
+      "experiment_id": "scross_group_r75_g0_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
             "accuracy": 0.9229166666666667,
             "precision": 1.0,
             "recall": 0.22916666666666666,
             "f1_score": 0.3728813559322034,
-            "auc_roc": 0.9710165895061729,
-            "auc_pr": 0.8258328440992945,
+            "auc_roc": 0.6218171296296297,
+            "auc_pr": 0.5021414750722055,
             "balanced_accuracy": 0.6145833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.9640721450617284,
+            "auc_pr": 0.7999092798873416,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 1.0,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.684931506849315,
+            "auc_roc": 0.9477237654320988,
+            "auc_pr": 0.8551861267412606,
+            "balanced_accuracy": 0.7604166666666667
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 0,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r75_g0_t2",
+      "experiment_id": "scross_group_r75_g0_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
             "accuracy": 0.9229166666666667,
             "precision": 1.0,
             "recall": 0.22916666666666666,
             "f1_score": 0.3728813559322034,
-            "auc_roc": 0.9710165895061729,
-            "auc_pr": 0.8258328440992945,
+            "auc_roc": 0.6218171296296297,
+            "auc_pr": 0.5021414750722055,
             "balanced_accuracy": 0.6145833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.9640721450617284,
+            "auc_pr": 0.7999092798873416,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9541666666666667,
+            "precision": 1.0,
+            "recall": 0.5416666666666666,
+            "f1_score": 0.7027027027027027,
+            "auc_roc": 0.9618055555555557,
+            "auc_pr": 0.8570242748627577,
+            "balanced_accuracy": 0.7708333333333333
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 0,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r75_g0_t3",
+      "experiment_id": "scross_group_r75_g0_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
             "accuracy": 0.9229166666666667,
             "precision": 1.0,
             "recall": 0.22916666666666666,
             "f1_score": 0.3728813559322034,
-            "auc_roc": 0.9710165895061729,
-            "auc_pr": 0.8258328440992945,
+            "auc_roc": 0.6218171296296297,
+            "auc_pr": 0.5021414750722055,
             "balanced_accuracy": 0.6145833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.9640721450617284,
+            "auc_pr": 0.7999092798873416,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.9619502314814815,
+            "auc_pr": 0.8934529043556446,
+            "balanced_accuracy": 0.75
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 0,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r75_g0_t4",
+      "experiment_id": "scross_group_r75_g0_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
-        "random_forest": {
+        "svm": {
           "metrics": {
             "accuracy": 0.9229166666666667,
             "precision": 1.0,
             "recall": 0.22916666666666666,
             "f1_score": 0.3728813559322034,
-            "auc_roc": 0.9710165895061729,
-            "auc_pr": 0.8258328440992945,
+            "auc_roc": 0.6218171296296297,
+            "auc_pr": 0.5021414750722055,
             "balanced_accuracy": 0.6145833333333334
+          },
+          "success": true,
+          "error": null
+        },
+        "random_forest": {
+          "metrics": {
+            "accuracy": 0.9270833333333334,
+            "precision": 1.0,
+            "recall": 0.2708333333333333,
+            "f1_score": 0.4262295081967213,
+            "auc_roc": 0.9640721450617284,
+            "auc_pr": 0.7999092798873416,
+            "balanced_accuracy": 0.6354166666666666
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9541666666666667,
+            "precision": 0.9642857142857143,
+            "recall": 0.5625,
+            "f1_score": 0.7105263157894737,
+            "auc_roc": 0.9607445987654322,
+            "auc_pr": 0.8748570612057047,
+            "balanced_accuracy": 0.7800925925925926
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 0,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r75_g1_t0",
+      "experiment_id": "scross_group_r75_g1_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.7249228395061729,
+            "auc_pr": 0.5810107082880239,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.95625,
-            "precision": 0.9655172413793104,
-            "recall": 0.5833333333333334,
-            "f1_score": 0.7272727272727273,
-            "auc_roc": 0.9692804783950618,
-            "auc_pr": 0.8419824409687287,
-            "balanced_accuracy": 0.7905092592592593
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9714506172839507,
+            "auc_pr": 0.8402504988168781,
+            "balanced_accuracy": 0.6875
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9583333333333334,
+            "precision": 0.9117647058823529,
+            "recall": 0.6458333333333334,
+            "f1_score": 0.7560975609756098,
+            "auc_roc": 0.9711612654320988,
+            "auc_pr": 0.8956982427010904,
+            "balanced_accuracy": 0.8194444444444444
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 1,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r75_g1_t1",
+      "experiment_id": "scross_group_r75_g1_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.7249228395061729,
+            "auc_pr": 0.5810107082880239,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.95625,
-            "precision": 0.9655172413793104,
-            "recall": 0.5833333333333334,
-            "f1_score": 0.7272727272727273,
-            "auc_roc": 0.9692804783950618,
-            "auc_pr": 0.8419824409687287,
-            "balanced_accuracy": 0.7905092592592593
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9714506172839507,
+            "auc_pr": 0.8402504988168781,
+            "balanced_accuracy": 0.6875
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.96,
+            "recall": 0.5,
+            "f1_score": 0.6575342465753424,
+            "auc_roc": 0.9523533950617283,
+            "auc_pr": 0.8711963577010868,
+            "balanced_accuracy": 0.7488425925925926
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 1,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r75_g1_t2",
+      "experiment_id": "scross_group_r75_g1_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.7249228395061729,
+            "auc_pr": 0.5810107082880239,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.95625,
-            "precision": 0.9655172413793104,
-            "recall": 0.5833333333333334,
-            "f1_score": 0.7272727272727273,
-            "auc_roc": 0.9692804783950618,
-            "auc_pr": 0.8419824409687287,
-            "balanced_accuracy": 0.7905092592592593
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9714506172839507,
+            "auc_pr": 0.8402504988168781,
+            "balanced_accuracy": 0.6875
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.9259259259259259,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.9604070216049383,
+            "auc_pr": 0.8633204463184158,
+            "balanced_accuracy": 0.7581018518518519
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 1,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r75_g1_t3",
+      "experiment_id": "scross_group_r75_g1_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.7249228395061729,
+            "auc_pr": 0.5810107082880239,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.95625,
-            "precision": 0.9655172413793104,
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9714506172839507,
+            "auc_pr": 0.8402504988168781,
+            "balanced_accuracy": 0.6875
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9541666666666667,
+            "precision": 0.9333333333333333,
             "recall": 0.5833333333333334,
-            "f1_score": 0.7272727272727273,
-            "auc_roc": 0.9692804783950618,
-            "auc_pr": 0.8419824409687287,
-            "balanced_accuracy": 0.7905092592592593
+            "f1_score": 0.717948717948718,
+            "auc_roc": 0.970679012345679,
+            "auc_pr": 0.8898525274166409,
+            "balanced_accuracy": 0.7893518518518519
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 1,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r75_g1_t4",
+      "experiment_id": "scross_group_r75_g1_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.7249228395061729,
+            "auc_pr": 0.5810107082880239,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9714506172839507,
+            "auc_pr": 0.8402504988168781,
+            "balanced_accuracy": 0.6875
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
             "accuracy": 0.95625,
-            "precision": 0.9655172413793104,
-            "recall": 0.5833333333333334,
-            "f1_score": 0.7272727272727273,
-            "auc_roc": 0.9692804783950618,
-            "auc_pr": 0.8419824409687287,
-            "balanced_accuracy": 0.7905092592592593
+            "precision": 0.8292682926829268,
+            "recall": 0.7083333333333334,
+            "f1_score": 0.7640449438202247,
+            "auc_roc": 0.9440586419753088,
+            "auc_pr": 0.8526866865046323,
+            "balanced_accuracy": 0.8460648148148149
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 1,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r75_g2_t0",
+      "experiment_id": "scross_group_r75_g2_t0",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.91875,
+            "precision": 1.0,
+            "recall": 0.1875,
+            "f1_score": 0.3157894736842105,
+            "auc_roc": 0.5725067515432098,
+            "auc_pr": 0.43502241111119183,
+            "balanced_accuracy": 0.59375
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.925,
             "precision": 1.0,
             "recall": 0.25,
             "f1_score": 0.4,
-            "auc_roc": 0.9745370370370371,
-            "auc_pr": 0.8549318152214268,
+            "auc_roc": 0.9762249228395061,
+            "auc_pr": 0.8648834243110014,
             "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.9629629629629629,
+            "recall": 0.5416666666666666,
+            "f1_score": 0.6933333333333334,
+            "auc_roc": 0.9085648148148148,
+            "auc_pr": 0.8024987623890174,
+            "balanced_accuracy": 0.7696759259259259
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 2,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r75_g2_t1",
+      "experiment_id": "scross_group_r75_g2_t1",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.91875,
+            "precision": 1.0,
+            "recall": 0.1875,
+            "f1_score": 0.3157894736842105,
+            "auc_roc": 0.5725067515432098,
+            "auc_pr": 0.43502241111119183,
+            "balanced_accuracy": 0.59375
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.925,
             "precision": 1.0,
             "recall": 0.25,
             "f1_score": 0.4,
-            "auc_roc": 0.9745370370370371,
-            "auc_pr": 0.8549318152214268,
+            "auc_roc": 0.9762249228395061,
+            "auc_pr": 0.8648834243110014,
             "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 1.0,
+            "recall": 0.4791666666666667,
+            "f1_score": 0.647887323943662,
+            "auc_roc": 0.943335262345679,
+            "auc_pr": 0.8136329985251897,
+            "balanced_accuracy": 0.7395833333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 2,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r75_g2_t2",
+      "experiment_id": "scross_group_r75_g2_t2",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.91875,
+            "precision": 1.0,
+            "recall": 0.1875,
+            "f1_score": 0.3157894736842105,
+            "auc_roc": 0.5725067515432098,
+            "auc_pr": 0.43502241111119183,
+            "balanced_accuracy": 0.59375
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.925,
             "precision": 1.0,
             "recall": 0.25,
             "f1_score": 0.4,
-            "auc_roc": 0.9745370370370371,
-            "auc_pr": 0.8549318152214268,
+            "auc_roc": 0.9762249228395061,
+            "auc_pr": 0.8648834243110014,
             "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.9259259259259259,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.900414737654321,
+            "auc_pr": 0.7620345350595332,
+            "balanced_accuracy": 0.7581018518518519
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 2,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r75_g2_t3",
+      "experiment_id": "scross_group_r75_g2_t3",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.91875,
+            "precision": 1.0,
+            "recall": 0.1875,
+            "f1_score": 0.3157894736842105,
+            "auc_roc": 0.5725067515432098,
+            "auc_pr": 0.43502241111119183,
+            "balanced_accuracy": 0.59375
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.925,
             "precision": 1.0,
             "recall": 0.25,
             "f1_score": 0.4,
-            "auc_roc": 0.9745370370370371,
-            "auc_pr": 0.8549318152214268,
+            "auc_roc": 0.9762249228395061,
+            "auc_pr": 0.8648834243110014,
             "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95625,
+            "precision": 0.9655172413793104,
+            "recall": 0.5833333333333334,
+            "f1_score": 0.7272727272727273,
+            "auc_roc": 0.9233699845679013,
+            "auc_pr": 0.8116526904488918,
+            "balanced_accuracy": 0.7905092592592593
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 2,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r75_g2_t4",
+      "experiment_id": "scross_group_r75_g2_t4",
       "train_size": 200,
       "test_size": 480,
       "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.91875,
+            "precision": 1.0,
+            "recall": 0.1875,
+            "f1_score": 0.3157894736842105,
+            "auc_roc": 0.5725067515432098,
+            "auc_pr": 0.43502241111119183,
+            "balanced_accuracy": 0.59375
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
             "accuracy": 0.925,
             "precision": 1.0,
             "recall": 0.25,
             "f1_score": 0.4,
-            "auc_roc": 0.9745370370370371,
-            "auc_pr": 0.8549318152214268,
+            "auc_roc": 0.9762249228395061,
+            "auc_pr": 0.8648834243110014,
             "balanced_accuracy": 0.625
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
+            "precision": 1.0,
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.8944347993827159,
+            "auc_pr": 0.7696339084801622,
+            "balanced_accuracy": 0.6979166666666666
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 75,
       "group_id": 2,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r100_g0_t0",
-      "train_size": 198,
+      "experiment_id": "scross_group_r100_g0_t0",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09090909090909091,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9041666666666667,
+            "precision": 1.0,
+            "recall": 0.041666666666666664,
+            "f1_score": 0.08,
+            "auc_roc": 0.6799768518518517,
+            "auc_pr": 0.5078478298196509,
+            "balanced_accuracy": 0.5208333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.91875,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9635898919753086,
+            "auc_pr": 0.7274092717000527,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.925,
             "precision": 1.0,
-            "recall": 0.1875,
-            "f1_score": 0.3157894736842105,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8258110935673625,
-            "balanced_accuracy": 0.59375
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.947193287037037,
+            "auc_pr": 0.8351293650332333,
+            "balanced_accuracy": 0.625
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 0,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r100_g0_t1",
-      "train_size": 198,
+      "experiment_id": "scross_group_r100_g0_t1",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09090909090909091,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9041666666666667,
+            "precision": 1.0,
+            "recall": 0.041666666666666664,
+            "f1_score": 0.08,
+            "auc_roc": 0.6799768518518517,
+            "auc_pr": 0.5078478298196509,
+            "balanced_accuracy": 0.5208333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.91875,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9635898919753086,
+            "auc_pr": 0.7274092717000527,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9208333333333333,
             "precision": 1.0,
-            "recall": 0.1875,
-            "f1_score": 0.3157894736842105,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8258110935673625,
-            "balanced_accuracy": 0.59375
+            "recall": 0.20833333333333334,
+            "f1_score": 0.3448275862068966,
+            "auc_roc": 0.9470003858024691,
+            "auc_pr": 0.794853684497423,
+            "balanced_accuracy": 0.6041666666666666
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 0,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r100_g0_t2",
-      "train_size": 198,
+      "experiment_id": "scross_group_r100_g0_t2",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09090909090909091,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9041666666666667,
+            "precision": 1.0,
+            "recall": 0.041666666666666664,
+            "f1_score": 0.08,
+            "auc_roc": 0.6799768518518517,
+            "auc_pr": 0.5078478298196509,
+            "balanced_accuracy": 0.5208333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.91875,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9635898919753086,
+            "auc_pr": 0.7274092717000527,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9375,
             "precision": 1.0,
-            "recall": 0.1875,
-            "f1_score": 0.3157894736842105,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8258110935673625,
-            "balanced_accuracy": 0.59375
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9344135802469136,
+            "auc_pr": 0.790826441895794,
+            "balanced_accuracy": 0.6875
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 0,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r100_g0_t3",
-      "train_size": 198,
+      "experiment_id": "scross_group_r100_g0_t3",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09090909090909091,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9041666666666667,
+            "precision": 1.0,
+            "recall": 0.041666666666666664,
+            "f1_score": 0.08,
+            "auc_roc": 0.6799768518518517,
+            "auc_pr": 0.5078478298196509,
+            "balanced_accuracy": 0.5208333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.91875,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9635898919753086,
+            "auc_pr": 0.7274092717000527,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9375,
             "precision": 1.0,
-            "recall": 0.1875,
-            "f1_score": 0.3157894736842105,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8258110935673625,
-            "balanced_accuracy": 0.59375
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9624807098765433,
+            "auc_pr": 0.8352359089916458,
+            "balanced_accuracy": 0.6875
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 0,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r100_g0_t4",
-      "train_size": 198,
+      "experiment_id": "scross_group_r100_g0_t4",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09090909090909091,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9041666666666667,
+            "precision": 1.0,
+            "recall": 0.041666666666666664,
+            "f1_score": 0.08,
+            "auc_roc": 0.6799768518518517,
+            "auc_pr": 0.5078478298196509,
+            "balanced_accuracy": 0.5208333333333334
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.91875,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9635898919753086,
+            "auc_pr": 0.7274092717000527,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9291666666666667,
             "precision": 1.0,
-            "recall": 0.1875,
-            "f1_score": 0.3157894736842105,
-            "auc_roc": 0.9755979938271605,
-            "auc_pr": 0.8258110935673625,
-            "balanced_accuracy": 0.59375
+            "recall": 0.2916666666666667,
+            "f1_score": 0.45161290322580644,
+            "auc_roc": 0.9593460648148149,
+            "auc_pr": 0.8283097102569008,
+            "balanced_accuracy": 0.6458333333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 0,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r100_g1_t0",
-      "train_size": 197,
+      "experiment_id": "scross_group_r100_g1_t0",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.08629441624365482,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9125,
+            "precision": 1.0,
+            "recall": 0.125,
+            "f1_score": 0.2222222222222222,
+            "auc_roc": 0.7268036265432098,
+            "auc_pr": 0.604025523581853,
+            "balanced_accuracy": 0.5625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1_score": 0.0,
-            "auc_roc": 0.9479166666666666,
-            "auc_pr": 0.7451760221506276,
-            "balanced_accuracy": 0.5
+            "accuracy": 0.90625,
+            "precision": 1.0,
+            "recall": 0.0625,
+            "f1_score": 0.11764705882352941,
+            "auc_roc": 0.9599247685185185,
+            "auc_pr": 0.753189807080938,
+            "balanced_accuracy": 0.53125
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9354166666666667,
+            "precision": 0.9473684210526315,
+            "recall": 0.375,
+            "f1_score": 0.5373134328358209,
+            "auc_roc": 0.9321469907407407,
+            "auc_pr": 0.7699891597924777,
+            "balanced_accuracy": 0.6863425925925926
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 1,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r100_g1_t1",
-      "train_size": 197,
+      "experiment_id": "scross_group_r100_g1_t1",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.08629441624365482,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9125,
+            "precision": 1.0,
+            "recall": 0.125,
+            "f1_score": 0.2222222222222222,
+            "auc_roc": 0.7268036265432098,
+            "auc_pr": 0.604025523581853,
+            "balanced_accuracy": 0.5625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1_score": 0.0,
-            "auc_roc": 0.9479166666666666,
-            "auc_pr": 0.7451760221506276,
-            "balanced_accuracy": 0.5
+            "accuracy": 0.90625,
+            "precision": 1.0,
+            "recall": 0.0625,
+            "f1_score": 0.11764705882352941,
+            "auc_roc": 0.9599247685185185,
+            "auc_pr": 0.753189807080938,
+            "balanced_accuracy": 0.53125
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9520833333333333,
+            "precision": 0.8787878787878788,
+            "recall": 0.6041666666666666,
+            "f1_score": 0.7160493827160493,
+            "auc_roc": 0.9388503086419754,
+            "auc_pr": 0.8153539541844432,
+            "balanced_accuracy": 0.7974537037037037
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 1,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r100_g1_t2",
-      "train_size": 197,
+      "experiment_id": "scross_group_r100_g1_t2",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.08629441624365482,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9125,
+            "precision": 1.0,
+            "recall": 0.125,
+            "f1_score": 0.2222222222222222,
+            "auc_roc": 0.7268036265432098,
+            "auc_pr": 0.604025523581853,
+            "balanced_accuracy": 0.5625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1_score": 0.0,
-            "auc_roc": 0.9479166666666666,
-            "auc_pr": 0.7451760221506276,
-            "balanced_accuracy": 0.5
+            "accuracy": 0.90625,
+            "precision": 1.0,
+            "recall": 0.0625,
+            "f1_score": 0.11764705882352941,
+            "auc_roc": 0.9599247685185185,
+            "auc_pr": 0.753189807080938,
+            "balanced_accuracy": 0.53125
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9375,
+            "precision": 1.0,
+            "recall": 0.375,
+            "f1_score": 0.5454545454545454,
+            "auc_roc": 0.9408275462962963,
+            "auc_pr": 0.7647023228054405,
+            "balanced_accuracy": 0.6875
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 1,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r100_g1_t3",
-      "train_size": 197,
+      "experiment_id": "scross_group_r100_g1_t3",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.08629441624365482,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9125,
+            "precision": 1.0,
+            "recall": 0.125,
+            "f1_score": 0.2222222222222222,
+            "auc_roc": 0.7268036265432098,
+            "auc_pr": 0.604025523581853,
+            "balanced_accuracy": 0.5625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1_score": 0.0,
-            "auc_roc": 0.9479166666666666,
-            "auc_pr": 0.7451760221506276,
-            "balanced_accuracy": 0.5
+            "accuracy": 0.90625,
+            "precision": 1.0,
+            "recall": 0.0625,
+            "f1_score": 0.11764705882352941,
+            "auc_roc": 0.9599247685185185,
+            "auc_pr": 0.753189807080938,
+            "balanced_accuracy": 0.53125
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95625,
+            "precision": 0.9090909090909091,
+            "recall": 0.625,
+            "f1_score": 0.7407407407407407,
+            "auc_roc": 0.9448302469135802,
+            "auc_pr": 0.8385101037774213,
+            "balanced_accuracy": 0.8090277777777778
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 1,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r100_g1_t4",
-      "train_size": 197,
+      "experiment_id": "scross_group_r100_g1_t4",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.08629441624365482,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9125,
+            "precision": 1.0,
+            "recall": 0.125,
+            "f1_score": 0.2222222222222222,
+            "auc_roc": 0.7268036265432098,
+            "auc_pr": 0.604025523581853,
+            "balanced_accuracy": 0.5625
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.9,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1_score": 0.0,
-            "auc_roc": 0.9479166666666666,
-            "auc_pr": 0.7451760221506276,
-            "balanced_accuracy": 0.5
+            "accuracy": 0.90625,
+            "precision": 1.0,
+            "recall": 0.0625,
+            "f1_score": 0.11764705882352941,
+            "auc_roc": 0.9599247685185185,
+            "auc_pr": 0.753189807080938,
+            "balanced_accuracy": 0.53125
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
+            "precision": 0.9259259259259259,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.6666666666666666,
+            "auc_roc": 0.9527391975308642,
+            "auc_pr": 0.8521210391368342,
+            "balanced_accuracy": 0.7581018518518519
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 1,
       "trial": 4
     },
     {
-      "experiment_id": "swithin_group_r100_g2_t0",
-      "train_size": 199,
+      "experiment_id": "scross_group_r100_g2_t0",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09547738693467336,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.5503231095679013,
+            "auc_pr": 0.419150474702475,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.90625,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9814091435185184,
+            "auc_pr": 0.892891858756472,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9479166666666666,
             "precision": 1.0,
-            "recall": 0.0625,
-            "f1_score": 0.11764705882352941,
-            "auc_roc": 0.9605034722222221,
-            "auc_pr": 0.8136975778776595,
-            "balanced_accuracy": 0.53125
+            "recall": 0.4791666666666667,
+            "f1_score": 0.647887323943662,
+            "auc_roc": 0.9308931327160495,
+            "auc_pr": 0.816363281471623,
+            "balanced_accuracy": 0.7395833333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 2,
       "trial": 0
     },
     {
-      "experiment_id": "swithin_group_r100_g2_t1",
-      "train_size": 199,
+      "experiment_id": "scross_group_r100_g2_t1",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09547738693467336,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.5503231095679013,
+            "auc_pr": 0.419150474702475,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.90625,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9814091435185184,
+            "auc_pr": 0.892891858756472,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9416666666666667,
             "precision": 1.0,
-            "recall": 0.0625,
-            "f1_score": 0.11764705882352941,
-            "auc_roc": 0.9605034722222221,
-            "auc_pr": 0.8136975778776595,
-            "balanced_accuracy": 0.53125
+            "recall": 0.4166666666666667,
+            "f1_score": 0.5882352941176471,
+            "auc_roc": 0.9458429783950616,
+            "auc_pr": 0.8392756362588112,
+            "balanced_accuracy": 0.7083333333333334
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 2,
       "trial": 1
     },
     {
-      "experiment_id": "swithin_group_r100_g2_t2",
-      "train_size": 199,
+      "experiment_id": "scross_group_r100_g2_t2",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09547738693467336,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.5503231095679013,
+            "auc_pr": 0.419150474702475,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.90625,
-            "precision": 1.0,
-            "recall": 0.0625,
-            "f1_score": 0.11764705882352941,
-            "auc_roc": 0.9605034722222221,
-            "auc_pr": 0.8136975778776595,
-            "balanced_accuracy": 0.53125
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9814091435185184,
+            "auc_pr": 0.892891858756472,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 0.9615384615384616,
+            "recall": 0.5208333333333334,
+            "f1_score": 0.6756756756756757,
+            "auc_roc": 0.9143036265432098,
+            "auc_pr": 0.8069725312870435,
+            "balanced_accuracy": 0.7592592592592593
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 2,
       "trial": 2
     },
     {
-      "experiment_id": "swithin_group_r100_g2_t3",
-      "train_size": 199,
+      "experiment_id": "scross_group_r100_g2_t3",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09547738693467336,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.5503231095679013,
+            "auc_pr": 0.419150474702475,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.90625,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9814091435185184,
+            "auc_pr": 0.892891858756472,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.9395833333333333,
             "precision": 1.0,
-            "recall": 0.0625,
-            "f1_score": 0.11764705882352941,
-            "auc_roc": 0.9605034722222221,
-            "auc_pr": 0.8136975778776595,
-            "balanced_accuracy": 0.53125
+            "recall": 0.3958333333333333,
+            "f1_score": 0.5671641791044776,
+            "auc_roc": 0.9351851851851851,
+            "auc_pr": 0.8223044083832545,
+            "balanced_accuracy": 0.6979166666666666
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 2,
       "trial": 3
     },
     {
-      "experiment_id": "swithin_group_r100_g2_t4",
-      "train_size": 199,
+      "experiment_id": "scross_group_r100_g2_t4",
+      "train_size": 200,
       "test_size": 480,
-      "train_spam_ratio": 0.09547738693467336,
+      "train_spam_ratio": 0.1,
       "test_spam_ratio": 0.1,
       "classifiers": {
+        "svm": {
+          "metrics": {
+            "accuracy": 0.9145833333333333,
+            "precision": 1.0,
+            "recall": 0.14583333333333334,
+            "f1_score": 0.2545454545454545,
+            "auc_roc": 0.5503231095679013,
+            "auc_pr": 0.419150474702475,
+            "balanced_accuracy": 0.5729166666666666
+          },
+          "success": true,
+          "error": null
+        },
         "random_forest": {
           "metrics": {
-            "accuracy": 0.90625,
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "auc_roc": 0.9814091435185184,
+            "auc_pr": 0.892891858756472,
+            "balanced_accuracy": 0.5
+          },
+          "success": true,
+          "error": null
+        },
+        "deep_learning": {
+          "metrics": {
+            "accuracy": 0.94375,
             "precision": 1.0,
-            "recall": 0.0625,
-            "f1_score": 0.11764705882352941,
-            "auc_roc": 0.9605034722222221,
-            "auc_pr": 0.8136975778776595,
-            "balanced_accuracy": 0.53125
+            "recall": 0.4375,
+            "f1_score": 0.6086956521739131,
+            "auc_roc": 0.9013310185185186,
+            "auc_pr": 0.7814748493644912,
+            "balanced_accuracy": 0.71875
           },
           "success": true,
           "error": null
         }
       },
-      "strategy": "within_group",
+      "strategy": "cross_group",
       "synthetic_ratio": 100,
       "group_id": 2,
       "trial": 4
@@ -1960,7 +3910,9 @@
   ],
   "config": {
     "classifiers": [
-      "random_forest"
+      "svm",
+      "random_forest",
+      "deep_learning"
     ],
     "evaluation_metrics": [
       "accuracy",

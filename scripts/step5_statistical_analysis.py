@@ -88,7 +88,7 @@ def main():
                 f"{experiment_name}_classification_results.json"
             )
 
-        output_dir = args.output_dir or config.output.get('results_path', './output/results/')
+        output_dir = args.output_dir or config.output.get('reports_path', './output/reports/')
 
         logger.info(f"Starting statistical analysis")
         logger.info(f"Results file: {results_file}")

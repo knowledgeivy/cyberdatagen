@@ -70,28 +70,39 @@
 3. **Weak**: "请生成一封subtle spam邮件，使其看起来更像legitimate邮件但仍保持spam本质"
 
 **分类器**: SVM, Random Forest, Deep Learning
-**重复次数**: R = 20
-**样本量**: N = 9000
+**Pilot Study参数**: R = 3组, N = 200 (验证代码和流程)
+**正规实验参数**: R = 20组, N = 9000 (基于pilot结果决定)
+**混合策略**: 四种策略全部测试 (within-group, cross-group, real-fixed+random-synthetic, full-random)
+**采样方式**: 不重复抽样 (without replacement)
 
 ### 4.2 实验流程
 
-```
-For each synthetic_ratio in [0%, 10%, 20%, ..., 100%]:
-    For each prompt_strategy in [Original, Strong, Weak]:
-        For trial in range(20):  # R = 20
-            # 1. 数据生成
-            generate_synthetic_spam_data(prompt_strategy, synthetic_ratio)
+```python
+For each mixing_strategy in [within_group, cross_group, real_fixed_random_synthetic, full_random]:
+    For each synthetic_ratio in [0%, 25%, 50%, 75%, 100%]:  # Pilot用5个关键点
+        For each prompt_strategy in [Original, Strong, Weak]:
+            For trial in range(3):  # Pilot: R = 3组
+                # 1. 数据分组 (Pilot: 每组200样本)
+                groups = stratified_split(data, n_groups=3, group_size=200)
 
-            # 2. 数据集构建
-            training_set = combine_data(real_non_spam, mixed_spam_data)
-            testing_set = real_data_only
+                # 2. LLM合成数据生成
+                synthetic_data = generate_synthetic_spam_data(prompt_strategy)
 
-            # 3. 模型训练与评估
-            for classifier in [SVM, RandomForest, DeepLearning]:
-                model = train(training_set)
-                metrics = evaluate(model, testing_set)
-                record_results(metrics, synthetic_ratio, prompt_strategy, trial)
+                # 3. 根据混合策略构建训练集
+                training_set = apply_mixing_strategy(
+                    groups, synthetic_data, mixing_strategy, synthetic_ratio
+                )
+                testing_set = real_data_only  # 测试集始终为真实数据
+
+                # 4. 模型训练与评估
+                for classifier in [SVM, RandomForest, DeepLearning]:
+                    model = train(classifier, training_set)
+                    metrics = evaluate(model, testing_set)
+                    record_results(metrics, mixing_strategy, synthetic_ratio,
+                                 prompt_strategy, trial, classifier)
 ```
+
+**实验复杂度**: 4种策略 × 5种比例 × 3种prompt × 3组 × 3种分类器 = 540个实验配置
 
 ### 4.3 预期输出
 
@@ -121,7 +132,6 @@ For each synthetic_ratio in [0%, 10%, 20%, ..., 100%]:
 
 ### 5.3 第四阶段: 深度分析
 
-- **语义分析**: 使用embedding分析synthetic与real data的语义相似性
 - **对抗性评估**: 评估synthetic data是否容易被检测
 - **Error analysis**: 深入分析performance衰减的具体原因
 
@@ -219,31 +229,50 @@ LLM Generation → Data Mixing → Model Training → Evaluation
 
 ### 10.2 分组抽样与泛化能力验证
 
-**问题**: 组内生成 vs 跨组混合的对比实验设计是否严谨？
+**问题**: 多种数据混合策略的对比实验设计
 
-**详细实验设计**:
+**详细实验设计 - 四种混合策略**:
 
 ```python
-# 两种synthetic data生成策略对比
-Strategy A: 组内生成 (Within-group generation)
+# 四种数据混合策略对比实验
+Strategy 1: Within-group (组内一致)
 For each group i in range(20):
-    real_spam_group_i = real_spam[group_i_indices]
-    synthetic_spam_group_i = LLM_generate(real_spam_group_i, prompt)
-    training_set_i = combine(synthetic_spam_group_i, real_non_spam_group_i)
+    real_spam_i = real_spam[group_i_indices]
+    synthetic_spam_i = synthetic_spam[group_i_indices]  # 同组生成的synthetic
+    training_set_i = mix_by_ratio(real_spam_i, synthetic_spam_i, ratio)
 
-Strategy B: 跨组混合 (Cross-group mixing)
+Strategy 2: Cross-group (跨组泛化)
 For each group i in range(20):
-    # 从其他组随机抽取real spam作为生成source
-    other_groups = [j for j in range(20) if j != i]
-    source_spam = random_sample_from(real_spam[other_groups])
-    synthetic_spam_group_i = LLM_generate(source_spam, prompt)
-    training_set_i = combine(synthetic_spam_group_i, real_non_spam_group_i)
+    real_spam_i = real_spam[group_i_indices]
+    synthetic_spam_j = synthetic_spam[group_j_indices where j != i]  # 其他组的synthetic
+    training_set_i = mix_by_ratio(real_spam_i, synthetic_spam_j, ratio)
+
+Strategy 3: Real-fixed + Random-synthetic (数据增强)
+For each group i in range(20):
+    real_spam_i = real_spam[group_i_indices]
+    synthetic_spam_random = random_sample(all_synthetic_spam)  # 全局随机采样synthetic
+    training_set_i = mix_by_ratio(real_spam_i, synthetic_spam_random, ratio)
+
+Strategy 4: Full-random (完全随机基线)
+For each group i in range(20):
+    real_spam_random = random_sample(all_real_spam)  # 全局随机采样real
+    synthetic_spam_random = random_sample(all_synthetic_spam)  # 全局随机采样synthetic
+    training_set_i = mix_by_ratio(real_spam_random, synthetic_spam_random, ratio)
 ```
 
 **假设验证逻辑**:
-- **H1**: 如果Strategy A >> Strategy B，说明LLM生成具有局部优化特性，泛化能力有限
-- **H2**: 如果Strategy A ≈ Strategy B，说明LLM具有良好的泛化能力
-- **H3**: 如果两者都显著低于real data baseline，说明synthetic data整体质量不足
+- **H1**: Strategy 1 > Strategy 2 → LLM生成具有领域特异性，组内数据更匹配
+- **H2**: Strategy 2 ≈ Strategy 1 → LLM具有良好的跨组泛化能力
+- **H3**: Strategy 3 > Strategy 1,2 → 多样化synthetic data具有更好的数据增强效果
+- **H4**: Strategy 4作为随机基线，验证组结构的重要性
+
+**学术价值**:
+- **策略1**: 测试理想情况下的synthetic data效果
+- **策略2**: 核心研究问题 - 测试跨域泛化能力
+- **策略3**: 实际应用场景 - 数据增强策略效果
+- **策略4**: 消除bias的对照组，确保实验严谨性
+
+**采样方式**: 不重复抽样 (without replacement)，确保数据独立性和避免过拟合
 
 **技术实现要点**:
 ```python
@@ -436,74 +465,6 @@ def anova_analysis(results_by_prompt):
 - **ANOVA**: 多组间比较
 - **Confidence Intervals**: 提供效应量范围
 
-### 10.5 Embedding Analysis集成策略
-
-**问题**: 之前的embedding analysis (edge vs core)是否还有用？
-
-**集成方案**:
-
-```python
-# 将embedding analysis作为synthetic data质量评估的补充维度
-def comprehensive_evaluation_framework():
-
-    # 1. Performance-based evaluation (主要评估)
-    performance_metrics = {
-        'accuracy', 'precision', 'recall', 'f1_score',
-        'auc_roc', 'auc_pr'
-    }
-
-    # 2. Embedding-based evaluation (质量评估)
-    embedding_metrics = {
-        'edge_vs_core_similarity',
-        'real_vs_synthetic_distance',
-        'intra_cluster_coherence',
-        'inter_cluster_separation'
-    }
-
-    # 3. Distribution-based evaluation (分布评估)
-    distribution_metrics = {
-        'kl_divergence',
-        'optimal_transport_distance',
-        'maximum_mean_discrepancy'
-    }
-
-    return {
-        'performance': performance_metrics,
-        'embedding': embedding_metrics,
-        'distribution': distribution_metrics
-    }
-
-# Edge vs Core分析的新用途
-def edge_core_analysis_for_synthetic_quality(real_data, synthetic_data):
-    """
-    使用edge vs core分析来评估synthetic data的质量
-    """
-
-    # 1. 计算real data的edge/core structure
-    real_embeddings = get_embeddings(real_data)
-    real_edge_core = compute_edge_core_structure(real_embeddings)
-
-    # 2. 计算synthetic data的edge/core structure
-    synthetic_embeddings = get_embeddings(synthetic_data)
-    synthetic_edge_core = compute_edge_core_structure(synthetic_embeddings)
-
-    # 3. 比较结构相似性
-    structure_similarity = compare_edge_core_structures(
-        real_edge_core, synthetic_edge_core
-    )
-
-    # 4. 预测performance
-    # 如果synthetic保持了类似的edge/core结构，性能应该更好
-    predicted_performance = predict_performance_from_structure(structure_similarity)
-
-    return {
-        'structure_similarity': structure_similarity,
-        'predicted_performance': predicted_performance,
-        'quality_score': compute_quality_score(structure_similarity)
-    }
-```
-
-**学术价值**: Edge vs core分析可以提供performance metrics之外的解释性洞察，帮助理解为什么某些synthetic data效果更好。
 
 ### 10.6 其他技术建议与改进
 
@@ -584,7 +545,6 @@ def quality_control_pipeline(synthetic_data, real_data):
 
     # 2. 语义质量检查
     semantic_checks = {
-        'embedding_similarity': check_embedding_similarity(synthetic_data, real_data),
         'topic_consistency': check_topic_consistency(synthetic_data, real_data)
     }
 
@@ -610,7 +570,6 @@ def quality_control_pipeline(synthetic_data, real_data):
 2. **实施组内生成vs跨组混合的对比实验**，这个设计很有学术价值
 3. **调整超参数**: R=30, N=12000, 在关键区域增加ratio检测点
 4. **完善统计检验**: 增加多重比较校正和非参数检验
-5. **集成embedding analysis**: 作为性能评估的补充解释维度
 6. **分阶段实施**: 先pilot study验证，再全面展开
 
 这个实验设计具有很强的学术严谨性和实践价值，建议按照优化后的方案实施。
