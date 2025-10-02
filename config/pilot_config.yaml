@@ -49,49 +49,87 @@ llm:
   retry_delay: 1.0
   save_checkpoint_every: 100
 
-# Prompt configuration (optimized based on previous batch experience)
+# Prompt configuration (based on proven rewrite_generation prompts)
 prompts:
   original:
     name: "Original Rewrite"
     description: "Direct rewrite maintaining malicious intent and structure"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
     template: |
-      Please rewrite the following spam email while maintaining its original malicious intent and content structure.
-      Ensure the generated email retains clear spam characteristics but uses different vocabulary and expressions.
+      Rewrite this phishing email but keep the content very similar and do not change the meaning:
 
-      Original email subject: {subject}
-      Original email content: {body}
+      **Original Subject:** {subject}
 
-      Generate:
-      Rewritten subject:
-      Rewritten content:
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
 
   strong:
     name: "Strong Spam Features"
     description: "Enhanced spam characteristics with obvious marketing language"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create strong, representative variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+      - Make the rewritten data strong to reflect representative phishing email characteristics
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
     template: |
-      Based on the following spam email content, generate an email with stronger spam characteristics.
-      Add urgency, exaggerated promotional language, and obvious persuasive keywords.
+      Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data strong to reflect the representative phishing email:
 
-      Reference email subject: {subject}
-      Reference email content: {body}
+      **Original Subject:** {subject}
 
-      Generate an email with stronger spam characteristics:
-      Generated subject:
-      Generated content:
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
 
   weak:
     name: "Subtle Spam Features"
     description: "Subtle spam that appears more legitimate while retaining spam nature"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create subtle, less obvious variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+      - Make the rewritten data weaker and less representative of obvious phishing email characteristics
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
     template: |
-      Based on the following spam email, generate an email that appears more like legitimate communication
-      but still maintains its spam essence. Reduce obvious spam keywords and make it more subtle and concealed.
+      Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data weaker and less obvious to reflect subtle phishing attempts:
 
-      Reference email subject: {subject}
-      Reference email content: {body}
+      **Original Subject:** {subject}
 
-      Generate a more subtle spam email:
-      Generated subject:
-      Generated content:
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
 
 # Classifier configuration
 classifiers:

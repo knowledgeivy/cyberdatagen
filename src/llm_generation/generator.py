@@ -53,6 +53,20 @@ class LLMGenerator:
         """
         raise NotImplementedError
 
+    async def generate_single_with_system(self, user_prompt: str, system_prompt: str = '', max_retries: int = 3) -> Optional[str]:
+        """
+        使用system prompt生成单个文本
+
+        Args:
+            user_prompt: 用户输入prompt
+            system_prompt: 系统prompt
+            max_retries: 最大重试次数
+
+        Returns:
+            Optional[str]: 生成的文本
+        """
+        raise NotImplementedError
+
     def parse_response(self, response: str) -> Dict[str, str]:
         """
         解析LLM响应，提取主题和内容
@@ -63,9 +77,35 @@ class LLMGenerator:
         Returns:
             Dict[str, str]: 包含'subject'和'body'的字典
         """
-        lines = response.strip().split('\n')
+        import json
+        import re
+
         result = {'subject': '', 'body': ''}
 
+        try:
+            # 首先尝试直接解析JSON
+            json_data = json.loads(response.strip())
+            result['subject'] = json_data.get('rewritten_subject', '')
+            result['body'] = json_data.get('rewritten_body', '')
+            return result
+        except json.JSONDecodeError:
+            pass
+
+        # 如果直接解析失败，尝试提取JSON块
+        try:
+            # 寻找JSON块
+            json_match = re.search(r'\{[^{}]*"rewritten_subject"[^{}]*\}', response, re.DOTALL)
+            if json_match:
+                json_str = json_match.group()
+                json_data = json.loads(json_str)
+                result['subject'] = json_data.get('rewritten_subject', '')
+                result['body'] = json_data.get('rewritten_body', '')
+                return result
+        except json.JSONDecodeError:
+            pass
+
+        # 如果JSON解析都失败，退回到文本解析
+        lines = response.strip().split('\n')
         current_section = None
         content_lines = []
 
@@ -75,7 +115,7 @@ class LLMGenerator:
                 continue
 
             # 识别主题部分
-            if any(keyword in line.lower() for keyword in ['重写后的主题', '生成的主题', '主题']):
+            if any(keyword in line.lower() for keyword in ['rewritten_subject', 'subject', '重写后的主题', '生成的主题', '主题']):
                 if current_section == 'body':
                     result['body'] = '\n'.join(content_lines).strip()
                 current_section = 'subject'
@@ -83,13 +123,13 @@ class LLMGenerator:
                 # 尝试提取同一行的内容
                 colon_pos = line.find(':')
                 if colon_pos != -1 and colon_pos < len(line) - 1:
-                    content = line[colon_pos + 1:].strip()
+                    content = line[colon_pos + 1:].strip().strip('"')
                     if content:
                         content_lines.append(content)
                 continue
 
             # 识别内容部分
-            if any(keyword in line.lower() for keyword in ['重写后的内容', '生成的内容', '内容']):
+            if any(keyword in line.lower() for keyword in ['rewritten_body', 'body', '重写后的内容', '生成的内容', '内容']):
                 if current_section == 'subject':
                     result['subject'] = '\n'.join(content_lines).strip()
                 current_section = 'body'
@@ -97,14 +137,14 @@ class LLMGenerator:
                 # 尝试提取同一行的内容
                 colon_pos = line.find(':')
                 if colon_pos != -1 and colon_pos < len(line) - 1:
-                    content = line[colon_pos + 1:].strip()
+                    content = line[colon_pos + 1:].strip().strip('"')
                     if content:
                         content_lines.append(content)
                 continue
 
             # 收集内容
             if current_section:
-                content_lines.append(line)
+                content_lines.append(line.strip('"'))
 
         # 处理最后一个部分
         if current_section == 'subject':
@@ -114,7 +154,6 @@ class LLMGenerator:
 
         # 如果解析失败，尝试简单分割
         if not result['subject'] and not result['body']:
-            # 假设第一行是主题，其余是内容
             if lines:
                 result['subject'] = lines[0].strip()
                 if len(lines) > 1:
@@ -135,13 +174,20 @@ class OpenAIGenerator(LLMGenerator):
 
     async def generate_single(self, prompt: str, max_retries: int = 3) -> Optional[str]:
         """生成单个文本"""
+        return await self.generate_single_with_system(prompt, "", max_retries)
+
+    async def generate_single_with_system(self, user_prompt: str, system_prompt: str = '', max_retries: int = 3) -> Optional[str]:
+        """使用system prompt生成单个文本"""
         for attempt in range(max_retries):
             try:
+                messages = []
+                if system_prompt.strip():
+                    messages.append({"role": "system", "content": system_prompt})
+                messages.append({"role": "user", "content": user_prompt})
+
                 response = await self.client.chat.completions.create(
                     model=self.model,
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ],
+                    messages=messages,
                     max_tokens=self.api_config.get('max_tokens', 1000),
                     temperature=self.api_config.get('temperature', 0.7),
                     top_p=self.api_config.get('top_p', 1.0),
@@ -297,7 +343,9 @@ class SyntheticDataGenerator:
             raise ValueError(f"未找到LLM生成器: {llm_engine}")
 
         generator = self.generators[llm_engine]
-        prompt_template = self.config.prompts[prompt_name]['template']
+        prompt_config = self.config.prompts[prompt_name]
+        prompt_template = prompt_config['template']
+        system_prompt = prompt_config.get('system_prompt', '')
 
         logger.info(f"开始批量生成: {len(spam_data)} 条数据, prompt={prompt_name}, llm={llm_engine}")
 
@@ -314,8 +362,8 @@ class SyntheticDataGenerator:
 
             # 创建批次任务
             for _, row in batch_data.iterrows():
-                prompt = self.create_prompt(prompt_template, row['subject'], row['body'])
-                task = generator.generate_single(prompt, self.config.max_retries)
+                user_prompt = self.create_prompt(prompt_template, row['subject'], row['body'])
+                task = generator.generate_single_with_system(user_prompt, system_prompt, self.config.max_retries)
                 batch_tasks.append((row, task))
 
             # 并行执行批次
