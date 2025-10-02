@@ -115,8 +115,14 @@ def main():
             print("pip install transformers torch")
             return
 
-    # Set device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # 优化设备选择：CUDA > MPS > CPU
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
+
     model.to(device)
     model.eval()
     print(f"Using device: {device}")

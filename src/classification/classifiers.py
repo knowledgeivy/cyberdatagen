@@ -377,7 +377,15 @@ class DeepLearningClassifier(BaseClassifier):
 
     def __init__(self, config: ExperimentConfig):
         super().__init__(config, 'deep_learning')
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # 优化设备选择：CUDA > MPS > CPU
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            self.device = torch.device('mps')
+        else:
+            self.device = torch.device('cpu')
+
+        print(f"Deep Learning分类器使用设备: {self.device}")
 
     def _create_model(self, input_dim: int) -> nn.Module:
         """创建神经网络模型"""
