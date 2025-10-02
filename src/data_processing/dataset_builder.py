@@ -106,7 +106,8 @@ class DatasetBuilder:
         group_data: pd.DataFrame,
         synthetic_data: pd.DataFrame,
         synthetic_ratio: int,
-        strategy: str = "within_group"
+        strategy: str = "within_group",
+        all_groups_data: Optional[Dict[str, pd.DataFrame]] = None
     ) -> pd.DataFrame:
         """
         创建混合训练集
@@ -115,53 +116,89 @@ class DatasetBuilder:
             group_data: 组数据
             synthetic_data: synthetic数据
             synthetic_ratio: synthetic比例 (0-100)
-            strategy: 混合策略 ("within_group" 或 "cross_group")
+            strategy: 混合策略 ("within_group", "cross_group", "real_fixed_random_synthetic", "full_random")
+            all_groups_data: 所有组数据 (用于full_random策略)
 
         Returns:
             pd.DataFrame: 混合训练集
         """
-        # 分离spam和non-spam数据
-        real_spam = group_data[group_data['label'] == 1].copy()
-        real_non_spam = group_data[group_data['label'] == 0].copy()
+        # 获取当前组ID
+        current_group_id = group_data['group_id'].iloc[0] if 'group_id' in group_data.columns else None
 
-        # 根据策略过滤synthetic数据
+        # 根据策略选择real spam和synthetic数据
         if strategy == "within_group":
-            # 只使用当前组的synthetic数据
-            group_id = group_data['group_id'].iloc[0] if 'group_id' in group_data.columns else None
-            if group_id is not None:
+            # Strategy 1: Real Group i + Synthetic Group i
+            real_spam_pool = group_data[group_data['label'] == 1].copy()
+            real_non_spam = group_data[group_data['label'] == 0].copy()
+
+            if current_group_id is not None:
                 available_synthetic = synthetic_data[
-                    synthetic_data['group_id'] == group_id
+                    synthetic_data['group_id'] == current_group_id
                 ].copy()
             else:
                 available_synthetic = synthetic_data.copy()
+
+        elif strategy == "cross_group":
+            # Strategy 2: Real Group i + Synthetic Group j≠i
+            real_spam_pool = group_data[group_data['label'] == 1].copy()
+            real_non_spam = group_data[group_data['label'] == 0].copy()
+
+            if current_group_id is not None:
+                available_synthetic = synthetic_data[
+                    synthetic_data['group_id'] != current_group_id
+                ].copy()
+            else:
+                available_synthetic = synthetic_data.copy()
+
+        elif strategy == "real_fixed_random_synthetic":
+            # Strategy 3: Real Group i + Random Synthetic (from all groups)
+            real_spam_pool = group_data[group_data['label'] == 1].copy()
+            real_non_spam = group_data[group_data['label'] == 0].copy()
+
+            # Use all synthetic data randomly
+            available_synthetic = synthetic_data.copy()
+
+        elif strategy == "full_random":
+            # Strategy 4: Random Real + Random Synthetic
+            if all_groups_data is None:
+                raise ValueError("all_groups_data required for full_random strategy")
+
+            # Combine all real spam data from all groups
+            all_real_spam = []
+            all_real_non_spam = []
+            for group_name, group_df in all_groups_data.items():
+                all_real_spam.append(group_df[group_df['label'] == 1])
+                all_real_non_spam.append(group_df[group_df['label'] == 0])
+
+            real_spam_pool = pd.concat(all_real_spam, ignore_index=True)
+            # For non-spam, still use current group to maintain test consistency
+            real_non_spam = group_data[group_data['label'] == 0].copy()
+
+            # Use all synthetic data randomly
+            available_synthetic = synthetic_data.copy()
+
         else:
-            # 使用其他组的synthetic数据
-            group_id = group_data['group_id'].iloc[0] if 'group_id' in group_data.columns else None
-            if group_id is not None:
-                available_synthetic = synthetic_data[
-                    synthetic_data['group_id'] != group_id
-                ].copy()
-            else:
-                available_synthetic = synthetic_data.copy()
+            raise ValueError(f"Unknown strategy: {strategy}")
 
         # 计算需要的synthetic和real数量
-        total_spam_needed = len(real_spam)
+        total_spam_needed = len(real_spam_pool) if strategy != "full_random" else len(group_data[group_data['label'] == 1])
         synthetic_count = int(total_spam_needed * synthetic_ratio / 100)
         real_count = total_spam_needed - synthetic_count
 
-        logger.debug(f"Spam混合比例: real={real_count}, synthetic={synthetic_count}")
+        logger.debug(f"Spam混合比例 ({strategy}): real={real_count}, synthetic={synthetic_count}")
 
         # 选择real spam
         if real_count > 0:
-            if real_count <= len(real_spam):
-                selected_real_spam = real_spam.sample(
+            if real_count <= len(real_spam_pool):
+                selected_real_spam = real_spam_pool.sample(
                     n=real_count,
-                    random_state=self.config.random_seed
+                    random_state=self.config.random_seed,
+                    replace=False  # No replacement sampling
                 )
             else:
                 # 如果需要的real数量超过可用数量，使用所有可用的
-                selected_real_spam = real_spam.copy()
-                logger.warning(f"Real spam数据不足: 需要{real_count}, 可用{len(real_spam)}")
+                selected_real_spam = real_spam_pool.copy()
+                logger.warning(f"Real spam数据不足: 需要{real_count}, 可用{len(real_spam_pool)}")
         else:
             selected_real_spam = pd.DataFrame()
 
@@ -170,7 +207,8 @@ class DatasetBuilder:
             if synthetic_count <= len(available_synthetic):
                 selected_synthetic = available_synthetic.sample(
                     n=synthetic_count,
-                    random_state=self.config.random_seed
+                    random_state=self.config.random_seed,
+                    replace=False  # No replacement sampling
                 )
             else:
                 # 如果需要的synthetic数量超过可用数量，使用所有可用的
@@ -314,7 +352,8 @@ class DatasetBuilder:
 
                         # 创建混合训练集
                         training_set = self.create_mixed_training_set(
-                            group_data, synthetic_data, synthetic_ratio, strategy
+                            group_data, synthetic_data, synthetic_ratio, strategy,
+                            all_groups_data=groups if strategy == "full_random" else None
                         )
 
                         # 保存训练集

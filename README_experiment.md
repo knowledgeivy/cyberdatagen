@@ -14,16 +14,17 @@ This framework provides a systematic evaluation methodology for LLM-generated sy
    - What synthetic spam ratio achieves optimal performance?
    - How do different prompt strategies affect synthetic data quality?
    - What are the performance degradation patterns and critical thresholds?
-   - How does within-group vs cross-group generation compare for generalization?
+   - How do four different data mixing strategies compare for model performance?
 
 ## Experimental Design
 
 ### Multi-Sample Evaluation Protocol
-- **Groups**: R = 20 (pilot: 10)
-- **Sample Size**: N = 9000 per group (pilot: 6000)
+- **Groups**: R = 20 (pilot: 3)
+- **Sample Size**: N = 9000 per group (pilot: 200)
 - **Spam Ratio**: Fixed 1:9 (realistic imbalance)
-- **Synthetic Ratios**: 0%, 25%, 50%, 75%, 100% (pilot), full range 0%-100%
+- **Synthetic Ratios**: 0%, 25%, 50%, 75%, 100%
 - **Trials**: 5 per configuration
+- **Mixing Strategies**: 4 strategies (详见四种混合策略部分)
 
 ### Statistical Rigor
 - Paired t-tests with FDR correction
@@ -88,8 +89,8 @@ experiment:
   random_seed: 42
 
 data:
-  n_groups: 10                    # Reduced for pilot
-  sample_size_per_group: 6000     # Reduced for pilot
+  n_groups: 3                     # Minimal for pilot testing
+  sample_size_per_group: 200      # Minimal viable for testing
   spam_ratio: 0.1                 # Fixed 1:9 ratio
   synthetic_ratios: [0, 25, 50, 75, 100]  # Key points
 
@@ -124,24 +125,54 @@ python scripts/step2_llm_generation.py --config config/pilot_config.yaml --promp
 - `data/paper/synthetic/ceas08_synthetic_[prompt]_gpt41mini.csv.gz`
 - Quality control metrics and generation statistics
 
-#### Step 3: Dataset Construction (15 minutes)
+#### Step 3: Dataset Construction (30 minutes)
 ```bash
+# Build datasets for all four mixing strategies
 python scripts/step3_dataset_construction.py \
     --config config/pilot_config.yaml \
     --prompt original \
     --strategy within_group
+
+python scripts/step3_dataset_construction.py \
+    --config config/pilot_config.yaml \
+    --prompt original \
+    --strategy cross_group
+
+python scripts/step3_dataset_construction.py \
+    --config config/pilot_config.yaml \
+    --prompt original \
+    --strategy real_fixed_random_synthetic
+
+python scripts/step3_dataset_construction.py \
+    --config config/pilot_config.yaml \
+    --prompt original \
+    --strategy full_random
 ```
 
 **Expected Output:**
-- Training sets with different synthetic ratios
-- Maintained test set consistency
-- Data leakage prevention
+- Training sets for all four mixing strategies
+- Datasets with different synthetic ratios (0%, 25%, 50%, 75%, 100%)
+- Maintained test set consistency across strategies
+- No replacement sampling to ensure data independence
 
-#### Step 4: Classification Experiments (45-60 minutes)
+#### Step 4: Classification Experiments (3-4 hours)
 ```bash
+# Run classification for all four strategies
 python scripts/step4_classification.py \
     --config config/pilot_config.yaml \
     --strategy within_group
+
+python scripts/step4_classification.py \
+    --config config/pilot_config.yaml \
+    --strategy cross_group
+
+python scripts/step4_classification.py \
+    --config config/pilot_config.yaml \
+    --strategy real_fixed_random_synthetic
+
+python scripts/step4_classification.py \
+    --config config/pilot_config.yaml \
+    --strategy full_random
 ```
 
 **Expected Output:**
@@ -186,9 +217,33 @@ python scripts/step6_visualization.py \
 - Effect size analysis (Cohen's d)
 - Non-parametric alternatives (Wilcoxon)
 
-### Experimental Strategies
-- **Within-group**: Generate synthetic data from same group spam
-- **Cross-group**: Generate from other groups (tests generalization)
+### 四种数据混合策略
+
+本研究采用四种不同的数据混合策略来全面评估synthetic data的效果：
+
+#### Strategy 1: Within-group Mixing (组内一致)
+- **数据组合**: Real Group i + Synthetic Group i
+- **学术价值**: 测试当synthetic数据与real数据分布匹配时的效果
+- **假设**: 相同组生成的synthetic数据应该具有最佳的兼容性
+
+#### Strategy 2: Cross-group Mixing (跨组泛化)
+- **数据组合**: Real Group i + Synthetic Group j≠i
+- **学术价值**: 测试跨不同spam模式的泛化能力
+- **假设**: 检验synthetic数据是否能泛化到不同的spam类型
+
+#### Strategy 3: Real-fixed + Random-synthetic (数据增强)
+- **数据组合**: Real Group i + Random Synthetic (from all groups)
+- **学术价值**: 测试用多样化synthetic模式进行数据增强的效果
+- **假设**: 多样化的synthetic数据能提供更丰富的特征空间
+
+#### Strategy 4: Full-random Baseline (完全随机基线)
+- **数据组合**: Random Real + Random Synthetic
+- **学术价值**: 提供比较基线并测试最坏情况场景
+- **假设**: 完全随机组合应该表现最差，作为对照组
+
+### 实验配置复杂度
+- **总配置数**: 4 strategies × 5 ratios × 3 prompts × 3 groups × 3 classifiers = **540 configurations**
+- **总训练次数**: 540 × 5 trials = **2,700 individual training runs**
 
 ### Quality Control
 - Length similarity checks (30%-300% of original)
@@ -212,15 +267,17 @@ python scripts/step6_visualization.py \
 
 ## Expected Costs and Timeline
 
-### Pilot Study (Total: 3-4 hours)
-- **Step 1-3**: 25 minutes (data preparation)
-- **Step 4**: 60-90 minutes (LLM generation - main cost)
-- **Step 5-6**: 75 minutes (experiments and analysis)
+### Pilot Study (Total: 6-7 hours)
+- **Step 1**: 10 minutes (data preprocessing)
+- **Step 2**: 60-90 minutes (LLM generation - main cost)
+- **Step 3**: 30 minutes (dataset construction for 4 strategies)
+- **Step 4**: 3-4 hours (classification experiments for 540 configurations)
+- **Step 5-6**: 20 minutes (statistical analysis and visualization)
 
 ### Resource Requirements
-- **API Cost**: ~$20-30 (GPT-4o-mini for pilot)
-- **Compute**: 8GB RAM, 4 CPU cores recommended
-- **Storage**: ~2GB for pilot study
+- **API Cost**: ~$20-30 (GPT-4.1-mini for pilot)
+- **Compute**: 16GB RAM, 8 CPU cores recommended (due to 540 configurations)
+- **Storage**: ~5GB for pilot study (4 strategies × multiple datasets)
 
 ## Troubleshooting
 
@@ -237,10 +294,11 @@ python scripts/step6_visualization.py \
 
 ## Next Steps After Pilot
 
-1. **Cross-group Strategy**: Test generalization hypothesis
-2. **Parameter Scaling**: Increase R, N to full study values
-3. **Multi-LLM Comparison**: Add Claude and Gemini engines
-4. **Multi-Dataset Validation**: TREC-07, Assassin, Enron
+1. **Strategy Performance Analysis**: Compare all four mixing strategies
+2. **Parameter Scaling**: Increase R=20, N=9000 to full study values
+3. **Multi-Prompt Analysis**: Compare original vs strong vs weak prompt effectiveness
+4. **Multi-LLM Comparison**: Add Claude and Gemini engines
+5. **Multi-Dataset Validation**: TREC-07, Assassin, Enron
 
 ## Quality Assurance Checklist
 

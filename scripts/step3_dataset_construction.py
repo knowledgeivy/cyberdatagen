@@ -59,7 +59,7 @@ def main():
         '--strategy',
         type=str,
         default='within_group',
-        choices=['within_group', 'cross_group'],
+        choices=['within_group', 'cross_group', 'real_fixed_random_synthetic', 'full_random'],
         help='Mixing strategy'
     )
     parser.add_argument(

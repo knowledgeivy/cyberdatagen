@@ -200,15 +200,29 @@ quality_control:
 
 # Experiment strategy configuration (following discussion_real.md design)
 strategies:
-  # Within-group generation strategy
+  # Strategy 1: Within-group mixing (组内一致)
   within_group:
-    name: "Within-group Generation"
-    description: "Generate synthetic data using spam from the same group"
+    name: "Within-group Mixing"
+    description: "Real Group i + Synthetic Group i (generated from same group)"
+    academic_value: "Tests effectiveness when synthetic data matches real data distribution"
 
-  # Cross-group mixing strategy
+  # Strategy 2: Cross-group mixing (跨组泛化)
   cross_group:
     name: "Cross-group Mixing"
-    description: "Generate synthetic data using spam from other groups"
+    description: "Real Group i + Synthetic Group j≠i (generated from different group)"
+    academic_value: "Tests generalization capability across different spam patterns"
+
+  # Strategy 3: Real-fixed + Random-synthetic (数据增强)
+  real_fixed_random_synthetic:
+    name: "Real-fixed + Random-synthetic"
+    description: "Real Group i + Random Synthetic (from all groups)"
+    academic_value: "Tests data augmentation with diverse synthetic patterns"
+
+  # Strategy 4: Full-random (完全随机基线)
+  full_random:
+    name: "Full-random Baseline"
+    description: "Random Real + Random Synthetic (complete randomization)"
+    academic_value: "Provides baseline for comparison and tests worst-case scenario"
 
 # Logging configuration
 logging:

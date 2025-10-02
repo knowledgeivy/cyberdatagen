@@ -43,7 +43,7 @@ flowchart TD
 flowchart LR
     A[Step 1<br/>Data Preprocessing<br/>step1_data_preprocessing.py<br/>Create 3/20 groups] --> B[Step 2<br/>LLM Generation<br/>step2_llm_generation.py<br/>--prompt original/strong/weak]
 
-    B --> C[Step 3<br/>Dataset Construction<br/>step3_dataset_construction.py<br/>--strategy within_group/<br/>cross_group/real_fixed_random/<br/>full_random]
+    B --> C[Step 3<br/>Dataset Construction<br/>step3_dataset_construction.py<br/>--strategy within_group/<br/>cross_group/real_fixed_random_synthetic/<br/>full_random]
 
     C --> D[Step 4<br/>Classification<br/>step4_classification.py<br/>540 experiments<br/>SVM/RF/DL training]
 
