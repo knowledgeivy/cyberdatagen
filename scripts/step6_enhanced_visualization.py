@@ -51,14 +51,14 @@ def setup_matplotlib_style():
         'savefig.dpi': 300,
         'figure.figsize': [16, 10],
         'font.size': 10,
-        'axes.titlesize': 12,
+        'axes.titlesize': 11,
         'axes.labelsize': 10,
         'xtick.labelsize': 9,
         'ytick.labelsize': 9,
         'legend.fontsize': 9,
         'figure.titlesize': 14,
-        'axes.titlepad': 20,  # 增加标题间距
-        'figure.subplot.hspace': 0.4,  # 增加子图间垂直间距
+        'axes.titlepad': 15,  # 子图标题与图的间距
+        'figure.subplot.hspace': 0.5,  # 增加子图间垂直间距
         'figure.subplot.wspace': 0.3,  # 增加子图间水平间距
         'axes.grid': True
     })
@@ -99,6 +99,17 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
     """创建策略对比图表"""
     logger.info("创建策略对比图表")
 
+    # 调试：检查数据
+    logger.info(f"DataFrame shape: {df.shape}")
+    logger.info(f"Unique strategies: {df['strategy'].unique()}")
+    logger.info(f"Unique classifiers: {df['classifier'].unique()}")
+    logger.info(f"Unique synthetic ratios: {sorted(df['synthetic_ratio'].unique())}")
+
+    # 检查每个策略的数据量
+    for strategy in df['strategy'].unique():
+        count = len(df[df['strategy'] == strategy])
+        logger.info(f"Strategy '{strategy}': {count} records")
+
     # 获取模型信息
     model_info = "gpt-4.1-mini"
     if config and hasattr(config, 'llm'):
@@ -113,6 +124,8 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
         'f1_score': ['mean', 'std', 'count'],
         'auc_roc': ['mean', 'std', 'count']
     }).reset_index()
+
+    logger.info(f"Strategy stats shape: {strategy_stats.shape}")
 
     # 扁平化列名
     strategy_stats.columns = ['_'.join(col).strip() if col[1] else col[0] for col in strategy_stats.columns.values]
@@ -139,6 +152,7 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
                 ].copy()
 
                 if len(strategy_data) == 0:
+                    logger.warning(f"No data for strategy={strategy}, classifier={classifier}, metric={metric}")
                     continue
 
                 strategy_data = strategy_data.sort_values('synthetic_ratio')
@@ -146,6 +160,8 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
                 ratios = strategy_data['synthetic_ratio'].values
                 means = strategy_data[f'{metric}_mean'].values
                 stds = strategy_data[f'{metric}_std'].values
+
+                logger.info(f"Plotting {strategy} for {classifier}: {len(ratios)} points")
 
                 # 计算置信区间
                 ci_lower = means - 1.96 * stds / np.sqrt(strategy_data[f'{metric}_count'].values)
@@ -156,10 +172,11 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
                        linewidth=2, markersize=6)
                 ax.fill_between(ratios, ci_lower, ci_upper, alpha=0.2)
 
-            ax.set_title(f'{classifier.replace("_", " ").title()}\n{metric.replace("_", " ").title()}', fontsize=11)
+            ax.set_title(f'{classifier.replace("_", " ").title()} - {metric.replace("_", " ").title()}',
+                        fontsize=11, pad=10)
             ax.set_xlabel('Synthetic Ratio (%)', fontsize=10)
             ax.set_ylabel(metric.replace('_', ' ').title(), fontsize=10)
-            ax.legend(fontsize=9)
+            ax.legend(fontsize=9, loc='best')
             ax.grid(True, alpha=0.3)
 
             # 设置x轴
@@ -167,10 +184,10 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
             ax.set_xticks(unique_ratios)
             ax.set_xticklabels(unique_ratios)
 
-        plt.suptitle(f'Strategy Comparison: {metric.replace("_", " ").title()} Performance\n({model_info})',
-                    fontsize=14, y=0.98)
+        plt.suptitle(f'Strategy Comparison: {metric.replace("_", " ").title()} Performance ({model_info})',
+                    fontsize=14, y=0.995)
         plt.tight_layout()
-        plt.subplots_adjust(top=0.9)
+        plt.subplots_adjust(top=0.93, bottom=0.08)
         plt.savefig(os.path.join(output_dir, f'{experiment_name}_strategy_comparison_{metric}.png'),
                    bbox_inches='tight', dpi=300, facecolor='white')
         plt.close()
@@ -226,9 +243,9 @@ def create_baseline_comparison_chart(df: pd.DataFrame, output_dir: str, experime
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(metric_labels)
     ax.set_ylim(0, 1)
-    ax.set_title(f'Baseline Performance Comparison (0% Synthetic)\n{model_info}',
-                size=14, fontweight='bold', pad=20)
-    ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.1))
+    ax.set_title(f'Baseline Performance Comparison - 0% Synthetic ({model_info})',
+                size=14, fontweight='bold', pad=25)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.15, 1.15))
 
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'{experiment_name}_baseline_radar.png'),
@@ -321,7 +338,7 @@ def create_degradation_heatmaps(df: pd.DataFrame, output_dir: str, experiment_na
         # 创建热力图
         sns.heatmap(pivot_data, annot=True, cmap='RdYlBu_r', center=0,
                    ax=ax, fmt='.1f', cbar_kws={'label': 'Degradation (%)'})
-        ax.set_title(f'{metric.replace("_", " ").title()} Degradation (%)', fontsize=12)
+        ax.set_title(f'{metric.replace("_", " ").title()} Degradation (%)', fontsize=12, pad=10)
         ax.set_xlabel('Synthetic Ratio (%)', fontsize=10)
         ax.set_ylabel('Strategy & Classifier', fontsize=10)
 
@@ -333,9 +350,9 @@ def create_degradation_heatmaps(df: pd.DataFrame, output_dir: str, experiment_na
     for i in range(len(metrics), len(axes)):
         axes[i].set_visible(False)
 
-    plt.suptitle(f'Performance Degradation Heatmaps\n{model_info}', fontsize=16, y=0.98)
+    plt.suptitle(f'Performance Degradation Heatmaps ({model_info})', fontsize=16, y=0.995)
     plt.tight_layout()
-    plt.subplots_adjust(top=0.92)
+    plt.subplots_adjust(top=0.93, bottom=0.05)
     plt.savefig(os.path.join(output_dir, f'{experiment_name}_degradation_heatmaps.png'),
                bbox_inches='tight', dpi=300, facecolor='white')
     plt.close()
@@ -471,7 +488,7 @@ def main():
     create_strategy_comparison_plots(df, output_dir, experiment_name, config)
     create_baseline_comparison_chart(df, output_dir, experiment_name, config)
     create_degradation_heatmaps(df, output_dir, experiment_name, config)
-    create_best_strategy_summary(df, output_dir, experiment_name, config)
+    # create_best_strategy_summary(df, output_dir, experiment_name, config)  # 用户不需要
 
     logger.info(f"所有可视化已保存到: {output_dir}")
     logger.info("增强可视化分析完成")
