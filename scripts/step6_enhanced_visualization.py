@@ -44,12 +44,18 @@ def setup_logging(config):
 
 
 def setup_matplotlib_style():
-    """设置matplotlib样式以避免文字重叠"""
+    """设置学术期刊风格的matplotlib样式"""
     plt.style.use('seaborn-v0_8-whitegrid')
     plt.rcParams.update({
-        'figure.dpi': 300,
-        'savefig.dpi': 300,
+        # 高分辨率输出，适合打印
+        'figure.dpi': 600,
+        'savefig.dpi': 600,
+        'savefig.bbox': 'tight',
         'figure.figsize': [16, 10],
+
+        # 字体设置 - 学术期刊标准
+        'font.family': 'serif',
+        'font.serif': ['Times New Roman', 'DejaVu Serif'],
         'font.size': 10,
         'axes.titlesize': 11,
         'axes.labelsize': 10,
@@ -57,10 +63,24 @@ def setup_matplotlib_style():
         'ytick.labelsize': 9,
         'legend.fontsize': 9,
         'figure.titlesize': 14,
-        'axes.titlepad': 15,  # 子图标题与图的间距
-        'figure.subplot.hspace': 0.5,  # 增加子图间垂直间距
-        'figure.subplot.wspace': 0.3,  # 增加子图间水平间距
-        'axes.grid': True
+
+        # 间距设置 - 增加标题间距
+        'axes.titlepad': 20,  # 子图标题与图的间距
+        'figure.subplot.hspace': 0.6,  # 子图间垂直间距
+        'figure.subplot.wspace': 0.35,  # 子图间水平间距
+
+        # 网格和线条
+        'axes.grid': True,
+        'grid.alpha': 0.3,
+        'axes.linewidth': 0.8,
+        'lines.linewidth': 2,
+        'lines.markersize': 8,
+
+        # 图例
+        'legend.frameon': True,
+        'legend.framealpha': 0.9,
+        'legend.edgecolor': 'black',
+        'legend.fancybox': False
     })
 
 
@@ -135,6 +155,34 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
     classifiers = df['classifier'].unique()
     strategies = df['strategy'].unique()
 
+    # 学术风格的线型、标记和颜色配置（黑白打印友好）
+    style_config = {
+        'within_group': {
+            'linestyle': '-',
+            'marker': 'o',
+            'color': '#2E86AB',  # 深蓝
+            'label': 'Within Group'
+        },
+        'cross_group': {
+            'linestyle': '--',
+            'marker': 's',
+            'color': '#A23B72',  # 深紫红
+            'label': 'Cross Group'
+        },
+        'real_fixed_random_synthetic': {
+            'linestyle': '-.',
+            'marker': '^',
+            'color': '#F18F01',  # 橙色
+            'label': 'Real Fixed Random Synthetic'
+        },
+        'full_random': {
+            'linestyle': ':',
+            'marker': 'd',
+            'color': '#C73E1D',  # 深红
+            'label': 'Full Random'
+        }
+    }
+
     # 为每个metric创建对比图
     for metric in metrics:
         fig, axes = plt.subplots(1, len(classifiers), figsize=(20, 6))
@@ -167,10 +215,30 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
                 ci_lower = means - 1.96 * stds / np.sqrt(strategy_data[f'{metric}_count'].values)
                 ci_upper = means + 1.96 * stds / np.sqrt(strategy_data[f'{metric}_count'].values)
 
-                # 绘制曲线
-                ax.plot(ratios, means, 'o-', label=strategy.replace('_', ' ').title(),
-                       linewidth=2, markersize=6)
-                ax.fill_between(ratios, ci_lower, ci_upper, alpha=0.2)
+                # 获取样式配置
+                style = style_config.get(strategy, {
+                    'linestyle': '-',
+                    'marker': 'o',
+                    'color': 'black',
+                    'label': strategy.replace('_', ' ').title()
+                })
+
+                # 绘制曲线（学术风格：线型+标记+颜色）
+                ax.plot(ratios, means,
+                       linestyle=style['linestyle'],
+                       marker=style['marker'],
+                       color=style['color'],
+                       label=style['label'],
+                       linewidth=2,
+                       markersize=8,
+                       markerfacecolor='white',
+                       markeredgewidth=1.5,
+                       markeredgecolor=style['color'])
+
+                # 置信区间阴影（半透明，与线条同色）
+                ax.fill_between(ratios, ci_lower, ci_upper,
+                               color=style['color'],
+                               alpha=0.15)
 
             ax.set_title(f'{classifier.replace("_", " ").title()} - {metric.replace("_", " ").title()}',
                         fontsize=11, pad=10)
@@ -185,11 +253,13 @@ def create_strategy_comparison_plots(df: pd.DataFrame, output_dir: str, experime
             ax.set_xticklabels(unique_ratios)
 
         plt.suptitle(f'Strategy Comparison: {metric.replace("_", " ").title()} Performance ({model_info})',
-                    fontsize=14, y=0.995)
+                    fontsize=14, y=0.998)
         plt.tight_layout()
-        plt.subplots_adjust(top=0.93, bottom=0.08)
+        plt.subplots_adjust(top=0.90, bottom=0.08, hspace=0.4)
+
+        # 保存为高分辨率PNG
         plt.savefig(os.path.join(output_dir, f'{experiment_name}_strategy_comparison_{metric}.png'),
-                   bbox_inches='tight', dpi=300, facecolor='white')
+                   bbox_inches='tight', dpi=600, facecolor='white')
         plt.close()
 
     logger.info("策略对比图表创建完成")
@@ -249,7 +319,7 @@ def create_baseline_comparison_chart(df: pd.DataFrame, output_dir: str, experime
 
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'{experiment_name}_baseline_radar.png'),
-               bbox_inches='tight', dpi=300, facecolor='white')
+               bbox_inches='tight', dpi=600, facecolor='white')
     plt.close()
 
     logger.info("基线对比图表创建完成")
@@ -350,11 +420,11 @@ def create_degradation_heatmaps(df: pd.DataFrame, output_dir: str, experiment_na
     for i in range(len(metrics), len(axes)):
         axes[i].set_visible(False)
 
-    plt.suptitle(f'Performance Degradation Heatmaps ({model_info})', fontsize=16, y=0.995)
+    plt.suptitle(f'Performance Degradation Heatmaps ({model_info})', fontsize=16, y=0.998)
     plt.tight_layout()
-    plt.subplots_adjust(top=0.93, bottom=0.05)
+    plt.subplots_adjust(top=0.90, bottom=0.05, hspace=0.5)
     plt.savefig(os.path.join(output_dir, f'{experiment_name}_degradation_heatmaps.png'),
-               bbox_inches='tight', dpi=300, facecolor='white')
+               bbox_inches='tight', dpi=600, facecolor='white')
     plt.close()
 
     logger.info("性能衰减热力图创建完成")
