@@ -192,7 +192,7 @@ class DatasetBuilder:
             if real_count <= len(real_spam_pool):
                 selected_real_spam = real_spam_pool.sample(
                     n=real_count,
-                    random_state=self.config.random_seed,
+                    random_state=self.random_state,
                     replace=False  # No replacement sampling
                 )
             else:
@@ -207,7 +207,7 @@ class DatasetBuilder:
             if synthetic_count <= len(available_synthetic):
                 selected_synthetic = available_synthetic.sample(
                     n=synthetic_count,
-                    random_state=self.config.random_seed,
+                    random_state=self.random_state,
                     replace=False  # No replacement sampling
                 )
             else:
@@ -269,7 +269,7 @@ class DatasetBuilder:
         # 随机打乱
         training_set = training_set.sample(
             n=len(training_set),
-            random_state=self.config.random_seed
+            random_state=self.random_state
         ).reset_index(drop=True)
 
         # 添加数据集标识

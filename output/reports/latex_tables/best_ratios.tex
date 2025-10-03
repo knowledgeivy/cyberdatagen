@@ -2,26 +2,26 @@
 \toprule
 classifier & metric & best_ratio & best_strategy & absolute_change & relative_change_pct & cohens_d & is_significant \\
 \midrule
-svm & accuracy & 25 & within_group & -0.0070 & -0.7402 & 9.6609 & True \\
-svm & precision & 25 & within_group & 0.0000 & 0.0000 & 0.0000 & NaN \\
-svm & recall & 25 & within_group & -0.0698 & -18.1818 & 9.6609 & True \\
-svm & f1_score & 25 & within_group & -0.0769 & -13.8415 & 10.2130 & True \\
-svm & auc_roc & 25 & within_group & 0.0005 & 0.0688 & -0.0109 & False \\
-svm & auc_pr & 25 & within_group & 0.0032 & 0.5359 & -0.0661 & False \\
-svm & balanced_accuracy & 25 & within_group & -0.0349 & -5.0251 & 9.6609 & True \\
-random_forest & accuracy & 25 & within_group & 0.0014 & 0.1455 & -0.2309 & True \\
-random_forest & precision & 75 & within_group & -0.0015 & -0.1664 & 0.0175 & False \\
-random_forest & recall & 100 & within_group & -0.0000 & -0.0000 & 0.0000 & False \\
-random_forest & f1_score & 25 & within_group & -0.0049 & -0.6558 & 0.1471 & False \\
-random_forest & auc_roc & 25 & within_group & -0.0005 & -0.0458 & 0.8505 & True \\
-random_forest & auc_pr & 25 & within_group & 0.0072 & 0.8170 & -0.9534 & True \\
-random_forest & balanced_accuracy & 100 & within_group & -0.0047 & -0.5685 & 0.3019 & False \\
-deep_learning & accuracy & 75 & within_group & -0.0024 & -0.2469 & 0.3955 & False \\
-deep_learning & precision & 100 & within_group & 0.0164 & 1.8073 & -0.2774 & False \\
-deep_learning & recall & 75 & within_group & -0.0530 & -8.2609 & 0.7154 & False \\
-deep_learning & f1_score & 75 & within_group & -0.0265 & -3.5533 & 0.5552 & False \\
-deep_learning & auc_roc & 100 & within_group & -0.0030 & -0.3163 & 0.1654 & False \\
-deep_learning & auc_pr & 100 & within_group & -0.0165 & -1.9233 & 0.6267 & False \\
-deep_learning & balanced_accuracy & 75 & within_group & -0.0249 & -3.0380 & 0.7025 & False \\
+svm & accuracy & 25 & cross_group & -0.0003 & -0.0299 & 0.0664 & False \\
+svm & precision & 25 & within_group & 0.0000 & 0.0000 & NaN & NaN \\
+svm & recall & 25 & cross_group & -0.0028 & -0.9091 & 0.0664 & False \\
+svm & f1_score & 25 & cross_group & -0.0050 & -1.0734 & 0.1011 & False \\
+svm & auc_roc & 25 & within_group & 0.0006 & 0.0839 & -0.0079 & False \\
+svm & auc_pr & 50 & full_random & 0.0021 & 0.4026 & -0.0248 & False \\
+svm & balanced_accuracy & 25 & cross_group & -0.0014 & -0.2128 & 0.0664 & False \\
+random_forest & accuracy & 25 & within_group & -0.0004 & -0.0440 & 0.0272 & False \\
+random_forest & precision & 25 & full_random & -0.0065 & -0.9163 & 0.0433 & False \\
+random_forest & recall & 75 & cross_group & 0.0014 & 0.1686 & -0.0177 & False \\
+random_forest & f1_score & 75 & full_random & 0.0001 & 0.0140 & -0.0019 & False \\
+random_forest & auc_roc & 25 & full_random & 0.0006 & 0.0573 & -0.0931 & False \\
+random_forest & auc_pr & 50 & full_random & -0.0046 & -0.5163 & 0.1574 & False \\
+random_forest & balanced_accuracy & 50 & real_fixed_random_synthetic & -0.0005 & -0.0605 & 0.0140 & False \\
+deep_learning & accuracy & 25 & within_group & -0.0021 & -0.2178 & 0.2177 & False \\
+deep_learning & precision & 50 & full_random & -0.0009 & -0.1014 & 0.0112 & False \\
+deep_learning & recall & 50 & cross_group & 0.0069 & 1.1338 & -0.0551 & False \\
+deep_learning & f1_score & 25 & cross_group & -0.0081 & -1.0979 & 0.0895 & False \\
+deep_learning & auc_roc & 25 & within_group & -0.0018 & -0.1886 & 0.0722 & False \\
+deep_learning & auc_pr & 25 & within_group & -0.0028 & -0.3204 & 0.0490 & False \\
+deep_learning & balanced_accuracy & 50 & cross_group & -0.0001 & -0.0096 & 0.0013 & False \\
 \bottomrule
 \end{tabular}
