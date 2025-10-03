@@ -72,12 +72,12 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     logger.info("创建性能曲线图")
 
     # 获取模型和prompt信息用于标题
-    model_info = "gpt-4.1-mini"  # 默认值
+    model_info = "GPT-4o-mini"  # 默认值
     prompt_info = "Original"   # 默认值
 
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     # 简化标题信息
     title_suffix = f" ({model_info}, {prompt_info} Prompt)"
@@ -158,10 +158,10 @@ def create_degradation_heatmap(analysis_results: dict, output_dir: str, experime
     logger.info("创建性能衰减热力图")
 
     # 获取模型信息
-    model_info = "gpt-4.1-mini"
+    model_info = "GPT-4o-mini"
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     degradation_analysis = analysis_results.get('performance_degradation', {})
     if not degradation_analysis:
@@ -223,10 +223,10 @@ def create_statistical_significance_plot(analysis_results: dict, output_dir: str
     logger.info("创建统计显著性图")
 
     # 获取模型信息
-    model_info = "gpt-4.1-mini"
+    model_info = "GPT-4o-mini"
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     hypothesis_tests = analysis_results.get('hypothesis_tests', {})
     if not hypothesis_tests:
@@ -304,10 +304,10 @@ def create_interactive_dashboard(analysis_results: dict, output_dir: str, experi
     logger.info("创建交互式仪表板")
 
     # 获取模型信息
-    model_info = "gpt-4.1-mini"
+    model_info = "GPT-4o-mini"
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -405,12 +405,12 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
     logger.info("创建总结报告")
 
     # 获取模型和prompt信息
-    model_info = "gpt-4.1-mini"
+    model_info = "GPT-4o-mini"
     prompt_info = "Original"
 
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            model_info = config.llm.api_config['openai'].get('model', 'GPT-4o-mini')
 
     findings = analysis_results.get('summary_findings', {})
     experiment_info = analysis_results.get('experiment_info', {})
