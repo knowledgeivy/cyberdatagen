@@ -42,12 +42,31 @@ class EmailDataPreprocessor:
         """
         logger.info(f"加载原始数据: {dataset_name}")
 
-        # 构建文件路径
+        # 首先尝试从SevenPhishingEmailDataset目录加载（新数据源）
+        seven_dataset_file = Path(self.config.raw_data_path) / "SevenPhishingEmailDataset" / f"{dataset_name}.csv"
+
+        if seven_dataset_file.exists():
+            logger.info(f"从SevenPhishingEmailDataset加载: {seven_dataset_file}")
+            try:
+                data = pd.read_csv(seven_dataset_file)
+                logger.info(f"数据加载完成: {len(data)} 条记录")
+                logger.info(f"数据列: {list(data.columns)}")
+                return data
+            except Exception as e:
+                logger.error(f"数据加载失败: {e}")
+                raise
+
+        # 如果SevenPhishingEmailDataset不存在，回退到旧的分离文件格式（向后兼容）
+        logger.info("SevenPhishingEmailDataset不存在，尝试旧格式（train/test分离）")
         train_file = Path(self.config.raw_data_path) / f"email_phishing_{dataset_name}_train.csv.gz"
         test_file = Path(self.config.raw_data_path) / f"email_phishing_{dataset_name}_test.csv.gz"
 
         if not train_file.exists() or not test_file.exists():
-            raise FileNotFoundError(f"数据文件不存在: {train_file} 或 {test_file}")
+            raise FileNotFoundError(
+                f"数据文件不存在。尝试了：\n"
+                f"  1. {seven_dataset_file}\n"
+                f"  2. {train_file} 和 {test_file}"
+            )
 
         try:
             # 加载训练和测试数据
