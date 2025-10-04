@@ -216,12 +216,17 @@ class EmailDataPreprocessor:
         if len(spam_data) < total_spam_needed:
             raise ValueError(f"Spam数据不足: 需要{total_spam_needed}, 可用{len(spam_data)}")
 
-        if len(non_spam_data) < total_non_spam_needed:
-            raise ValueError(f"Non-spam数据不足: 需要{total_non_spam_needed}, 可用{len(non_spam_data)}")
+        # Non-spam允许重复使用（with replacement）作为固定背景
+        non_spam_replacement = len(non_spam_data) < total_non_spam_needed
+        if non_spam_replacement:
+            logger.warning(f"Non-spam数据不足，将使用replacement采样: 需要{total_non_spam_needed}, 可用{len(non_spam_data)}")
+            logger.info("Non-spam作为背景负样本，允许在不同组间重复出现（学术上可接受）")
 
-        # 随机打乱数据
-        spam_data = spam_data.sample(n=len(spam_data), random_state=self.config.random_seed)
-        non_spam_data = non_spam_data.sample(n=len(non_spam_data), random_state=self.config.random_seed)
+        # 随机打乱spam数据（严格无放回）
+        spam_data = spam_data.sample(n=len(spam_data), random_state=self.config.random_seed, replace=False)
+
+        # 随机打乱non-spam数据，准备分组
+        non_spam_data = non_spam_data.sample(n=len(non_spam_data), random_state=self.config.random_seed, replace=False)
 
         # 创建分组
         groups = {}
@@ -232,18 +237,29 @@ class EmailDataPreprocessor:
             'non_spam_per_group': non_spam_per_group,
             'spam_ratio': self.config.spam_ratio,
             'random_seed': self.config.random_seed,
+            'non_spam_replacement': non_spam_replacement,  # 记录是否使用了replacement
             'groups': {}
         }
 
         for i in range(self.config.n_groups):
-            # 为当前组选择数据
+            # 为当前组选择spam数据（严格无放回）
             spam_start = i * spam_per_group
             spam_end = (i + 1) * spam_per_group
-            non_spam_start = i * non_spam_per_group
-            non_spam_end = (i + 1) * non_spam_per_group
-
             group_spam = spam_data.iloc[spam_start:spam_end].copy()
-            group_non_spam = non_spam_data.iloc[non_spam_start:non_spam_end].copy()
+
+            # 为当前组选择non-spam数据（允许循环使用）
+            if non_spam_replacement:
+                # 使用模运算循环使用non-spam数据
+                group_non_spam_indices = []
+                for j in range(non_spam_per_group):
+                    idx = (i * non_spam_per_group + j) % len(non_spam_data)
+                    group_non_spam_indices.append(idx)
+                group_non_spam = non_spam_data.iloc[group_non_spam_indices].copy()
+            else:
+                # 充足时正常分配
+                non_spam_start = i * non_spam_per_group
+                non_spam_end = (i + 1) * non_spam_per_group
+                group_non_spam = non_spam_data.iloc[non_spam_start:non_spam_end].copy()
 
             # 合并组数据
             group_data = pd.concat([group_spam, group_non_spam], ignore_index=True)
@@ -270,11 +286,23 @@ class EmailDataPreprocessor:
 
         logger.info(f"分组创建完成: {len(groups)} 组")
 
+        # 计算剩余数据
+        # Spam严格无放回，所以只有未使用的spam可用于测试
+        remaining_spam = spam_data.iloc[total_spam_needed:]
+
+        # Non-spam如果使用了replacement，则所有non-spam都可用于测试集
+        # 因为训练集的non-spam是循环使用的，并未"消耗"数据
+        if non_spam_replacement:
+            remaining_non_spam = non_spam_data.copy()
+            logger.info(f"Non-spam使用了replacement，所有{len(remaining_non_spam)}个non-spam可用于测试集")
+        else:
+            remaining_non_spam = non_spam_data.iloc[total_non_spam_needed:]
+
         return {
             'groups': groups,
             'metadata': group_metadata,
-            'remaining_spam': spam_data.iloc[total_spam_needed:],
-            'remaining_non_spam': non_spam_data.iloc[total_non_spam_needed:]
+            'remaining_spam': remaining_spam,
+            'remaining_non_spam': remaining_non_spam
         }
 
     def create_test_set(self, remaining_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
