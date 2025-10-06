@@ -659,6 +659,7 @@ class ClassificationExperiment:
                 train_data, test_data = builder.load_dataset_for_experiment(
                     datasets_dir,
                     exp_config['strategy'],
+                    exp_config['prompt'],
                     exp_config['synthetic_ratio'],
                     exp_config['group_id'],
                     exp_config['trial']

@@ -358,7 +358,7 @@ class DatasetBuilder:
 
                         # 保存训练集
                         dataset_name = self.config.dataset.lower().replace('-', '')
-                        train_filename = f"train_r{synthetic_ratio}_g{group_metadata['group_id']}_t{trial}.csv.gz"
+                        train_filename = f"train_{prompt_name}_r{synthetic_ratio}_g{group_metadata['group_id']}_t{trial}.csv.gz"
                         train_path = os.path.join(strategy_dir, train_filename)
 
                         training_set.to_csv(train_path, compression='gzip', index=False)
@@ -385,11 +385,13 @@ class DatasetBuilder:
                 ratio_datasets[group_name] = group_datasets
                 ratio_metadata['groups'][group_name] = group_metadata
 
-            # 保存测试集（所有ratio共享）
+            # 保存测试集（所有ratio和prompt共享，测试集不含synthetic数据）
             if test_set is not None and synthetic_ratio == self.config.synthetic_ratios[0]:
-                test_filename = f"test_set.csv.gz"
+                test_filename = "test_set.csv.gz"
                 test_path = os.path.join(strategy_dir, test_filename)
-                test_set.to_csv(test_path, compression='gzip', index=False)
+                # 只保存一次，避免重复写入
+                if not os.path.exists(test_path):
+                    test_set.to_csv(test_path, compression='gzip', index=False)
 
                 ratio_metadata['test_file'] = test_path
                 ratio_metadata['test_size'] = len(test_set)
@@ -413,6 +415,7 @@ class DatasetBuilder:
         self,
         datasets_dir: str,
         strategy: str,
+        prompt_name: str,
         synthetic_ratio: int,
         group_id: int,
         trial: int
@@ -423,6 +426,7 @@ class DatasetBuilder:
         Args:
             datasets_dir: 数据集目录
             strategy: 混合策略
+            prompt_name: prompt名称
             synthetic_ratio: synthetic比例
             group_id: 组ID
             trial: 试验ID
@@ -433,7 +437,7 @@ class DatasetBuilder:
         strategy_dir = os.path.join(datasets_dir, strategy)
 
         # 加载训练集
-        train_filename = f"train_r{synthetic_ratio}_g{group_id}_t{trial}.csv.gz"
+        train_filename = f"train_{prompt_name}_r{synthetic_ratio}_g{group_id}_t{trial}.csv.gz"
         train_path = os.path.join(strategy_dir, train_filename)
 
         if not os.path.exists(train_path):
@@ -441,7 +445,7 @@ class DatasetBuilder:
 
         training_set = pd.read_csv(train_path, compression='gzip')
 
-        # 加载测试集
+        # 加载测试集（所有prompt共享同一个测试集）
         test_filename = "test_set.csv.gz"
         test_path = os.path.join(strategy_dir, test_filename)
 

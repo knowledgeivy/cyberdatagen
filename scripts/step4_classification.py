@@ -40,6 +40,7 @@ def setup_logging(config):
 def create_experiment_configs(
     config,
     strategy: str,
+    prompt: str,
     synthetic_ratios: Optional[List[int]] = None,
     specific_ratio: Optional[int] = None,
     specific_group: Optional[int] = None,
@@ -64,6 +65,7 @@ def create_experiment_configs(
             for trial in trials:
                 experiment_configs.append({
                     'strategy': strategy,
+                    'prompt': prompt,
                     'synthetic_ratio': ratio,
                     'group_id': group_id,
                     'trial': trial
@@ -86,6 +88,13 @@ def main():
         default='within_group',
         choices=['within_group', 'cross_group', 'real_fixed_random_synthetic', 'full_random'],
         help='Mixing strategy'
+    )
+    parser.add_argument(
+        '--prompt',
+        type=str,
+        required=True,
+        choices=['original', 'strong', 'weak'],
+        help='Prompt type'
     )
     parser.add_argument(
         '--synthetic_ratio',
@@ -156,12 +165,14 @@ def main():
         logger.info(f"Starting classification experiment")
         logger.info(f"Dataset: {config.dataset}")
         logger.info(f"Strategy: {args.strategy}")
+        logger.info(f"Prompt: {args.prompt}")
         logger.info(f"Enabled classifiers: {[name for name, cfg in config.classifiers.items() if cfg.get('enabled', True)]}")
 
         # Create experiment configurations
         experiment_configs = create_experiment_configs(
             config,
             args.strategy,
+            args.prompt,
             specific_ratio=args.synthetic_ratio,
             specific_group=args.group_id,
             specific_trial=args.trial
