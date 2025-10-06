@@ -71,16 +71,18 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     """创建性能曲线图"""
     logger.info("创建性能曲线图")
 
-    # 获取模型和prompt信息用于标题
-    model_info = "gpt-4.1-mini"  # 默认值
+    # 获取模型和prompt信息用于整体标题
+    model_info = "GPT-4.1-mini"  # 默认值
     prompt_info = "Original"   # 默认值
 
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
-
-    # 简化标题信息
-    title_suffix = f" ({model_info}, {prompt_info} Prompt)"
+            model_name = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+            # 格式化模型名称
+            if 'gpt-4' in model_name.lower():
+                model_info = model_name.upper().replace('GPT-', 'GPT-')
+            else:
+                model_info = model_name
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -128,7 +130,7 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
 
             if not ratios:
                 ax.text(0.5, 0.5, 'No Data', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(f'{classifier} - {metric}{title_suffix}')
+                ax.set_title(f'{classifier.upper()} ({model_info}, {prompt_info})', fontsize=10, pad=10)
                 continue
 
             # 绘制曲线
@@ -136,7 +138,7 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
             ax.fill_between(ratios, ci_lowers, ci_uppers, alpha=0.3)
 
             # 设置标题和标签
-            ax.set_title(f'{classifier} - {metric}{title_suffix}')
+            ax.set_title(f'{classifier.upper()} ({model_info}, {prompt_info})', fontsize=10, pad=10)
             ax.set_xlabel('Synthetic Ratio (%)')
             ax.set_ylabel(metric.replace('_', ' ').title())
             ax.grid(True, alpha=0.3)
