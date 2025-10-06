@@ -157,14 +157,14 @@ classifiers:
 
   deep_learning:
     name: "Neural Network"
-    enabled: true
+    enabled: false  # Temporarily disabled, will run separately later
     params:
       hidden_layers: [128, 64, 32]
       dropout_rate: 0.3
       learning_rate: 0.001
       batch_size: 32
-      epochs: 50
-      early_stopping_patience: 10
+      epochs: 100
+      early_stopping_patience: 20
       class_weight: "balanced"  # Handle class imbalance
 
 # Feature extraction configuration

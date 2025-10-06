@@ -169,38 +169,18 @@ def main():
 
         logger.info(f"Total number of experiments: {len(experiment_configs)}")
 
-        # Check existing results
-        results_file = os.path.join(output_dir, f"{config.name}_classification_results.json")
-        existing_results = []
-
-        if os.path.exists(results_file) and args.resume:
-            logger.info(f"Loading existing results: {results_file}")
-            import json
-            with open(results_file, 'r', encoding='utf-8') as f:
-                existing_data = json.load(f)
-                existing_results = existing_data.get('results', [])
-
-            # Create set of completed experiments
-            completed_experiments = set()
-            for result in existing_results:
-                exp_key = (
-                    result['strategy'],
-                    result['synthetic_ratio'],
-                    result['group_id'],
-                    result['trial']
-                )
-                completed_experiments.add(exp_key)
-
-            # Filter out completed experiments
-            original_count = len(experiment_configs)
-            experiment_configs = [
-                config for config in experiment_configs
-                if (config['strategy'], config['synthetic_ratio'], config['group_id'], config['trial'])
-                not in completed_experiments
-            ]
-
-            logger.info(f"Skipped completed experiments: {original_count - len(experiment_configs)}")
-            logger.info(f"Remaining experiments: {len(experiment_configs)}")
+        # Check existing results（针对group独立文件）
+        if args.resume and args.group_id is not None:
+            # 检查该group的结果文件是否已存在
+            group_results_file = os.path.join(
+                output_dir,
+                f"{config.name}_{args.strategy}_group{args.group_id}_results.json"
+            )
+            if os.path.exists(group_results_file):
+                logger.info(f"Group {args.group_id} 已完成，跳过: {group_results_file}")
+                experiment_configs = []
+            else:
+                logger.info(f"Group {args.group_id} 未完成，开始运行")
 
         if not experiment_configs:
             logger.info("No experiments to run")
@@ -209,25 +189,18 @@ def main():
         # Create classification experiment manager
         experiment = ClassificationExperiment(config)
 
-        # Run experiments
+        # Run experiments（传递group_id用于独立保存）
         if args.parallel_jobs > 1:
             logger.info(f"Running experiments in parallel: {args.parallel_jobs} jobs")
             # TODO: Implement parallel execution
-            batch_results = experiment.run_batch_experiments(experiment_configs, datasets_dir, output_dir)
+            batch_results = experiment.run_batch_experiments(
+                experiment_configs, datasets_dir, output_dir, group_id=args.group_id
+            )
         else:
             logger.info("Running experiments sequentially")
-            batch_results = experiment.run_batch_experiments(experiment_configs, datasets_dir, output_dir)
-
-        # If resuming, merge results
-        if existing_results:
-            logger.info("Merging existing results")
-            batch_results['results'] = existing_results + batch_results['results']
-            batch_results['summary']['total_experiments'] += len(existing_results)
-
-            # Re-save merged results
-            import json
-            with open(results_file, 'w', encoding='utf-8') as f:
-                json.dump(batch_results, f, indent=2, ensure_ascii=False, default=str)
+            batch_results = experiment.run_batch_experiments(
+                experiment_configs, datasets_dir, output_dir, group_id=args.group_id
+            )
 
         # Output experiment results statistics
         logger.info("=" * 50)

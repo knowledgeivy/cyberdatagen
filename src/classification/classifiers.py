@@ -610,15 +610,17 @@ class ClassificationExperiment:
         self,
         experiment_configs: List[Dict[str, Any]],
         datasets_dir: str,
-        output_dir: str
+        output_dir: str,
+        group_id: int = None  # 添加group_id参数用于独立保存
     ) -> Dict[str, Any]:
         """
-        批量运行实验
+        批量运行实验（每个group独立保存，避免并发冲突）
 
         Args:
             experiment_configs: 实验配置列表
             datasets_dir: 数据集目录
             output_dir: 输出目录
+            group_id: 当前group ID（用于生成独立文件名）
 
         Returns:
             Dict[str, Any]: 批量实验结果
@@ -632,6 +634,21 @@ class ClassificationExperiment:
             'failed_experiments': 0,
             'results_file': None
         }
+
+        # 准备结果文件路径（独立文件，按group分开）
+        os.makedirs(output_dir, exist_ok=True)
+
+        # 如果指定了group_id，使用独立文件名
+        if group_id is not None and len(experiment_configs) > 0:
+            strategy = experiment_configs[0]['strategy']
+            results_file = os.path.join(
+                output_dir,
+                f"{self.config.name}_{strategy}_group{group_id}_results.json"
+            )
+        else:
+            results_file = os.path.join(output_dir, f"{self.config.name}_classification_results.json")
+
+        summary['results_file'] = results_file
 
         from ..data_processing.dataset_builder import DatasetBuilder
         builder = DatasetBuilder(self.config)
@@ -668,10 +685,7 @@ class ClassificationExperiment:
                 logger.error(f"实验 {i+1}/{len(experiment_configs)} 失败: {e}")
                 summary['failed_experiments'] += 1
 
-        # 保存结果
-        os.makedirs(output_dir, exist_ok=True)
-        results_file = os.path.join(output_dir, f"{self.config.name}_classification_results.json")
-
+        # 最终保存（每个group独立保存，无需锁）
         batch_results = {
             'experiment_name': self.config.name,
             'summary': summary,
@@ -685,10 +699,54 @@ class ClassificationExperiment:
         with open(results_file, 'w', encoding='utf-8') as f:
             json.dump(batch_results, f, indent=2, ensure_ascii=False, default=str)
 
-        summary['results_file'] = results_file
         logger.info(f"批量实验完成: 成功{summary['successful_experiments']}, 失败{summary['failed_experiments']}")
+        logger.info(f"结果已保存到: {results_file}")
 
         return batch_results
+
+    def _save_checkpoint(self, results_file: str, new_results: List[Dict[str, Any]]):
+        """保存checkpoint到结果文件（追加模式）"""
+        existing_results = []
+
+        # 读取已有结果
+        if os.path.exists(results_file):
+            try:
+                with open(results_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    existing_results = data.get('results', [])
+            except:
+                pass
+
+        # 合并结果（去重）
+        existing_keys = {
+            (r['strategy'], r['synthetic_ratio'], r['group_id'], r['trial'])
+            for r in existing_results
+        }
+
+        for result in new_results:
+            key = (result['strategy'], result['synthetic_ratio'], result['group_id'], result['trial'])
+            if key not in existing_keys:
+                existing_results.append(result)
+                existing_keys.add(key)
+
+        # 保存合并后的结果
+        checkpoint_data = {
+            'experiment_name': self.config.name,
+            'summary': {
+                'total_experiments': len(existing_results),
+                'successful_experiments': len(existing_results),
+                'failed_experiments': 0,
+                'results_file': results_file
+            },
+            'results': existing_results,
+            'config': {
+                'classifiers': list(self.classifiers.keys()),
+                'evaluation_metrics': self.config.evaluation.get('metrics', [])
+            }
+        }
+
+        with open(results_file, 'w', encoding='utf-8') as f:
+            json.dump(checkpoint_data, f, indent=2, ensure_ascii=False, default=str)
 
 
 # 便捷函数
