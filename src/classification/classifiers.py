@@ -641,9 +641,10 @@ class ClassificationExperiment:
         # 如果指定了group_id，使用独立文件名
         if group_id is not None and len(experiment_configs) > 0:
             strategy = experiment_configs[0]['strategy']
+            prompt = experiment_configs[0]['prompt']
             results_file = os.path.join(
                 output_dir,
-                f"{self.config.name}_{strategy}_group{group_id}_results.json"
+                f"{self.config.name}_{prompt}_{strategy}_group{group_id}_results.json"
             )
         else:
             results_file = os.path.join(output_dir, f"{self.config.name}_classification_results.json")
