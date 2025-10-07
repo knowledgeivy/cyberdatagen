@@ -49,50 +49,71 @@ class StatisticalAnalyzer:
         logger.info(f"加载完成: {len(results['results'])} 个实验结果")
         return results
 
-    def organize_results_by_ratio(self, results: Dict[str, Any]) -> Dict[str, Dict[str, List[float]]]:
+    def organize_results_by_ratio(self, results: Dict[str, Any], group_by_prompt: bool = True) -> Dict[str, Dict[str, List[float]]]:
         """
         按synthetic ratio组织结果
 
         Args:
             results: 分类结果
+            group_by_prompt: 是否按prompt分组
 
         Returns:
-            Dict: 按ratio组织的结果 {ratio: {classifier: {metric: [values]}}}
+            Dict: 按ratio组织的结果
+                  如果group_by_prompt=True: {prompt: {ratio: {classifier: {metric: [values]}}}}
+                  如果group_by_prompt=False: {ratio: {classifier: {metric: [values]}}}
         """
-        logger.info("按synthetic ratio组织结果")
+        logger.info(f"按synthetic ratio组织结果 (group_by_prompt={group_by_prompt})")
 
         organized = {}
 
         for result in results['results']:
             ratio = result['synthetic_ratio']
+            prompt = result.get('prompt', 'original')
             strategy = result.get('strategy', 'unknown')
 
-            if ratio not in organized:
-                organized[ratio] = {}
+            if group_by_prompt:
+                # 按 prompt -> ratio -> classifier -> metric 组织
+                if prompt not in organized:
+                    organized[prompt] = {}
+
+                if ratio not in organized[prompt]:
+                    organized[prompt][ratio] = {}
+
+                current_level = organized[prompt][ratio]
+            else:
+                # 按 ratio -> classifier -> metric 组织
+                if ratio not in organized:
+                    organized[ratio] = {}
+
+                current_level = organized[ratio]
 
             for classifier_name, classifier_result in result['classifiers'].items():
                 if not classifier_result['success']:
                     continue
 
-                if classifier_name not in organized[ratio]:
-                    organized[ratio][classifier_name] = {}
+                if classifier_name not in current_level:
+                    current_level[classifier_name] = {}
 
                 metrics = classifier_result['metrics']
                 for metric_name, metric_value in metrics.items():
-                    if metric_name not in organized[ratio][classifier_name]:
-                        organized[ratio][classifier_name][metric_name] = []
+                    if metric_name not in current_level[classifier_name]:
+                        current_level[classifier_name][metric_name] = []
 
-                    organized[ratio][classifier_name][metric_name].append(metric_value)
+                    current_level[classifier_name][metric_name].append(metric_value)
 
-        logger.info(f"组织完成: {len(organized)} 个ratio")
+        if group_by_prompt:
+            logger.info(f"组织完成: {len(organized)} 个prompt")
+        else:
+            logger.info(f"组织完成: {len(organized)} 个ratio")
         return organized
 
-    def compute_descriptive_statistics(self, organized_results: Dict) -> Dict[str, Any]:
+    def compute_descriptive_statistics(self, organized_results: Dict, has_prompt_level: bool = True) -> Dict[str, Any]:
         """
         计算描述性统计
 
         Args:
             organized_results: 按ratio组织的结果
+            has_prompt_level: 数据是否包含prompt层级
 
         Returns:
             Dict[str, Any]: 描述性统计
@@ -101,9 +122,9 @@ class StatisticalAnalyzer:
 
         descriptive_stats = {}
 
-        for ratio, ratio_data in organized_results.items():
+        def compute_stats_for_ratio_data(ratio_data):
+            """计算单个ratio的统计数据"""
             ratio_stats = {}
-
             for classifier_name, classifier_data in ratio_data.items():
                 classifier_stats = {}
 
@@ -127,7 +148,18 @@ class StatisticalAnalyzer:
                     }
 
                 ratio_stats[classifier_name] = classifier_stats
-            descriptive_stats[ratio] = ratio_stats
+            return ratio_stats
+
+        if has_prompt_level:
+            # 数据结构: {prompt: {ratio: {classifier: {metric: [values]}}}}
+            for prompt, prompt_data in organized_results.items():
+                descriptive_stats[prompt] = {}
+                for ratio, ratio_data in prompt_data.items():
+                    descriptive_stats[prompt][ratio] = compute_stats_for_ratio_data(ratio_data)
+        else:
+            # 数据结构: {ratio: {classifier: {metric: [values]}}}
+            for ratio, ratio_data in organized_results.items():
+                descriptive_stats[ratio] = compute_stats_for_ratio_data(ratio_data)
 
         logger.info("描述性统计计算完成")
         return descriptive_stats

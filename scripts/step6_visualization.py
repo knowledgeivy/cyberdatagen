@@ -75,6 +75,12 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     model_info = "GPT-4.1-mini"  # 默认值
     prompt_info = "Original"   # 默认值
 
+    # 从分析结果中读取prompt信息
+    if 'experiment_info' in analysis_results:
+        prompt_from_file = analysis_results['experiment_info'].get('prompt', 'original')
+        # 首字母大写
+        prompt_info = prompt_from_file.capitalize()
+
     if config and hasattr(config, 'llm'):
         if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
             model_name = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
