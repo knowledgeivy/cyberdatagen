@@ -153,8 +153,9 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
             ax.set_xticks(ratios)
             ax.set_xticklabels(ratios)
 
-            # 设置y轴范围为0-1，避免误导性的缩放
-            ax.set_ylim([0, 1])
+            # 设置y轴范围为0-1.1（顶部留空间），但只显示0-1.0的刻度
+            ax.set_ylim([0, 1.1])
+            ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
 
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'{experiment_name}_performance_curves.png'),
