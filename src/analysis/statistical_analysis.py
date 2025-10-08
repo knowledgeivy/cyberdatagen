@@ -417,10 +417,63 @@ class StatisticalAnalyzer:
                                 degradation > metric_analysis['max_acceptable_degradation']):
                             metric_analysis['critical_ratio'] = ratio
 
+                # 计算sensitivity指标（性能对synthetic ratio的敏感度）
+                metric_analysis['sensitivity'] = self._calculate_sensitivity(
+                    baseline_mean,
+                    metric_analysis['degradation_curve']
+                )
+
                 classifier_analysis[metric_name] = metric_analysis
             degradation_analysis[classifier_name] = classifier_analysis
 
         return degradation_analysis
+
+    def _calculate_sensitivity(self, baseline: float, degradation_curve: List[Dict]) -> Dict[str, float]:
+        """
+        计算模型对synthetic data比例的敏感度
+
+        Args:
+            baseline: 基线性能（0% synthetic）
+            degradation_curve: 性能衰减曲线
+
+        Returns:
+            Dict: 包含各种sensitivity指标
+        """
+        if not degradation_curve:
+            return {}
+
+        # 准备数据：ratios和performances
+        ratios = [0] + [point['ratio'] for point in degradation_curve]
+        performances = [baseline] + [point['performance'] for point in degradation_curve]
+
+        # 线性回归计算斜率
+        slope, intercept, r_value, p_value, std_err = stats.linregress(ratios, performances)
+
+        # 计算0%到100%的总变化（如果有100%的数据）
+        max_ratio = max(ratios)
+        if max_ratio == 100:
+            perf_at_max = performances[-1]
+            total_change = perf_at_max - baseline
+            linear_rate = total_change / 100
+            relative_rate = (total_change / baseline) * 100 / 100 if baseline != 0 else 0
+        else:
+            # 如果没有100%，使用最大ratio估算
+            perf_at_max = performances[-1]
+            total_change = perf_at_max - baseline
+            linear_rate = total_change / max_ratio
+            relative_rate = (total_change / baseline) * 100 / max_ratio if baseline != 0 else 0
+
+        return {
+            'regression_slope': float(slope),
+            'regression_intercept': float(intercept),
+            'regression_r_squared': float(r_value ** 2),
+            'regression_p_value': float(p_value),
+            'regression_stderr': float(std_err),
+            'linear_rate_per_percent': float(linear_rate),
+            'relative_rate_per_percent': float(relative_rate * 100),
+            'max_ratio_tested': int(max_ratio),
+            'total_change_0_to_max': float(total_change)
+        }
 
     def compare_prompt_strategies(self, results_by_prompt: Dict[str, Dict]) -> Dict[str, Any]:
         """

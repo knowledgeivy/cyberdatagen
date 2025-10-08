@@ -86,8 +86,8 @@ def main():
         '--strategy',
         type=str,
         default='within_group',
-        choices=['within_group', 'cross_group', 'real_fixed_random_synthetic', 'full_random'],
-        help='Mixing strategy'
+        choices=['within_group', 'cross_group'],
+        help='Mixing strategy (only within_group and cross_group are used)'
     )
     parser.add_argument(
         '--prompt',

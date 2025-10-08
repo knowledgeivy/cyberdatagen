@@ -573,6 +573,150 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
     logger.info(f"总结报告创建完成: {report_file}")
 
 
+def create_combined_prompt_comparison(base_dir: str, strategy: str, experiment_name: str, config=None):
+    """
+    创建多prompt对比图（combined模式）
+
+    Args:
+        base_dir: 实验基础目录
+        strategy: within_group 或 cross_group
+        experiment_name: 实验名称
+        config: 配置对象
+    """
+    logger.info(f"创建 {strategy} 的prompt对比图...")
+
+    prompts = ['original', 'strong', 'weak']
+    classifiers = ['svm', 'random_forest']
+    metrics = ['accuracy', 'precision', 'recall', 'f1_score', 'auc_roc']
+
+    metric_labels = {
+        'accuracy': 'Accuracy',
+        'precision': 'Precision',
+        'recall': 'Recall',
+        'f1_score': 'F1-Score',
+        'auc_roc': 'AUC-ROC'
+    }
+
+    classifier_labels = {
+        'svm': 'SVM',
+        'random_forest': 'Random Forest'
+    }
+
+    # 加载所有prompt的数据
+    all_data = {}
+    reports_dir = os.path.join(base_dir, 'reports')
+
+    for prompt in prompts:
+        analysis_file = os.path.join(reports_dir, f'{experiment_name}_{prompt}_{strategy}_statistical_analysis.json')
+        if not os.path.exists(analysis_file):
+            logger.error(f"文件不存在: {analysis_file}")
+            continue
+        all_data[prompt] = load_analysis_results(analysis_file)
+
+    if len(all_data) != 3:
+        logger.error(f"无法加载所有prompt的数据 (只加载了 {len(all_data)}/3)")
+        return
+
+    # 创建figure - 3行(prompts) × 5列(metrics)
+    fig = plt.figure(figsize=(20, 10))
+
+    # 定义classifier的颜色和线型
+    clf_styles = {
+        'svm': {'color': '#1f77b4', 'linestyle': '-', 'marker': 'o'},
+        'random_forest': {'color': '#ff7f0e', 'linestyle': '--', 'marker': 's'}
+    }
+
+    # 为每个prompt创建一行
+    for prompt_idx, prompt in enumerate(prompts):
+        data = all_data[prompt]
+
+        # 为每个metric创建子图
+        for metric_idx, metric in enumerate(metrics):
+            subplot_idx = prompt_idx * 5 + metric_idx + 1
+            ax = plt.subplot(3, 5, subplot_idx)
+
+            # 为每个classifier绘制曲线
+            for clf in classifiers:
+                ratios = []
+                means = []
+                ci_lowers = []
+                ci_uppers = []
+
+                descriptive_stats = data.get('descriptive_statistics', {})
+                for ratio_str, ratio_data in sorted(descriptive_stats.items(), key=lambda x: int(x[0])):
+                    ratio = int(ratio_str)
+                    clf_data = ratio_data.get(clf, {})
+                    metric_data = clf_data.get(metric, {})
+
+                    if metric_data:
+                        ratios.append(ratio)
+                        means.append(metric_data['mean'])
+                        ci_lowers.append(metric_data['ci_lower'])
+                        ci_uppers.append(metric_data['ci_upper'])
+
+                # 绘制曲线
+                if ratios:
+                    style = clf_styles[clf]
+                    ax.plot(ratios, means,
+                           color=style['color'],
+                           linestyle=style['linestyle'],
+                           marker=style['marker'],
+                           linewidth=2,
+                           markersize=5,
+                           label=classifier_labels[clf],
+                           alpha=0.9)
+                    ax.fill_between(ratios, ci_lowers, ci_uppers,
+                                   color=style['color'],
+                                   alpha=0.15)
+
+            # 设置y轴范围为0-1.1（顶部留空间），但只显示0-1.0的刻度
+            ax.set_ylim([0, 1.1])
+            ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+
+            # 设置标题（只在第一行显示metric名称）
+            if prompt_idx == 0:
+                ax.set_title(metric_labels[metric], fontsize=11, fontweight='bold')
+
+            # 设置y轴标签（只在第一列显示prompt名称）
+            if metric_idx == 0:
+                ax.set_ylabel(f'{prompt.capitalize()}\n{metric_labels[metric]}',
+                             fontsize=10, fontweight='bold')
+            else:
+                ax.set_ylabel(metric_labels[metric], fontsize=9)
+
+            # 设置x轴标签（只在最后一行显示）
+            if prompt_idx == 2:
+                ax.set_xlabel('Synthetic Ratio (%)', fontsize=9)
+            else:
+                ax.set_xlabel('')
+
+            # 添加图例（只在第一行最后一列添加）
+            if prompt_idx == 0 and metric_idx == 4:
+                ax.legend(loc='lower right', fontsize=9, framealpha=0.9)
+
+            # 网格
+            ax.grid(True, alpha=0.3)
+            ax.set_axisbelow(True)
+
+    # 设置总标题
+    strategy_title = strategy.replace('_', '-').title()
+    fig.suptitle(f'Performance Comparison Across Prompts - {strategy_title} Strategy',
+                fontsize=16, fontweight='bold', y=0.995)
+
+    # 调整布局
+    plt.tight_layout(rect=[0, 0, 1, 0.99])
+
+    # 保存图片到combined子文件夹
+    output_dir = os.path.join(base_dir, 'plots', 'combined')
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_file = os.path.join(output_dir, f'prompts_comparison_{strategy}_performance_curves.png')
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"已保存: {output_file}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='可视化脚本')
     parser.add_argument(
@@ -582,6 +726,13 @@ def main():
         help='配置文件路径'
     )
     parser.add_argument(
+        '--mode',
+        type=str,
+        default='single',
+        choices=['single', 'combined'],
+        help='可视化模式: single=单个分析, combined=多prompt对比'
+    )
+    parser.add_argument(
         '--experiment_name',
         type=str,
         help='实验名称'
@@ -589,20 +740,31 @@ def main():
     parser.add_argument(
         '--analysis_file',
         type=str,
-        help='统计分析结果文件路径'
+        help='统计分析结果文件路径（single模式）'
     )
     parser.add_argument(
         '--output_dir',
         type=str,
-        help='输出目录'
+        help='输出目录（single模式）'
+    )
+    parser.add_argument(
+        '--base_dir',
+        type=str,
+        help='实验基础目录（combined模式）'
+    )
+    parser.add_argument(
+        '--strategies',
+        nargs='+',
+        default=['within_group', 'cross_group'],
+        help='策略列表（combined模式）'
     )
     parser.add_argument(
         '--plot_types',
         type=str,
         nargs='+',
-        default=['curves', 'heatmap', 'significance', 'dashboard', 'report'],
+        default=['curves'],
         choices=['curves', 'heatmap', 'significance', 'dashboard', 'report'],
-        help='要生成的图表类型'
+        help='要生成的图表类型（single模式）'
     )
 
     args = parser.parse_args()
@@ -618,9 +780,25 @@ def main():
         # 设置matplotlib样式
         setup_matplotlib_style(config)
 
-        # 确定文件路径
         experiment_name = args.experiment_name or config.name
 
+        # 根据模式选择处理逻辑
+        if args.mode == 'combined':
+            # Combined模式：生成多prompt对比图
+            logger.info("开始创建combined prompt对比图")
+
+            base_dir = args.base_dir
+            if not base_dir:
+                logger.error("Combined模式需要指定--base_dir参数")
+                return
+
+            for strategy in args.strategies:
+                create_combined_prompt_comparison(base_dir, strategy, experiment_name, config)
+
+            logger.success("Combined可视化完成")
+            return
+
+        # Single模式：生成单个分析的图表
         if args.analysis_file:
             analysis_file = args.analysis_file
         else:

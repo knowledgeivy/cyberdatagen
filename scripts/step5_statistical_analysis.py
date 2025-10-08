@@ -67,6 +67,21 @@ def main():
         choices=['descriptive', 'hypothesis', 'degradation', 'prompt_comparison'],
         help='Analysis types to execute'
     )
+    parser.add_argument(
+        '--filter_prompt',
+        type=str,
+        help='Filter results by prompt (e.g., original, strong, weak)'
+    )
+    parser.add_argument(
+        '--filter_strategy',
+        type=str,
+        help='Filter results by strategy (e.g., within_group, cross_group)'
+    )
+    parser.add_argument(
+        '--output_file',
+        type=str,
+        help='Output file path (overrides default naming)'
+    )
 
     args = parser.parse_args()
 
@@ -105,8 +120,28 @@ def main():
         # Load results
         results = analyzer.load_classification_results(results_file)
 
+        # Filter results if specified
+        if args.filter_prompt or args.filter_strategy:
+            original_count = len(results['results'])
+            filtered_results = []
+
+            for result in results['results']:
+                if args.filter_prompt and result.get('prompt', 'original') != args.filter_prompt:
+                    continue
+                if args.filter_strategy and result.get('strategy', 'unknown') != args.filter_strategy:
+                    continue
+                filtered_results.append(result)
+
+            results['results'] = filtered_results
+            logger.info(f"Filtered results: {original_count} → {len(filtered_results)} experiments")
+
+            if args.filter_prompt:
+                logger.info(f"  Filter by prompt: {args.filter_prompt}")
+            if args.filter_strategy:
+                logger.info(f"  Filter by strategy: {args.filter_strategy}")
+
         # Organize results
-        organized_results = analyzer.organize_results_by_ratio(results)
+        organized_results = analyzer.organize_results_by_ratio(results, group_by_prompt=False)
 
         logger.info(f"Analyzing data: {len(organized_results)} synthetic ratios")
 
@@ -115,7 +150,7 @@ def main():
 
         if 'descriptive' in args.analysis_types:
             logger.info("Executing descriptive statistical analysis")
-            analysis_results['descriptive_statistics'] = analyzer.compute_descriptive_statistics(organized_results)
+            analysis_results['descriptive_statistics'] = analyzer.compute_descriptive_statistics(organized_results, has_prompt_level=False)
 
         if 'hypothesis' in args.analysis_types:
             logger.info("Executing hypothesis testing")
@@ -130,9 +165,50 @@ def main():
             # TODO: Need to load results from multiple prompts for comparison
             logger.warning("Prompt comparison analysis requires results from multiple prompts, currently skipping")
 
-        # Generate comprehensive report
-        logger.info("Generating comprehensive statistical analysis report")
-        comprehensive_report = analyzer.generate_comprehensive_report(results_file, output_dir)
+        # Build comprehensive report
+        logger.info("Building comprehensive statistical analysis report")
+        import pandas as pd
+        import json
+
+        experiment_info = {
+            'experiment_name': results['experiment_name'],
+            'total_experiments': len(results['results']),
+            'successful_experiments': len([r for r in results['results'] if all(c['success'] for c in r['classifiers'].values())]),
+            'analysis_timestamp': pd.Timestamp.now().isoformat()
+        }
+
+        # Add filter info if applicable
+        if args.filter_prompt:
+            experiment_info['prompt'] = args.filter_prompt
+        if args.filter_strategy:
+            experiment_info['strategy'] = args.filter_strategy
+
+        comprehensive_report = {
+            'experiment_info': experiment_info,
+            'descriptive_statistics': analysis_results.get('descriptive_statistics', {}),
+            'hypothesis_tests': analysis_results.get('hypothesis_tests', {}),
+            'performance_degradation': analysis_results.get('performance_degradation', {}),
+            'summary_findings': analyzer._generate_summary_findings(
+                analysis_results.get('descriptive_statistics', {}),
+                analysis_results.get('hypothesis_tests', {}),
+                analysis_results.get('performance_degradation', {})
+            )
+        }
+
+        # Save report
+        os.makedirs(output_dir, exist_ok=True)
+
+        if args.output_file:
+            report_file = args.output_file
+        else:
+            experiment_name = args.experiment_name or config.name
+            report_file = os.path.join(output_dir, f"{experiment_name}_statistical_analysis.json")
+
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(comprehensive_report, f, indent=2, ensure_ascii=False)
+
+        comprehensive_report['report_file'] = report_file
+        logger.info(f"Report saved: {report_file}")
 
         # Output key findings
         logger.info("=" * 50)
