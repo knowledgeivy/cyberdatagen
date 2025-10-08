@@ -96,16 +96,17 @@ def export_sensitivity_to_csv(analysis_file: Path, output_csv: Path):
     logger.info(f"已导出CSV: {output_csv}")
 
 
-def export_all_analyses_to_csv(base_dir: Path, experiment_name: str, prompts: list, strategies: list):
+def export_all_analyses_to_csv(base_dir, experiment_name: str, prompts: list, strategies: list):
     """
     批量导出所有分析结果到CSV
 
     Args:
-        base_dir: 实验基础目录
+        base_dir: 实验基础目录 (str或Path)
         experiment_name: 实验名称
         prompts: prompt列表
         strategies: strategy列表
     """
+    base_dir = Path(base_dir)
     reports_dir = base_dir / 'reports'
     csv_dir = base_dir / 'reports' / 'csv'
     csv_dir.mkdir(parents=True, exist_ok=True)
