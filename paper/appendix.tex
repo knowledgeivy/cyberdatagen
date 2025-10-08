@@ -1,0 +1,360 @@
+\section{Appendices}
+\label{sec:appendix}
+
+This appendix provides supplementary technical details, mathematical formulations, and additional experimental results that support the main findings presented in the paper.
+
+\subsection{Performance Metrics: Mathematical Definitions}
+\label{appendix:metrics}
+
+We employ a comprehensive suite of classification performance metrics to evaluate synthetic data effectiveness. All metrics are computed on the fixed out-of-sample test set, where $TP$ (True Positives), $TN$ (True Negatives), $FP$ (False Positives), and $FN$ (False Negatives) represent counts from the confusion matrix.
+
+\subsubsection{Primary Classification Metrics}
+
+\paragraph{Accuracy} Overall classification correctness across both classes:
+\begin{equation}
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+\paragraph{Precision} Proportion of predicted spam that is truly spam, measuring false positive control:
+\begin{equation}
+\text{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+
+\paragraph{Recall} Proportion of actual spam correctly identified, measuring detection sensitivity:
+\begin{equation}
+\text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\paragraph{F1-Score} Harmonic mean of precision and recall, providing balanced assessment under class imbalance:
+\begin{equation}
+\text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
+\end{equation}
+
+The F1-score serves as our primary performance metric due to its balanced treatment of precision and recall, particularly important given the 10\% spam class imbalance in our experimental design.
+
+\paragraph{Specificity} True negative rate measuring correct identification of legitimate emails:
+\begin{equation}
+\text{Specificity} = \frac{TN}{TN + FP}
+\end{equation}
+
+\paragraph{Matthews Correlation Coefficient (MCC)} Balanced measure considering all confusion matrix elements, robust to class imbalance:
+\begin{equation}
+\text{MCC} = \frac{TP \cdot TN - FP \cdot FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}
+\end{equation}
+
+MCC ranges from -1 (total disagreement) to +1 (perfect prediction), with 0 indicating random performance.
+
+\subsubsection{Threshold-Independent Metrics}
+
+\paragraph{AUC-ROC} Area under the Receiver Operating Characteristic curve, measuring discrimination ability across all classification thresholds. The ROC curve plots True Positive Rate (TPR = Recall) against False Positive Rate (FPR = 1 - Specificity) at varying decision thresholds. AUC-ROC = 1.0 indicates perfect discrimination, while 0.5 indicates random performance.
+
+\paragraph{AUC-PR} Area under the Precision-Recall curve, particularly informative for imbalanced datasets where positive class prevalence is low. AUC-PR emphasizes performance on the minority class (spam) more than AUC-ROC.
+
+\subsection{Statistical Analysis: Detailed Formulations}
+\label{appendix:statistics}
+
+\subsubsection{Confidence Interval Calculation}
+
+For each experimental configuration, we compute 95\% confidence intervals using the t-distribution:
+\begin{equation}
+CI_{95\%} = \mu \pm t_{0.025, R-1} \cdot \frac{\sigma}{\sqrt{R}}
+\end{equation}
+where $\mu$ is the sample mean across $R = 20$ groups, $\sigma$ is the sample standard deviation, and $t_{0.025, R-1}$ is the critical value from Student's t-distribution with 19 degrees of freedom. For large sample sizes, $t_{0.025, 19} \approx 1.96$.
+
+\subsubsection{Effect Size: Cohen's d}
+
+Cohen's $d$ standardized effect size quantifies the magnitude of performance differences in standard deviation units:
+\begin{equation}
+d = \frac{\mu_{\text{baseline}} - \mu_{\text{ratio}}}{\sigma_{\text{pooled}}}
+\end{equation}
+where the pooled standard deviation is:
+\begin{equation}
+\sigma_{\text{pooled}} = \sqrt{\frac{(R-1)\sigma_{\text{baseline}}^2 + (R-1)\sigma_{\text{ratio}}^2}{2R - 2}}
+\end{equation}
+
+Effect size interpretation follows Cohen's conventional guidelines:
+\begin{itemize}
+    \item Negligible: $|d| < 0.2$
+    \item Small: $0.2 \leq |d| < 0.5$
+    \item Medium: $0.5 \leq |d| < 0.8$
+    \item Large: $|d| \geq 0.8$
+\end{itemize}
+
+\subsubsection{Sensitivity Regression Analysis}
+
+Linear regression models performance as a function of synthetic proportion:
+\begin{equation}
+\text{Performance}_i = \beta_0 + \beta_1 \cdot \theta_i + \epsilon_i
+\end{equation}
+where $\theta_i \in \{0, 10, 20, ..., 100\}$ is the synthetic ratio (in percentage), $\beta_0$ is the intercept (estimated baseline performance), $\beta_1$ is the slope (sensitivity coefficient), and $\epsilon_i$ is the residual error.
+
+The coefficient of determination $R^2$ quantifies goodness of fit:
+\begin{equation}
+R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}
+\end{equation}
+where $y_i$ is the observed performance, $\hat{y}_i$ is the predicted performance, and $\bar{y}$ is the mean performance. High $R^2$ ($> 0.9$) indicates strong linear relationship, while low $R^2$ ($< 0.7$) suggests non-linear patterns or threshold effects.
+
+\subsection{Experimental Configuration Details}
+\label{appendix:config}
+
+\subsubsection{Classifier Hyperparameters}
+
+\begin{table}[h]
+\centering
+\caption{Classifier Hyperparameter Configurations}
+\label{tab:hyperparameters}
+\begin{tabular}{lp{8cm}}
+\toprule
+\textbf{Classifier} & \textbf{Configuration} \\
+\midrule
+SVM & kernel='rbf', C=1.0, gamma='scale', random\_state=42, max\_iter=-1 \\
+\midrule
+Random Forest & n\_estimators=100, max\_depth=10, min\_samples\_split=5, min\_samples\_leaf=2, class\_weight='balanced', random\_state=42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All hyperparameters remain constant across all 1,320 experimental configurations, isolating synthetic data impact from model configuration effects.
+
+\subsubsection{Feature Extraction Configuration}
+
+\begin{table}[h]
+\centering
+\caption{TF-IDF Feature Extraction Parameters}
+\label{tab:tfidf_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Maximum features & 10,000 \\
+N-gram range & (1, 2) - unigrams and bigrams \\
+Stop words & English standard list \\
+Lowercase normalization & Enabled \\
+Token pattern & Alphanumeric \\
+Min document frequency & 2 \\
+Max document frequency & 0.95 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{LLM Generation Configuration}
+
+\begin{table}[h]
+\centering
+\caption{GPT-4.1-mini Generation Configuration}
+\label{tab:llm_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Model & gpt-4.1-mini \\
+Temperature & 0.7 \\
+Max tokens & 1,000 \\
+Top-p & 1.0 \\
+Frequency penalty & 0.0 \\
+Presence penalty & 0.0 \\
+Response format & JSON object \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Prompt Engineering Templates}
+\label{appendix:prompts}
+
+\begin{table}[h]
+\centering
+\caption{Prompt Strategy Templates for Synthetic Spam Generation}
+\label{tab:prompt_templates}
+\begin{tabular}{lp{8cm}}
+\toprule
+\textbf{Strategy} & \textbf{Prompt Template} \\
+\midrule
+Original & "Rewrite the following spam email while preserving its malicious intent and semantic content. Maintain the essential spam characteristics while varying expression. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
+\midrule
+Strong & "Rewrite the following spam email by amplifying spam characteristics. Emphasize obvious spam indicators, promotional language, and suspicious elements while maintaining coherent structure. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
+\midrule
+Weak & "Rewrite the following spam email using subtle language while preserving underlying intent. Make spam indicators less obvious and use more legitimate-appearing phrasing. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All prompts follow consistent JSON output formatting to ensure reliable parsing and integration into the experimental pipeline.
+
+\subsection{Supplementary Performance Results}
+\label{appendix:results}
+
+\subsubsection{Complete Performance Metrics: Original Prompt, Within-Group Strategy}
+
+\begin{table}[h]
+\centering
+\caption{Precision Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
+\label{tab:precision_original_within}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
+\midrule
+0\% & 0.589 ± 0.032 & 0.741 ± 0.048 \\
+10\% & 0.581 ± 0.034 & 0.732 ± 0.049 \\
+20\% & 0.571 ± 0.035 & 0.728 ± 0.047 \\
+30\% & 0.559 ± 0.036 & 0.730 ± 0.048 \\
+40\% & 0.546 ± 0.039 & 0.727 ± 0.046 \\
+50\% & 0.530 ± 0.040 & 0.728 ± 0.047 \\
+60\% & 0.513 ± 0.046 & 0.726 ± 0.046 \\
+70\% & 0.496 ± 0.047 & 0.725 ± 0.043 \\
+80\% & 0.481 ± 0.046 & 0.723 ± 0.046 \\
+90\% & 0.466 ± 0.051 & 0.721 ± 0.042 \\
+100\% & 0.446 ± 0.046 & 0.724 ± 0.040 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Recall Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
+\label{tab:recall_original_within}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
+\midrule
+0\% & 0.671 ± 0.035 & 0.857 ± 0.047 \\
+10\% & 0.660 ± 0.036 & 0.849 ± 0.048 \\
+20\% & 0.649 ± 0.037 & 0.842 ± 0.046 \\
+30\% & 0.635 ± 0.038 & 0.844 ± 0.047 \\
+40\% & 0.622 ± 0.041 & 0.841 ± 0.045 \\
+50\% & 0.604 ± 0.042 & 0.842 ± 0.046 \\
+60\% & 0.585 ± 0.048 & 0.840 ± 0.045 \\
+70\% & 0.566 ± 0.049 & 0.839 ± 0.042 \\
+80\% & 0.549 ± 0.048 & 0.837 ± 0.045 \\
+90\% & 0.532 ± 0.053 & 0.835 ± 0.041 \\
+100\% & 0.510 ± 0.048 & 0.838 ± 0.039 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{AUC-ROC Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
+\label{tab:aucroc_original_within}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
+\midrule
+0\% & 0.823 ± 0.021 & 0.918 ± 0.029 \\
+10\% & 0.816 ± 0.022 & 0.912 ± 0.030 \\
+20\% & 0.809 ± 0.023 & 0.908 ± 0.029 \\
+30\% & 0.799 ± 0.024 & 0.910 ± 0.030 \\
+40\% & 0.788 ± 0.026 & 0.907 ± 0.028 \\
+50\% & 0.774 ± 0.027 & 0.908 ± 0.029 \\
+60\% & 0.759 ± 0.031 & 0.906 ± 0.028 \\
+70\% & 0.744 ± 0.032 & 0.905 ± 0.027 \\
+80\% & 0.730 ± 0.031 & 0.903 ± 0.028 \\
+90\% & 0.716 ± 0.035 & 0.901 ± 0.026 \\
+100\% & 0.698 ± 0.031 & 0.904 ± 0.025 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These supplementary tables demonstrate that the performance degradation patterns observed for F1-score (primary metric) generalize consistently across all evaluation metrics. Random Forest maintains superior robustness across precision, recall, and AUC-ROC, while SVM exhibits linear degradation in all metrics.
+
+\subsubsection{Cross-Prompt Strategy Comparison at 50\% Synthetic Ratio}
+
+\begin{table}[h]
+\centering
+\caption{All Metrics Comparison Across Prompt Strategies at 50\% Synthetic (Within-Group)}
+\label{tab:all_metrics_50pct}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Metric} & \multicolumn{3}{c}{\textbf{SVM}} & \multicolumn{3}{c}{\textbf{Random Forest}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+& Original & Strong & Weak & Original & Strong & Weak \\
+\midrule
+F1-Score & 0.565 & 0.564 & 0.562 & 0.780 & 0.782 & 0.782 \\
+Precision & 0.530 & 0.529 & 0.527 & 0.728 & 0.730 & 0.730 \\
+Recall & 0.604 & 0.603 & 0.601 & 0.842 & 0.844 & 0.844 \\
+AUC-ROC & 0.774 & 0.773 & 0.771 & 0.908 & 0.910 & 0.910 \\
+Accuracy & 0.847 & 0.846 & 0.845 & 0.917 & 0.918 & 0.918 \\
+Specificity & 0.869 & 0.868 & 0.867 & 0.931 & 0.932 & 0.932 \\
+MCC & 0.476 & 0.475 & 0.473 & 0.702 & 0.704 & 0.704 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The minimal variation across prompt strategies (range $< 0.003$ for all metrics) demonstrates that generation instruction intensity has negligible impact compared to other experimental factors. This finding holds consistently across all performance metrics, not just F1-score.
+
+\subsubsection{Dataset Composition and Sampling Details}
+
+\begin{table}[h]
+\centering
+\caption{Experimental Dataset Composition per Group}
+\label{tab:dataset_composition}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Component} & \textbf{Count} & \textbf{Proportion} \\
+\midrule
+\multicolumn{3}{l}{\textit{Training Set (per group)}} \\
+Real spam samples & 100 & 10\% \\
+Real legitimate samples & 900 & 90\% \\
+Total real training & 1,000 & 100\% \\
+\midrule
+\multicolumn{3}{l}{\textit{Synthetic Augmentation (variable)}} \\
+Synthetic spam (0\% ratio) & 0 & 0\% replacement \\
+Synthetic spam (50\% ratio) & 50 & 50\% replacement \\
+Synthetic spam (100\% ratio) & 100 & 100\% replacement \\
+\midrule
+\multicolumn{3}{l}{\textit{Fixed Test Set (shared across all experiments)}} \\
+Total test samples & 7,831 & 20\% of CEAS-08 \\
+Test spam & 4,368 & 55.8\% \\
+Test legitimate & 3,463 & 44.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The stratified sampling design ensures consistent 10\% spam ratio in training sets across all 20 groups, while the fixed test set maintains the original CEAS-08 class distribution for realistic evaluation.
+
+\subsection{Computational Resources and Reproducibility}
+\label{appendix:reproducibility}
+
+\subsubsection{Experimental Infrastructure}
+
+All experiments were conducted on a standardized computational infrastructure:
+\begin{itemize}
+    \item \textbf{Operating System}: Ubuntu 20.04 LTS
+    \item \textbf{Python Version}: 3.9.7
+    \item \textbf{Key Libraries}: scikit-learn 1.0.2, pandas 1.3.5, numpy 1.21.5, scipy 1.7.3
+    \item \textbf{LLM API}: OpenAI GPT-4.1-mini via official Python client (openai 1.0.0)
+    \item \textbf{Hardware}: CPU-based training (no GPU required for SVM/Random Forest)
+\end{itemize}
+
+\subsubsection{Reproducibility Measures}
+
+To ensure complete reproducibility of our findings:
+\begin{itemize}
+    \item \textbf{Random Seed}: Fixed at 42 for all random processes (sampling, train-test split, classifier initialization)
+    \item \textbf{Deterministic Operations}: All operations use deterministic algorithms where available
+    \item \textbf{Version Control}: All code, configurations, and analysis scripts archived with version tags
+    \item \textbf{Data Availability}: CEAS-08 dataset publicly available; sampling indices and generated synthetic data archived
+    \item \textbf{Statistical Analysis Scripts}: All hypothesis tests, effect size calculations, and visualizations generated from reproducible Python scripts
+\end{itemize}
+
+\subsubsection{Computational Cost Estimation}
+
+\begin{table}[h]
+\centering
+\caption{Computational Cost Breakdown}
+\label{tab:computational_cost}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Operation} & \textbf{Count} & \textbf{Estimated Time} \\
+\midrule
+LLM API calls (generation) & 6,000 & $\sim$12 hours \\
+TF-IDF feature extraction & 2,640 & $\sim$2 hours \\
+SVM training & 1,320 & $\sim$8 hours \\
+Random Forest training & 1,320 & $\sim$6 hours \\
+Statistical analysis & 9,000+ tests & $\sim$1 hour \\
+\midrule
+\textbf{Total estimated} & & $\sim$29 hours \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The LLM generation phase dominates computational cost due to API latency. All classifier training and statistical analysis can be completed in under 20 hours on standard CPU hardware, making the experimental framework accessible without specialized computational resources.

@@ -1,0 +1,72 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Machine learning has become the cornerstone of modern spam detection systems, enabling automated identification of malicious content at scales unreachable by manual review. However, the effectiveness of these systems depends critically on the availability of large, diverse, and representative training datasets—a requirement that often proves difficult to satisfy in practice. Spam datasets are constrained by privacy regulations that limit data sharing, legal restrictions on maintaining malicious content, and the inherent rarity of spam samples in operational systems where class imbalance (often $<$10\% spam) represents the norm rather than the exception.
+
+These data scarcity challenges are further compounded by the dynamic nature of spam tactics. Attackers continuously evolve their strategies to evade detection, introducing concept drift that degrades classifier performance over time. Collecting sufficient real spam samples to retrain classifiers for each new variant imposes substantial operational costs and delays, potentially leaving systems vulnerable during adaptation periods. The convergence of scarcity, privacy constraints, and temporal evolution creates a fundamental bottleneck for developing and maintaining robust spam detection systems.
+
+\subsection{The Promise of Synthetic Data Generation}
+
+Large Language Models (LLMs) have emerged as a compelling approach to address data scarcity through synthetic generation. Recent models demonstrate remarkable capability for producing coherent, contextually appropriate text across diverse domains, raising the possibility of generating synthetic training data that preserves essential characteristics of real samples while avoiding privacy and legal constraints. For spam detection specifically, LLMs could potentially generate diverse spam variants from limited seed samples, augmenting training datasets without requiring access to sensitive real data or expensive manual collection efforts.
+
+However, fundamental questions remain about synthetic data effectiveness for cybersecurity applications. Unlike general text generation tasks where fluency and coherence suffice, spam generation requires preservation of specific malicious characteristics—social engineering techniques, persuasive elements, urgency signals—that distinguish spam from legitimate content. Whether LLMs can reliably capture and reproduce these domain-specific patterns, and whether classifiers trained on synthetic spam can achieve performance comparable to real-data training, remains empirically unresolved.
+
+\subsection{Critical Knowledge Gaps}
+
+Existing research on synthetic cybersecurity data suffers from several methodological limitations that prevent confident conclusions about practical utility. First, most evaluations employ single-trial experiments without replication, providing point estimates that may be unrepresentative due to sampling variability, initialization effects, or stochastic training dynamics. Without confidence intervals or hypothesis testing, it is impossible to distinguish genuine treatment effects from random fluctuations, potentially leading to erroneous deployment decisions.
+
+Second, prior work typically varies a single experimental factor while holding others constant, preventing identification of interaction effects or comparative assessment of factor importance. For instance, studies may evaluate synthetic data at a fixed proportion without systematically varying the ratio, or may test a single generation strategy without comparing alternatives. This piecemeal approach leaves critical questions unanswered: Does classifier architecture affect synthetic data sensitivity? How do different prompt engineering strategies compare? Does distribution matching between synthetic and real samples matter for performance?
+
+Third, existing evaluations rarely employ rigorous statistical frameworks for assessing significance and effect magnitude. Without correction for multiple comparisons, reported significant effects may be spurious. Without effect size quantification, statistically significant differences may be practically negligible, misleading practitioners about operational importance. The absence of sensitivity analysis limits understanding of performance-proportion relationships, preventing prediction of degradation for mixing ratios not directly evaluated.
+
+These methodological gaps create a critical need for systematic, replicated evaluation that quantifies uncertainty, tests hypotheses rigorously, and distinguishes between statistical and practical significance.
+
+\subsection{Research Objectives}
+
+This work presents a comprehensive evaluation framework designed to address these limitations and establish empirical foundations for understanding LLM-generated synthetic spam data effectiveness. Our investigation centers on three fundamental research questions:
+
+\begin{enumerate}
+    \item \textbf{Architectural Dependence}: How do different classifier architectures respond to synthetic data integration? Do margin-based and ensemble-based methods exhibit similar sensitivity to synthetic data quality?
+
+    \item \textbf{Generation Strategy Impact}: What role do prompt engineering and distribution matching play in determining synthetic data utility? Do intensive optimization efforts in these dimensions yield commensurate performance gains?
+
+    \item \textbf{Degradation Patterns}: How does classification performance degrade as synthetic data proportion increases? Are degradation patterns linear, enabling simple prediction, or do they exhibit threshold effects and non-linearities requiring more complex modeling?
+\end{enumerate}
+
+To answer these questions, we employ a systematic experimental design with $R = 20$ independent replications, providing sufficient statistical power ($>80\%$) to detect medium effect sizes (Cohen's $d \geq 0.5$) at standard significance levels ($\alpha = 0.05$). This replicated design enables rigorous hypothesis testing with False Discovery Rate correction for multiple comparisons, effect size quantification to distinguish statistical from practical significance, and confidence interval estimation to quantify uncertainty in performance estimates.
+
+\subsection{Approach and Experimental Design}
+
+Our evaluation framework systematically varies four primary experimental factors in a full-factorial design: (1) \emph{Prompt strategy} (original, strong, weak) controlling generation instruction intensity, (2) \emph{Mixing strategy} (within-group, cross-group) manipulating distribution matching between synthetic and real samples, (3) \emph{Synthetic proportion} (0\%-100\% in 10\% increments) varying training set composition, and (4) \emph{Classifier architecture} (SVM, Random Forest) assessing architectural sensitivity. This design yields 1,320 experimental configurations (3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers), enabling comprehensive assessment across diverse conditions.
+
+The experimental protocol employs GPT-4.1-mini for synthetic generation, the CEAS-08 spam corpus as source data, and TF-IDF feature representation for classification. All configurations share a fixed out-of-sample test set to eliminate test set variance as a confounding factor, ensuring that observed performance differences reflect genuine treatment effects rather than evaluation artifacts. Comprehensive statistical analysis—including paired t-tests, effect size calculation, sensitivity regression, and confidence interval estimation—provides rigorous quantification of synthetic data impacts.
+
+\subsection{Principal Findings}
+
+Our systematic evaluation reveals three fundamental insights that reshape understanding of synthetic spam data utility:
+
+\paragraph{Classifier Architecture Dominates Sensitivity} Random Forest demonstrates 11.8-fold greater robustness to synthetic data compared to SVM, maintaining 97.9\% of baseline performance at 100\% synthetic proportion versus SVM's 75.9\% retention. This architectural dependence manifests in fundamentally different degradation patterns: SVM exhibits highly linear performance decline ($R^2 = 0.990$) at -0.154\% F1-score per 1\% synthetic increase, while Random Forest shows non-linear degradation ($R^2 = 0.723$) with 11.8-fold smaller slope magnitude. These patterns suggest that ensemble aggregation mechanisms provide inherent resistance to synthetic data quality variations, while margin-based classifiers' reliance on support vectors makes them vulnerable to distributional artifacts.
+
+\paragraph{Prompt Engineering Shows Minimal Impact} Contrary to intuitive expectations, our three systematically varied prompt strategies produce statistically indistinguishable results (effect sizes $d < 0.1$, completely overlapping confidence intervals). This unexpected finding suggests that fundamental LLM generation capabilities dominate over specific prompt engineering choices, likely due to semantic constraints inherent in spam generation. The practical implication is clear: optimization efforts should focus on model selection and seed quality rather than extensive prompt tuning.
+
+\paragraph{Distribution Matching Proves Flexible} Within-group and cross-group mixing strategies show near-equivalent performance across most synthetic proportions, demonstrating that precise distribution matching between synthetic and real samples provides less benefit than anticipated. This finding substantially simplifies operational deployment, enabling temporal flexibility (historical synthetic data augmenting current training), source diversity (pooling from multiple corpora), and organizational collaboration (sharing synthetic data without revealing specific distributions).
+
+\subsection{Contributions}
+
+This work makes several fundamental contributions to synthetic cybersecurity data research:
+
+\begin{enumerate}
+    \item \textbf{Rigorous Evaluation Framework}: We establish the first large-scale replicated evaluation ($R = 20$) of synthetic spam data, employing comprehensive statistical analysis with hypothesis testing, effect size quantification, and confidence interval estimation. This methodological rigor transforms synthetic data evaluation from exploratory point estimation to confirmatory hypothesis testing with quantified uncertainty.
+
+    \item \textbf{Architectural Sensitivity Characterization}: Through systematic comparison of margin-based and ensemble-based classifiers, we demonstrate dramatic architectural dependence (11.8-fold robustness difference) and establish quantitative degradation models enabling performance prediction for arbitrary synthetic proportions.
+
+    \item \textbf{Factor Importance Ranking}: By systematically varying generation strategies, mixing approaches, and synthetic proportions, we empirically rank factors by operational importance, revealing that classifier architecture dominates while prompt engineering and distribution matching prove surprisingly less critical than conventionally assumed.
+
+    \item \textbf{Operational Deployment Guidance}: Our findings translate directly to actionable recommendations: prioritize ensemble classifiers for synthetic data scenarios, limit SVM synthetic proportions below 30\%, focus optimization on model selection rather than prompt tuning, and leverage distribution matching flexibility for simplified deployment logistics.
+
+    \item \textbf{Evaluation Standards}: The comprehensive statistical framework we establish—incorporating multiple comparison correction, effect sizes, sensitivity analysis, and replicated design—provides a template for rigorous synthetic data evaluation that raises methodological standards in this rapidly evolving research area.
+\end{enumerate}
+
+\subsection{Paper Organization}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work on synthetic data generation and evaluation in cybersecurity contexts. Section~\ref{sec:methodology} presents our four-stage evaluation framework, establishing theoretical foundations and design rationale. Section~\ref{sec:experiment} details the experimental design, including dataset preparation, synthetic generation protocols, classifier configurations, and statistical analysis methods. Section~\ref{sec:evaluation} presents comprehensive results across all experimental conditions, including sensitivity analysis and hypothesis testing outcomes. Section~\ref{sec:discussion} interprets findings, discusses theoretical implications, and addresses limitations and boundary conditions. Section~\ref{sec:conclusion} summarizes contributions and outlines future research directions. Appendices provide complete mathematical formulations, supplementary results, and reproducibility details.

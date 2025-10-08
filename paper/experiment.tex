@@ -140,40 +140,19 @@ This feature representation captures both word-level semantics and local phrase 
 
 \subsection{Performance Metrics}
 
-We employ a comprehensive suite of metrics to capture different aspects of classifier performance:
+We employ a comprehensive suite of seven metrics to capture different aspects of classifier performance:
 
-\subsubsection{Primary Classification Metrics}
+\begin{itemize}
+    \item \textbf{F1-Score}: Harmonic mean of precision and recall, serving as our primary metric for balanced assessment under class imbalance
+    \item \textbf{Accuracy}: Overall classification correctness across both classes
+    \item \textbf{Precision}: Proportion of predicted spam that is truly spam, measuring false positive control
+    \item \textbf{Recall}: Proportion of actual spam correctly identified, measuring detection sensitivity
+    \item \textbf{AUC-ROC}: Area under the Receiver Operating Characteristic curve, measuring threshold-independent discrimination ability
+    \item \textbf{Specificity}: True negative rate for legitimate email detection
+    \item \textbf{Matthews Correlation Coefficient (MCC)}: Balanced measure robust to class imbalance, considering all confusion matrix elements
+\end{itemize}
 
-\begin{enumerate}
-    \item \textbf{Accuracy}: Overall classification correctness
-    \[
-    \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
-    \]
-
-    \item \textbf{Precision}: Proportion of predicted spam that is truly spam
-    \[
-    \text{Precision} = \frac{TP}{TP + FP}
-    \]
-
-    \item \textbf{Recall}: Proportion of actual spam correctly identified
-    \[
-    \text{Recall} = \frac{TP}{TP + FN}
-    \]
-
-    \item \textbf{F1-Score}: Harmonic mean of precision and recall
-    \[
-    \text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
-    \]
-
-    \item \textbf{AUC-ROC}: Area under the Receiver Operating Characteristic curve, measuring discrimination ability across all classification thresholds
-
-    \item \textbf{AUC-PR}: Area under the Precision-Recall curve, particularly relevant for imbalanced datasets
-
-    \item \textbf{Balanced Accuracy}: Average of recall on each class, accounting for class imbalance
-    \[
-    \text{Balanced Accuracy} = \frac{1}{2}\left(\frac{TP}{TP+FN} + \frac{TN}{TN+FP}\right)
-    \]
-\end{enumerate}
+Complete mathematical definitions for all metrics are provided in Appendix~\ref{appendix:metrics}. The F1-score serves as our primary evaluation metric throughout the analysis due to its balanced treatment of precision and recall, particularly appropriate given the 10\% spam class imbalance in our experimental design.
 
 \subsection{Statistical Analysis Framework}
 
@@ -181,14 +160,7 @@ To ensure rigorous statistical inference, we employ a multi-level analysis frame
 
 \subsubsection{Descriptive Statistics}
 
-For each experimental configuration (prompt $\times$ strategy $\times$ ratio $\times$ classifier $\times$ metric), we compute:
-\begin{itemize}
-    \item \textbf{Mean} ($\mu$): Average performance across $R = 20$ groups
-    \item \textbf{Standard deviation} ($\sigma$): Variability in performance
-    \item \textbf{95\% Confidence Interval}: $\mu \pm 1.96 \cdot \frac{\sigma}{\sqrt{R}}$
-\end{itemize}
-
-The confidence intervals quantify estimation uncertainty and enable visual assessment of statistical significance through interval overlap analysis.
+For each experimental configuration (prompt $\times$ strategy $\times$ ratio $\times$ classifier $\times$ metric), we compute mean ($\mu$), standard deviation ($\sigma$), and 95\% confidence intervals across $R = 20$ groups. The confidence intervals quantify estimation uncertainty and enable visual assessment of statistical significance through interval overlap analysis. Detailed formulations are provided in Appendix~\ref{appendix:statistics}.
 
 \subsubsection{Hypothesis Testing}
 
@@ -210,48 +182,17 @@ Given the large number of comparisons (10 ratios $\times$ 2 classifiers $\times$
 
 \subsubsection{Effect Size Analysis}
 
-To assess practical significance beyond statistical significance, we compute Cohen's $d$ for each comparison:
-
-\[
-d = \frac{\mu_{\text{baseline}} - \mu_{\text{ratio}}}{\sigma_{\text{pooled}}}
-\]
-
-where $\sigma_{\text{pooled}}$ is the pooled standard deviation. We interpret effect sizes as:
-\begin{itemize}
-    \item Small: $|d| < 0.2$
-    \item Medium: $0.2 \leq |d| < 0.5$
-    \item Large: $0.5 \leq |d| < 0.8$
-    \item Very large: $|d| \geq 0.8$
-\end{itemize}
+To assess practical significance beyond statistical significance, we compute Cohen's $d$ standardized effect size for each comparison. Effect sizes are interpreted following Cohen's guidelines: negligible ($|d| < 0.2$), small ($0.2 \leq |d| < 0.5$), medium ($0.5 \leq |d| < 0.8$), and large ($|d| \geq 0.8$). Mathematical formulation is provided in Appendix~\ref{appendix:statistics}.
 
 \subsubsection{Sensitivity Analysis}
 
-To quantify the impact of synthetic data proportion on classifier performance, we employ linear regression to model the relationship:
+To quantify the impact of synthetic data proportion on classifier performance, we employ linear regression modeling performance as a function of synthetic ratio ($\theta$). The regression slope ($\beta_1$) quantifies the rate of performance change per 1\% increase in synthetic data, while $R^2$ indicates linearity of the relationship. High $R^2$ values ($> 0.9$) suggest linear degradation patterns, while low values ($< 0.7$) indicate threshold effects or non-linearities. Complete regression formulations are provided in Appendix~\ref{appendix:statistics}.
 
-\[
-\text{Performance} = \beta_0 + \beta_1 \cdot \theta + \epsilon
-\]
+\subsection{Experimental Scale and Reproducibility}
 
-where $\theta$ is the synthetic ratio and $\beta_1$ represents the sensitivity (performance change per 1\% increase in synthetic data). We report:
-\begin{itemize}
-    \item \textbf{Regression slope} ($\beta_1$): Rate of performance change
-    \item \textbf{$R^2$}: Proportion of variance explained by linear relationship
-    \item \textbf{Regression p-value}: Statistical significance of the trend
-    \item \textbf{Total change}: Performance difference between 0\% and 100\% synthetic
-\end{itemize}
+Our complete experimental design encompasses 6,000 LLM generation calls (20 groups $\times$ 100 spam/group $\times$ 3 prompts), 2,640 classifier training runs (3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers), and approximately 9,000 statistical hypothesis tests across all metrics and configurations.
 
-The $R^2$ value indicates whether performance degradation follows a linear pattern ($R^2 \approx 1$) or exhibits threshold effects and non-linearities ($R^2 < 0.7$).
-
-\subsection{Experimental Scale and Computational Requirements}
-
-Our complete experimental design encompasses:
-\begin{itemize}
-    \item \textbf{Synthetic generation}: 20 groups $\times$ 100 spam/group $\times$ 3 prompts = 6,000 LLM API calls
-    \item \textbf{Training configurations}: 3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers = 2,640 classifier training runs
-    \item \textbf{Statistical comparisons}: 66 configurations $\times$ 140 tests/configuration $\approx$ 9,000 hypothesis tests
-\end{itemize}
-
-All experiments are conducted with fixed random seeds ($\text{seed} = 42$) to ensure complete reproducibility. The systematic replication with $R = 20$ groups provides sufficient statistical power while maintaining computational feasibility.
+All experiments employ fixed random seeds ($\text{seed} = 42$) for complete reproducibility. The systematic replication with $R = 20$ groups provides sufficient statistical power ($>80\%$ for medium effects) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
 
 \subsection{Quality Control and Validation}
 

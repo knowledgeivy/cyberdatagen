@@ -1,0 +1,92 @@
+\section{Discussion}
+\label{sec:discussion}
+
+Our comprehensive evaluation through 1,320 replicated experiments establishes fundamental principles governing LLM-generated synthetic spam data effectiveness while revealing critical dependencies on classifier architecture, mixing strategies, and generation approaches. The rigorous statistical framework with $R = 20$ independent replications enables confident assertions about synthetic data utility that extend beyond point estimates to quantify uncertainty, effect magnitudes, and degradation patterns. These findings provide both theoretical insights into synthetic data mechanisms and practical guidance for operational deployment in spam detection systems.
+
+\subsection{Classifier Architecture as the Dominant Factor}
+
+The most striking finding from our evaluation is the profound architectural dependence of synthetic data sensitivity. Random Forest demonstrates 11.8-fold greater robustness to synthetic data compared to SVM, experiencing only 2.1\% relative performance degradation at 100\% synthetic proportion versus SVM's 24.1\% degradation. This remarkable difference cannot be attributed to baseline performance disparities alone, as Random Forest maintains its advantage consistently across all synthetic ratios with minimal effect sizes (Cohen's $d = 0.19$-$0.47$) compared to SVM's substantial effects ($d = 0.35$-$2.02$).
+
+\subsubsection{Theoretical Explanations for Architectural Sensitivity}
+
+The differential sensitivity patterns suggest fundamentally different failure modes between margin-based and ensemble-based classifiers when confronted with distribution shift. SVM's reliance on support vectors for decision boundary construction makes it inherently vulnerable to distributional artifacts introduced by synthetic generation. If LLM-generated spam exhibits systematic deviations from real spam distributions—even subtle shifts in word co-occurrence patterns or semantic density—these perturbations directly impact support vector selection and consequently the entire decision boundary geometry.
+
+The near-perfect linearity of SVM degradation ($R^2 = 0.990$) provides additional evidence for this distributional shift hypothesis. Linear degradation patterns indicate that each percentage point increase in synthetic proportion introduces consistent distributional contamination, accumulating monotonically without threshold effects or saturation phenomena. This pattern suggests that synthetic data does not fundamentally alter the classification problem structure but rather progressively shifts the feature distribution in ways that SVM's margin optimization cannot accommodate.
+
+Random Forest's robustness likely stems from three complementary mechanisms. First, ensemble aggregation across 100 independently trained trees provides natural resistance to individual sample quality variations, as weak signals from lower-quality synthetic samples are averaged out by stronger signals from high-quality samples. Second, the bootstrap sampling mechanism during tree construction ensures that no single synthetic sample can disproportionately influence the ensemble, distributing risk across multiple subsamples. Third, the decision tree's hierarchical splitting strategy may naturally identify and route synthetic samples with unusual feature patterns down less influential branches, limiting their impact on overall predictions.
+
+The moderate $R^2 = 0.723$ for Random Forest degradation supports this multi-mechanism hypothesis, as different resistance mechanisms may dominate at different synthetic proportions, producing non-linear patterns that reflect the complex interplay between bootstrap sampling, feature selection, and aggregation effects.
+
+\subsubsection{Implications for Classifier Selection}
+
+These findings fundamentally alter classifier selection when synthetic data augmentation is anticipated. Organizations planning synthetic spam integration should prioritize ensemble methods over margin-based classifiers. SVM's predictable linear degradation ($\beta_1 = -0.00154$) enables performance forecasting but limits operational flexibility. Random Forest's minimal degradation even at 100\% synthetic enables aggressive utilization for privacy-sensitive applications or rapidly evolving threats where real samples are expensive to collect.
+
+\subsection{The Surprising Irrelevance of Prompt Engineering}
+
+The near-identical performance across our three systematically varied prompt strategies (original, strong, weak) stands as one of the most unexpected findings from our evaluation. With effect sizes below $d = 0.1$ and completely overlapping confidence intervals, the data provides strong evidence that prompt engineering intensity has negligible impact on downstream spam detection performance.
+
+\subsubsection{Explanations for Prompt Strategy Convergence}
+
+Several mechanisms may explain this finding. The semantic constraints of spam rewriting may leave limited room for prompt-driven variation, as spam emails balance competing objectives (persuasive content, promotional elements, urgency signals). GPT-4.1-mini's strong priors about spam characteristics may dominate over explicit instructions. The TF-IDF representation may lack sensitivity to dimensions where prompt strategies diverge, suggesting that deeper semantic representations might reveal effects not captured by lexical features. Finally, spam classifiers may learn coarse-grained patterns that generalize across multiple realizations of spam intent, providing natural resilience to generation intensity variations.
+
+\subsubsection{Practical Implications for Generation Pipeline Design}
+
+The prompt strategy irrelevance finding has immediate practical implications for synthetic spam generation pipelines. Organizations need not invest heavily in prompt optimization, sensitivity analysis, or A/B testing of generation instructions, as these efforts appear unlikely to yield meaningful performance improvements. Instead, generation pipeline development should prioritize:
+
+\begin{itemize}
+    \item \textbf{LLM model selection}: Choosing more capable base models likely provides greater benefits than prompt engineering with weaker models.
+    \item \textbf{Seed sample quality}: Ensuring diverse, representative seed samples appears more critical than optimizing how those seeds are processed.
+    \item \textbf{Post-generation filtering}: Implementing quality checks based on distributional properties or embedding similarity may offer higher returns than prompt tuning.
+    \item \textbf{Mixing ratio optimization}: Given the clear performance-ratio relationships we observe, careful selection of synthetic proportions provides more leverage than prompt adjustments.
+\end{itemize}
+
+This reallocation of optimization effort from prompt engineering toward other pipeline components represents a significant shift in recommended best practices for synthetic spam generation.
+
+\subsection{Distribution Matching: Less Critical Than Anticipated}
+
+The within-group versus cross-group mixing strategy comparison reveals that precise distribution matching between synthetic and real samples provides less benefit than intuition suggests. While within-group mixing should theoretically achieve superior distribution alignment by sourcing synthetic samples from the same spam groups as real training data, our results show minimal consistent performance differences between strategies, with effect sizes well below practical significance thresholds.
+
+\subsubsection{Diversity-Fidelity Trade-offs}
+
+The near-equivalence of mixing strategies suggests synthetic data effectiveness depends more on capturing general spam semantics than on precise statistical alignment. This supports a diversity-oriented view: synthetic samples provide value by expanding semantic space coverage rather than precisely replicating real sample statistics. The slight SVM advantage for cross-group at intermediate ratios hints that distributional diversity may compensate for quality issues, analogous to data augmentation in computer vision where controlled variation improves generalization.
+
+\subsubsection{Operational Simplification from Strategy Equivalence}
+
+From an operational perspective, the strategy equivalence finding substantially simplifies synthetic data deployment. Organizations need not maintain precise correspondence between synthetic and real data sources, enabling more flexible approaches:
+
+\begin{itemize}
+    \item \textbf{Temporal flexibility}: Synthetic data generated from historical spam can augment training for current spam detection without requiring temporal alignment.
+    \item \textbf{Source diversity}: Synthetic samples can be pooled from multiple spam corpora, threat intelligence feeds, or organizational sources without concern for distribution matching.
+    \item \textbf{Organizational collaboration}: Organizations can share synthetic spam data without revealing which specific spam patterns are prevalent in their environments, as precise distribution matching appears unnecessary.
+    \item \textbf{Incremental adaptation}: As new spam variants emerge, synthetic data from those variants can be integrated immediately without waiting to accumulate sufficient samples for distribution-matched mixing.
+\end{itemize}
+
+This operational flexibility reduces the friction associated with synthetic data integration, potentially accelerating adoption in production systems.
+
+\subsection{Methodological Contributions of Large-Scale Replication}
+
+Beyond the specific findings about synthetic spam data, our $R = 20$ replication design demonstrates the value of rigorous statistical methodology in synthetic data research. The comprehensive framework we establish—combining descriptive statistics, hypothesis testing with multiplicity correction, effect size quantification, and sensitivity analysis—provides a template for evaluating synthetic data approaches with confidence estimates and effect magnitude assessment.
+
+\subsubsection{From Point Estimates to Distributional Understanding}
+
+Single-trial evaluations provide point estimates that may be unrepresentative due to sampling variability. Our replicated design transforms these into distributional characterizations with quantified uncertainty. The 95\% confidence intervals reveal that Random Forest's small performance differences may reflect random variation rather than genuine effects, while SVM's non-overlapping intervals across most ratios provide strong evidence for genuine degradation. This signal-noise distinction would be impossible from single-trial results.
+
+\subsubsection{Effect Sizes: Statistical vs Practical Significance}
+
+Cohen's $d$ calculation distinguishes statistically significant effects from practically significant ones. SVM shows both statistical ($p < 0.001$) and practical significance ($d > 2.0$ at high ratios), indicating substantial degradation. Random Forest shows statistical significance but small effect sizes ($d < 0.5$), suggesting differences too small to influence deployment decisions. This distinction guides resource allocation: focus mitigation on combinations showing both significances (SVM), not just statistical significance (Random Forest).
+
+\subsubsection{Sensitivity Analysis for Prediction}
+
+The regression framework enables performance forecasting for arbitrary synthetic proportions. SVM's high $R^2 = 0.990$ supports linear extrapolation: 35\% synthetic augmentation predicts $35 \times 0.00154 = 0.054$ F1-score degradation, enabling cost-benefit analysis. Random Forest's non-linear pattern ($R^2 = 0.723$) requires empirical validation rather than extrapolation, itself providing valuable information about prediction complexity.
+
+\subsection{Limitations and Boundary Conditions}
+
+Several limitations define generalizability boundaries. TF-IDF features capture lexical patterns but may miss semantic characteristics where deep learning models on contextualized embeddings might exhibit different sensitivity profiles. The CEAS-08 dataset represents spam from a specific time period; evolving adversarial tactics may interact differently with synthetic data. Our fixed 10\% spam ratio represents one point on the imbalance spectrum; more severe ($<$5\%) or balanced ($>$20\%) conditions may exhibit different patterns. GPT-4.1-mini represents current LLM capabilities; more advanced models might generate higher-quality synthetic data while weaker models might produce more obvious quality issues.
+
+\subsection{Future Research Directions}
+
+Several high-priority directions warrant investigation. Understanding architectural sensitivity mechanisms through controlled experiments manipulating synthetic data characteristics would enable architecture-optimized generation approaches. Extending the framework to deep learning with contextualized embeddings represents a critical next step, as transformer models might exhibit different robustness profiles. Adversarial testing of synthetic-trained classifiers would inform safe deployment practices. Integrating synthetic generation with active learning could address both scarcity and labeling costs. Evaluating synthetic data's role in temporal adaptation for concept drift remains underexplored. Extending to multimodal cybersecurity data (network traffic, malware binaries, fraud patterns) would test our findings' generality.
+
+\subsection{Broader Implications for Cybersecurity Practice}
+
+Our work contributes to several broader themes. The demonstrated effectiveness enables privacy-preserving threat intelligence sharing, where organizations can generate and share synthetic data without revealing specific attack patterns. The strategy equivalence finding strengthens this case: organizations can share synthetic data without revealing their specific spam distributions. Synthetic generation offers safer alternatives to real spam collection, avoiding operational risks like storing malicious content or legal liability. The framework could democratize cybersecurity research by enabling academic institutions and small organizations to work on realistic problems without access to proprietary datasets. Our comprehensive statistical framework establishes evaluation standards for synthetic cybersecurity data research, providing a template that raises the bar for evidence quality in this rapidly growing field.
