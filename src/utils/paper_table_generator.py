@@ -87,9 +87,9 @@ def calculate_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
         'prompt', 'strategy', 'synthetic_ratio', 'classifier', 'metric'
     ])['value'].agg(['mean', 'std', 'count']).reset_index()
 
-    # 格式化为 mean ± std
+    # 格式化为 mean ± std (3位小数)
     summary['mean_std'] = summary.apply(
-        lambda row: f"{row['mean']:.4f} ± {row['std']:.4f}",
+        lambda row: f"{row['mean']:.3f} ± {row['std']:.3f}",
         axis=1
     )
 
@@ -99,7 +99,7 @@ def calculate_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     summary['ci_lower'] = summary['mean'] - 1.96 * (summary['std'] / np.sqrt(summary['count']))
     summary['ci_upper'] = summary['mean'] + 1.96 * (summary['std'] / np.sqrt(summary['count']))
     summary['ci_95'] = summary.apply(
-        lambda row: f"[{row['ci_lower']:.4f}, {row['ci_upper']:.4f}]",
+        lambda row: f"[{row['ci_lower']:.3f}, {row['ci_upper']:.3f}]",
         axis=1
     )
 

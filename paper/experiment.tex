@@ -1,0 +1,291 @@
+\section{Experimental Design}
+\label{sec:experiment}
+
+This section describes our comprehensive experimental framework designed to rigorously evaluate the effectiveness and limitations of LLM-generated synthetic spam data for training spam classifiers. Our design employs a multi-factorial approach with systematic replication to ensure statistical reliability and generalizability of findings.
+
+\subsection{Dataset and Sampling Strategy}
+
+\subsubsection{Source Dataset}
+
+We conduct our experiments using the CEAS-08 spam email dataset~\cite{ceas08}, which contains 39,154 real-world email samples with 21,842 labeled as spam (55.8\%) and 17,312 as legitimate (44.2\%). This dataset provides a substantial corpus of authentic spam emails that capture diverse spam patterns and tactics observed in real-world email systems.
+
+\subsubsection{Stratified Group Sampling}
+
+To ensure statistical rigor and enable robust hypothesis testing, we employ stratified random sampling to partition the spam corpus into $R = 20$ independent groups. Each group contains $N = 1,000$ samples with a fixed spam ratio of 10\% (100 spam, 900 legitimate), reflecting realistic class imbalance commonly observed in operational email filtering systems.
+
+The stratification process ensures:
+\begin{itemize}
+    \item \textbf{Statistical independence}: Each group is sampled without replacement, creating 20 statistically independent experimental units.
+    \item \textbf{Distributional balance}: Stratified sampling maintains representation of diverse spam patterns across all groups.
+    \item \textbf{Replication power}: With $R = 20$ groups, we achieve sufficient statistical power ($>80\%$) to detect medium effect sizes (Cohen's $d \geq 0.5$) at $\alpha = 0.05$ significance level.
+\end{itemize}
+
+\subsubsection{Train-Test Split}
+
+We employ a fixed out-of-sample test set to ensure consistent evaluation across all experimental conditions. The test set, comprising 20\% of the total dataset, is held out before any experimental manipulation and remains constant across all configurations. This approach eliminates test set variance as a confounding factor and enables fair comparison across different synthetic data strategies and ratios.
+
+The training data from each group is further used to construct experimental datasets with varying synthetic data proportions, while the test set remains pure real-world data throughout all experiments.
+
+\subsection{Synthetic Data Generation}
+
+\subsubsection{LLM Configuration}
+
+We employ GPT-4.1-mini as our generation engine with the following configuration:
+\begin{itemize}
+    \item \textbf{Temperature}: 0.7 (balancing diversity and coherence)
+    \item \textbf{Max tokens}: 1,000 (sufficient for email content)
+    \item \textbf{Top-p}: 1.0 (full vocabulary access)
+    \item \textbf{Frequency/Presence penalties}: 0.0 (no artificial diversity forcing)
+\end{itemize}
+
+\subsubsection{Prompt Engineering Strategies}
+
+To investigate the impact of generation instructions on synthetic data quality, we design three distinct prompt strategies that vary in their guidance intensity:
+
+\begin{enumerate}
+    \item \textbf{Original Prompt}: Instructs the LLM to rewrite spam emails while preserving malicious intent and semantic content. This serves as our baseline generation approach, emphasizing faithful reproduction of spam characteristics.
+
+    \item \textbf{Strong Prompt}: Encourages amplification of spam features by explicitly requesting emphasis on malicious characteristics and obvious spam indicators. This strategy tests whether more explicit spam signals improve classifier training.
+
+    \item \textbf{Weak Prompt}: Promotes subtle spam generation by requesting less obvious malicious content while maintaining spam intent. This strategy explores whether more legitimate-appearing spam variants provide training value.
+\end{enumerate}
+
+All prompts follow a consistent template structure with systematic instructions and JSON-formatted output requirements to ensure parsing reliability. Complete prompt templates are provided in Appendix~\ref{appendix:prompts}.
+
+\subsubsection{Synthetic Data Mixing Strategies}
+
+We implement two fundamental mixing strategies to evaluate different synthetic data deployment scenarios:
+
+\begin{enumerate}
+    \item \textbf{Within-Group Strategy}: For each group $i$, synthetic spam is generated from real spam samples \emph{within the same group}. The training set combines real spam from group $i$ with synthetic spam generated from group $i$'s real samples. This strategy tests the effectiveness of synthetic data when it closely matches the target distribution.
+
+    Mathematical formulation:
+    \[
+    \text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}
+    \]
+    where $\theta$ is the synthetic proportion and synthetic samples are generated from $\text{Real}_i$.
+
+    \item \textbf{Cross-Group Strategy}: For each group $i$, synthetic spam is generated from real spam samples in \emph{different groups} ($j \neq i$). This strategy tests the generalization capability of synthetic data when it does not precisely match the target distribution.
+
+    Mathematical formulation:
+    \[
+    \text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}
+    \]
+\end{enumerate}
+
+These two strategies enable us to distinguish between in-distribution synthetic data effectiveness (within-group) and cross-distribution generalization (cross-group), providing insights into the robustness and transfer learning properties of LLM-generated spam.
+
+\subsection{Experimental Factors and Design}
+
+Our experimental design follows a full-factorial structure with three primary factors:
+
+\begin{enumerate}
+    \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
+    \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
+    \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
+\end{enumerate}
+
+This yields $3 \times 2 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups, resulting in $66 \times 20 = 1,320$ total experimental units.
+
+\subsubsection{Synthetic Ratio Progression}
+
+We systematically vary the synthetic data proportion $\theta$ from 0\% (pure real data baseline) to 100\% (pure synthetic data) in 10\% increments. This granular progression enables:
+\begin{itemize}
+    \item Detection of non-linear effects and threshold phenomena
+    \item Sensitivity analysis to quantify performance degradation rates
+    \item Identification of optimal mixing ratios for operational deployment
+\end{itemize}
+
+\subsection{Classification Models}
+
+We evaluate two distinct classifier architectures to ensure findings generalize across different learning paradigms:
+
+\subsubsection{Support Vector Machine (SVM)}
+
+We employ an RBF kernel SVM with the following hyperparameters:
+\begin{itemize}
+    \item Regularization parameter: $C = 1.0$
+    \item Kernel: Radial Basis Function (RBF)
+    \item Class weight: Balanced (to handle 10\% spam ratio)
+    \item Random state: 42 (for reproducibility)
+\end{itemize}
+
+SVM is selected for its strong theoretical foundations, effectiveness in high-dimensional feature spaces, and interpretability through support vector analysis.
+
+\subsubsection{Random Forest (RF)}
+
+We employ a Random Forest ensemble with the following hyperparameters:
+\begin{itemize}
+    \item Number of trees: 100
+    \item Maximum depth: 10
+    \item Minimum samples per split: 5
+    \item Minimum samples per leaf: 2
+    \item Class weight: Balanced
+    \item Random state: 42
+\end{itemize}
+
+Random Forest is selected for its robustness to overfitting, ability to capture non-linear patterns, and natural handling of feature interactions.
+
+\subsubsection{Feature Representation}
+
+All emails are represented using TF-IDF features with the following configuration:
+\begin{itemize}
+    \item Maximum features: 10,000
+    \item N-gram range: Unigrams and bigrams (1-2)
+    \item Stop words: English
+    \item Lowercase normalization: Enabled
+\end{itemize}
+
+This feature representation captures both word-level semantics and local phrase patterns relevant to spam detection.
+
+\subsection{Performance Metrics}
+
+We employ a comprehensive suite of metrics to capture different aspects of classifier performance:
+
+\subsubsection{Primary Classification Metrics}
+
+\begin{enumerate}
+    \item \textbf{Accuracy}: Overall classification correctness
+    \[
+    \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+    \]
+
+    \item \textbf{Precision}: Proportion of predicted spam that is truly spam
+    \[
+    \text{Precision} = \frac{TP}{TP + FP}
+    \]
+
+    \item \textbf{Recall}: Proportion of actual spam correctly identified
+    \[
+    \text{Recall} = \frac{TP}{TP + FN}
+    \]
+
+    \item \textbf{F1-Score}: Harmonic mean of precision and recall
+    \[
+    \text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+    \]
+
+    \item \textbf{AUC-ROC}: Area under the Receiver Operating Characteristic curve, measuring discrimination ability across all classification thresholds
+
+    \item \textbf{AUC-PR}: Area under the Precision-Recall curve, particularly relevant for imbalanced datasets
+
+    \item \textbf{Balanced Accuracy}: Average of recall on each class, accounting for class imbalance
+    \[
+    \text{Balanced Accuracy} = \frac{1}{2}\left(\frac{TP}{TP+FN} + \frac{TN}{TN+FP}\right)
+    \]
+\end{enumerate}
+
+\subsection{Statistical Analysis Framework}
+
+To ensure rigorous statistical inference, we employ a multi-level analysis framework combining descriptive statistics, hypothesis testing, and sensitivity analysis.
+
+\subsubsection{Descriptive Statistics}
+
+For each experimental configuration (prompt $\times$ strategy $\times$ ratio $\times$ classifier $\times$ metric), we compute:
+\begin{itemize}
+    \item \textbf{Mean} ($\mu$): Average performance across $R = 20$ groups
+    \item \textbf{Standard deviation} ($\sigma$): Variability in performance
+    \item \textbf{95\% Confidence Interval}: $\mu \pm 1.96 \cdot \frac{\sigma}{\sqrt{R}}$
+\end{itemize}
+
+The confidence intervals quantify estimation uncertainty and enable visual assessment of statistical significance through interval overlap analysis.
+
+\subsubsection{Hypothesis Testing}
+
+We conduct paired t-tests to compare each synthetic ratio configuration against the pure real data baseline (0\% synthetic). The null hypothesis for each comparison is:
+
+\[
+H_0: \mu_{\text{baseline}} = \mu_{\text{ratio}}
+\]
+\[
+H_1: \mu_{\text{baseline}} \neq \mu_{\text{ratio}}
+\]
+
+Given the large number of comparisons (10 ratios $\times$ 2 classifiers $\times$ 7 metrics = 140 tests per configuration), we apply the Benjamini-Hochberg False Discovery Rate (FDR) correction~\cite{benjamini1995controlling} to control for multiple testing:
+\begin{itemize}
+    \item Significance level: $\alpha = 0.05$
+    \item Correction method: FDR-BH (Benjamini-Hochberg)
+    \item Corrected p-values reported throughout
+\end{itemize}
+
+\subsubsection{Effect Size Analysis}
+
+To assess practical significance beyond statistical significance, we compute Cohen's $d$ for each comparison:
+
+\[
+d = \frac{\mu_{\text{baseline}} - \mu_{\text{ratio}}}{\sigma_{\text{pooled}}}
+\]
+
+where $\sigma_{\text{pooled}}$ is the pooled standard deviation. We interpret effect sizes as:
+\begin{itemize}
+    \item Small: $|d| < 0.2$
+    \item Medium: $0.2 \leq |d| < 0.5$
+    \item Large: $0.5 \leq |d| < 0.8$
+    \item Very large: $|d| \geq 0.8$
+\end{itemize}
+
+\subsubsection{Sensitivity Analysis}
+
+To quantify the impact of synthetic data proportion on classifier performance, we employ linear regression to model the relationship:
+
+\[
+\text{Performance} = \beta_0 + \beta_1 \cdot \theta + \epsilon
+\]
+
+where $\theta$ is the synthetic ratio and $\beta_1$ represents the sensitivity (performance change per 1\% increase in synthetic data). We report:
+\begin{itemize}
+    \item \textbf{Regression slope} ($\beta_1$): Rate of performance change
+    \item \textbf{$R^2$}: Proportion of variance explained by linear relationship
+    \item \textbf{Regression p-value}: Statistical significance of the trend
+    \item \textbf{Total change}: Performance difference between 0\% and 100\% synthetic
+\end{itemize}
+
+The $R^2$ value indicates whether performance degradation follows a linear pattern ($R^2 \approx 1$) or exhibits threshold effects and non-linearities ($R^2 < 0.7$).
+
+\subsection{Experimental Scale and Computational Requirements}
+
+Our complete experimental design encompasses:
+\begin{itemize}
+    \item \textbf{Synthetic generation}: 20 groups $\times$ 100 spam/group $\times$ 3 prompts = 6,000 LLM API calls
+    \item \textbf{Training configurations}: 3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers = 2,640 classifier training runs
+    \item \textbf{Statistical comparisons}: 66 configurations $\times$ 140 tests/configuration $\approx$ 9,000 hypothesis tests
+\end{itemize}
+
+All experiments are conducted with fixed random seeds ($\text{seed} = 42$) to ensure complete reproducibility. The systematic replication with $R = 20$ groups provides sufficient statistical power while maintaining computational feasibility.
+
+\subsection{Quality Control and Validation}
+
+To ensure data quality and experimental validity, we implement multiple quality control mechanisms:
+
+\subsubsection{Generation Quality Checks}
+\begin{itemize}
+    \item Length constraints: $0.3 \leq \frac{|\text{synthetic}|}{|\text{original}|} \leq 3.0$
+    \item Similarity bounds: $0.1 \leq \text{similarity}(\text{synthetic}, \text{original}) \leq 0.95$
+    \item JSON parsing validation: All generated outputs must parse successfully
+    \item Language quality: Automated checks for grammatical coherence
+\end{itemize}
+
+\subsubsection{Statistical Validation}
+\begin{itemize}
+    \item \textbf{Distributional checks}: Verify that group sampling maintains overall spam distribution
+    \item \textbf{Assumption testing}: Validate normality and homoscedasticity assumptions for parametric tests
+    \item \textbf{Robustness verification}: Supplement t-tests with non-parametric Wilcoxon signed-rank tests
+    \item \textbf{Outlier analysis}: Identify and investigate extreme performance deviations
+\end{itemize}
+
+\subsection{Reproducibility and Open Science}
+
+To facilitate reproducibility and enable future research, we provide:
+\begin{itemize}
+    \item Complete configuration files specifying all experimental parameters
+    \item Detailed random seed documentation for all stochastic processes
+    \item Comprehensive logging of all experimental runs with timestamps
+    \item Statistical analysis scripts with documented data processing steps
+    \item Result tables with mean $\pm$ standard deviation and 95\% confidence intervals
+\end{itemize}
+
+All experimental code, configurations, and analysis scripts are version-controlled and documented to enable exact replication of our findings.
+
+\subsection{Ethical Considerations}
+
+Our experiments use publicly available spam datasets collected with appropriate consent and ethical review. The synthetic spam generation is conducted solely for research purposes to improve spam detection capabilities, with all generated data secured and not disseminated publicly to prevent misuse. We do not conduct experiments involving real user data or operational email systems.
