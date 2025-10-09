@@ -43,15 +43,11 @@ The $R^2$ metric distinguishes between linear degradation patterns (enabling sim
 
 \subsection{Practical Implications and Operational Guidance}
 
-Our findings translate directly to operational guidance for deploying synthetic spam data in production systems.
+Our findings provide strategic guidance for organizations deploying synthetic spam data. The architectural dependence suggests that classifier selection represents the most impactful decision: ensemble methods enable aggressive synthetic utilization while margin-based classifiers require careful proportion management. Organizations should prioritize architectural choice over peripheral optimization efforts.
 
-For SVM-based systems, synthetic proportions should remain below 30\% to limit degradation to acceptable levels ($<$10\% relative loss). The predictable linear relationship enables performance forecasting: introducing $X\%$ synthetic data degrades F1-score by approximately $0.154X\%$, supporting systematic cost-benefit analysis.
+The prompt engineering irrelevance finding redirects optimization resources toward fundamentally impactful factors—LLM model capability, seed sample diversity, and post-generation quality control—rather than intensive prompt tuning. This resource reallocation enables more efficient generation pipelines without sacrificing effectiveness.
 
-For Random Forest systems, the minimal degradation even at 100\% synthetic (2.1\% relative loss) enables aggressive synthetic data utilization in scenarios where real spam is expensive, privacy-sensitive, or legally constrained. The non-linear degradation pattern necessitates empirical validation for specific proportion choices rather than relying on linear extrapolation.
-
-The strategy equivalence at high synthetic proportions simplifies deployment logistics, eliminating requirements for precise distribution matching between synthetic and real data sources. This flexibility reduces operational complexity for scenarios requiring synthetic data from diverse sources or time periods.
-
-The minimal prompt engineering impact suggests that generation pipeline optimization should prioritize seed sample quality, LLM model selection, and post-generation filtering rather than extensive prompt tuning, enabling more efficient resource allocation.
+The distribution matching flexibility simplifies deployment logistics, enabling organizations to leverage synthetic data from diverse sources, time periods, and collaborators without requiring precise statistical alignment. This operational flexibility reduces friction for adoption in privacy-constrained, legally restricted, or rapidly evolving threat environments where real spam collection faces practical barriers.
 
 \subsection{Limitations and Scope}
 

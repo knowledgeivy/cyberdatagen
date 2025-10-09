@@ -17,9 +17,11 @@ Random Forest's robustness likely stems from three complementary mechanisms. Fir
 
 The moderate $R^2 = 0.723$ for Random Forest degradation supports this multi-mechanism hypothesis, as different resistance mechanisms may dominate at different synthetic proportions, producing non-linear patterns that reflect the complex interplay between bootstrap sampling, feature selection, and aggregation effects.
 
-\subsubsection{Implications for Classifier Selection}
+\subsubsection{Implications for Classifier Selection and Deployment}
 
 These findings fundamentally alter classifier selection when synthetic data augmentation is anticipated. Organizations planning synthetic spam integration should prioritize ensemble methods over margin-based classifiers. SVM's predictable linear degradation ($\beta_1 = -0.00154$) enables performance forecasting but limits operational flexibility. Random Forest's minimal degradation even at 100\% synthetic enables aggressive utilization for privacy-sensitive applications or rapidly evolving threats where real samples are expensive to collect.
+
+For operational deployment, these patterns translate to concrete guidance. SVM-based systems requiring synthetic augmentation should limit synthetic proportions below 30\% to maintain acceptable performance ($<$10\% relative degradation), leveraging the linear relationship for straightforward cost-benefit analysis. Random Forest systems, conversely, can operate effectively even with 100\% synthetic training data, offering deployment flexibility for privacy-constrained or legally restricted environments where real spam collection is impractical. The 11.8-fold robustness difference suggests that architectural choice may be the single most impactful decision for synthetic data utilization strategies.
 
 \subsection{The Surprising Irrelevance of Prompt Engineering}
 
@@ -29,18 +31,9 @@ The near-identical performance across our three systematically varied prompt str
 
 Several mechanisms may explain this finding. The semantic constraints of spam rewriting may leave limited room for prompt-driven variation, as spam emails balance competing objectives (persuasive content, promotional elements, urgency signals). GPT-4.1-mini's strong priors about spam characteristics may dominate over explicit instructions. The TF-IDF representation may lack sensitivity to dimensions where prompt strategies diverge, suggesting that deeper semantic representations might reveal effects not captured by lexical features. Finally, spam classifiers may learn coarse-grained patterns that generalize across multiple realizations of spam intent, providing natural resilience to generation intensity variations.
 
-\subsubsection{Practical Implications for Generation Pipeline Design}
+\subsubsection{Implications for Generation Pipeline Design}
 
-The prompt strategy irrelevance finding has immediate practical implications for synthetic spam generation pipelines. Organizations need not invest heavily in prompt optimization, sensitivity analysis, or A/B testing of generation instructions, as these efforts appear unlikely to yield meaningful performance improvements. Instead, generation pipeline development should prioritize:
-
-\begin{itemize}
-    \item \textbf{LLM model selection}: Choosing more capable base models likely provides greater benefits than prompt engineering with weaker models.
-    \item \textbf{Seed sample quality}: Ensuring diverse, representative seed samples appears more critical than optimizing how those seeds are processed.
-    \item \textbf{Post-generation filtering}: Implementing quality checks based on distributional properties or embedding similarity may offer higher returns than prompt tuning.
-    \item \textbf{Mixing ratio optimization}: Given the clear performance-ratio relationships we observe, careful selection of synthetic proportions provides more leverage than prompt adjustments.
-\end{itemize}
-
-This reallocation of optimization effort from prompt engineering toward other pipeline components represents a significant shift in recommended best practices for synthetic spam generation.
+The prompt strategy irrelevance finding fundamentally shifts optimization priorities for synthetic spam generation pipelines. Rather than investing in prompt optimization, sensitivity analysis, or A/B testing of generation instructions—efforts unlikely to yield meaningful performance improvements—practitioners should focus on LLM model selection (choosing more capable base models), seed sample quality (ensuring diverse, representative seeds), post-generation filtering (implementing distributional quality checks), and mixing ratio optimization (leveraging the clear performance-ratio relationships we observe). This reallocation of effort from prompt engineering toward more impactful pipeline components represents a significant shift in recommended best practices.
 
 \subsection{Distribution Matching: Less Critical Than Anticipated}
 
@@ -50,18 +43,9 @@ The within-group versus cross-group mixing strategy comparison reveals that prec
 
 The near-equivalence of mixing strategies suggests synthetic data effectiveness depends more on capturing general spam semantics than on precise statistical alignment. This supports a diversity-oriented view: synthetic samples provide value by expanding semantic space coverage rather than precisely replicating real sample statistics. The slight SVM advantage for cross-group at intermediate ratios hints that distributional diversity may compensate for quality issues, analogous to data augmentation in computer vision where controlled variation improves generalization.
 
-\subsubsection{Operational Simplification from Strategy Equivalence}
+\subsubsection{Operational Simplification}
 
-From an operational perspective, the strategy equivalence finding substantially simplifies synthetic data deployment. Organizations need not maintain precise correspondence between synthetic and real data sources, enabling more flexible approaches:
-
-\begin{itemize}
-    \item \textbf{Temporal flexibility}: Synthetic data generated from historical spam can augment training for current spam detection without requiring temporal alignment.
-    \item \textbf{Source diversity}: Synthetic samples can be pooled from multiple spam corpora, threat intelligence feeds, or organizational sources without concern for distribution matching.
-    \item \textbf{Organizational collaboration}: Organizations can share synthetic spam data without revealing which specific spam patterns are prevalent in their environments, as precise distribution matching appears unnecessary.
-    \item \textbf{Incremental adaptation}: As new spam variants emerge, synthetic data from those variants can be integrated immediately without waiting to accumulate sufficient samples for distribution-matched mixing.
-\end{itemize}
-
-This operational flexibility reduces the friction associated with synthetic data integration, potentially accelerating adoption in production systems.
+From an operational perspective, the strategy equivalence finding substantially simplifies synthetic data deployment. Organizations need not maintain precise correspondence between synthetic and real data sources, enabling temporal flexibility (using historical synthetic data for current training), source diversity (pooling from multiple corpora without distribution matching concerns), organizational collaboration (sharing synthetic data without revealing specific spam distributions), and incremental adaptation (integrating new variants immediately without accumulation delays). This operational flexibility reduces deployment friction, potentially accelerating production adoption.
 
 \subsection{Methodological Contributions of Large-Scale Replication}
 

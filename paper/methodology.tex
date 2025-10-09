@@ -32,9 +32,13 @@ The framework is grounded in four fundamental principles that address key challe
 
 \subsubsection{Statistical Replication for Robust Inference}
 
-Our adoption of $R = 20$ independent experimental groups reflects statistical power analysis requirements for detecting practically meaningful effects. With 20 replications, we achieve statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) at standard significance levels ($\alpha = 0.05$). This design choice transforms synthetic data evaluation from exploratory single-point estimation to rigorous hypothesis testing with quantified uncertainty, enabling confident conclusions about synthetic data effectiveness across operational variability.
+Our adoption of replicated experimental design reflects statistical power analysis requirements for detecting practically meaningful effects. The required sample size $R$ (number of independent groups) is determined through power analysis:
+\begin{equation}
+\text{Power}(R, \delta, \alpha) = P(\text{reject } H_0 | H_1 \text{ true}) = f(R, \delta, \alpha, \sigma)
+\end{equation}
+where $\delta$ is the minimum detectable effect size, $\alpha$ is the significance level, and $\sigma$ is the expected standard deviation. This design choice transforms synthetic data evaluation from exploratory single-point estimation to rigorous hypothesis testing with quantified uncertainty, enabling confident conclusions about synthetic data effectiveness across operational variability. The specific value of $R$ for our experiments is determined in Section~\ref{sec:experiment}.
 
-The replication approach addresses a critical limitation in existing synthetic data research, where single-trial experiments cannot distinguish genuine treatment effects from random variation. By observing performance across 20 independent groups, we can quantify both central tendency (mean performance) and dispersion (standard deviation, confidence intervals), providing complete characterization of synthetic data impact rather than point estimates that may be unrepresentative.
+The replication approach addresses a critical limitation in existing synthetic data research, where single-trial experiments cannot distinguish genuine treatment effects from random variation. By observing performance across $R$ independent groups, we can quantify both central tendency (mean performance) and dispersion (standard deviation, confidence intervals), providing complete characterization of synthetic data impact rather than point estimates that may be unrepresentative.
 
 \subsubsection{Controlled Prompt Engineering for Systematic Exploration}
 
@@ -86,23 +90,17 @@ Our methodology employs a comprehensive metrics suite that captures synthetic da
 
 \subsubsection{Classification Performance Metrics}
 
-The classification metrics provide standard machine learning assessment across all experimental conditions, ensuring comprehensive evaluation of synthetic data utility for operational spam detection:
+Comprehensive evaluation requires multiple metrics capturing different performance aspects. We employ a balanced metrics suite combining:
 
 \begin{itemize}
-\item \textbf{Accuracy}: Overall correctness rate measuring the proportion of correctly classified samples. While informative, accuracy can be misleading under class imbalance, motivating our emphasis on additional metrics.
+\item \textbf{Threshold-dependent metrics}: Measures evaluated at fixed decision thresholds, including precision (false positive control), recall (false negative control), and their harmonic mean F1-score (balanced assessment under class imbalance).
 
-\item \textbf{Precision}: True positive rate for spam detection, quantifying the reliability of positive classifications. High precision minimizes false positives, critical for maintaining user trust in spam filtering systems.
+\item \textbf{Threshold-independent metrics}: Measures aggregating performance across all decision thresholds, such as AUC-ROC (overall discrimination ability) and AUC-PR (performance under severe imbalance).
 
-\item \textbf{Recall}: Sensitivity measure capturing the ability to identify spam samples. High recall minimizes false negatives, ensuring that malicious content is reliably detected.
-
-\item \textbf{F1-Score}: Harmonic mean of precision and recall, providing balanced assessment particularly important under class imbalance conditions. The F1-score serves as our primary metric for comparing synthetic data strategies, as it equally weights both error types.
-
-\item \textbf{AUC-ROC}: Area under the receiver operating characteristic curve, measuring classifier discrimination ability across all decision thresholds. AUC-ROC provides threshold-independent assessment, complementing threshold-dependent metrics.
-
-\item \textbf{Specificity}: True negative rate for legitimate email detection, quantifying the ability to correctly identify benign samples. High specificity minimizes legitimate email misclassification.
-
-\item \textbf{Matthews Correlation Coefficient (MCC)}: Balanced measure considering all confusion matrix elements, providing robust performance assessment even under severe class imbalance.
+\item \textbf{Balanced measures}: Metrics designed to handle class imbalance through normalization or comprehensive confusion matrix consideration, providing robust assessment when class distributions are skewed.
 \end{itemize}
+
+This multi-faceted approach ensures that synthetic data effectiveness is evaluated comprehensively rather than through single-aspect assessment. The specific metrics employed and their mathematical definitions are detailed in Section~\ref{sec:experiment} and Appendix~\ref{appendix:metrics} respectively.
 
 \subsubsection{Statistical Analysis Metrics}
 
@@ -116,15 +114,23 @@ s_m = \sqrt{\frac{1}{R-1}\sum_{r=1}^{R} (m_r - \bar{m})^2}
 \end{equation}
 where $m_r$ denotes the performance metric for the $r$-th experimental group. The mean $\bar{m}$ quantifies expected performance, while standard deviation $s_m$ indicates consistency across operational variability. This replicated measurement approach provides complete distributional characterization rather than single-point estimates.
 
-\item \textbf{Confidence Intervals}: 95\% confidence intervals quantify estimation uncertainty for all performance metrics:
+\item \textbf{Confidence Intervals}: Confidence intervals quantify estimation uncertainty for all performance metrics:
 \begin{equation}
-\text{CI}_{95\%} \approx \bar{m} \pm 1.96 \cdot \frac{s_m}{\sqrt{R}}
+\text{CI}_{1-\alpha} = \bar{m} \pm t_{\alpha/2, R-1} \cdot \frac{s_m}{\sqrt{R}}
 \end{equation}
-For $R = 20$ replications, this yields margin of error $\approx 0.44 \cdot s_m$, providing reasonable precision for operational decision making. Narrow intervals indicate precise estimates, while wide intervals suggest high variability requiring cautious interpretation. Complete t-distribution formulation accounting for finite sample size is provided in Appendix~\ref{appendix:statistics}.
+where $t_{\alpha/2, R-1}$ is the critical value from Student's t-distribution with $R-1$ degrees of freedom. For large $R$, the t-distribution approximates the normal distribution: $t \approx z_{\alpha/2}$. Narrow intervals indicate precise estimates, while wide intervals suggest high variability requiring cautious interpretation. The specific confidence level (e.g., 95\%) is determined in Section~\ref{sec:experiment}. Complete derivation is provided in Appendix~\ref{appendix:statistics}.
 
-\item \textbf{Hypothesis Testing}: Paired t-tests comparing each synthetic ratio against baseline (0\% synthetic), with Benjamini-Hochberg False Discovery Rate correction for multiple comparisons. This approach controls expected proportion of false discoveries while maintaining reasonable statistical power.
+\item \textbf{Hypothesis Testing}: For each synthetic ratio configuration, we test against the baseline using paired comparisons:
+\begin{equation}
+H_0: \mu_{\text{baseline}} = \mu_{\text{ratio}}, \quad H_1: \mu_{\text{baseline}} \neq \mu_{\text{ratio}}
+\end{equation}
+Given multiple simultaneous tests, we apply Benjamini-Hochberg False Discovery Rate (FDR) correction to control the expected proportion of false discoveries among rejected hypotheses, ensuring that reported significant effects are unlikely to be spurious while maintaining reasonable statistical power.
 
-\item \textbf{Effect Sizes}: Cohen's $d$ quantifying standardized mean differences between conditions. Effect size interpretation follows standard guidelines: $|d| < 0.2$ = negligible, $0.2 \leq |d| < 0.5$ = small, $0.5 \leq |d| < 0.8$ = medium, $|d| \geq 0.8$ = large.
+\item \textbf{Effect Sizes}: To distinguish statistical significance from practical importance, we compute standardized effect size:
+\begin{equation}
+d = \frac{\mu_1 - \mu_2}{\sigma_{\text{pooled}}}, \quad \text{where} \quad \sigma_{\text{pooled}} = \sqrt{\frac{(n_1-1)\sigma_1^2 + (n_2-1)\sigma_2^2}{n_1 + n_2 - 2}}
+\end{equation}
+Effect magnitude interpretation follows Cohen's conventional guidelines, distinguishing negligible, small, medium, and large effects. Complete thresholds are specified in Section~\ref{sec:experiment}.
 
 \item \textbf{Sensitivity Analysis}: Linear regression modeling performance as a function of synthetic proportion:
 \[
