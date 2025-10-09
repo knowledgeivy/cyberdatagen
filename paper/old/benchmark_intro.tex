@@ -1,0 +1,99 @@
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\title{Robust Benchmarking via Multi-Sample Evaluation}
+\author{(Your Name)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% This file is self-contained and should compile with pdflatex/xelatex.
+% It does not assume a specific paper organization.
+% You can keep everything under this single section or move parts elsewhere later.
+
+\section*{Introduction}
+
+Modern model evaluation often relies on a single held-out test set and a point estimate such as accuracy or F1. This practice can be misleading for two reasons. First, one-shot testing confounds the true performance of a model with the idiosyncrasies of a particular sample. Second, extremely high scores (e.g., 99--100\%) are frequently artifacts of unrepresentative class balance or leakage rather than genuine generalization. To obtain a more faithful picture, we argue that a benchmark should be constructed with \emph{explicit data composition} and \emph{multi-sample testing} at its core, and that reporting should center on \emph{ranges} and \emph{uncertainty} rather than single numbers.
+
+\paragraph{Data composition and realism.}
+Let $\mathcal{D}$ denote a pool of labeled examples partitioned into positives $\mathcal{D}^{+}$ and negatives $\mathcal{D}^{-}$.
+A realistic benchmark specifies a target class ratio $(\pi^{+}, \pi^{-})$ with $\pi^{+} + \pi^{-} = 1$ (e.g., $\pi^{+}=0.8,\ \pi^{-}=0.2$ or $\pi^{+}=0.9,\ \pi^{-}=0.1$), reflecting the expected operational prevalence.
+Benchmarks may be constructed per dataset (single-source baseline) or by mixing multiple sources (pooled baseline) to capture heterogeneity.
+
+\paragraph{Repeated out-of-sample evaluation.}
+Given a model $f$ and a metric $m(\cdot)$ (e.g., Accuracy, Precision, Recall, F1, AUROC), we draw $R$ independent \emph{out-of-sample} test sets $\{\mathcal{T}_r\}_{r=1}^{R}$ from $\mathcal{D}$ according to $(\pi^{+}, \pi^{-})$, each of size $n$.
+We compute $m_r = m(f;\mathcal{T}_r)$ for every replicate.
+The reporting target becomes the sampling distribution summary:
+\begin{equation*}
+\bar{m}=\frac{1}{R}\sum_{r=1}^{R} m_r,\qquad
+s_m=\sqrt{\frac{1}{R-1}\sum_{r=1}^{R} (m_r - \bar{m})^2}.
+\end{equation*}
+Instead of a single point, we present $\bar{m} \pm s_m$ and a $(1-\alpha)$ confidence interval (CI).
+For large $R$, a normal-approximate CI is
+\begin{equation*}
+\text{CI}_{1-\alpha}: \quad \bar{m} \pm z_{1-\alpha/2}\cdot \frac{s_m}{\sqrt{R}},
+\end{equation*}
+or the Student-$t$ variant when $R$ is modest.
+This reframes evaluation as \emph{performance with quantified uncertainty}.
+
+\paragraph{Multiple baselines and factorization of variability.}
+Beyond a single composition, we consider a grid of benchmark settings:
+(i) \textbf{per-dataset} baselines (each source independently),
+(ii) \textbf{mixed} baselines (sources pooled at controlled proportions), and
+(iii) \textbf{composition sweeps} across $\pi^{+}\in\{0.5,0.8,0.9\}$ (and $\pi^{-}=1-\pi^{+}$).
+For each setting, we repeat the sampling protocol to estimate $(\bar{m}, s_m, \text{CI})$.
+This exposes sensitivity to dataset origin and class balance, two dominant axes of real-world variation.
+
+\paragraph{Comparing multiple models.}
+Let $\mathcal{F}=\{f^{(1)},\dots,f^{(K)}\}$ denote competing models (e.g., distinct LMs or systems).
+We evaluate each $f^{(k)}$ under the same sampling plan and report the collection $\{(\bar{m}^{(k)}, s_m^{(k)}, \text{CI}^{(k)})\}_{k=1}^{K}$ per benchmark setting.
+Pairwise differences can be tested by resampling-aware procedures.
+For example, if $m_r^{(a)}$ and $m_r^{(b)}$ are paired by identical $\mathcal{T}_r$, one may use a paired $t$-test on $\Delta_r = m_r^{(a)} - m_r^{(b)}$, reporting
+\begin{equation*}
+\bar{\Delta}=\frac{1}{R}\sum_{r=1}^{R} \Delta_r,\qquad
+s_\Delta=\sqrt{\frac{1}{R-1}\sum_{r=1}^{R}(\Delta_r-\bar{\Delta})^2},
+\end{equation*}
+and a CI for $\bar{\Delta}$.
+When distributional assumptions are doubtful, a nonparametric alternative (e.g., permutation or bootstrap) provides robust $p$-values and CIs.
+
+\paragraph{From single numbers to ranges and decisions.}
+Operational decisions rarely hinge on a single-point score; they trade off risk and benefit under uncertainty.
+Therefore, we encourage reporting \emph{performance bands} (e.g., violin/interval plots over replicates), together with the estimated probability that one model outperforms another by a practically meaningful margin (e.g., $\Pr[\bar{\Delta}>\delta]$ for a chosen effect size $\delta$).
+This connects statistical significance to \emph{practical significance}.
+
+\paragraph{Controlling for synthetic and ``peaky'' cases.}
+Where positive or negative examples can be curated or synthesized, we incorporate stress sets that are intentionally ``hard'' (e.g., distributional shifts, class-ambiguous or high-confusability items).
+These stress sets are included as additional benchmark cells, evaluated with the same replicate protocol, to surface brittleness that average-case metrics may hide.
+
+\paragraph{Recommended reporting template (drop-in).}
+For each benchmark cell (dataset source, class ratio, stress/regular), report:
+\begin{enumerate}
+  \item Replicate count $R$ and test size $n$; sampling recipe (with/without replacement).
+  \item Class composition $(\pi^{+},\pi^{-})$ and any mixing proportions across sources.
+  \item Metric(s) $m$ with $\bar{m}$, $s_m$, and $(1-\alpha)$ CI.
+  \item Model comparisons: $\bar{\Delta}$, CI, and $p$-value (paired if applicable).
+  \item Visual summary: interval/violin plots across replicates; optionally calibration or PR/ROC curves aggregated over replicates.
+\end{enumerate}
+
+\paragraph{Notation cheat sheet (for quick reuse).}
+\begin{itemize}
+  \item $\mathcal{D}$: labeled pool; $\mathcal{D}^{+}$ positives, $\mathcal{D}^{-}$ negatives.
+  \item $(\pi^{+},\pi^{-})$: target class ratio; $n$: test size; $R$: replicate count.
+  \item $\mathcal{T}_r$: $r$-th out-of-sample test set; $m_r$: metric on $\mathcal{T}_r$.
+  \item $\bar{m}, s_m$: replicate mean and standard deviation; $\text{CI}$: confidence interval.
+  \item $f^{(k)}$: $k$-th model; $\Delta_r$: replicate-wise paired difference between two models.
+\end{itemize}
+
+\paragraph{Why this matters.}
+This protocol converts evaluation from a one-time number into a distributional characterization that respects data realism (class balance), assesses stability (replicates), and supports principled comparison (CIs, $p$-values, and effect sizes). It reduces the risk of overclaiming from flattering splits and provides actionable uncertainty that downstream stakeholders can plan against.
+
+\paragraph{Question and Discussion}
+see benchmark\_discussion.pdf
+\end{document}
+

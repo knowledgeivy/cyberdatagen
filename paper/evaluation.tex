@@ -101,7 +101,7 @@ The overlapping 95\% confidence intervals for most strategy comparisons indicate
 
 \subsection{Prompt Strategy Effectiveness Analysis}
 
-Our evaluation of three prompt engineering strategies (original, strong, weak) reveals systematic performance differences that correlate with generation instruction characteristics. Table~\ref{tab:prompt_comparison} compares strategies at 50\% synthetic proportion where differences are most pronounced.
+Our evaluation of three prompt engineering strategies (original, strong, weak) reveals systematic performance differences that correlate with generation instruction characteristics. Table~\ref{tab:prompt_comparison} compares strategies at 50\% synthetic proportion where differences are most pronounced, alongside the baseline (0\% synthetic) for reference.
 
 \begin{table}[h]
 \centering
@@ -109,18 +109,23 @@ Our evaluation of three prompt engineering strategies (original, strong, weak) r
 \label{tab:prompt_comparison}
 \begin{tabular}{lcc}
 \toprule
-\textbf{Prompt Strategy} & \textbf{SVM F1} & \textbf{RF F1} \\
+\textbf{Configuration} & \textbf{SVM F1} & \textbf{RF F1} \\
 \midrule
-Original & 0.565 $\pm$ 0.032 & 0.780 $\pm$ 0.040 \\
-Strong & 0.564 $\pm$ 0.031 & 0.782 $\pm$ 0.039 \\
-Weak & 0.562 $\pm$ 0.030 & 0.782 $\pm$ 0.038 \\
+\textit{Baseline (0\% Synthetic)} & 0.627 $\pm$ 0.026 & 0.793 $\pm$ 0.041 \\
 \midrule
-\textit{Range} & \textit{0.003} & \textit{0.002} \\
+\multicolumn{3}{c}{\textit{50\% Synthetic Ratio}} \\
+\midrule
+Original Prompt & 0.565 $\pm$ 0.032 & 0.780 $\pm$ 0.040 \\
+Strong Prompt & 0.564 $\pm$ 0.031 & 0.782 $\pm$ 0.039 \\
+Weak Prompt & 0.562 $\pm$ 0.030 & 0.782 $\pm$ 0.038 \\
+\midrule
+\textit{Degradation from baseline} & \textit{-9.9\% to -10.4\%} & \textit{-1.4\% to -1.6\%} \\
+\textit{Prompt variation range} & \textit{0.003} & \textit{0.002} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The minimal performance variation across prompt strategies (ranges of 0.003 for SVM, 0.002 for Random Forest) stands in striking contrast to the substantial impact of synthetic proportion and classifier architecture. All three strategies produce statistically indistinguishable results, with completely overlapping 95\% confidence intervals. This finding suggests that the fundamental LLM generation process, rather than specific prompt engineering choices, dominates synthetic data quality for spam detection tasks.
+The minimal performance variation across prompt strategies (ranges of 0.003 for SVM, 0.002 for Random Forest) stands in striking contrast to the substantial degradation from baseline (9.9-10.4\% for SVM, 1.4-1.6\% for Random Forest). All three strategies produce statistically indistinguishable results, with completely overlapping 95\% confidence intervals. This finding suggests that the fundamental LLM generation process, rather than specific prompt engineering choices, dominates synthetic data quality for spam detection tasks.
 
 The slight trend toward original and strong strategies outperforming weak strategies aligns with the hypothesis that more explicit spam characteristic preservation benefits classifier training. However, effect sizes (Cohen's $d < 0.1$) fall well below meaningful thresholds, indicating that prompt optimization yields marginal returns compared to other experimental factors.
 
