@@ -1,0 +1,38 @@
+\section{Related Work}
+\label{sec:related}
+
+% \subsection{Synthetic Data Generation in Cybersecurity}
+
+The field of synthetic cybersecurity data generation has evolved from simple statistical methods to sophisticated deep learning approaches. Early efforts focused on rule-based systems and statistical models that attempted to replicate traffic patterns and attack signatures found in benchmark datasets like KDD Cup 1999~\cite{tavallaee2009detailed} and DARPA 1998. These approaches, while providing basic data augmentation capabilities, lacked the sophistication to capture the complex semantic relationships inherent in cybersecurity data.
+
+The emergence of deep generative models marked a significant advancement in synthetic cybersecurity data generation. Generative Adversarial Networks (GANs) have demonstrated considerable success in generating tabular network traffic data with improved fidelity and utility. Ammara et al.~\cite{ammara2025syntheticnetworktrafficdata} conducted comprehensive comparisons of GAN-based methods including CTGAN and CopulaGAN, demonstrating their superiority over traditional approaches in capturing complex data distributions. Zouhri and Idri~\cite{10765501} specifically applied CTGAN to address multi-class imbalance in cybersecurity datasets, showing improved detection performance compared to conventional oversampling techniques. However, these approaches remain primarily focused on numerical and categorical features rather than the rich textual content that characterizes many cybersecurity data sources.
+
+% \subsection{Large Language Models for Cybersecurity Data}
+
+Recent advances in Large Language Models have opened new possibilities for generating synthetic cybersecurity content. LLMs excel at understanding and generating human-readable text, making them particularly suitable for creating synthetic security logs, threat intelligence reports, and malicious content descriptions that contain rich semantic information. Razmyslovich et al.~\cite{razmyslovich2025eltex} introduced domain-driven synthetic text generation using LLMs, demonstrating effectiveness for cybersecurity text classification tasks.
+
+The application of LLMs to cybersecurity extends beyond simple text generation to include structured data creation and domain-specific content generation [?]. Unlike GANs, which primarily operate on numerical representations, LLMs can generate semantically coherent cybersecurity content that maintains logical consistency across multiple attributes. This capability is particularly valuable for malicious email generation, where the relationship between subject lines, sender information, and message content must remain coherent to produce realistic synthetic samples.
+
+% \subsection{Evaluation Frameworks for Synthetic Data}
+
+The evaluation of synthetic data quality has traditionally relied on statistical measures and downstream task performance. Conventional approaches assess distributional similarity using metrics such as Wasserstein distance, Jensen-Shannon divergence, and correlation preservation [?]. While these metrics provide valuable insights into numerical data quality, they fail to capture the semantic coherence that is crucial for text-based cybersecurity data.
+
+Recent work has begun exploring embedding-based evaluation approaches that can assess semantic quality in high-dimensional spaces. These methods leverage pre-trained language models to map synthetic and real data into shared semantic spaces, enabling direct comparison of semantic preservation and distributional alignment [?]. However, existing frameworks lack comprehensive metrics that combine both intrinsic quality assessment and predictive capability for downstream task performance.
+
+% \subsection{Class Imbalance in Cybersecurity Machine Learning}
+
+Class imbalance represents a fundamental challenge in cybersecurity machine learning, where malicious instances are typically vastly outnumbered by benign samples. This imbalance leads to biased model performance and reduced sensitivity to minority class detection~\cite{5356528}. Lian et al.~\cite{lian2021robustness} demonstrated the importance of systematic evaluation under varying imbalance conditions, highlighting the need for controlled experimental approaches that can isolate the impact of class distribution on model performance.
+
+Synthetic data generation offers a promising approach to address class imbalance by enabling controlled creation of minority class samples. However, the effectiveness of synthetic data under severe imbalance conditions remains poorly understood. Most existing studies focus on balanced or mildly imbalanced scenarios, leaving significant gaps in understanding how synthetic data performs under the extreme imbalance conditions typical of real-world cybersecurity applications.
+
+% \subsection{Prompt Engineering for Data Generation}
+
+The quality and characteristics of LLM-generated content can be significantly influenced through prompt engineering strategies. Research in prompt design has shown that different instruction styles, context provision, and output constraints can dramatically affect the semantic properties and utility of generated content [?]. However, systematic evaluation of prompt engineering strategies specifically for synthetic cybersecurity data generation remains limited.
+
+Existing work has primarily focused on prompt optimization for specific tasks rather than understanding how different prompt strategies affect the intrinsic quality and distributional properties of generated data. This gap is particularly relevant for cybersecurity applications, where the subtlety and overtness of malicious characteristics can significantly impact both data realism and downstream detection performance.
+
+% \subsection{Gaps and Research Contributions}
+
+Despite significant advances in both GAN-based and LLM-based synthetic data generation, several critical gaps remain in the field. First, there is limited systematic evaluation of LLM-generated synthetic cybersecurity data under realistic operational conditions, particularly severe class imbalance scenarios that characterize real-world deployments. Second, existing evaluation frameworks lack comprehensive metrics that can predict downstream performance without expensive classifier training. Third, the impact of different prompt engineering strategies on synthetic data quality and utility remains poorly understood.
+
+Our work addresses these gaps by providing the first systematic evaluation framework for LLM-generated synthetic cybersecurity data under controlled class imbalance conditions. We introduce a comprehensive dual-metrics approach that combines traditional performance measures with novel embedding space quality metrics, enabling predictive assessment of synthetic data utility. Additionally, we provide systematic analysis of prompt engineering strategies, establishing evidence-based guidelines for optimal synthetic data generation in cybersecurity applications.

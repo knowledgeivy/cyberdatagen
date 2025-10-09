@@ -103,6 +103,7 @@ where $y_i$ is the observed performance, $\hat{y}_i$ is the predicted performanc
 \centering
 \caption{Classifier Hyperparameter Configurations}
 \label{tab:hyperparameters}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lp{8cm}}
 \toprule
 \textbf{Classifier} & \textbf{Configuration} \\
@@ -112,6 +113,7 @@ SVM & kernel='rbf', C=1.0, gamma='scale', random\_state=42, max\_iter=-1 \\
 Random Forest & n\_estimators=100, max\_depth=10, min\_samples\_split=5, min\_samples\_leaf=2, class\_weight='balanced', random\_state=42 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 All hyperparameters remain constant across all 1,320 experimental configurations, isolating synthetic data impact from model configuration effects.
@@ -165,6 +167,7 @@ Response format & JSON object \\
 \centering
 \caption{Prompt Strategy Templates for Synthetic Spam Generation}
 \label{tab:prompt_templates}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lp{8cm}}
 \toprule
 \textbf{Strategy} & \textbf{Prompt Template} \\
@@ -176,6 +179,7 @@ Strong & "Rewrite the following spam email by amplifying spam characteristics. E
 Weak & "Rewrite the following spam email using subtle language while preserving underlying intent. Make spam indicators less obvious and use more legitimate-appearing phrasing. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 All prompts follow consistent JSON output formatting to ensure reliable parsing and integration into the experimental pipeline.
@@ -262,6 +266,7 @@ These supplementary tables demonstrate that the performance degradation patterns
 \centering
 \caption{All Metrics Comparison Across Prompt Strategies at 50\% Synthetic (Within-Group)}
 \label{tab:all_metrics_50pct}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Metric} & \multicolumn{3}{c}{\textbf{SVM}} & \multicolumn{3}{c}{\textbf{Random Forest}} \\
@@ -277,6 +282,7 @@ Specificity & 0.869 & 0.868 & 0.867 & 0.931 & 0.932 & 0.932 \\
 MCC & 0.476 & 0.475 & 0.473 & 0.702 & 0.704 & 0.704 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The minimal variation across prompt strategies (range $< 0.003$ for all metrics) demonstrates that generation instruction intensity has negligible impact compared to other experimental factors. This finding holds consistently across all performance metrics, not just F1-score.

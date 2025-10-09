@@ -53,14 +53,14 @@ Figures~\ref{fig:performance_within} and~\ref{fig:performance_cross} illustrate 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{output/full_experiments/ceas08_gpt41mini/plots/combined/prompts_comparison_within_group_performance_curves.png}
+\includegraphics[width=\columnwidth]{pic/performance_curves_within_group.png}
 \caption{F1-Score Degradation Under Within-Group Strategy. SVM (solid lines) exhibits strong linear degradation across all prompt strategies, declining from 0.627 to 0.476 F1-score. Random Forest (dashed lines) maintains robust performance with minimal degradation (0.793 to 0.777). The three prompt strategies (Original: blue, Strong: orange, Weak: green) show nearly identical performance patterns, indicating limited impact of prompt engineering on synthetic data quality. Error bars represent 95\% confidence intervals.}
 \label{fig:performance_within}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{output/full_experiments/ceas08_gpt41mini/plots/combined/prompts_comparison_cross_group_performance_curves.png}
+\includegraphics[width=\columnwidth]{pic/performance_curves_cross_group.png}
 \caption{F1-Score Degradation Under Cross-Group Strategy. Performance patterns closely mirror the within-group strategy (Figure~\ref{fig:performance_within}), with SVM showing comparable linear degradation and Random Forest maintaining robustness. The convergence of both strategies at extreme synthetic proportions (0\% and 100\%) confirms that distribution matching effects are most pronounced at intermediate mixing ratios. Error bars represent 95\% confidence intervals.}
 \label{fig:performance_cross}
 \end{figure}
