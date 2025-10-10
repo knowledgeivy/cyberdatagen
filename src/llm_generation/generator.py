@@ -216,16 +216,27 @@ class AnthropicGenerator(LLMGenerator):
 
     async def generate_single(self, prompt: str, max_retries: int = 3) -> Optional[str]:
         """生成单个文本"""
+        return await self.generate_single_with_system(prompt, "", max_retries)
+
+    async def generate_single_with_system(self, user_prompt: str, system_prompt: str = '', max_retries: int = 3) -> Optional[str]:
+        """使用system prompt生成单个文本"""
         for attempt in range(max_retries):
             try:
-                response = await self.client.messages.create(
-                    model=self.model,
-                    max_tokens=self.api_config.get('max_tokens', 1000),
-                    temperature=self.api_config.get('temperature', 0.7),
-                    messages=[
-                        {"role": "user", "content": prompt}
+                # Claude API支持system参数
+                kwargs = {
+                    'model': self.model,
+                    'max_tokens': self.api_config.get('max_tokens', 1000),
+                    'temperature': self.api_config.get('temperature', 0.7),
+                    'messages': [
+                        {"role": "user", "content": user_prompt}
                     ]
-                )
+                }
+
+                # 如果有system prompt，添加system参数
+                if system_prompt.strip():
+                    kwargs['system'] = system_prompt
+
+                response = await self.client.messages.create(**kwargs)
                 return response.content[0].text
 
             except Exception as e:

@@ -1,0 +1,279 @@
+# Full-Scale Experiment Configuration for CEAS-08 Dataset with Claude 3.5 Haiku
+# Based on discussion_real.md design framework and README_experiment.md specifications
+# Experiment naming convention: full_[dataset]_[model]_[version]
+
+# Basic experiment information
+experiment:
+  name: "full_ceas08_claude35haiku_v1"
+  description: "Full-scale study using CEAS-08 dataset with Claude 3.5 Haiku for synthetic spam generation"
+  dataset: "CEAS-08"
+  random_seed: 42
+
+# Data configuration
+data:
+  # Data paths - organized by experiment name to avoid confusion
+  raw_data_path: "./raw/"
+  processed_data_path: "./data/full_experiments/ceas08_claude35haiku/processed/"
+  synthetic_data_path: "./data/full_experiments/ceas08_claude35haiku/synthetic/"
+  datasets_path: "./data/full_experiments/ceas08_claude35haiku/datasets/"
+
+  # Sampling parameters (optimized for cost-effectiveness)
+  n_groups: 20                    # R value - provides 100 comparison samples (20×5trials) for 84% power
+  sample_size_per_group: 1000     # N value - balanced between quality and cost
+  spam_ratio: 0.1                 # spam:non-spam = 1:9 (realistic imbalance)
+  test_split: 0.2                 # Test set proportion
+  # Note: N=1000 → 6,000 API calls, ~$20 cost, 84.4% statistical power (sufficient)
+
+  # Synthetic ratio configuration - smoother granularity for full experiment
+  synthetic_ratios: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  # 11 points for smooth curve
+
+  # Experiment repetitions
+  trials_per_config: 5
+
+# LLM configuration
+llm:
+  # Supported engines
+  engines: ["claude-3-5-haiku"]
+
+  # API configuration
+  api_config:
+    claude:
+      model: "claude-3-5-haiku-20241022"
+      max_tokens: 1000
+      temperature: 0.7
+
+  # Batch processing configuration - optimized for stability
+  batch_size: 5                   # Reduced for API stability
+  max_retries: 5                  # Increased for reliability
+  retry_delay: 2.0                # Longer delay between retries
+  save_checkpoint_every: 50       # More frequent checkpoints
+
+# Prompt configuration (based on proven rewrite_generation prompts)
+prompts:
+  original:
+    name: "Original Rewrite"
+    description: "Direct rewrite maintaining malicious intent and structure"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
+    template: |
+      Rewrite this phishing email but keep the content very similar and do not change the meaning:
+
+      **Original Subject:** {subject}
+
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
+
+  strong:
+    name: "Strong Spam Features"
+    description: "Enhanced spam characteristics with obvious marketing language"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create strong, representative variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+      - Make the rewritten data strong to reflect representative phishing email characteristics
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
+    template: |
+      Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data strong to reflect the representative phishing email:
+
+      **Original Subject:** {subject}
+
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
+
+  weak:
+    name: "Subtle Spam Features"
+    description: "Subtle spam that appears more legitimate while retaining spam nature"
+    system_prompt: |
+      You are an expert at rewriting phishing email content while preserving the original malicious intent and meaning.
+
+      Your task is to rewrite phishing emails to create subtle, less obvious variations that:
+      - Keep the exact same malicious meaning and intent
+      - Maintain the same phishing techniques and social engineering tactics
+      - Use different wording and phrasing
+      - Preserve the original structure and key elements
+      - Make the rewritten data weaker and less representative of obvious phishing email characteristics
+
+      Always return valid JSON with "rewritten_subject" and "rewritten_body" fields.
+    template: |
+      Rewrite this phishing email but keep the content very similar and do not change the meaning. Make the rewritten data weaker and less obvious to reflect subtle phishing attempts:
+
+      **Original Subject:** {subject}
+
+      **Original Body:** {body}
+
+      Return only valid JSON:
+      {{
+        "rewritten_subject": "rewritten subject here",
+        "rewritten_body": "rewritten body here"
+      }}
+
+# Classifier configuration
+classifiers:
+  svm:
+    name: "Support Vector Machine"
+    enabled: true
+    params:
+      C: 1.0
+      kernel: "rbf"
+      class_weight: "balanced"  # Handle class imbalance
+      random_state: 42
+
+  random_forest:
+    name: "Random Forest"
+    enabled: true
+    params:
+      n_estimators: 100
+      max_depth: 10
+      min_samples_split: 5
+      min_samples_leaf: 2
+      class_weight: "balanced"  # Handle class imbalance
+      random_state: 42
+
+  deep_learning:
+    name: "Neural Network"
+    enabled: false  # Temporarily disabled, will run separately later
+    params:
+      hidden_layers: [128, 64, 32]
+      dropout_rate: 0.3
+      learning_rate: 0.001
+      batch_size: 32
+      epochs: 100
+      early_stopping_patience: 20
+      class_weight: "balanced"  # Handle class imbalance
+
+# Feature extraction configuration
+feature_extraction:
+  # TF-IDF configuration
+  tfidf:
+    max_features: 10000
+    ngram_range: [1, 2]
+    stop_words: "english"
+    lowercase: true
+
+  # Embedding configuration
+  embeddings:
+    model_name: "all-MiniLM-L6-v2"
+    max_seq_length: 512
+    batch_size: 32
+
+# Evaluation metrics configuration
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "auc_roc"
+    - "auc_pr"
+    - "balanced_accuracy"
+
+  # Statistical testing configuration (following discussion_real.md)
+  statistical_tests:
+    alpha: 0.05
+    multiple_comparison_method: "fdr_bh"  # Benjamini-Hochberg FDR correction
+    effect_size_threshold: 0.3  # Cohen's d threshold
+
+# Output configuration - organized by experiment name
+output:
+  results_path: "./output/full_experiments/ceas08_claude35haiku/results/"
+  plots_path: "./output/full_experiments/ceas08_claude35haiku/plots/"
+  reports_path: "./output/full_experiments/ceas08_claude35haiku/reports/"
+  logs_path: "./logs/full_experiments/ceas08_claude35haiku/"
+
+  # Save formats
+  save_formats:
+    - "json"
+    - "csv"
+    - "pkl"
+
+  # Visualization configuration
+  visualization:
+    dpi: 600
+    figure_size: [16, 10]
+    style: "seaborn-v0_8"
+    color_palette: "husl"
+
+# Parallel processing configuration
+parallel:
+  n_jobs: -1  # Use all available CPUs
+  backend: "loky"
+  verbose: 1
+
+# Quality control configuration
+quality_control:
+  # Generation quality checks
+  min_length_ratio: 0.3  # Generated text cannot be less than 30% of original
+  max_length_ratio: 3.0  # Generated text cannot exceed 300% of original
+
+  # Similarity checks
+  max_similarity_threshold: 0.95  # Similarity with original cannot exceed 95%
+  min_similarity_threshold: 0.1   # Similarity with original cannot be below 10%
+
+  # Language quality checks
+  check_language_quality: true
+  min_language_score: 0.8
+
+# Experiment strategy configuration (following discussion_real.md design)
+strategies:
+  # Strategy 1: Within-group mixing (组内一致)
+  within_group:
+    name: "Within-group Mixing"
+    description: "Real Group i + Synthetic Group i (generated from same group)"
+    academic_value: "Tests effectiveness when synthetic data matches real data distribution"
+
+  # Strategy 2: Cross-group mixing (跨组泛化)
+  cross_group:
+    name: "Cross-group Mixing"
+    description: "Real Group i + Synthetic Group j≠i (generated from different group)"
+    academic_value: "Tests generalization capability across different spam patterns"
+
+  # Strategy 3: Real-fixed + Random-synthetic (数据增强)
+  real_fixed_random_synthetic:
+    name: "Real-fixed + Random-synthetic"
+    description: "Real Group i + Random Synthetic (from all groups)"
+    academic_value: "Tests data augmentation with diverse synthetic patterns"
+
+  # Strategy 4: Full-random (完全随机基线)
+  full_random:
+    name: "Full-random Baseline"
+    description: "Random Real + Random Synthetic (complete randomization)"
+    academic_value: "Provides baseline for comparison and tests worst-case scenario"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "100 MB"
+  retention: "30 days"
+
+# Experiment scale summary (OPTIMIZED for cost-effectiveness)
+# Data source: SevenPhishingEmailDataset/CEAS-08.csv (39,154 samples, 21,842 spam)
+# Total configurations: 4 strategies × 11 ratios × 20 groups × 3 classifiers = 2,640 configurations
+# Total training runs: 2,640 × 5 trials = 13,200 individual training runs
+# Estimated API calls: 20 groups × 100 spam/group × 3 prompts = 6,000 LLM calls
+# Estimated API cost: ~$20 for Claude 3.5 Haiku (cost-effective for quality comparison)
+# Statistical power: 84.4% (100 comparison samples from 20 groups × 5 trials)
+# Estimated total time: 1-2 days (API is fast, bottleneck is still training)
