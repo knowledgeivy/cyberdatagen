@@ -24,6 +24,64 @@ from loguru import logger
 from src.config.config_manager import load_config
 
 
+def extract_model_from_experiment_name(experiment_name: str) -> str:
+    """从实验名称中提取模型信息
+
+    Args:
+        experiment_name: 实验名称，例如 full_ceas08_gpt41mini_v1 或 full_ceas08_claude35haiku_v1
+
+    Returns:
+        格式化的模型名称，例如 "GPT-4.1-mini" 或 "Claude-3.5-Haiku"
+    """
+    name_lower = experiment_name.lower()
+
+    # GPT models
+    if 'gpt41mini' in name_lower or 'gpt-4.1-mini' in name_lower:
+        return 'GPT-4.1-mini'
+    elif 'gpt4o' in name_lower or 'gpt-4o' in name_lower:
+        return 'GPT-4o'
+    elif 'gpt4' in name_lower or 'gpt-4' in name_lower:
+        return 'GPT-4'
+    elif 'gpt35' in name_lower or 'gpt-3.5' in name_lower:
+        return 'GPT-3.5'
+
+    # Claude models
+    if 'claude35haiku' in name_lower or 'claude-3-5-haiku' in name_lower:
+        return 'Claude-3.5-Haiku'
+    elif 'claude35sonnet' in name_lower or 'claude-3-5-sonnet' in name_lower:
+        return 'Claude-3.5-Sonnet'
+    elif 'claude3' in name_lower or 'claude-3' in name_lower:
+        return 'Claude-3'
+    elif 'claude' in name_lower:
+        return 'Claude'
+
+    # Gemini models
+    if 'geminipro' in name_lower or 'gemini-pro' in name_lower:
+        return 'Gemini-Pro'
+    elif 'gemini' in name_lower:
+        return 'Gemini'
+
+    return 'Unknown Model'
+
+
+def get_model_info_from_analysis(analysis_results: dict) -> str:
+    """从分析结果中获取模型信息
+
+    Args:
+        analysis_results: 统计分析结果字典
+
+    Returns:
+        模型名称字符串
+    """
+    exp_info = analysis_results.get('experiment_info', {})
+
+    # 优先从experiment_name中提取
+    if 'experiment_name' in exp_info:
+        return extract_model_from_experiment_name(exp_info['experiment_name'])
+
+    return 'Unknown Model'
+
+
 def setup_logging(config):
     """设置日志"""
     log_config = config.logging
@@ -71,8 +129,8 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
     """创建性能曲线图"""
     logger.info("创建性能曲线图")
 
-    # 获取模型和prompt信息用于整体标题
-    model_info = "GPT-4.1-mini"  # 默认值
+    # 从分析结果中获取模型和prompt信息
+    model_info = get_model_info_from_analysis(analysis_results)
     prompt_info = "Original"   # 默认值
 
     # 从分析结果中读取prompt信息
@@ -80,15 +138,6 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
         prompt_from_file = analysis_results['experiment_info'].get('prompt', 'original')
         # 首字母大写
         prompt_info = prompt_from_file.capitalize()
-
-    if config and hasattr(config, 'llm'):
-        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_name = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
-            # 格式化模型名称
-            if 'gpt-4' in model_name.lower():
-                model_info = model_name.upper().replace('GPT-', 'GPT-')
-            else:
-                model_info = model_name
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -169,11 +218,8 @@ def create_degradation_heatmap(analysis_results: dict, output_dir: str, experime
     """创建性能衰减热力图"""
     logger.info("创建性能衰减热力图")
 
-    # 获取模型信息
-    model_info = "gpt-4.1-mini"
-    if config and hasattr(config, 'llm'):
-        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+    # 从分析结果中获取模型信息
+    model_info = get_model_info_from_analysis(analysis_results)
 
     degradation_analysis = analysis_results.get('performance_degradation', {})
     if not degradation_analysis:
@@ -234,11 +280,8 @@ def create_statistical_significance_plot(analysis_results: dict, output_dir: str
     """创建统计显著性图"""
     logger.info("创建统计显著性图")
 
-    # 获取模型信息
-    model_info = "gpt-4.1-mini"
-    if config and hasattr(config, 'llm'):
-        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+    # 从分析结果中获取模型信息
+    model_info = get_model_info_from_analysis(analysis_results)
 
     hypothesis_tests = analysis_results.get('hypothesis_tests', {})
     if not hypothesis_tests:
@@ -315,11 +358,8 @@ def create_interactive_dashboard(analysis_results: dict, output_dir: str, experi
     """创建交互式仪表板"""
     logger.info("创建交互式仪表板")
 
-    # 获取模型信息
-    model_info = "gpt-4.1-mini"
-    if config and hasattr(config, 'llm'):
-        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
+    # 从分析结果中获取模型信息
+    model_info = get_model_info_from_analysis(analysis_results)
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -416,13 +456,9 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
     """创建总结报告"""
     logger.info("创建总结报告")
 
-    # 获取模型和prompt信息
-    model_info = "gpt-4.1-mini"
+    # 从分析结果中获取模型和prompt信息
+    model_info = get_model_info_from_analysis(analysis_results)
     prompt_info = "Original"
-
-    if config and hasattr(config, 'llm'):
-        if hasattr(config.llm, 'api_config') and 'openai' in config.llm.api_config:
-            model_info = config.llm.api_config['openai'].get('model', 'gpt-4.1-mini')
 
     findings = analysis_results.get('summary_findings', {})
     experiment_info = analysis_results.get('experiment_info', {})
