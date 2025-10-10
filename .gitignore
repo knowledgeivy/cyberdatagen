@@ -25,4 +25,15 @@ raw/SevenPhishingEmailDataset
 .code-workspace
 
 # Ignore large dataset files
-data/full_experiments/**/datasets/
+# Ignore data/ but keep synthetic generated data
+data/**
+
+# Keep LLM-generated synthetic data (important for research)
+!data/full_experiments/
+!data/full_experiments/*/
+!data/full_experiments/*/synthetic/
+!data/full_experiments/*/synthetic/**
+
+# Re-ignore large files in experiments
+data/full_experiments/*/processed/
+data/full_experiments/*/datasets/
