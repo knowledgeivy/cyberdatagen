@@ -78,107 +78,158 @@ def extract_performance_data(analysis_results, classifier='svm', metric='f1_scor
 
     return np.array(ratios), np.array(means), np.array(stds)
 
-def plot_combined_performance_curves(strategy='within_group', metric='f1_score',
-                                    prompt_filter='original', figsize=(14, 10)):
+def plot_combined_performance_curves_v2(strategy='within_group', figsize=(12, 5)):
     """
-    Generate combined performance curves for all models and classifiers.
+    Generate compact combined performance curves (Scheme A).
+
+    Layout: 1 row × 2 columns (SVM left, RF right)
+    Shows: F1-Score only
+    Lines: GPT (3 prompts) + Claude (3 prompts) + SMOTE (1 baseline)
 
     Args:
         strategy: 'within_group' or 'cross_group'
-        metric: performance metric to plot
-        prompt_filter: which prompt to use for LLMs ('original', 'strong', 'weak')
-        figsize: figure size
+        figsize: figure size (width, height)
     """
-    fig, axes = plt.subplots(2, 2, figsize=figsize)
-    fig.suptitle(f'Combined Performance Comparison: {strategy.replace("_", "-").title()} Strategy',
-                 fontsize=16, fontweight='bold', y=0.995)
+    fig, axes = plt.subplots(1, 2, figsize=figsize)
 
-    # Color scheme
+    # Professional color scheme (colorblind-friendly)
     colors = {
         'GPT-4.1-mini': '#1f77b4',      # Blue
         'Claude-3.5-Haiku': '#ff7f0e',  # Orange
         'SMOTE': '#2ca02c'               # Green
     }
 
+    # Linestyles for prompts
     linestyles = {
-        'svm': '-',
-        'random_forest': '--'
+        'original': '-',
+        'strong': '--',
+        'weak': ':'
     }
 
-    # Plot configurations: (classifier, col)
-    plot_configs = [
-        ('svm', 0),
-        ('random_forest', 1)
-    ]
+    # Markers for prompts
+    markers = {
+        'original': 'o',
+        'strong': 's',
+        'weak': '^'
+    }
 
-    for idx, (classifier, col) in enumerate(plot_configs):
-        # F1-Score subplot
-        ax_f1 = axes[0, col]
-        ax_acc = axes[1, col]
+    classifiers = ['svm', 'random_forest']
+    prompts = ['original', 'strong', 'weak']
 
-        # Plot each model
-        for model_name, config in EXPERIMENTS.items():
-            # Determine which prompt to use
-            if model_name == 'SMOTE':
-                prompt = 'smote'
-            else:
-                prompt = prompt_filter
+    for idx, classifier in enumerate(classifiers):
+        ax = axes[idx]
 
-            # Load data
-            analysis_results = load_statistical_analysis(
-                config['dir'],
-                config['model_key'],
-                prompt,
-                strategy
-            )
+        # Plot LLM methods (GPT and Claude) with all prompts
+        for model_name in ['GPT-4.1-mini', 'Claude-3.5-Haiku']:
+            config = EXPERIMENTS[model_name]
 
-            if analysis_results is None:
-                continue
+            for prompt in prompts:
+                # Load data
+                analysis_results = load_statistical_analysis(
+                    config['dir'],
+                    config['model_key'],
+                    prompt,
+                    strategy
+                )
 
-            # Extract F1-score data
-            ratios, means_f1, stds_f1 = extract_performance_data(analysis_results, classifier, 'f1_score')
-            ratios, means_acc, stds_acc = extract_performance_data(analysis_results, classifier, 'accuracy')
+                if analysis_results is None:
+                    continue
 
-            if len(ratios) == 0:
-                continue
+                # Extract F1-score data
+                ratios, means, stds = extract_performance_data(analysis_results, classifier, 'f1_score')
 
-            # Plot F1-score
-            ax_f1.plot(ratios, means_f1, label=model_name,
-                      color=colors[model_name], linestyle=linestyles[classifier],
-                      linewidth=2.5, marker='o', markersize=5, alpha=0.9)
-            ax_f1.fill_between(ratios, means_f1 - stds_f1, means_f1 + stds_f1,
-                              alpha=0.15, color=colors[model_name])
+                if len(ratios) == 0:
+                    continue
 
-            # Plot Accuracy
-            ax_acc.plot(ratios, means_acc, label=model_name,
-                       color=colors[model_name], linestyle=linestyles[classifier],
-                       linewidth=2.5, marker='s', markersize=5, alpha=0.9)
-            ax_acc.fill_between(ratios, means_acc - stds_acc, means_acc + stds_acc,
-                               alpha=0.15, color=colors[model_name])
+                # Plot line
+                ax.plot(ratios, means,
+                       color=colors[model_name],
+                       linestyle=linestyles[prompt],
+                       marker=markers[prompt],
+                       linewidth=2.0 if prompt == 'original' else 1.5,
+                       markersize=4,
+                       alpha=0.85,
+                       label=f'{model_name} ({prompt.capitalize()})')
 
-        # Format F1-score subplot
+                # Add confidence interval (lighter)
+                ax.fill_between(ratios, means - stds, means + stds,
+                               alpha=0.10, color=colors[model_name])
+
+        # Plot SMOTE baseline (thick prominent line)
+        smote_config = EXPERIMENTS['SMOTE']
+        analysis_results = load_statistical_analysis(
+            smote_config['dir'],
+            smote_config['model_key'],
+            'smote',
+            strategy
+        )
+
+        if analysis_results is not None:
+            ratios, means, stds = extract_performance_data(analysis_results, classifier, 'f1_score')
+
+            if len(ratios) > 0:
+                # SMOTE as thick baseline
+                ax.plot(ratios, means,
+                       color=colors['SMOTE'],
+                       linestyle='-',
+                       linewidth=3.0,
+                       marker='D',
+                       markersize=5,
+                       alpha=0.95,
+                       label='SMOTE (Baseline)',
+                       zorder=10)  # Bring to front
+
+                ax.fill_between(ratios, means - stds, means + stds,
+                               alpha=0.15, color=colors['SMOTE'])
+
+        # Formatting
         classifier_display = classifier.upper().replace('_', ' ')
-        ax_f1.set_title(f'{classifier_display} - F1 Score', fontsize=12, fontweight='bold', pad=10)
-        ax_f1.set_xlabel('Synthetic Ratio (%)', fontsize=11)
-        ax_f1.set_ylabel('F1 Score', fontsize=11)
-        ax_f1.grid(True, alpha=0.3, linestyle='--')
-        ax_f1.set_xlim(-5, 105)
-        ax_f1.set_ylim(0.4, 1.0)
-        ax_f1.legend(loc='best', framealpha=0.9, fontsize=10)
+        ax.set_title(f'{classifier_display}', fontsize=13, fontweight='bold', pad=12)
+        ax.set_xlabel('Synthetic Ratio (%)', fontsize=11)
+        ax.set_ylabel('F1 Score', fontsize=11)
+        ax.grid(True, alpha=0.25, linestyle='--', linewidth=0.5)
+        ax.set_xlim(-5, 105)
 
-        # Format Accuracy subplot
-        ax_acc.set_title(f'{classifier_display} - Accuracy', fontsize=12, fontweight='bold', pad=10)
-        ax_acc.set_xlabel('Synthetic Ratio (%)', fontsize=11)
-        ax_acc.set_ylabel('Accuracy', fontsize=11)
-        ax_acc.grid(True, alpha=0.3, linestyle='--')
-        ax_acc.set_xlim(-5, 105)
-        ax_acc.set_ylim(0.85, 1.0)
-        ax_acc.legend(loc='best', framealpha=0.9, fontsize=10)
+        # Unified y-axis range: 0 to 1.05 (showing 0-1.0 on ticks)
+        ax.set_ylim(0, 1.05)
+        ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 
-    plt.tight_layout()
+        # Legend - put on SVM (left) subplot to avoid blocking RF curves
+        if idx == 0:  # Show legend on SVM (left subplot)
+            # Create custom legend with hierarchical grouping
+            handles, labels = ax.get_legend_handles_labels()
+
+            # Reorder: GPT methods, then Claude methods, then SMOTE
+            gpt_handles = [h for h, l in zip(handles, labels) if 'GPT' in l]
+            gpt_labels = [l for l in labels if 'GPT' in l]
+
+            claude_handles = [h for h, l in zip(handles, labels) if 'Claude' in l]
+            claude_labels = [l for l in labels if 'Claude' in l]
+
+            smote_handles = [h for h, l in zip(handles, labels) if 'SMOTE' in l]
+            smote_labels = [l for l in labels if 'SMOTE' in l]
+
+            # Combine in order
+            ordered_handles = gpt_handles + claude_handles + smote_handles
+            ordered_labels = gpt_labels + claude_labels + smote_labels
+
+            ax.legend(ordered_handles, ordered_labels,
+                     loc='lower left',
+                     framealpha=0.95,
+                     fontsize=8.5,
+                     ncol=1,
+                     columnspacing=0.5,
+                     handlelength=2.5)
+
+    # Overall title
+    strategy_title = strategy.replace('_', '-').title()
+    fig.suptitle(f'F1-Score Comparison: {strategy_title} Strategy',
+                fontsize=14, fontweight='bold', y=0.98)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
 
     # Save figure
-    output_filename = f'combined_performance_curves_{strategy}_{prompt_filter}.png'
+    output_filename = f'combined_f1_comparison_{strategy}.png'
     output_path = OUTPUT_DIR / output_filename
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"✓ Saved: {output_path}")
@@ -245,18 +296,16 @@ def main():
     """Generate all combined visualizations and tables."""
 
     print("=" * 80)
-    print("Generating Combined Performance Visualizations")
+    print("Generating Combined Performance Visualizations (Scheme A)")
     print("=" * 80)
 
-    # Generate performance curves for all combinations
+    # Generate v2 compact performance curves (F1-Score only, all prompts in one figure)
     for strategy in STRATEGIES:
-        for prompt in ['original', 'strong', 'weak']:
-            print(f"\nGenerating: {strategy} - {prompt} prompt")
-            plot_combined_performance_curves(
-                strategy=strategy,
-                prompt_filter=prompt,
-                figsize=(14, 10)
-            )
+        print(f"\nGenerating: {strategy} strategy (compact view)")
+        plot_combined_performance_curves_v2(
+            strategy=strategy,
+            figsize=(12, 5)
+        )
 
     # Generate comparison tables
     print("\n" + "=" * 80)
@@ -272,6 +321,9 @@ def main():
     print("\n" + "=" * 80)
     print("✓ All visualizations and tables generated successfully!")
     print("=" * 80)
+    print(f"\n📊 Generated figures:")
+    print(f"  - {OUTPUT_DIR}/combined_f1_comparison_within_group.png")
+    print(f"  - {OUTPUT_DIR}/combined_f1_comparison_cross_group.png")
 
 if __name__ == '__main__':
     main()
