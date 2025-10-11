@@ -1,13 +1,13 @@
 # Full-Scale SMOTE Baseline Configuration for CEAS-08 Dataset
-# Traditional baseline using SMOTE/ADASYN for feature-space augmentation
+# Traditional baseline using SMOTE for feature-space augmentation
 # Experiment naming convention: full_[dataset]_smote_[version]
 
 # Basic experiment information
 experiment:
   name: "full_ceas08_smote_v1"
-  description: "Full-scale study using CEAS-08 dataset with SMOTE/ADASYN for traditional baseline comparison"
+  description: "Full-scale study using CEAS-08 dataset with SMOTE for traditional baseline comparison"
   dataset: "CEAS-08"
-  method: "smote"  # or "adasyn"
+  method: "smote"
   random_seed: 42
 
 # Data configuration
@@ -31,19 +31,13 @@ data:
 
 # SMOTE configuration
 smote:
-  # Method selection
-  variants: ["smote", "adasyn"]  # Will run both for comparison
+  # Method selection (only SMOTE as traditional baseline)
+  variants: ["smote"]
 
   # SMOTE parameters (standard configuration)
   smote_params:
     sampling_strategy: "auto"  # Automatically calculate target ratio
     k_neighbors: 5             # Standard 5-nearest neighbors
-    random_state: 42
-
-  # ADASYN parameters (adaptive synthetic sampling)
-  adasyn_params:
-    sampling_strategy: "auto"
-    n_neighbors: 5
     random_state: 42
 
   # Feature extraction (TF-IDF - consistent with classification)
@@ -141,9 +135,9 @@ logging:
   retention: "30 days"
 
 # Experiment scale summary
-# Method: SMOTE/ADASYN (Feature-space augmentation)
-# Total configurations: 2 variants × 2 strategies × 11 ratios × 20 groups × 2 classifiers = 1,760 configurations
-# Total training runs: 1,760 × 5 trials = 8,800 individual training runs
+# Method: SMOTE (Feature-space augmentation baseline)
+# Total configurations: 1 variant × 2 strategies × 11 ratios × 20 groups × 2 classifiers = 880 configurations
+# Total training runs: 880 configurations (no repeated trials needed for deterministic SMOTE)
 # Computational cost: Local CPU only (no API costs)
-# Estimated time: 3-4 hours (much faster than LLM - no API calls)
+# Estimated time: 1-2 hours (much faster than LLM - no API calls, deterministic)
 # Purpose: Traditional baseline for LLM comparison
