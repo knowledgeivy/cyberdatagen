@@ -39,16 +39,25 @@ The results reveal striking contrasts across augmentation paradigms and classifi
 
 \subsection{Comparative Performance Visualization}
 
-Figure~\ref{fig:combined_performance} presents comprehensive performance trajectories across all three augmentation methods, revealing distinct degradation patterns as synthetic proportion increases from 0\% to 100\%.
+Figure~\ref{fig:combined_performance_within} presents comprehensive F1-score trajectories across all three augmentation methods and all prompt strategies for within-group mixing, revealing distinct degradation patterns as synthetic proportion increases from 0\% to 100\%. Figure~\ref{fig:combined_performance_cross} presents the analogous comparison for cross-group mixing strategy.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/combined_performance_curves_within_group_original.png}
-\caption{Combined Performance Comparison Across Augmentation Methods (Within-Group Strategy, Original Prompt). \textbf{Top row}: F1-Score trajectories show SMOTE (green) maintaining stable SVM performance while both LLM methods degrade substantially, with Claude-3.5-Haiku (orange) experiencing catastrophic failure at high synthetic ratios. Random Forest demonstrates robustness to all methods, with SMOTE showing performance improvement. \textbf{Bottom row}: Accuracy patterns mirror F1-Score trends. Shaded regions represent $\pm$1 standard deviation across 20 replicate groups. The stark divergence between feature-space (SMOTE) and text-space (LLMs) augmentation for SVM highlights fundamental architectural sensitivity differences.}
-\label{fig:combined_performance}
+\includegraphics[width=\textwidth]{pic/combined_f1_comparison_within_group.png}
+\caption{F1-Score Comparison Across All Methods and Prompts: Within-Group Strategy. \textbf{Left panel (SVM)}: SMOTE (green thick line) maintains stable performance near 0.65-0.68, significantly outperforming both LLM methods. GPT-4.1-mini (blue lines) shows moderate degradation with minimal prompt variation (solid/dashed/dotted for original/strong/weak), declining from 0.63 to 0.42-0.48. Claude-3.5-Haiku (orange lines) exhibits severe prompt-dependent degradation, with weak prompt (dotted) catastrophically collapsing to F1 $\approx$ 0.20 at 100\% synthetic. \textbf{Right panel (Random Forest)}: All methods demonstrate robustness. SMOTE (green thick line) shows performance \emph{improvement} from 0.81 to 0.86, while LLM methods maintain 0.77-0.81, except Claude weak prompt (orange dotted) which degrades to 0.59. Shaded regions represent $\pm$1 standard deviation across 20 replicate groups.}
+\label{fig:combined_performance_within}
 \end{figure*}
 
-The visualization reveals several critical patterns. For SVM (left column), SMOTE maintains near-baseline performance across all synthetic ratios (green solid line), while GPT-4.1-mini shows moderate linear degradation (blue solid line), and Claude-3.5-Haiku exhibits severe degradation culminating in near-random performance at 100\% synthetic (orange solid line dropping to F1 $\approx$ 0.34). For Random Forest (right column), all three methods demonstrate robustness, with SMOTE actually improving performance as synthetic ratio increases (green dashed line rising from 0.81 to 0.86), while both LLMs maintain stable performance with minimal degradation.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{pic/combined_f1_comparison_cross_group.png}
+\caption{F1-Score Comparison Across All Methods and Prompts: Cross-Group Strategy. Performance patterns closely mirror within-group strategy (Figure~\ref{fig:combined_performance_within}) with slight cross-group advantages for SMOTE and Random Forest. SVM shows comparable linear degradation across LLM methods, while Random Forest maintains robustness. The similarity between strategies confirms that distribution matching effects are less critical than method selection and classifier architecture. Shaded regions represent $\pm$1 standard deviation.}
+\label{fig:combined_performance_cross}
+\end{figure*}
+
+The visualization reveals several critical patterns that quantify the method-classifier-prompt interactions. For SVM (left panels), SMOTE's thick green baseline demonstrates near-constant performance across all synthetic ratios (0.65-0.68 within-group, 0.66-0.70 cross-group), establishing feature-space interpolation's superiority for margin-based classifiers. GPT-4.1-mini (blue lines) exhibits prompt-invariant degradation, with all three prompt strategies producing nearly identical trajectories declining from baseline 0.63 to 0.42-0.48 at 100\% synthetic. In stark contrast, Claude-3.5-Haiku (orange lines) shows dramatic prompt sensitivity: original and strong prompts (solid and dashed) perform comparably to GPT, but weak prompt (dotted) catastrophically collapses, reaching near-random performance (F1 $\approx$ 0.20) at extreme synthetic proportions.
+
+For Random Forest (right panels), the performance landscape inverts entirely. SMOTE (green thick line) demonstrates the counterintuitive phenomenon of performance \emph{improvement} with increasing synthetic proportion, rising from baseline 0.81 to 0.86-0.87, suggesting that feature-space diversity enhances ensemble decision boundaries. LLM methods maintain remarkable stability: GPT-4.1-mini (blue lines) shows essentially flat trajectories at 0.77-0.81 across all prompts and ratios, while Claude-3.5-Haiku (orange lines) exhibits modest prompt effects—original and strong maintain 0.78-0.83, but weak prompt degrades to 0.59-0.73 at high synthetic proportions, still substantially better than its SVM counterpart.
 
 \subsection{Sensitivity Analysis: Performance Degradation Patterns}
 
