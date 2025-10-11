@@ -29,7 +29,15 @@ The training data from each group is further used to construct experimental data
 
 \subsubsection{LLM Configuration}
 
-We employ GPT-4.1-mini as our generation engine with temperature $= 0.7$ to balance diversity and coherence, max tokens $= 1{,}000$ for email content, and standard sampling parameters (top-p $= 1.0$, no frequency/presence penalties). Complete configuration details are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:llm_config}.
+We employ two state-of-the-art large language models to evaluate the robustness and generalizability of LLM-based synthetic data generation across different model architectures:
+
+\begin{enumerate}
+    \item \textbf{GPT-4.1-mini} (OpenAI): A compact yet capable model optimized for efficiency while maintaining strong generation quality. Configuration: temperature $= 0.7$, max tokens $= 1{,}000$, top-p $= 1.0$, no frequency or presence penalties.
+
+    \item \textbf{Claude-3.5-Haiku} (Anthropic): A fast, cost-effective model designed for high-throughput applications with competitive performance. Configuration: temperature $= 0.7$, max tokens $= 1{,}000$, standard sampling parameters.
+\end{enumerate}
+
+Both models use identical temperature settings and generation parameters to ensure fair comparison. The selection of these two models provides architectural diversity (OpenAI GPT vs Anthropic Claude) while maintaining practical feasibility for large-scale generation. Complete configuration details are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:llm_config}.
 
 \subsubsection{Prompt Engineering Strategies}
 
@@ -68,17 +76,60 @@ We implement two fundamental mixing strategies to evaluate different synthetic d
 
 These two strategies enable us to distinguish between in-distribution synthetic data effectiveness (within-group) and cross-distribution generalization (cross-group), providing insights into the robustness and transfer learning properties of LLM-generated spam.
 
+\subsubsection{SMOTE Baseline Configuration}
+
+To contextualize the performance and utility of LLM-based text generation, we implement SMOTE (Synthetic Minority Over-sampling Technique)~\cite{chawla2002smote} as a traditional feature-space augmentation baseline. As formalized in Section~\ref{sec:methodology}, SMOTE operates fundamentally differently from LLMs by generating synthetic samples through linear interpolation in the vectorized feature space rather than text space.
+
+\textbf{Implementation Details}: We apply SMOTE using the \texttt{imblearn} library~\cite{lemaitre2017imbalanced} with the following configuration:
+\begin{itemize}
+    \item \textbf{Interpolation method}: Standard SMOTE with $k=5$ nearest neighbors
+    \item \textbf{Sampling strategy}: Oversample minority class (spam) only to achieve target synthetic ratios
+    \item \textbf{Random seed}: Fixed at 42 for reproducibility across all groups
+    \item \textbf{Feature space}: Operates on TF-IDF vectors (identical to LLM pipeline)
+\end{itemize}
+
+\textbf{Experimental Design}: SMOTE baseline experiments follow an analogous structure to LLM experiments:
+\begin{itemize}
+    \item \textbf{Mixing strategies}: Both within-group and cross-group configurations
+    \item \textbf{Synthetic ratios}: Identical 11 levels (0\%, 10\%, ..., 100\%)
+    \item \textbf{Replication}: Same 20 independent groups
+    \item \textbf{Evaluation}: Identical test set and performance metrics
+\end{itemize}
+
+This parallel experimental design enables direct performance comparison while highlighting the fundamental architectural distinction: SMOTE generates abstract feature vectors without corresponding text, whereas LLMs generate interpretable text samples that are subsequently vectorized.
+
 \subsection{Experimental Factors and Design}
 
-Our experimental design follows a full-factorial structure with three primary factors:
+Our comprehensive experimental design encompasses two complementary evaluation tracks that enable rigorous assessment of both LLM-based and traditional augmentation approaches.
+
+\subsubsection{LLM Experiment Track}
+
+The LLM experiments follow a full-factorial design with four primary factors:
 
 \begin{enumerate}
+    \item \textbf{Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
     \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
     \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
     \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
 \end{enumerate}
 
-This yields $3 \times 2 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups, resulting in $66 \times 20 = 1,320$ total experimental units.
+This yields $2 \times 3 \times 2 \times 11 = 132$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 2 classifiers (SVM, Random Forest), resulting in $132 \times 20 \times 2 = 5,280$ training-evaluation units.
+
+\subsubsection{SMOTE Baseline Track}
+
+The SMOTE experiments follow a simplified factorial design with three factors:
+
+\begin{enumerate}
+    \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
+    \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
+    \item \textbf{Classifier}: 2 levels (SVM, Random Forest)
+\end{enumerate}
+
+This yields $2 \times 11 \times 2 = 44$ unique configurations, each replicated across $R = 20$ groups, resulting in $44 \times 20 = 880$ training-evaluation units.
+
+\subsubsection{Combined Experimental Scale}
+
+The complete experimental framework encompasses $132 + 44 = 176$ distinct configurations across both tracks, with $5,280 + 880 = 6,160$ total training-evaluation units. This comprehensive design enables systematic comparison between text-space generation (LLMs) and feature-space interpolation (SMOTE) under controlled conditions.
 
 \subsubsection{Synthetic Ratio Progression}
 
@@ -131,20 +182,47 @@ We apply the linear regression framework (Equation~3.6 in Methodology) to model 
 
 \subsection{Experimental Scale and Reproducibility}
 
-Our complete experimental design encompasses 6,000 LLM generation calls (20 groups $\times$ 100 spam/group $\times$ 3 prompts), 2,640 classifier training runs (3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers), and approximately 9,000 statistical hypothesis tests across all metrics and configurations.
+Our comprehensive experimental framework encompasses substantial computational investment to ensure rigorous evaluation:
 
-All experiments employ fixed random seeds ($\text{seed} = 42$) for complete reproducibility. The systematic replication with $R = 20$ groups provides sufficient statistical power ($>80\%$ for medium effects) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
+\textbf{Data Generation}:
+\begin{itemize}
+    \item \textbf{LLM generation}: 12,000 API calls across both models (2 models $\times$ 20 groups $\times$ 100 spam/group $\times$ 3 prompts)
+    \item \textbf{SMOTE generation}: 880 feature-space interpolation operations (2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
+\end{itemize}
+
+\textbf{Model Training and Evaluation}:
+\begin{itemize}
+    \item \textbf{LLM track}: 5,280 classifier training-evaluation runs (2 models $\times$ 3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
+    \item \textbf{SMOTE track}: 880 classifier training-evaluation runs (2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
+    \item \textbf{Total}: 6,160 training-evaluation units
+\end{itemize}
+
+\textbf{Statistical Analysis}:
+\begin{itemize}
+    \item Approximately 15,000 hypothesis tests across all configurations, metrics, and comparisons
+    \item FDR correction applied to control false discovery rate across multiple testing
+\end{itemize}
+
+All experiments employ fixed random seeds ($\text{seed} = 42$) throughout the pipeline—from data sampling and LLM generation to SMOTE interpolation and classifier training—ensuring complete reproducibility of all results. The systematic replication with $R = 20$ independent groups provides statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
 
 \subsection{Quality Control and Validation}
 
 To ensure data quality and experimental validity, we implement multiple quality control mechanisms:
 
-\subsubsection{Generation Quality Checks}
+\subsubsection{LLM Generation Quality Checks}
 \begin{itemize}
     \item Length constraints: $0.3 \leq \frac{|\text{synthetic}|}{|\text{original}|} \leq 3.0$
     \item Similarity bounds: $0.1 \leq \text{similarity}(\text{synthetic}, \text{original}) \leq 0.95$
     \item JSON parsing validation: All generated outputs must parse successfully
     \item Language quality: Automated checks for grammatical coherence
+\end{itemize}
+
+\subsubsection{SMOTE Generation Quality Checks}
+\begin{itemize}
+    \item \textbf{Vector validity}: Verify all synthetic vectors contain finite values (no NaN or infinity)
+    \item \textbf{Feature space bounds}: Ensure synthetic vectors remain within the convex hull of real data feature distributions
+    \item \textbf{Sample count verification}: Confirm exact synthetic sample counts match target ratios for each configuration
+    \item \textbf{Numerical stability}: Validate TF-IDF vectorization produces consistent feature dimensions across all experimental units
 \end{itemize}
 
 \subsubsection{Statistical Validation}

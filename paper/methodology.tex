@@ -1,6 +1,92 @@
 \section{Methodology}
 \label{sec:methodology}
 
+\subsection{Research Motivation and Significance}
+
+The effectiveness of machine learning-based cybersecurity defenses fundamentally depends on training data quality and quantity. However, acquiring sufficient labeled cybersecurity data confronts persistent challenges: high annotation costs requiring domain expertise, severe class imbalance where malicious samples constitute small minorities, privacy concerns preventing cross-organizational data sharing, and temporal drift as attack patterns evolve faster than dataset collection cycles. These constraints create critical bottlenecks in developing robust detection systems, particularly for emerging threat variants with limited real-world examples.
+
+Large Language Models (LLMs) offer a transformative paradigm for addressing data scarcity in cybersecurity domains. Unlike traditional data augmentation methods operating in fixed feature spaces, LLMs generate semantically coherent text in the original input space, providing several unique capabilities:
+
+\begin{itemize}
+\item \textbf{Semantic Generation}: LLMs produce contextually appropriate content preserving linguistic coherence and domain-specific characteristics, generating samples exhibiting realistic patterns rather than artificial feature combinations.
+
+\item \textbf{Controllable Generation}: Prompt engineering enables systematic manipulation of generation parameters, allowing specification of desired characteristics and exploration of diverse threat scenarios without collecting new real-world samples.
+
+\item \textbf{Text-Space Augmentation}: By generating actual text rather than abstract feature vectors, LLM-produced samples support multiple downstream applications including adversarial testing, human review, and transfer learning across detection systems.
+
+\item \textbf{Rapid Adaptability}: LLM generation requires no manual annotation once initial prompts are designed, enabling adaptation to emerging patterns through prompt modifications rather than expensive data collection campaigns.
+\end{itemize}
+
+Despite these theoretical advantages, the practical utility of LLM-generated synthetic data for cybersecurity training remains empirically underexplored. Critical questions persist: Does synthetic data improve classification performance? How does effectiveness scale with varying synthetic proportions? Most fundamentally, \emph{do LLMs provide advantages over established augmentation methods?} This research addresses these questions through rigorous empirical comparison of neural text generation against traditional feature-space augmentation, establishing evidence-based guidance for synthetic data deployment in operational systems.
+
+\subsection{Data Augmentation Paradigms: Text-Space vs Feature-Space}
+
+To contextualize our LLM-based approach, we establish fundamental distinctions between neural text generation and traditional augmentation methods, focusing on SMOTE (Synthetic Minority Over-sampling Technique) as a widely-adopted baseline for imbalanced learning tasks.
+
+\subsubsection{Feature-Space Augmentation: SMOTE Baseline}
+
+SMOTE~\cite{chawla2002smote} addresses class imbalance through feature-space interpolation. Given a dataset $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{N}$ where $\mathbf{x}_i \in \mathbb{R}^d$ represents feature vectors and $y_i \in \{0,1\}$ denotes binary labels, SMOTE generates synthetic minority-class samples through:
+
+\textbf{Feature Extraction.} Transform text documents to feature vectors:
+\begin{equation}
+\mathbf{x}_i = \phi(\text{doc}_i) \in \mathbb{R}^d
+\end{equation}
+where $\phi(\cdot)$ represents feature extraction (e.g., TF-IDF vectorization).
+
+\textbf{Neighbor Identification.} For each minority sample $\mathbf{x}_i$ with $y_i = 1$, identify $k$ nearest neighbors in feature space:
+\begin{equation}
+\mathcal{N}_k(\mathbf{x}_i) = \{\mathbf{x}_j : y_j = 1, \|\mathbf{x}_i - \mathbf{x}_j\| \text{ minimal}\}
+\end{equation}
+
+\textbf{Linear Interpolation.} Generate synthetic samples through convex combination:
+\begin{equation}
+\mathbf{x}_{\text{synth}}^{\text{SMOTE}} = \mathbf{x}_i + \lambda \cdot (\mathbf{x}_j - \mathbf{x}_i), \quad \lambda \sim \text{Uniform}(0,1), \quad \mathbf{x}_j \in \mathcal{N}_k(\mathbf{x}_i)
+\end{equation}
+
+\textbf{Critical Limitation:} The synthetic vector $\mathbf{x}_{\text{synth}}^{\text{SMOTE}}$ exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction ($\phi^{-1}$ is undefined), these synthetic samples serve only immediate classification purposes and cannot support applications requiring actual text content.
+
+\subsubsection{Text-Space Generation: LLM Approach}
+
+In contrast, LLM-based augmentation operates in the original text space. Given a real minority-class example $\text{doc}_i$ with $y_i = 1$:
+
+\textbf{Prompt-Guided Generation.} Construct generation instruction and query LLM:
+\begin{equation}
+\text{doc}_{\text{synth}}^{\text{LLM}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta)
+\end{equation}
+where $\Theta$ represents learned parameters and strategy controls generation characteristics. The output $\text{doc}_{\text{synth}}^{\text{LLM}}$ is actual readable text.
+
+\textbf{Standard Vectorization.} Transform generated text to features:
+\begin{equation}
+\mathbf{x}_{\text{synth}}^{\text{LLM}} = \phi(\text{doc}_{\text{synth}}^{\text{LLM}}) \in \mathbb{R}^d
+\end{equation}
+
+\textbf{Key Distinction:} The synthetic sample exists as interpretable text \emph{before} vectorization, enabling human inspection, semantic validation, and reuse across multiple tasks. The feature vector derives from genuine text generation rather than mathematical interpolation.
+
+\subsubsection{Formal Comparison}
+
+Table~\ref{tab:augmentation-comparison} formalizes the architectural differences. Both methods augment only the minority class while preserving majority-class samples, but differ fundamentally in synthetic sample representation.
+
+\begin{table}[h]
+\centering
+\caption{Formal Comparison of Augmentation Paradigms}
+\label{tab:augmentation-comparison}
+\small
+\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
+\toprule
+\textbf{Aspect} & \textbf{SMOTE} & \textbf{LLM} \\
+\midrule
+Operation space & Feature space $\mathbb{R}^d$ & Text space $\mathcal{T}$ \\
+Generation method & Linear interpolation & Neural generation \\
+Synthetic output & $\mathbf{x}_{\text{synth}} \in \mathbb{R}^d$ & $\text{doc}_{\text{synth}} \in \mathcal{T}$ \\
+Text representation & None (vector only) & Full text available \\
+Training data & $\{\phi(\text{real}), \mathbf{x}_{\text{synth}}^{\text{SMOTE}}\}$ & $\{\phi(\text{real}), \phi(\text{doc}_{\text{synth}}^{\text{LLM}})\}$ \\
+Downstream utility & Classification only & Multiple applications \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This architectural distinction motivates our comparative evaluation: if LLMs achieve competitive classification performance while generating interpretable text, they provide strictly greater utility. Conversely, if SMOTE performs comparably at lower cost, practitioners gain quantitative cost-benefit guidance. Our empirical investigation provides evidence-based resolution to this practical decision problem.
+
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{pic/model_flowchart.png}
@@ -8,9 +94,9 @@
     \label{fig:framework}
 \end{figure}
 
-Our methodology presents a systematic framework for rigorously evaluating LLM-generated synthetic spam data through large-scale replication and comprehensive statistical analysis. The framework addresses fundamental challenges in synthetic cybersecurity data assessment: quantifying quality-performance relationships, establishing statistical confidence in observed effects, and providing actionable guidance for operational deployment. As illustrated in Figure~\ref{fig:framework}, our approach integrates controlled generation, systematic mixing, and rigorous statistical evaluation to produce empirically grounded insights into synthetic data effectiveness.
-
 \subsection{Framework Overview}
+
+Our methodology presents a systematic framework for rigorously evaluating LLM-generated synthetic spam data through large-scale replication and comprehensive statistical analysis. The framework addresses fundamental challenges in synthetic cybersecurity data assessment: quantifying quality-performance relationships, establishing statistical confidence in observed effects, and providing actionable guidance for operational deployment. As illustrated in Figure~\ref{fig:framework}, our approach integrates controlled generation, systematic mixing, and rigorous statistical evaluation to produce empirically grounded insights into synthetic data effectiveness.
 
 Our framework encompasses four primary stages that collectively enable rigorous assessment of synthetic spam data utility:
 
