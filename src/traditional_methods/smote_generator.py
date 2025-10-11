@@ -152,10 +152,24 @@ class SMOTEGenerator:
         """
         Build training dataset with specified synthetic ratio
 
+        IMPORTANT: This method ensures spam:ham ratio remains CONSTANT across all synthetic_ratios,
+        matching the behavior of GPT/Claude experiments.
+
+        Logic (matching GPT/Claude):
+        - Total spam count = FIXED (e.g., 100)
+        - synthetic_ratio controls REPLACEMENT of real spam with synthetic spam
+        - Training set size remains CONSTANT (except for special cases)
+
+        Example (100 real spam + 900 ham):
+        - 0%:   100 real spam + 0 synthetic + 900 ham = 1000 samples
+        - 10%:  90 real spam + 10 synthetic + 900 ham = 1000 samples
+        - 50%:  50 real spam + 50 synthetic + 900 ham = 1000 samples
+        - 100%: 0 real spam + 100 synthetic + 900 ham = 1000 samples
+
         Args:
             real_texts: Real spam email texts (all classes)
             real_labels: Real labels (0=ham, 1=spam)
-            synthetic_ratio: Percentage of synthetic spam vs real spam (0-100)
+            synthetic_ratio: Percentage of synthetic spam vs total spam (0-100)
             strategy: 'within_group' or 'cross_group' (for consistency)
 
         Returns:
@@ -168,102 +182,177 @@ class SMOTEGenerator:
         self.is_fitted = True
         y_real = real_labels.values
 
-        # Handle 0% synthetic case
-        if synthetic_ratio == 0:
+        # Separate spam and ham
+        spam_mask = y_real == 1
+        ham_mask = y_real == 0
+
+        X_real_spam = X_real[spam_mask]
+        y_real_spam = y_real[spam_mask]
+        X_real_ham = X_real[ham_mask]
+        y_real_ham = y_real[ham_mask]
+
+        n_total_real_spam = X_real_spam.shape[0]
+        n_total_ham = X_real_ham.shape[0]
+
+        logger.info(f"Real data: {n_total_real_spam} spam, {n_total_ham} ham")
+
+        # CRITICAL: Keep total spam count FIXED (same as GPT/Claude logic)
+        total_spam_needed = n_total_real_spam
+
+        # Calculate how many synthetic vs real spam we need
+        synthetic_count = int(total_spam_needed * synthetic_ratio / 100)
+        real_count = total_spam_needed - synthetic_count
+
+        logger.info(f"Target composition: {real_count} real spam + {synthetic_count} synthetic spam = {total_spam_needed} total spam")
+
+        # Handle 0% synthetic case (all real)
+        if synthetic_ratio == 0 or synthetic_count == 0:
+            X_train = X_real
+            y_train = y_real
+
+            # Shuffle
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.permutation(X_train.shape[0])
+            X_train = X_train[indices]
+            y_train = y_train[indices]
+
             metadata = {
-                'n_real': X_real.shape[0],
-                'n_real_spam': (y_real == 1).sum(),
-                'n_real_ham': (y_real == 0).sum(),
-                'n_synthetic': 0,
+                'n_real_spam': n_total_real_spam,
+                'n_real_ham': n_total_ham,
+                'n_synthetic_spam': 0,
+                'n_total_spam': n_total_real_spam,
+                'n_total_samples': X_train.shape[0],
                 'synthetic_ratio': 0,
+                'spam_ratio': n_total_real_spam / X_train.shape[0],
                 'method': self.method,
                 'strategy': strategy
             }
-            return X_real, y_real, metadata
+            logger.info(f"Training dataset (0% synthetic): {X_train.shape[0]} samples, spam ratio: {metadata['spam_ratio']:.3f}")
+            return X_train, y_train, metadata
 
-        # Calculate number of synthetic spam samples needed
-        n_real_spam = (y_real == 1).sum()
-
-        # Handle 100% case specially (all synthetic, no real)
-        # In SMOTE context, 100% means "maximum synthetic" = 10x real spam
+        # Handle 100% synthetic case (all synthetic, no real spam)
         if synthetic_ratio >= 100:
-            n_synthetic_spam = n_real_spam * 10
-            logger.info(f"100% synthetic ratio: generating {n_synthetic_spam} samples (10x real spam)")
+            real_count = 0
+            synthetic_count = total_spam_needed
+            logger.info(f"100% synthetic: generating {synthetic_count} synthetic spam samples")
+
+        # Step 1: Sample real spam
+        if real_count > 0:
+            if real_count <= n_total_real_spam:
+                rng = np.random.RandomState(self.random_state)
+                real_spam_indices = rng.choice(n_total_real_spam, real_count, replace=False)
+                X_selected_real_spam = X_real_spam[real_spam_indices]
+                y_selected_real_spam = y_real_spam[real_spam_indices]
+            else:
+                logger.warning(f"Requested {real_count} real spam but only {n_total_real_spam} available")
+                X_selected_real_spam = X_real_spam
+                y_selected_real_spam = y_real_spam
+                real_count = n_total_real_spam
         else:
-            n_synthetic_spam = int(n_real_spam * synthetic_ratio / (100 - synthetic_ratio))
+            X_selected_real_spam = None
+            y_selected_real_spam = None
 
-        if n_synthetic_spam == 0:
-            metadata = {
-                'n_real': X_real.shape[0],
-                'n_real_spam': n_real_spam,
-                'n_real_ham': (y_real == 0).sum(),
-                'n_synthetic': 0,
-                'synthetic_ratio': 0,
-                'method': self.method,
-                'strategy': strategy
-            }
-            return X_real, y_real, metadata
+        # Step 2: Generate synthetic spam using SMOTE
+        if synthetic_count > 0:
+            # We need to generate enough synthetic samples
+            # SMOTE generates by oversampling, so we'll generate more than needed and sample
 
-        # Generate synthetic spam samples using SMOTE on entire dataset
-        # Create temporary imbalanced dataset for SMOTE
-        # Target: add n_synthetic_spam spam samples
-        target_spam_count = n_real_spam + n_synthetic_spam
-        n_ham = (y_real == 0).sum()
+            # To generate synthetic_count samples, we use SMOTE to oversample spam
+            # Calculate target: we want to add synthetic_count spam samples to the dataset
+            target_spam_total = n_total_real_spam + synthetic_count
 
-        if n_ham == 0:
-            logger.warning("No ham samples found, cannot apply SMOTE")
-            return X_real, y_real, metadata
+            if n_total_ham == 0:
+                logger.error("No ham samples available, cannot apply SMOTE")
+                raise ValueError("SMOTE requires ham samples")
 
-        sampling_ratio = target_spam_count / n_ham
+            sampling_ratio = target_spam_total / n_total_ham
 
-        logger.info(f"Applying SMOTE: target {target_spam_count} spam vs {n_ham} ham (ratio={sampling_ratio:.3f})")
+            logger.info(f"Applying SMOTE to generate synthetic spam pool: target {target_spam_total} spam vs {n_total_ham} ham (ratio={sampling_ratio:.3f})")
 
-        # Apply SMOTE
-        # Use dictionary format when ratio > 1.0 (minority becomes majority)
-        if sampling_ratio > 1.0:
-            # Specify exact target counts for each class
-            self.sampler.sampling_strategy = {1: target_spam_count}
-            logger.info(f"Using dictionary sampling_strategy for high ratio: {{1: {target_spam_count}}}")
+            # Apply SMOTE
+            if sampling_ratio > 1.0:
+                self.sampler.sampling_strategy = {1: target_spam_total}
+                logger.info(f"Using dictionary sampling_strategy: {{1: {target_spam_total}}}")
+            else:
+                self.sampler.sampling_strategy = sampling_ratio
+
+            X_resampled, y_resampled = self.sampler.fit_resample(X_real, y_real)
+
+            # Extract only the NEW synthetic samples (those added by SMOTE)
+            n_original = X_real.shape[0]
+            X_synthetic_all = X_resampled[n_original:]
+            y_synthetic_all = y_resampled[n_original:]
+
+            # Filter to get only spam synthetic samples
+            synthetic_spam_mask = y_synthetic_all == 1
+            X_synthetic_spam_pool = X_synthetic_all[synthetic_spam_mask]
+            y_synthetic_spam_pool = y_synthetic_all[synthetic_spam_mask]
+
+            n_synthetic_pool = X_synthetic_spam_pool.shape[0]
+            logger.info(f"Generated synthetic spam pool: {n_synthetic_pool} samples")
+
+            # Sample exactly synthetic_count from the pool
+            if synthetic_count <= n_synthetic_pool:
+                rng = np.random.RandomState(self.random_state)
+                synthetic_indices = rng.choice(n_synthetic_pool, synthetic_count, replace=False)
+                X_synthetic_spam = X_synthetic_spam_pool[synthetic_indices]
+                y_synthetic_spam = y_synthetic_spam_pool[synthetic_indices]
+            else:
+                logger.warning(f"Requested {synthetic_count} synthetic but only generated {n_synthetic_pool}, using all")
+                X_synthetic_spam = X_synthetic_spam_pool
+                y_synthetic_spam = y_synthetic_spam_pool
+                synthetic_count = n_synthetic_pool
         else:
-            self.sampler.sampling_strategy = sampling_ratio
+            X_synthetic_spam = None
+            y_synthetic_spam = None
 
-        X_resampled, y_resampled = self.sampler.fit_resample(X_real, y_real)
+        # Step 3: Combine all parts (real spam + synthetic spam + all ham)
+        X_parts = []
+        y_parts = []
 
-        # Extract only the synthetic samples (new samples added by SMOTE)
-        n_original = X_real.shape[0]
-        X_synthetic = X_resampled[n_original:]
-        y_synthetic = y_resampled[n_original:]
+        if X_selected_real_spam is not None:
+            X_parts.append(X_selected_real_spam)
+            y_parts.append(y_selected_real_spam)
 
-        logger.info(f"Generated {len(y_synthetic)} synthetic samples")
+        if X_synthetic_spam is not None:
+            X_parts.append(X_synthetic_spam)
+            y_parts.append(y_synthetic_spam)
 
-        # Use the resampled dataset (real + synthetic)
-        X_train = X_resampled
-        y_train = y_resampled
+        # Always include ALL ham
+        X_parts.append(X_real_ham)
+        y_parts.append(y_real_ham)
 
-        # Shuffle (use random_state for reproducibility)
+        # Stack vertically
+        from scipy.sparse import vstack
+        X_train = vstack(X_parts)
+        y_train = np.concatenate(y_parts)
+
+        # Shuffle
         rng = np.random.RandomState(self.random_state)
         indices = rng.permutation(X_train.shape[0])
         X_train = X_train[indices]
         y_train = y_train[indices]
 
-        n_synthetic_actual = len(y_synthetic)
-        n_real_ham = (y_real == 0).sum()
-        n_real_spam = (y_real == 1).sum()
+        # Metadata
+        actual_spam_count = (y_train == 1).sum()
+        actual_ham_count = (y_train == 0).sum()
 
         metadata = {
-            'n_real': X_real.shape[0],
-            'n_real_spam': n_real_spam,
-            'n_real_ham': n_real_ham,
-            'n_synthetic': n_synthetic_actual,
-            'n_synthetic_spam': (y_synthetic == 1).sum(),
+            'n_real_spam': real_count,
+            'n_real_ham': n_total_ham,
+            'n_synthetic_spam': synthetic_count,
+            'n_total_spam': actual_spam_count,
+            'n_total_samples': X_train.shape[0],
             'synthetic_ratio': synthetic_ratio,
-            'actual_ratio': n_synthetic_actual / X_train.shape[0] * 100,
+            'actual_synthetic_ratio': (synthetic_count / actual_spam_count * 100) if actual_spam_count > 0 else 0,
+            'spam_ratio': actual_spam_count / X_train.shape[0],
             'method': self.method,
             'strategy': strategy
         }
 
         logger.info(f"Training dataset: {X_train.shape[0]} samples "
-                   f"({n_real_ham} real ham + {n_real_spam} real spam + {n_synthetic_actual} synthetic)")
+                   f"({real_count} real spam + {synthetic_count} synthetic spam + {actual_ham_count} ham)")
+        logger.info(f"Spam ratio: {metadata['spam_ratio']:.3f} (should be constant across ratios)")
 
         return X_train, y_train, metadata
 
