@@ -1,46 +1,43 @@
-# CyberData: Synthetic Cybersecurity Dataset Generator
+# CyberData: LLM-based Synthetic Spam Email Data Generation
 
-CyberData extracts patterns from real cybersecurity datasets and generates synthetic data that preserves technical accuracy and schema consistency. The system uses a three-step pipeline to ensure quality and production readiness.
+A systematic evaluation framework for assessing LLM-generated synthetic spam email data effectiveness on imbalanced datasets.
 
-## Key Features
+## Overview
 
-- Real-world data pattern extraction
-- Schema-preserving synthetic generation
-- Multi-dimensional quality validation
-- Large-scale production generation
-- Domain-specific intelligence integration
+This framework evaluates whether LLM-generated synthetic spam data can effectively improve machine learning model performance on imbalanced email datasets. It implements a rigorous multi-sample evaluation protocol with statistical analysis.
 
-## Research Experiment: Batch 6
+## Research Objectives
 
-The `batch6` experiment is a comprehensive research pipeline designed to generate high-quality synthetic data and evaluate its impact on machine learning model performance. The experiment is structured into seven distinct phases, from seed sample preparation to model training and performance visualization.
+1. **Core Question**: Can LLM-generated synthetic spam effectively improve ML model performance on imbalanced datasets?
+2. **Specific Questions**:
+   - What synthetic spam ratio achieves optimal performance?
+   - How do different prompt strategies affect data quality?
+   - What are the performance degradation patterns?
+   - How do within-group vs cross-group mixing strategies compare?
 
-### Research Goal
+## Experimental Design
 
-The primary goal of the `batch6` experiment is to investigate whether high-quality synthetic data can be used to train robust machine learning models for malicious content detection, achieving performance comparable to or better than models trained on real data.
+### Multi-Sample Evaluation Protocol
+- **Groups**: R = 20
+- **Sample Size**: N = 1100 per group
+- **Spam Ratio**: Fixed 1:9 (realistic imbalance)
+- **Synthetic Ratios**: 0%, 10%, 20%, ..., 100%
+- **Prompt Strategies**: Original, Strong, Weak
+- **Mixing Strategies**: Within-group, Cross-group
+- **LLM Models**: GPT-4.1-mini, Claude-3.5-Haiku
 
-### Workflow: The 7 Phases of Batch 6
-
-The `batch6` experiment follows a structured 7-phase workflow:
-
-1.  **Phase 1: Enhanced Seed Preparation:** Selects a diverse set of 2,000 high-quality "seed" samples from a larger dataset, using a 2-layer stratification method (core and edge) to ensure representation of the full spectrum of malicious data.
-
-2.  **Phase 2: High-Quality Synthetic Data Generation:** Generates 6,000 synthetic samples from the 2,000 seeds using a sophisticated "real_data_rewriter.py" methodology with three different prompt strategies (original, strong, and weak).
-
-3.  **Phase 3: Synthetic Data ID Annotation:** Assigns unique, traceable IDs to all synthetic samples, linking them back to their original seed, layer, and prompt strategy.
-
-4.  **Phase 4: Unified Embedding Space Construction:** Creates a unified embedding space for all data (seeds, synthetic, background, etc.) using the `all-MiniLM-L6-v2` model to represent text data in a way that captures its meaning.
-
-5.  **Phase 5 & 5a/5b: Enhanced Visualization and Analysis:** Performs a comprehensive visualization of the embedding space to analyze the quality and distribution of the synthetic data, the effects of different prompt strategies, and the quality of data clusters.
-
-6.  **Phase 6: Pure Dataset Construction:** Constructs 16 "pure" datasets with varying proportions of malicious data (5%, 10%, 15%, 20%) and different types of malicious data (real only, or purely synthetic from each of the three prompt strategies).
-
-7.  **Phase 7a & 7b: Model Training and Performance Evaluation:** Trains three different machine learning models (RandomForest, SVM, and a Deep Learning model) on each of the 16 pure datasets and evaluates their performance on a fixed, independent test set.
+### Statistical Rigor
+- Paired t-tests with FDR correction
+- Effect size analysis (Cohen's d)
+- Performance degradation curve analysis
+- Sensitivity analysis (regression slopes)
 
 ## Installation
 
 ### Requirements
 - Python 3.12+
 - OpenAI API key (GPT-4.1-mini)
+- Anthropic API key (Claude-3.5-Haiku)
 
 ### Setup
 ```bash
@@ -51,83 +48,244 @@ cd cyberdata
 # Install with Poetry
 poetry install
 
-# Or install with pip
-pip install -r requirements.txt
-
 # Set up environment
 cp .env.example .env
-# Add your OpenAI API key to .env
+# Add API keys to .env
 ```
 
-## Usage
+## Quick Start
 
-To run the `batch6` experiment, you can execute the scripts in the `src/cyberdata/scripts/` directory in the order of the phases. For example:
+### Full Experiment Pipeline
 
+#### For GPT-4.1-mini:
 ```bash
-# Run Phase 1: Enhanced Seed Preparation
-python src/cyberdata/scripts/batch6_phase1_seed_preparation.py
-
-# Run Phase 2: High-Quality Synthetic Data Generation
-python src/cyberdata/scripts/batch6_phase2_synthetic_generation.py
-
-# ... and so on for the remaining phases.
+# Run complete pipeline (Steps 3-6)
+bash scripts/run_gpt_pipeline_parallel.sh
 ```
 
-## File Structure
+#### For Claude-3.5-Haiku:
+```bash
+# Run complete pipeline (Steps 3-6)
+bash scripts/run_claude_pipeline_parallel.sh
+```
 
-The `batch6` experiment generates a comprehensive set of artifacts in the `data/batch6/` directory:
+#### Regenerate Analysis Only:
+```bash
+# Regenerate Claude visualizations
+bash scripts/regenerate_claude_analysis.sh
+```
+
+### Step-by-Step Execution
+
+#### Step 1: Data Preprocessing
+```bash
+python scripts/step1_data_preprocessing.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml
+```
+
+#### Step 2: LLM Generation
+```bash
+python scripts/step2_llm_generation.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --prompt original \
+    --llm_engine gpt-4.1-mini
+```
+
+#### Step 3: Dataset Construction
+```bash
+python scripts/step3_dataset_construction.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --prompt original \
+    --llm_engine gpt-4.1-mini \
+    --strategy within_group
+```
+
+#### Step 4: Classification
+```bash
+python scripts/step4_classification.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --prompt original \
+    --strategy within_group \
+    --group_id 0 \
+    --resume
+```
+
+#### Step 5: Statistical Analysis
+```bash
+python scripts/step5_statistical_analysis.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --results_file output/.../results.json \
+    --output_file output/.../analysis.json \
+    --filter_prompt original \
+    --filter_strategy within_group
+```
+
+#### Step 6: Visualization
+```bash
+# Single mode
+python scripts/step6_visualization.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --mode single \
+    --analysis_file output/.../analysis.json \
+    --output_dir output/.../plots/
+
+# Combined mode (multi-prompt comparison)
+python scripts/step6_visualization.py \
+    --config config/full_ceas08_gpt41mini_v1.yaml \
+    --mode combined \
+    --experiment_name full_ceas08_gpt41mini_v1 \
+    --base_dir output/full_experiments/ceas08_gpt41mini \
+    --strategies within_group cross_group
+```
+
+## Project Structure
 
 ```
 cyberdata/
-├── src/cyberdata/
-│   ├── scripts/
-│   │   ├── batch6_phase1_seed_preparation.py
-│   │   ├── batch6_phase2_synthetic_generation.py
-│   │   ├── batch6_phase3_synthetic_id_annotation.py
-│   │   ├── batch6_phase4_unified_embedding.py
-│   │   ├── batch6_phase5a_data_processing.py
-│   │   ├── batch6_phase5b_visualization.py
-│   │   ├── batch6_phase6_pure_dataset_construction.py
-│   │   ├── batch6_phase7a_model_training.py
-│   │   └── batch6_phase7b_visualization.py
-│   └── utils/
-├── config/
-├── data/
-│   └── batch6/
-│       ├── phase1_analysis/
-│       ├── phase2_analysis/
-│       ├── phase3_analysis/
-│       ├── phase4_analysis/
-│       ├── phase5a_processed_data/
-│       ├── phase5b_analysis/
-│       ├── phase7a_training/
-│       ├── phase7b_analysis/
-│       ├── pure_datasets/
-│       ├── seed_preparation/
-│       ├── synthetic_generation/
-│       ├── synthetic_with_ids/
-│       └── unified_embeddings/
-├── raw/
-└── logs/
+├── config/                          # Configuration files
+│   ├── full_ceas08_gpt41mini_v1.yaml
+│   └── full_ceas08_claude35haiku_v1.yaml
+├── scripts/                         # Execution scripts
+│   ├── step1_data_preprocessing.py
+│   ├── step2_llm_generation.py
+│   ├── step3_dataset_construction.py
+│   ├── step4_classification.py
+│   ├── step5_statistical_analysis.py
+│   ├── step6_visualization.py
+│   ├── run_gpt_pipeline_parallel.sh
+│   ├── run_claude_pipeline_parallel.sh
+│   └── regenerate_claude_analysis.sh
+├── src/                            # Source code
+│   ├── config/                     # Configuration management
+│   ├── data_processing/            # Data preprocessing
+│   ├── llm_generation/             # LLM generation modules
+│   ├── classification/             # Classification models
+│   ├── analysis/                   # Statistical analysis
+│   └── utils/                      # Utility functions
+├── data/                           # Data directory
+│   └── full_experiments/
+│       ├── processed/              # Preprocessed data
+│       ├── synthetic/              # LLM-generated data
+│       └── datasets/               # Training/testing datasets
+├── output/                         # Experiment results
+│   └── full_experiments/
+│       ├── ceas08_gpt41mini/
+│       │   ├── results/           # Classification results
+│       │   ├── reports/           # Statistical analysis
+│       │   └── plots/             # Visualizations
+│       │       ├── original/
+│       │       │   ├── within_group/
+│       │       │   └── cross_group/
+│       │       ├── strong/
+│       │       │   ├── within_group/
+│       │       │   └── cross_group/
+│       │       ├── weak/
+│       │       │   ├── within_group/
+│       │       │   └── cross_group/
+│       │       └── combined/      # Multi-prompt comparisons
+│       └── ceas08_claude35haiku/
+│           └── (same structure)
+└── logs/                          # Log files
 ```
 
-## Output
+## Key Features
 
-The `batch6` experiment generates a wide range of outputs, including:
+### Class Imbalance Handling
+- Balanced class weights in all classifiers
+- Stratified sampling for group creation
+- Focus on F1-score, AUC-ROC, AUC-PR, Balanced Accuracy
 
--   **High-quality synthetic data:** `data/batch6/synthetic_with_ids/`
--   **Unified embeddings:** `data/batch6/unified_embeddings/`
--   **Pure datasets for model training:** `data/batch6/pure_datasets/`
--   **Trained machine learning models:** `data/batch6/phase7a_training/models/`
--   **Comprehensive performance results and visualizations:** `data/batch6/phase7b_analysis/`
+### Statistical Analysis
+- Paired t-tests for synthetic ratio comparison
+- Benjamini-Hochberg FDR correction
+- Effect size analysis (Cohen's d)
+- Sensitivity analysis (performance degradation slopes)
+- Critical threshold identification
+
+### Prompt Strategies
+
+#### Original Prompt
+Direct rewriting maintaining malicious intent and technical patterns
+
+#### Strong Prompt
+Enhanced spam with obvious marketing language and urgency cues
+
+#### Weak Prompt
+Subtle spam appearing more legitimate with professional tone
+
+### Mixing Strategies
+
+#### Within-group Mixing
+- **Combination**: Real Group i + Synthetic Group i
+- **Purpose**: Test synthetic-real compatibility within same distribution
+
+#### Cross-group Mixing
+- **Combination**: Real Group i + Synthetic Group j≠i
+- **Purpose**: Test generalization across different spam patterns
+
+## Experiment Configurations
+
+### GPT-4.1-mini Experiments
+- **Total configs**: 20 groups × 11 ratios × 3 prompts × 2 strategies = 1,320
+- **Config file**: `config/full_ceas08_gpt41mini_v1.yaml`
+- **Output dir**: `output/full_experiments/ceas08_gpt41mini/`
+
+### Claude-3.5-Haiku Experiments
+- **Total configs**: 20 groups × 11 ratios × 3 prompts × 2 strategies = 1,320
+- **Config file**: `config/full_ceas08_claude35haiku_v1.yaml`
+- **Output dir**: `output/full_experiments/ceas08_claude35haiku/`
+
+## Outputs
+
+### Classification Results
+- Performance metrics for all configurations
+- Success/failure tracking
+- Detailed model predictions
+
+### Statistical Reports
+- Descriptive statistics (mean, std, CI)
+- Hypothesis test results (t-tests, p-values)
+- Performance degradation analysis
+- Sensitivity analysis (regression slopes)
+- Critical threshold identification
+
+### Visualizations
+- Performance curves by synthetic ratio
+- Performance degradation heatmaps
+- Statistical significance plots
+- Interactive dashboards (HTML)
+- Summary reports (HTML)
+- Multi-prompt comparison plots
+
+## Key Metrics
+
+- **Accuracy**: Overall classification accuracy
+- **Precision**: Spam detection precision
+- **Recall/Sensitivity**: Spam detection recall
+- **F1-Score**: Harmonic mean of precision and recall
+- **AUC-ROC**: Area under ROC curve
+- **AUC-PR**: Area under precision-recall curve
+- **Balanced Accuracy**: Average of sensitivity and specificity
+
+## Cost and Timeline
+
+### Full Experiment (per LLM)
+- **LLM Generation**: ~$50-80 (main cost)
+- **Classification**: 6-8 hours (parallel execution)
+- **Analysis**: 30 minutes
+- **Storage**: ~20GB per LLM
+
+### Resource Requirements
+- **Compute**: 32GB RAM, 8+ CPU cores recommended
+- **API**: OpenAI or Anthropic API access
 
 ## Version
 
-Current version: 2.1.6
+Current version: 2.2.0
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see LICENSE file for details
 
 ## Contact
 
