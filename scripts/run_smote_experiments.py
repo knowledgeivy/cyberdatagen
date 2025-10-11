@@ -66,44 +66,42 @@ def setup_logging(config):
 
 
 def load_processed_data(config, group_id: int):
-    """Load processed data for a specific group"""
+    """Load processed data for a specific group
+
+    Uses the same data structure as GPT/Claude experiments:
+    - Training: Full group file (1000 samples) from groups/ceas08_group_{group_id}.csv.gz
+    - Testing: Unified test set (7430 samples) from ceas08_test_set.csv.gz
+
+    This ensures baseline (0% synthetic) results match GPT/Claude experiments.
+    """
     processed_path = Path(config.data.processed_data_path)
 
-    # Find the processed file
-    processed_files = list(processed_path.glob(f"*_processed.csv.gz"))
-    if not processed_files:
-        raise FileNotFoundError(f"No processed data found in {processed_path}")
+    # Load group-specific training data (full 1000 samples)
+    group_file = processed_path / 'groups' / f'ceas08_group_{group_id}.csv.gz'
+    if not group_file.exists():
+        raise FileNotFoundError(f"Group file not found: {group_file}")
 
-    processed_file = processed_files[0]
-    logger.info(f"Loading processed data from {processed_file}")
+    logger.info(f"Loading training data from {group_file}")
+    train_df = pd.read_csv(group_file, compression='gzip')
 
-    df = pd.read_csv(processed_file, compression='gzip')
+    # Load unified test set (7430 samples)
+    test_file = processed_path / 'ceas08_test_set.csv.gz'
+    if not test_file.exists():
+        raise FileNotFoundError(f"Test file not found: {test_file}")
 
-    # Filter by group
-    group_df = df[df['group_id'] == group_id].copy()
+    logger.info(f"Loading test data from {test_file}")
+    test_df = pd.read_csv(test_file, compression='gzip')
 
     # Create 'text' column by combining subject and body
-    if 'text' not in group_df.columns:
-        group_df['text'] = group_df['subject'].fillna('') + ' ' + group_df['body'].fillna('')
+    if 'text' not in train_df.columns:
+        train_df['text'] = train_df['subject'].fillna('') + ' ' + train_df['body'].fillna('')
 
-    # Handle split: if no split column or all NaN, split manually
-    if 'split' not in group_df.columns or group_df['split'].isna().all():
-        # Manual split: 80% train, 20% test
-        from sklearn.model_selection import train_test_split
-        train_idx, test_idx = train_test_split(
-            group_df.index,
-            test_size=config.data.test_split,
-            random_state=config.experiment.random_seed,
-            stratify=group_df['label']
-        )
-        train_df = group_df.loc[train_idx].copy()
-        test_df = group_df.loc[test_idx].copy()
-    else:
-        # Use existing split
-        test_df = group_df[group_df['split'] == 'test'].copy()
-        train_df = group_df[group_df['split'] == 'train'].copy()
+    if 'text' not in test_df.columns:
+        test_df['text'] = test_df['subject'].fillna('') + ' ' + test_df['body'].fillna('')
 
-    logger.info(f"Group {group_id}: {len(train_df)} train, {len(test_df)} test samples")
+    logger.info(f"Group {group_id}: {len(train_df)} train samples, {len(test_df)} test samples")
+    logger.info(f"  Train distribution - Spam: {(train_df['label'] == 1).sum()}, Ham: {(train_df['label'] == 0).sum()}")
+    logger.info(f"  Test distribution - Spam: {(test_df['label'] == 1).sum()}, Ham: {(test_df['label'] == 0).sum()}")
 
     return train_df, test_df
 
@@ -157,7 +155,7 @@ def generate_smote_datasets(
         if strategy == 'within_group':
             source_df = train_df.copy()
         elif strategy == 'cross_group':
-            # For cross_group, use different group (simulate by shuffling group labels)
+            # For cross_group, use different group (combine all other groups)
             all_train = []
             for gid in range(config.data.n_groups):
                 if gid != group_id:
@@ -165,9 +163,12 @@ def generate_smote_datasets(
                     all_train.append(temp_train)
             if all_train:
                 source_df = pd.concat(all_train, ignore_index=True)
-                # Sample same amount as train_df
+                # Sample same amount as train_df (consistent random_state from config)
                 if len(source_df) > len(train_df):
-                    source_df = source_df.sample(n=len(train_df), random_state=42)
+                    source_df = source_df.sample(
+                        n=len(train_df),
+                        random_state=config.experiment.random_seed
+                    )
             else:
                 source_df = train_df.copy()
         else:

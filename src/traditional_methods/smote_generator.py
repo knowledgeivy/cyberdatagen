@@ -130,9 +130,10 @@ class SMOTEGenerator:
         X_synthetic_spam = X_synthetic[spam_mask]
         y_synthetic_spam = y_synthetic[spam_mask]
 
-        # Limit to target count
+        # Limit to target count (use random_state for reproducibility)
         if X_synthetic_spam.shape[0] > target_count:
-            indices = np.random.choice(X_synthetic_spam.shape[0], target_count, replace=False)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X_synthetic_spam.shape[0], target_count, replace=False)
             X_synthetic_spam = X_synthetic_spam[indices]
             y_synthetic_spam = y_synthetic_spam[indices]
 
@@ -239,8 +240,9 @@ class SMOTEGenerator:
         X_train = X_resampled
         y_train = y_resampled
 
-        # Shuffle
-        indices = np.random.permutation(X_train.shape[0])
+        # Shuffle (use random_state for reproducibility)
+        rng = np.random.RandomState(self.random_state)
+        indices = rng.permutation(X_train.shape[0])
         X_train = X_train[indices]
         y_train = y_train[indices]
 
