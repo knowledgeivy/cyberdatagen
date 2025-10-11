@@ -152,9 +152,9 @@ class SMOTEGenerator:
         Build training dataset with specified synthetic ratio
 
         Args:
-            real_texts: Real spam email texts
-            real_labels: Real labels
-            synthetic_ratio: Percentage of synthetic data (0-100)
+            real_texts: Real spam email texts (all classes)
+            real_labels: Real labels (0=ham, 1=spam)
+            synthetic_ratio: Percentage of synthetic spam vs real spam (0-100)
             strategy: 'within_group' or 'cross_group' (for consistency)
 
         Returns:
@@ -162,53 +162,106 @@ class SMOTEGenerator:
         """
         logger.info(f"Building training dataset with {synthetic_ratio}% synthetic data")
 
-        # Extract real features
+        # Extract real features for ALL data (ham + spam)
         X_real = self.vectorizer.fit_transform(real_texts)
         self.is_fitted = True
+        y_real = real_labels.values
 
         # Handle 0% synthetic case
         if synthetic_ratio == 0:
             metadata = {
                 'n_real': X_real.shape[0],
+                'n_real_spam': (y_real == 1).sum(),
+                'n_real_ham': (y_real == 0).sum(),
                 'n_synthetic': 0,
                 'synthetic_ratio': 0,
                 'method': self.method,
                 'strategy': strategy
             }
-            return X_real, real_labels.values, metadata
+            return X_real, y_real, metadata
 
-        # Calculate number of synthetic samples needed
-        n_real_spam = (real_labels == 1).sum()
-        n_synthetic = int(n_real_spam * synthetic_ratio / (100 - synthetic_ratio))
+        # Calculate number of synthetic spam samples needed
+        n_real_spam = (y_real == 1).sum()
 
-        # Generate synthetic samples
-        X_synthetic, y_synthetic = self.generate_synthetic_samples(
-            real_texts[real_labels == 1],
-            real_labels[real_labels == 1],
-            n_synthetic
-        )
+        # Handle 100% case specially (all synthetic, no real)
+        # In SMOTE context, 100% means "maximum synthetic" = 10x real spam
+        if synthetic_ratio >= 100:
+            n_synthetic_spam = n_real_spam * 10
+            logger.info(f"100% synthetic ratio: generating {n_synthetic_spam} samples (10x real spam)")
+        else:
+            n_synthetic_spam = int(n_real_spam * synthetic_ratio / (100 - synthetic_ratio))
 
-        # Combine real and synthetic
-        from scipy.sparse import vstack
-        X_train = vstack([X_real, X_synthetic])
-        y_train = np.concatenate([real_labels.values, y_synthetic])
+        if n_synthetic_spam == 0:
+            metadata = {
+                'n_real': X_real.shape[0],
+                'n_real_spam': n_real_spam,
+                'n_real_ham': (y_real == 0).sum(),
+                'n_synthetic': 0,
+                'synthetic_ratio': 0,
+                'method': self.method,
+                'strategy': strategy
+            }
+            return X_real, y_real, metadata
+
+        # Generate synthetic spam samples using SMOTE on entire dataset
+        # Create temporary imbalanced dataset for SMOTE
+        # Target: add n_synthetic_spam spam samples
+        target_spam_count = n_real_spam + n_synthetic_spam
+        n_ham = (y_real == 0).sum()
+
+        if n_ham == 0:
+            logger.warning("No ham samples found, cannot apply SMOTE")
+            return X_real, y_real, metadata
+
+        sampling_ratio = target_spam_count / n_ham
+
+        logger.info(f"Applying SMOTE: target {target_spam_count} spam vs {n_ham} ham (ratio={sampling_ratio:.3f})")
+
+        # Apply SMOTE
+        # Use dictionary format when ratio > 1.0 (minority becomes majority)
+        if sampling_ratio > 1.0:
+            # Specify exact target counts for each class
+            self.sampler.sampling_strategy = {1: target_spam_count}
+            logger.info(f"Using dictionary sampling_strategy for high ratio: {{1: {target_spam_count}}}")
+        else:
+            self.sampler.sampling_strategy = sampling_ratio
+
+        X_resampled, y_resampled = self.sampler.fit_resample(X_real, y_real)
+
+        # Extract only the synthetic samples (new samples added by SMOTE)
+        n_original = X_real.shape[0]
+        X_synthetic = X_resampled[n_original:]
+        y_synthetic = y_resampled[n_original:]
+
+        logger.info(f"Generated {len(y_synthetic)} synthetic samples")
+
+        # Use the resampled dataset (real + synthetic)
+        X_train = X_resampled
+        y_train = y_resampled
 
         # Shuffle
         indices = np.random.permutation(X_train.shape[0])
         X_train = X_train[indices]
         y_train = y_train[indices]
 
+        n_synthetic_actual = len(y_synthetic)
+        n_real_ham = (y_real == 0).sum()
+        n_real_spam = (y_real == 1).sum()
+
         metadata = {
             'n_real': X_real.shape[0],
-            'n_synthetic': X_synthetic.shape[0],
+            'n_real_spam': n_real_spam,
+            'n_real_ham': n_real_ham,
+            'n_synthetic': n_synthetic_actual,
+            'n_synthetic_spam': (y_synthetic == 1).sum(),
             'synthetic_ratio': synthetic_ratio,
-            'actual_ratio': X_synthetic.shape[0] / (X_real.shape[0] + X_synthetic.shape[0]) * 100,
+            'actual_ratio': n_synthetic_actual / X_train.shape[0] * 100,
             'method': self.method,
             'strategy': strategy
         }
 
         logger.info(f"Training dataset: {X_train.shape[0]} samples "
-                   f"({metadata['n_real']} real + {metadata['n_synthetic']} synthetic)")
+                   f"({n_real_ham} real ham + {n_real_spam} real spam + {n_synthetic_actual} synthetic)")
 
         return X_train, y_train, metadata
 

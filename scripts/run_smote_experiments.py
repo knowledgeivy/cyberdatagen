@@ -17,34 +17,57 @@ import json
 sys.path.append(str(Path(__file__).parent.parent))
 
 from loguru import logger
-from src.config.config_manager import load_config
+import yaml
+from types import SimpleNamespace
 from src.traditional_methods import SMOTEGenerator
-from src.classification.classification_pipeline import ClassificationPipeline
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_auc_score, average_precision_score, balanced_accuracy_score
+)
 import numpy as np
+
+
+def dict_to_namespace(d):
+    """Convert dict to namespace recursively"""
+    if isinstance(d, dict):
+        return SimpleNamespace(**{k: dict_to_namespace(v) for k, v in d.items()})
+    elif isinstance(d, list):
+        return [dict_to_namespace(item) for item in d]
+    else:
+        return d
+
+
+def load_smote_config(config_path):
+    """Load SMOTE config directly from YAML (bypass LLM validation)"""
+    with open(config_path, 'r') as f:
+        config_dict = yaml.safe_load(f)
+    return dict_to_namespace(config_dict)
 
 
 def setup_logging(config):
     """Setup logging"""
     log_config = config.logging
     log_file = os.path.join(
-        config.output.get('logs_path', './logs/'),
-        f"{config.name}_smote_experiments.log"
+        config.output.logs_path,
+        f"{config.experiment.name}_smote_experiments.log"
     )
 
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
     logger.add(
         log_file,
-        level=log_config.get('level', 'INFO'),
-        format=log_config.get('format', "{time} | {level} | {message}"),
-        rotation=log_config.get('rotation', "100 MB"),
-        retention=log_config.get('retention', "30 days")
+        level=log_config.level,
+        format=log_config.format,
+        rotation=log_config.rotation,
+        retention=log_config.retention
     )
 
 
 def load_processed_data(config, group_id: int):
     """Load processed data for a specific group"""
-    processed_path = Path(config.data.get('processed_data_path'))
+    processed_path = Path(config.data.processed_data_path)
 
     # Find the processed file
     processed_files = list(processed_path.glob(f"*_processed.csv.gz"))
@@ -59,9 +82,26 @@ def load_processed_data(config, group_id: int):
     # Filter by group
     group_df = df[df['group_id'] == group_id].copy()
 
-    # Split into train and test
-    test_df = group_df[group_df['split'] == 'test'].copy()
-    train_df = group_df[group_df['split'] == 'train'].copy()
+    # Create 'text' column by combining subject and body
+    if 'text' not in group_df.columns:
+        group_df['text'] = group_df['subject'].fillna('') + ' ' + group_df['body'].fillna('')
+
+    # Handle split: if no split column or all NaN, split manually
+    if 'split' not in group_df.columns or group_df['split'].isna().all():
+        # Manual split: 80% train, 20% test
+        from sklearn.model_selection import train_test_split
+        train_idx, test_idx = train_test_split(
+            group_df.index,
+            test_size=config.data.test_split,
+            random_state=config.experiment.random_seed,
+            stratify=group_df['label']
+        )
+        train_df = group_df.loc[train_idx].copy()
+        test_df = group_df.loc[test_idx].copy()
+    else:
+        # Use existing split
+        test_df = group_df[group_df['split'] == 'test'].copy()
+        train_df = group_df[group_df['split'] == 'train'].copy()
 
     logger.info(f"Group {group_id}: {len(train_df)} train, {len(test_df)} test samples")
 
@@ -81,23 +121,32 @@ def generate_smote_datasets(
     train_df, test_df = load_processed_data(config, group_id)
 
     # Initialize SMOTE generator
-    smote_params = config.smote.get(f'{smote_variant}_params', {})
-    vectorizer_params = config.smote.get('vectorizer_params', {})
+    smote_params = getattr(config.smote, f'{smote_variant}_params', {})
+    if isinstance(smote_params, SimpleNamespace):
+        smote_params = vars(smote_params)
+
+    vectorizer_params = config.smote.vectorizer_params
+    if isinstance(vectorizer_params, SimpleNamespace):
+        vectorizer_params = vars(vectorizer_params)
+
+    # Convert list to tuple for ngram_range (sklearn requirement)
+    if 'ngram_range' in vectorizer_params and isinstance(vectorizer_params['ngram_range'], list):
+        vectorizer_params['ngram_range'] = tuple(vectorizer_params['ngram_range'])
 
     generator = SMOTEGenerator(
         method=smote_variant,
         vectorizer_params=vectorizer_params,
         smote_params=smote_params,
-        random_state=config.experiment.get('random_seed', 42)
+        random_state=config.experiment.random_seed
     )
 
     # Prepare output directory
-    datasets_path = Path(config.data.get('datasets_path'))
+    datasets_path = Path(config.data.datasets_path)
     variant_dir = datasets_path / f"{smote_variant}_{strategy}"
     variant_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate datasets for each synthetic ratio
-    synthetic_ratios = config.data.get('synthetic_ratios', [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+    synthetic_ratios = config.data.synthetic_ratios
 
     datasets = {}
 
@@ -110,7 +159,7 @@ def generate_smote_datasets(
         elif strategy == 'cross_group':
             # For cross_group, use different group (simulate by shuffling group labels)
             all_train = []
-            for gid in range(config.data.get('n_groups', 20)):
+            for gid in range(config.data.n_groups):
                 if gid != group_id:
                     temp_train, _ = load_processed_data(config, gid)
                     all_train.append(temp_train)
@@ -169,7 +218,7 @@ def run_classification_experiments(
     logger.info(f"Running classification: variant={smote_variant}, strategy={strategy}, group={group_id}")
 
     # Load datasets
-    datasets_path = Path(config.data.get('datasets_path'))
+    datasets_path = Path(config.data.datasets_path)
     variant_dir = datasets_path / f"{smote_variant}_{strategy}"
 
     if not variant_dir.exists():
@@ -178,7 +227,7 @@ def run_classification_experiments(
 
     # Prepare results
     results = {
-        'experiment_name': config.name,
+        'experiment_name': config.experiment.name,
         'smote_variant': smote_variant,
         'strategy': strategy,
         'group_id': group_id,
@@ -186,14 +235,15 @@ def run_classification_experiments(
     }
 
     # Get classifiers
-    classifiers_config = config.classifiers
-    enabled_classifiers = {
-        name: cfg for name, cfg in classifiers_config.items()
-        if cfg.get('enabled', True)
-    }
+    classifiers_config = vars(config.classifiers)
+    enabled_classifiers = {}
+    for name, cfg in classifiers_config.items():
+        cfg_dict = vars(cfg) if isinstance(cfg, SimpleNamespace) else cfg
+        if cfg_dict.get('enabled', True):
+            enabled_classifiers[name] = cfg_dict
 
     # Run experiments for each ratio
-    synthetic_ratios = config.data.get('synthetic_ratios', [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+    synthetic_ratios = config.data.synthetic_ratios
 
     for ratio in synthetic_ratios:
         dataset_file = variant_dir / f"group_{group_id}_ratio_{ratio}.pkl"
@@ -218,18 +268,36 @@ def run_classification_experiments(
             logger.info(f"Training {clf_name} classifier")
 
             try:
-                # Initialize pipeline
-                pipeline = ClassificationPipeline(
-                    classifier_name=clf_name,
-                    classifier_params=clf_config.get('params', {}),
-                    random_state=config.experiment.get('random_seed', 42)
-                )
+                # Initialize classifier
+                params = clf_config.get('params', {})
+                if isinstance(params, SimpleNamespace):
+                    params = vars(params)
+
+                if clf_name == 'svm':
+                    clf = SVC(**params, probability=True)
+                elif clf_name == 'random_forest':
+                    clf = RandomForestClassifier(**params)
+                else:
+                    logger.warning(f"Unknown classifier: {clf_name}, skipping")
+                    continue
 
                 # Train (features already extracted by SMOTE)
-                pipeline.classifier.fit(X_train, y_train)
+                clf.fit(X_train, y_train)
 
-                # Evaluate
-                metrics = pipeline.evaluate(X_test, y_test)
+                # Predict
+                y_pred = clf.predict(X_test)
+                y_pred_proba = clf.predict_proba(X_test)[:, 1] if hasattr(clf, 'predict_proba') else y_pred
+
+                # Calculate metrics
+                metrics = {
+                    'accuracy': accuracy_score(y_test, y_pred),
+                    'precision': precision_score(y_test, y_pred, zero_division=0),
+                    'recall': recall_score(y_test, y_pred, zero_division=0),
+                    'f1_score': f1_score(y_test, y_pred, zero_division=0),
+                    'auc_roc': roc_auc_score(y_test, y_pred_proba),
+                    'auc_pr': average_precision_score(y_test, y_pred_proba),
+                    'balanced_accuracy': balanced_accuracy_score(y_test, y_pred)
+                }
 
                 # Record results
                 result = {
@@ -260,10 +328,26 @@ def run_classification_experiments(
                 results['results'].append(result)
 
     # Save results
-    results_path = Path(config.output.get('results_path'))
+    results_path = Path(config.output.results_path)
     results_path.mkdir(parents=True, exist_ok=True)
 
-    results_file = results_path / f"{config.name}_{smote_variant}_{strategy}_group{group_id}_results.json"
+    # Convert numpy types to Python types for JSON serialization
+    def convert_numpy_types(obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, dict):
+            return {k: convert_numpy_types(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_numpy_types(item) for item in obj]
+        return obj
+
+    results = convert_numpy_types(results)
+
+    results_file = results_path / f"{config.experiment.name}_{smote_variant}_{strategy}_group{group_id}_results.json"
     with open(results_file, 'w') as f:
         json.dump(results, f, indent=2)
 
@@ -314,15 +398,15 @@ def main():
     args = parser.parse_args()
 
     try:
-        # Load configuration
+        # Load configuration (directly from YAML, bypass LLM validation)
         logger.info("Loading configuration")
-        config = load_config(args.config)
+        config = load_smote_config(args.config)
 
         # Setup logging
         setup_logging(config)
 
         logger.info("=" * 60)
-        logger.info(f"SMOTE Baseline Experiment: {config.name}")
+        logger.info(f"SMOTE Baseline Experiment: {config.experiment.name}")
         logger.info(f"Variant: {args.variant}")
         logger.info(f"Strategy: {args.strategy}")
         logger.info(f"Group: {args.group_id}")
