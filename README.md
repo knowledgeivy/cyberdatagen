@@ -267,6 +267,142 @@ Subtle spam appearing more legitimate with professional tone
 - **AUC-PR**: Area under precision-recall curve
 - **Balanced Accuracy**: Average of sensitivity and specificity
 
+## Advanced Usage
+
+### Python API for Batch Processing
+
+#### Batch Analysis and Visualization
+```python
+from src.utils import run_batch_analysis, run_batch_visualization
+
+# Batch analysis for all prompt×strategy combinations
+run_batch_analysis(
+    config_file='config/full_ceas08_gpt41mini_v1.yaml',
+    results_file='output/full_experiments/ceas08_gpt41mini/results/full_ceas08_gpt41mini_v1_classification_results.json',
+    reports_dir='output/full_experiments/ceas08_gpt41mini/reports',
+    experiment_name='full_ceas08_gpt41mini_v1'
+)
+
+# Batch visualization
+run_batch_visualization(
+    config_file='config/full_ceas08_gpt41mini_v1.yaml',
+    base_dir='output/full_experiments/ceas08_gpt41mini',
+    experiment_name='full_ceas08_gpt41mini_v1'
+)
+```
+
+#### Merge Classification Results
+```python
+from src.utils import merge_classification_results
+
+# Merge group results into unified files
+merge_classification_results(
+    output_dir='output/full_experiments/ceas08_gpt41mini/results',
+    experiment_name='full_ceas08_gpt41mini_v1',
+    strategies=['within_group', 'cross_group'],
+    total_groups=20
+)
+```
+
+#### Export to CSV
+```python
+from src.utils import export_all_analyses_to_csv
+from pathlib import Path
+
+# Export detailed metrics to CSV format
+export_all_analyses_to_csv(
+    base_dir=Path('output/full_experiments/ceas08_gpt41mini'),
+    experiment_name='full_ceas08_gpt41mini_v1',
+    prompts=['original', 'strong', 'weak'],
+    strategies=['within_group', 'cross_group']
+)
+```
+
+Output CSV location: `output/.../reports/csv/`
+
+CSV columns include:
+- `synthetic_ratio`: 0%, 10%, ..., 100%
+- `performance`: Metric value at this ratio
+- `regression_slope`: Sensitivity slope
+- `regression_r_squared`: R² value
+- `regression_p_value`: Regression p-value
+- `p_value`: Hypothesis test p-value vs baseline
+- `absolute_degradation`: Absolute performance drop
+- `relative_degradation`: Relative performance drop
+
+#### Sensitivity Analysis Display
+```python
+from src.utils import display_sensitivity_analysis, create_sensitivity_table
+from pathlib import Path
+
+# Display single file sensitivity
+display_sensitivity_analysis(
+    Path('output/.../analysis.json'),
+    show_all_metrics=False
+)
+
+# Create comparison table across prompts/strategies
+create_sensitivity_table(
+    Path('output/full_experiments/ceas08_gpt41mini'),
+    prompts=['original', 'strong', 'weak'],
+    strategies=['within_group', 'cross_group']
+)
+```
+
+Sensitivity metrics interpretation:
+- **Negative slope**: Performance decreases with more synthetic data
+- **Larger absolute value**: More sensitive to synthetic data
+- **R² close to 1**: Strong linear relationship
+
+### Complete Workflow Example
+```python
+from pathlib import Path
+from src.utils import (
+    merge_classification_results,
+    run_batch_analysis,
+    run_batch_visualization,
+    create_sensitivity_table,
+    export_all_analyses_to_csv
+)
+
+# 1. Merge results
+merge_classification_results(
+    output_dir='output/full_experiments/ceas08_gpt41mini/results',
+    experiment_name='full_ceas08_gpt41mini_v1',
+    strategies=['within_group', 'cross_group']
+)
+
+# 2. Batch analysis
+run_batch_analysis(
+    config_file='config/full_ceas08_gpt41mini_v1.yaml',
+    results_file='output/full_experiments/ceas08_gpt41mini/results/full_ceas08_gpt41mini_v1_classification_results.json',
+    reports_dir='output/full_experiments/ceas08_gpt41mini/reports',
+    experiment_name='full_ceas08_gpt41mini_v1'
+)
+
+# 3. Batch visualization
+run_batch_visualization(
+    config_file='config/full_ceas08_gpt41mini_v1.yaml',
+    base_dir='output/full_experiments/ceas08_gpt41mini',
+    experiment_name='full_ceas08_gpt41mini_v1'
+)
+
+# 4. Export to CSV
+export_all_analyses_to_csv(
+    base_dir=Path('output/full_experiments/ceas08_gpt41mini'),
+    experiment_name='full_ceas08_gpt41mini_v1',
+    prompts=['original', 'strong', 'weak'],
+    strategies=['within_group', 'cross_group']
+)
+
+# 5. View sensitivity table
+create_sensitivity_table(
+    Path('output/full_experiments/ceas08_gpt41mini'),
+    prompts=['original', 'strong', 'weak'],
+    strategies=['within_group', 'cross_group']
+)
+```
+
 ## Cost and Timeline
 
 ### Full Experiment (per LLM)
