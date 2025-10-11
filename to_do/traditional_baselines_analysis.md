@@ -387,23 +387,241 @@ Cost: SMOTE < EDA << LLM
 
 ---
 
+## 最终实施方案：SMOTE-only Baseline
+
+### 决策：仅实现SMOTE（不包含EDA）
+
+**理由**：
+1. **时间限制**：需要快速完成实验
+2. **学术标准**：SMOTE是spam detection的事实标准baseline
+3. **足够说服力**：特征空间增强 vs 语义生成对比已经很有价值
+4. **审稿人期望**：所有imbalanced spam论文都对比SMOTE
+
+---
+
+## SMOTE实验设计
+
+### 实验目标
+**核心问题**：LLM生成的语义级synthetic data是否优于传统特征空间的SMOTE插值？
+
+### 方法对比
+```
+Traditional Baseline:
+├── Real-only (0% synthetic)
+├── SMOTE (standard version)
+└── ADASYN (adaptive version)
+
+LLM-based (Proposed):
+├── GPT-4.1-mini
+│   ├── Original prompt
+│   ├── Strong prompt
+│   └── Weak prompt
+└── Claude-3.5-Haiku
+    ├── Original prompt
+    ├── Strong prompt
+    └── Weak prompt
+```
+
+### 实验配置
+- **Groups**: 20
+- **Synthetic Ratios**: 0%, 10%, 20%, ..., 100%
+- **Strategies**: Within-group, Cross-group
+- **SMOTE Variants**: Standard SMOTE + ADASYN
+- **Total Configs**: 2 variants × 11 ratios × 2 strategies × 20 groups = **880 configs**
+
+### 技术实现要点
+
+#### 1. SMOTE特殊性
+```python
+# SMOTE不生成文本，在特征空间操作
+Text → TF-IDF/Embedding → SMOTE → Synthetic Features → Train Classifier
+
+# 与LLM对比：
+Text → LLM → Synthetic Text → TF-IDF/Embedding → Train Classifier
+```
+
+#### 2. Pipeline集成
+SMOTE在**dataset construction阶段**（Step 3）应用：
+```python
+# step3_dataset_construction.py
+if method == 'smote':
+    # 提取real data特征
+    X_real = vectorizer.transform(real_texts)
+    # 应用SMOTE生成synthetic features
+    X_synthetic, y_synthetic = smote.fit_resample(X_real, y_real)
+    # 直接在特征空间构建训练集
+    X_train = combine(X_real, X_synthetic, ratio)
+```
+
+#### 3. 文件结构一致性
+保持与LLM实验相同的目录结构：
+```
+data/full_experiments/
+└── datasets/
+    └── ceas08_smote/
+        ├── original_within_group/
+        │   ├── group_0_ratio_0.pkl
+        │   ├── group_0_ratio_10.pkl
+        │   └── ...
+        └── original_cross_group/
+            └── ...
+
+output/full_experiments/
+└── ceas08_smote/
+    ├── results/
+    │   ├── full_ceas08_smote_v1_original_within_group_classification_results.json
+    │   └── ...
+    ├── reports/
+    │   ├── full_ceas08_smote_v1_original_within_group_statistical_analysis.json
+    │   └── ...
+    └── plots/
+        ├── original/
+        │   ├── within_group/
+        │   └── cross_group/
+        └── combined/
+```
+
+### 实验意义
+
+#### 1. 学术贡献
+- **首个系统对比**：LLM vs SMOTE在spam generation的全面对比
+- **层次对比**：特征空间增强 vs 语义空间生成
+- **成本分析**：SMOTE（免费，秒级）vs LLM（API费用，分钟级）
+
+#### 2. 预期发现
+
+**假设1：LLM全面优于SMOTE（最理想）**
+```
+所有ratio下：LLM > SMOTE > Real-only
+论文叙事：LLM值得额外成本
+```
+
+**假设2：不同ratio各有优势（有趣）**
+```
+Low ratio (10-30%):  SMOTE ≈ LLM（简单插值足够）
+High ratio (70-100%): LLM >> SMOTE（语义理解关键）
+论文叙事：LLM在high-ratio场景下优势显著
+```
+
+**假设3：性能相当（需要深入分析）**
+```
+Performance: LLM ≈ SMOTE
+论文叙事：强调LLM的质量优势（多样性、可解释性、可控性）
+           + 定性分析生成文本的差异
+           + 强调LLM的潜力和未来方向
+```
+
+#### 3. 论文结构优化
+```
+Before:
+- LLM-based Synthetic Data Generation
+- Experiments on GPT-4.1-mini and Claude-3.5-Haiku
+
+After:
+- Baseline: SMOTE/ADASYN (Feature-space Augmentation)
+- Proposed: LLM-based (Semantic Generation)
+- Comprehensive Comparison
+- Cost-Benefit Analysis
+```
+
+---
+
+## 实施计划
+
+### Day 1: 实现SMOTE生成器
+- [ ] 创建`src/traditional_methods/smote_generator.py`
+- [ ] 实现SMOTE和ADASYN变种
+- [ ] 集成到step3 dataset construction
+- [ ] 单元测试
+
+### Day 2: 运行实验
+- [ ] 生成配置文件`config/full_ceas08_smote_v1.yaml`
+- [ ] 运行SMOTE实验（within_group + cross_group）
+- [ ] 监控实验进度
+
+### Day 3: 分析和可视化
+- [ ] 运行step5统计分析
+- [ ] 运行step6可视化
+- [ ] 生成LLM vs SMOTE对比图表
+- [ ] 导出结果到CSV
+
+**总时间**: 3天
+
+---
+
+## 技术细节
+
+### SMOTE参数选择
+```python
+# Standard SMOTE
+SMOTE(
+    sampling_strategy='auto',  # 自动计算sampling ratio
+    k_neighbors=5,             # 标准5-NN
+    random_state=42
+)
+
+# ADASYN (2024年最佳)
+ADASYN(
+    sampling_strategy='auto',
+    n_neighbors=5,
+    random_state=42
+)
+```
+
+### 特征提取
+```python
+# 使用TF-IDF（与分类器一致）
+TfidfVectorizer(
+    max_features=10000,
+    ngram_range=(1, 2),
+    min_df=2,
+    max_df=0.95
+)
+```
+
+### 评估指标（与LLM实验相同）
+- Accuracy
+- Precision
+- Recall/Sensitivity
+- F1-Score
+- AUC-ROC
+- AUC-PR
+- Balanced Accuracy
+
+---
+
+## 风险与应对
+
+### 风险1：SMOTE表现意外地好
+**应对**：
+- 强调LLM生成真实可读文本（质量分析）
+- 强调LLM的可控性和多样性
+- 成本-效益分析：SMOTE适合低预算，LLM适合高质量需求
+
+### 风险2：SMOTE表现很差
+**应对**：
+- 说明特征空间插值的局限性
+- 强调语义生成的优势
+- 论文贡献：证明了语义级生成的必要性
+
+---
+
 ## 最终建议
 
-### 建议1: 强烈推荐添加传统baseline ✅
+### 建议1: 实施SMOTE baseline（强烈推荐）✅
 
 **理由**：
-1. 显著提升论文质量（从3分提升到4-5分）
-2. 时间成本可控（3-4天）
-3. 技术风险低
-4. 审稿人几乎肯定会问这个问题
+1. 时间可控（3天）
+2. SMOTE是审稿人期望的标准对比
+3. 技术风险低（sklearn已有成熟实现）
+4. 显著提升论文质量
 
-### 建议2: 采用方案A (SMOTE + EDA) ✅
+### 建议2: 使用SMOTE + ADASYN两个变种 ✅
 
 **理由**：
-1. 覆盖两类传统方法（特征空间+文本空间）
-2. 时间预算合理
-3. 实现难度低
-4. 论文叙事完整
+1. ADASYN在2024年研究中表现最好（99.67%）
+2. 两个变种的对比本身也是贡献
+3. 实现成本几乎相同（都在sklearn中）
 
 ### 建议3: 与co-author讨论的要点
 

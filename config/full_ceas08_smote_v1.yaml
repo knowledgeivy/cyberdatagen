@@ -1,0 +1,149 @@
+# Full-Scale SMOTE Baseline Configuration for CEAS-08 Dataset
+# Traditional baseline using SMOTE/ADASYN for feature-space augmentation
+# Experiment naming convention: full_[dataset]_smote_[version]
+
+# Basic experiment information
+experiment:
+  name: "full_ceas08_smote_v1"
+  description: "Full-scale study using CEAS-08 dataset with SMOTE/ADASYN for traditional baseline comparison"
+  dataset: "CEAS-08"
+  method: "smote"  # or "adasyn"
+  random_seed: 42
+
+# Data configuration
+data:
+  # Data paths - organized by experiment name
+  raw_data_path: "./raw/"
+  processed_data_path: "./data/full_experiments/ceas08_smote/processed/"
+  datasets_path: "./data/full_experiments/ceas08_smote/datasets/"
+
+  # Sampling parameters (identical to LLM experiments for fair comparison)
+  n_groups: 20
+  sample_size_per_group: 1000
+  spam_ratio: 0.1
+  test_split: 0.2
+
+  # Synthetic ratio configuration (identical to LLM experiments)
+  synthetic_ratios: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+  # Experiment repetitions
+  trials_per_config: 5
+
+# SMOTE configuration
+smote:
+  # Method selection
+  variants: ["smote", "adasyn"]  # Will run both for comparison
+
+  # SMOTE parameters (standard configuration)
+  smote_params:
+    sampling_strategy: "auto"  # Automatically calculate target ratio
+    k_neighbors: 5             # Standard 5-nearest neighbors
+    random_state: 42
+
+  # ADASYN parameters (adaptive synthetic sampling)
+  adasyn_params:
+    sampling_strategy: "auto"
+    n_neighbors: 5
+    random_state: 42
+
+  # Feature extraction (TF-IDF - consistent with classification)
+  vectorizer_params:
+    max_features: 10000
+    ngram_range: [1, 2]
+    min_df: 2
+    max_df: 0.95
+    sublinear_tf: true
+    stop_words: "english"
+    lowercase: true
+
+# Classifier configuration (identical to LLM experiments)
+classifiers:
+  svm:
+    name: "Support Vector Machine"
+    enabled: true
+    params:
+      C: 1.0
+      kernel: "rbf"
+      class_weight: "balanced"
+      random_state: 42
+
+  random_forest:
+    name: "Random Forest"
+    enabled: true
+    params:
+      n_estimators: 100
+      max_depth: 10
+      min_samples_split: 5
+      min_samples_leaf: 2
+      class_weight: "balanced"
+      random_state: 42
+
+# Evaluation metrics configuration (identical to LLM experiments)
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "auc_roc"
+    - "auc_pr"
+    - "balanced_accuracy"
+
+  # Statistical testing configuration
+  statistical_tests:
+    alpha: 0.05
+    multiple_comparison_method: "fdr_bh"
+    effect_size_threshold: 0.3
+
+# Output configuration
+output:
+  results_path: "./output/full_experiments/ceas08_smote/results/"
+  plots_path: "./output/full_experiments/ceas08_smote/plots/"
+  reports_path: "./output/full_experiments/ceas08_smote/reports/"
+  logs_path: "./logs/full_experiments/ceas08_smote/"
+
+  # Save formats
+  save_formats:
+    - "json"
+    - "csv"
+    - "pkl"
+
+  # Visualization configuration
+  visualization:
+    dpi: 600
+    figure_size: [16, 10]
+    style: "seaborn-v0_8"
+    color_palette: "husl"
+
+# Parallel processing configuration
+parallel:
+  n_jobs: -1
+  backend: "loky"
+  verbose: 1
+
+# Experiment strategy configuration (only within_group and cross_group for now)
+strategies:
+  within_group:
+    name: "Within-group Mixing"
+    description: "Real Group i + SMOTE-generated features from same group"
+    academic_value: "Tests SMOTE effectiveness within same distribution"
+
+  cross_group:
+    name: "Cross-group Mixing"
+    description: "Real Group i + SMOTE-generated features from different group"
+    academic_value: "Tests SMOTE generalization across distributions"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "100 MB"
+  retention: "30 days"
+
+# Experiment scale summary
+# Method: SMOTE/ADASYN (Feature-space augmentation)
+# Total configurations: 2 variants × 2 strategies × 11 ratios × 20 groups × 2 classifiers = 1,760 configurations
+# Total training runs: 1,760 × 5 trials = 8,800 individual training runs
+# Computational cost: Local CPU only (no API costs)
+# Estimated time: 3-4 hours (much faster than LLM - no API calls)
+# Purpose: Traditional baseline for LLM comparison
