@@ -1,0 +1,160 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Experiment Analysis Report - full_ceas08_claude35haiku_v1_weak_within_group</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { background-color: #f0f0f0; padding: 20px; border-radius: 10px; }
+            .section { margin: 20px 0; padding: 15px; border-left: 4px solid #007acc; }
+            .metric { margin: 10px 0; padding: 10px; background-color: #f9f9f9; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .significant { color: #d9534f; font-weight: bold; }
+            .not-significant { color: #5cb85c; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Synthetic Spam Email Data Generation - Analysis Report</h1>
+            <p><strong>Experiment:</strong> full_ceas08_claude35haiku_v1</p>
+            <p><strong>LLM Model:</strong> Claude-3.5-Haiku</p>
+            <p><strong>Prompt Strategy:</strong> Original</p>
+            <p><strong>Analysis Date:</strong> 2025-10-11T11:03:32.191454</p>
+            <p><strong>Total Experiments:</strong> 1100</p>
+        </div>
+    
+        <div class="section">
+            <h2>Baseline Performance (0% Synthetic)</h2>
+            <table>
+                <tr><th>Classifier</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>AUC-ROC</th></tr>
+        
+                <tr>
+                    <td>svm</td>
+                    <td>0.9454</td>
+                    <td>0.9894</td>
+                    <td>0.4592</td>
+                    <td>0.6268</td>
+                    <td>0.7629</td>
+                </tr>
+            
+                <tr>
+                    <td>random_forest</td>
+                    <td>0.9481</td>
+                    <td>0.6678</td>
+                    <td>0.9818</td>
+                    <td>0.7931</td>
+                    <td>0.9929</td>
+                </tr>
+            </table></div>
+        <div class="section">
+            <h2>Significant Performance Degradations</h2>
+            <table>
+                <tr><th>Ratio</th><th>Classifier</th><th>Metric</th><th>Degradation</th><th>P-value</th><th>Effect Size</th></tr>
+        
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>accuracy</td>
+                    <td>0.0006</td>
+                    <td>0.0000</td>
+                    <td>0.2167</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>precision</td>
+                    <td>-0.0016</td>
+                    <td>0.0000</td>
+                    <td>-0.2622</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>recall</td>
+                    <td>0.0070</td>
+                    <td>0.0000</td>
+                    <td>0.2387</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>f1_score</td>
+                    <td>0.0063</td>
+                    <td>0.0000</td>
+                    <td>0.2317</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>auc_roc</td>
+                    <td>-0.0023</td>
+                    <td>0.0480</td>
+                    <td>-0.0782</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>balanced_accuracy</td>
+                    <td>0.0034</td>
+                    <td>0.0000</td>
+                    <td>0.2364</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>random_forest</td>
+                    <td>accuracy</td>
+                    <td>0.0057</td>
+                    <td>0.0000</td>
+                    <td>0.4350</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>random_forest</td>
+                    <td>precision</td>
+                    <td>0.0254</td>
+                    <td>0.0000</td>
+                    <td>0.4335</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>random_forest</td>
+                    <td>f1_score</td>
+                    <td>0.0182</td>
+                    <td>0.0000</td>
+                    <td>0.4487</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>random_forest</td>
+                    <td>auc_roc</td>
+                    <td>0.0005</td>
+                    <td>0.0002</td>
+                    <td>0.4107</td>
+                </tr>
+            </table></div>
+        <div class="section">
+            <h2>Critical Degradation Ratios</h2>
+            <p>The synthetic ratio at which performance degradation exceeds acceptable threshold (5%):</p>
+        <div class='metric'><strong>svm:</strong> recall: 30%, f1_score: 30%, auc_roc: 60%, auc_pr: 50%, balanced_accuracy: 50%</div><div class='metric'><strong>random_forest:</strong> precision: 20%, recall: 80%, f1_score: 100%, auc_pr: 90%, balanced_accuracy: 90%</div></div>
+        <div class="section">
+            <h2>Optimal Synthetic Ratios</h2>
+            <p>The synthetic ratio with minimal performance degradation:</p>
+        <div class='metric'><strong>svm:</strong> accuracy: 10% (degradation: 0.0007), precision: 10% (degradation: -0.0016), recall: 10% (degradation: 0.0152), f1_score: 10% (degradation: 0.0101), auc_roc: 20% (degradation: 0.0018), auc_pr: 10% (degradation: -0.0042), balanced_accuracy: 10% (degradation: 0.0047)</div><div class='metric'><strong>random_forest:</strong> accuracy: 60% (degradation: 0.0012), precision: 60% (degradation: 0.0000), recall: 30% (degradation: -0.0004), f1_score: 70% (degradation: -0.0057), auc_roc: 10% (degradation: 0.0005), auc_pr: 10% (degradation: 0.0041), balanced_accuracy: 10% (degradation: 0.0036)</div></div>
+        <div class="section">
+            <h2>Overall Conclusions</h2>
+            <ul>
+        <li>Baseline performance established across 2 classifiers</li><li>Found 130 significant performance degradations</li><li>Critical degradation thresholds identified for multiple classifier-metric combinations</li></ul></div>
+    </body>
+    </html>
+    

@@ -2,7 +2,7 @@
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Experiment Analysis Report - full_ceas08_claude35haiku_v1</title>
+        <title>Experiment Analysis Report - full_ceas08_claude35haiku_v1_strong_cross_group</title>
         <style>
             body { font-family: Arial, sans-serif; margin: 40px; }
             .header { background-color: #f0f0f0; padding: 20px; border-radius: 10px; }
@@ -21,7 +21,7 @@
             <p><strong>Experiment:</strong> full_ceas08_claude35haiku_v1</p>
             <p><strong>LLM Model:</strong> Claude-3.5-Haiku</p>
             <p><strong>Prompt Strategy:</strong> Original</p>
-            <p><strong>Analysis Date:</strong> 2025-10-11T10:54:29.183426</p>
+            <p><strong>Analysis Date:</strong> 2025-10-11T11:03:27.985924</p>
             <p><strong>Total Experiments:</strong> 1100</p>
         </div>
     
@@ -56,105 +56,105 @@
                 <tr class="significant">
                     <td>10%</td>
                     <td>svm</td>
-                    <td>accuracy</td>
-                    <td>0.0004</td>
-                    <td>0.0029</td>
-                    <td>0.1511</td>
-                </tr>
-            
-                <tr class="significant">
-                    <td>10%</td>
-                    <td>svm</td>
                     <td>precision</td>
-                    <td>-0.0016</td>
-                    <td>0.0001</td>
-                    <td>-0.2647</td>
+                    <td>-0.0028</td>
+                    <td>0.0000</td>
+                    <td>-0.4658</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>svm</td>
                     <td>recall</td>
-                    <td>0.0052</td>
-                    <td>0.0004</td>
-                    <td>0.1770</td>
+                    <td>0.0040</td>
+                    <td>0.0044</td>
+                    <td>0.1379</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>svm</td>
                     <td>f1_score</td>
-                    <td>0.0046</td>
-                    <td>0.0012</td>
-                    <td>0.1676</td>
+                    <td>0.0033</td>
+                    <td>0.0168</td>
+                    <td>0.1203</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>svm</td>
+                    <td>auc_roc</td>
+                    <td>-0.0075</td>
+                    <td>0.0000</td>
+                    <td>-0.2451</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>svm</td>
                     <td>auc_pr</td>
-                    <td>-0.0034</td>
-                    <td>0.0353</td>
-                    <td>-0.1062</td>
+                    <td>-0.0092</td>
+                    <td>0.0000</td>
+                    <td>-0.2838</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>svm</td>
                     <td>balanced_accuracy</td>
-                    <td>0.0025</td>
-                    <td>0.0005</td>
-                    <td>0.1743</td>
+                    <td>0.0019</td>
+                    <td>0.0061</td>
+                    <td>0.1331</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>random_forest</td>
                     <td>accuracy</td>
-                    <td>0.0054</td>
+                    <td>0.0052</td>
                     <td>0.0000</td>
-                    <td>0.4214</td>
+                    <td>0.4086</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>random_forest</td>
                     <td>precision</td>
-                    <td>0.0250</td>
+                    <td>0.0242</td>
                     <td>0.0000</td>
-                    <td>0.4423</td>
-                </tr>
-            
-                <tr class="significant">
-                    <td>10%</td>
-                    <td>random_forest</td>
-                    <td>recall</td>
-                    <td>-0.0019</td>
-                    <td>0.0033</td>
-                    <td>-0.2858</td>
+                    <td>0.4224</td>
                 </tr>
             
                 <tr class="significant">
                     <td>10%</td>
                     <td>random_forest</td>
                     <td>f1_score</td>
-                    <td>0.0169</td>
+                    <td>0.0166</td>
                     <td>0.0000</td>
-                    <td>0.4338</td>
+                    <td>0.4205</td>
+                </tr>
+            
+                <tr class="significant">
+                    <td>10%</td>
+                    <td>random_forest</td>
+                    <td>auc_pr</td>
+                    <td>0.0023</td>
+                    <td>0.0004</td>
+                    <td>0.3148</td>
                 </tr>
             </table></div>
         <div class="section">
             <h2>Critical Degradation Ratios</h2>
             <p>The synthetic ratio at which performance degradation exceeds acceptable threshold (5%):</p>
-        <div class='metric'><strong>svm:</strong> recall: 30%, f1_score: 30%, auc_roc: 60%, auc_pr: 50%, balanced_accuracy: 50%</div><div class='metric'><strong>random_forest:</strong> precision: 20%, recall: 80%, f1_score: 100%, auc_pr: 90%, balanced_accuracy: 90%</div></div>
+        <div class='metric'><strong>svm:</strong> recall: 30%, f1_score: 40%, auc_roc: 90%, auc_pr: 70%, balanced_accuracy: 60%</div><div class='metric'><strong>random_forest:</strong> precision: 20%, recall: 80%, f1_score: 100%, balanced_accuracy: 100%</div></div>
         <div class="section">
             <h2>Optimal Synthetic Ratios</h2>
             <p>The synthetic ratio with minimal performance degradation:</p>
-        <div class='metric'><strong>svm:</strong> accuracy: 10% (degradation: 0.0005), precision: 10% (degradation: -0.0017), recall: 10% (degradation: 0.0112), f1_score: 10% (degradation: 0.0073), auc_roc: 20% (degradation: 0.0011), auc_pr: 20% (degradation: 0.0017), balanced_accuracy: 10% (degradation: 0.0035)</div><div class='metric'><strong>random_forest:</strong> accuracy: 60% (degradation: -0.0005), precision: 60% (degradation: -0.0069), recall: 30% (degradation: -0.0006), f1_score: 60% (degradation: 0.0021), auc_roc: 10% (degradation: 0.0002), auc_pr: 10% (degradation: 0.0029), balanced_accuracy: 10% (degradation: 0.0022)</div></div>
+        <div class='metric'><strong>svm:</strong> accuracy: 10% (degradation: 0.0003), precision: 10% (degradation: -0.0028), recall: 10% (degradation: 0.0088), f1_score: 10% (degradation: 0.0053), auc_roc: 40% (degradation: -0.0014), auc_pr: 40% (degradation: 0.0047), balanced_accuracy: 10% (degradation: 0.0027)</div><div class='metric'><strong>random_forest:</strong> accuracy: 50% (degradation: 0.0009), precision: 50% (degradation: 0.0062), recall: 30% (degradation: -0.0001), f1_score: 50% (degradation: 0.0052), auc_roc: 10% (degradation: 0.0002), auc_pr: 10% (degradation: 0.0024), balanced_accuracy: 10% (degradation: 0.0025)</div></div>
         <div class="section">
             <h2>Overall Conclusions</h2>
             <ul>
-        <li>Baseline performance established across 2 classifiers</li><li>Found 132 significant performance degradations</li><li>Critical degradation thresholds identified for multiple classifier-metric combinations</li></ul></div>
+        <li>Baseline performance established across 2 classifiers</li><li>Found 128 significant performance degradations</li><li>Critical degradation thresholds identified for multiple classifier-metric combinations</li></ul></div>
     </body>
     </html>
     
