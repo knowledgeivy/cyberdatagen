@@ -11,6 +11,7 @@ The classification experiments reveal fundamental differences in how augmentatio
 \centering
 \caption{Classification Performance: Baseline vs. 100\% Synthetic Data (Within-Group Strategy)}
 \label{tab:performance_summary}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Classifier} & \textbf{Method} & \textbf{Baseline} & \textbf{100\% Synthetic} & \textbf{Degradation} \\
@@ -25,6 +26,7 @@ The classification experiments reveal fundamental differences in how augmentatio
 & SMOTE & 0.807 $\pm$ 0.065 & 0.858 $\pm$ 0.068 & +6.4\% \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The results reveal striking contrasts across augmentation paradigms and classifier architectures:
@@ -67,6 +69,7 @@ To quantify degradation rates, we conduct linear regression analysis modeling F1
 \centering
 \caption{Performance Degradation Sensitivity (Within-Group Strategy)}
 \label{tab:sensitivity_analysis}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{llcccc}
 \toprule
 \textbf{Classifier} & \textbf{Method} & \textbf{Slope} & \textbf{$R^2$} & \textbf{$p$-value} & \textbf{Total $\Delta$} \\
@@ -81,6 +84,7 @@ To quantify degradation rates, we conduct linear regression analysis modeling F1
 & SMOTE & +0.00051 & 0.891 & $<$10$^{-6}$ & +0.051 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The regression analysis quantifies the stark method-classifier interactions. For SVM, Claude-3.5-Haiku demonstrates the steepest degradation slope (-0.00289), nearly twice GPT-4.1-mini's rate (-0.00154) and 7.4 times SMOTE's rate (-0.00039). All relationships exhibit high linearity ($R^2 > 0.94$) and strong statistical significance ($p < 10^{-7}$), indicating consistent, predictable degradation patterns without threshold effects.
@@ -96,6 +100,7 @@ The systematic comparison of within-group and cross-group mixing strategies reve
 \centering
 \caption{Mixing Strategy Performance at 100\% Synthetic (Original Prompt, F1-Score)}
 \label{tab:strategy_comparison}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{llcc}
 \toprule
 \textbf{Method} & \textbf{Classifier} & \textbf{Within-Group} & \textbf{Cross-Group} \\
@@ -110,6 +115,7 @@ The systematic comparison of within-group and cross-group mixing strategies reve
 & Random Forest & 0.858 $\pm$ 0.068 & 0.864 $\pm$ 0.043 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The mixing strategy comparison reveals three key patterns:
@@ -128,6 +134,7 @@ Our evaluation of three prompt engineering strategies (original, strong, weak) a
 \centering
 \caption{Prompt Strategy Comparison at 50\% Synthetic Ratio (Within-Group)}
 \label{tab:prompt_comparison}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{llcc}
 \toprule
 \textbf{Model} & \textbf{Prompt} & \textbf{SVM F1} & \textbf{RF F1} \\
@@ -145,6 +152,7 @@ Our evaluation of three prompt engineering strategies (original, strong, weak) a
 \multicolumn{4}{c}{\textit{SMOTE (no prompts): 0.657 $\pm$ 0.097 (SVM), 0.832 $\pm$ 0.066 (RF)}} \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The results reveal striking model-dependent sensitivity to prompt engineering:
