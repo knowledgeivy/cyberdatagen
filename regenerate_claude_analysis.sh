@@ -47,7 +47,9 @@ for PROMPT in original strong weak; do
     python scripts/step5_statistical_analysis.py \
       --config ${CONFIG} \
       --results_file "${RESULTS_FILE}" \
-      --output_file "${REPORT_FILE}"
+      --output_file "${REPORT_FILE}" \
+      --filter_prompt ${PROMPT} \
+      --filter_strategy ${STRATEGY}
 
     # 创建plots子目录
     mkdir -p "${PLOTS_DIR}"
