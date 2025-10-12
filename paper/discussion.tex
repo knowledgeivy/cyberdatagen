@@ -23,6 +23,69 @@ These findings fundamentally alter classifier selection when synthetic data augm
 
 For operational deployment, these patterns translate to concrete guidance. SVM-based systems requiring synthetic augmentation should limit synthetic proportions below 30\% to maintain acceptable performance ($<$10\% relative degradation), leveraging the linear relationship for straightforward cost-benefit analysis. Random Forest systems, conversely, can operate effectively even with 100\% synthetic training data, offering deployment flexibility for privacy-constrained or legally restricted environments where real spam collection is impractical. The 11.8-fold robustness difference suggests that architectural choice may be the single most impactful decision for synthetic data utilization strategies.
 
+\subsection{Understanding SMOTE's Distribution-Dependent Performance}
+
+While Section~\ref{sec:evaluation} demonstrated SMOTE's aggregate Random Forest improvement (+3.7\%), the extreme group-to-group variance ($\pm$0.083, 4.2$\times$ higher than LLM methods) demands deeper theoretical investigation. This distribution-dependent behavior reveals fundamental differences between feature-space and text-space augmentation paradigms, with important implications for understanding when traditional oversampling methods provide value versus when LLM-based approaches offer superior reliability.
+
+\subsubsection{Convex-Hull Interpolation Mechanism}
+
+SMOTE's generation mechanism fundamentally differs from LLM text generation. Rather than probabilistically sampling from learned language distributions, SMOTE operates through deterministic feature-space interpolation. For each minority class sample $\mathbf{x}_i$, SMOTE identifies $k$ nearest neighbors (default $k=5$) in TF-IDF feature space and generates synthetic samples via linear interpolation:
+
+\begin{equation}
+\mathbf{x}_{\text{synthetic}} = \mathbf{x}_i + \lambda (\mathbf{x}_j - \mathbf{x}_i), \quad \lambda \sim \text{Uniform}(0, 1)
+\end{equation}
+
+where $\mathbf{x}_j$ is a randomly selected neighbor. This construction ensures all synthetic samples lie within the \emph{convex hull} of real minority class features, providing mathematically bounded generation constrained by observed feature distributions.
+
+This constraint has profound implications. SMOTE cannot generate samples exhibiting feature combinations absent from real data—it fills gaps between existing samples but cannot extrapolate beyond their boundaries. When test samples fall within this convex hull, SMOTE's interpolated features provide enhanced coverage that improves classification boundaries. When test samples fall outside this hull, SMOTE provides no benefit and may even harm performance by inducing boundaries optimized for the wrong feature distribution.
+
+\subsubsection{Why Random Forest Benefits While SVM Suffers}
+
+The differential response between Random Forest (+3.7\%) and SVM (-19.3\%) reveals how classifier architectures interact with feature-space interpolation:
+
+\textbf{Random Forest advantages}: Decision tree ensembles inherently benefit from continuous feature-space coverage. Each tree in the ensemble performs recursive binary splitting on feature values, and interpolated SMOTE samples provide continuous coverage along these splitting dimensions. The bootstrap sampling mechanism ensures diverse subsamples, amplifying the value of interpolated diversity. Feature bagging further enhances robustness: different trees examine different feature subspaces, and SMOTE's interpolation across all features provides coverage improvements visible to all trees. The ensemble averaging mechanism naturally mitigates individual poor-quality samples, as outliers in one tree are compensated by other trees trained on different bootstrap samples.
+
+\textbf{SVM vulnerabilities}: Support Vector Machines construct decision boundaries based on support vectors—samples near the decision boundary. SMOTE's interpolation may generate synthetic samples that become spurious support vectors, pulling boundaries away from optimal positions. When test distributions differ from training, these SMOTE-induced boundary perturbations accumulate errors. The margin-based optimization amplifies small distributional shifts: if SMOTE shifts the feature distribution even slightly, the entire margin geometry adjusts to accommodate these synthetic patterns, potentially degrading generalization to real test samples.
+
+The low $R^2 = 0.327$ for SMOTE's Random Forest regression confirms substantial non-linearity: improvements occur primarily at moderate synthetic ratios where interpolation fills genuine gaps, but plateau as additional interpolation provides diminishing returns. This contrasts with SVM's highly linear degradation ($R^2 = 0.969$), indicating consistent, predictable harm from distributional contamination.
+
+\subsubsection{Distribution Alignment Hypothesis}
+
+The bimodal outcome distribution—13 groups improving, 7 degrading—suggests performance depends critically on \emph{feature distribution alignment} between training and test sets. We hypothesize the following mechanism:
+
+\textbf{High-improvement groups} (e.g., Group 10: +22.5\%): Low baseline performance (F1 = 0.719) indicates insufficient real spam coverage. Test spam features likely lie within the convex hull of training features, but real training samples provide only sparse coverage. SMOTE's interpolation fills critical gaps between sparse real samples, creating continuous feature coverage that significantly improves boundary robustness. Random Forest trees trained on this enhanced representation generalize better to test samples occupying previously sparse regions.
+
+\textbf{High-degradation groups} (e.g., Group 0: -27.7\%): High baseline performance (F1 = 0.816) indicates strong real-data fit—training spam already provides excellent feature coverage for test spam. SMOTE's additional interpolation provides no benefit, as the feature space is already adequately covered. Moreover, synthetic interpolation may introduce artificial feature patterns that mislead boundary construction, particularly if test spam exhibits feature combinations not well-represented by convex interpolation of training features. The high baseline suggests real samples already capture test distribution well; synthetic augmentation disrupts this effective representation.
+
+This hypothesis explains the negative correlation between baseline performance and SMOTE benefit: groups needing help most (low baselines due to insufficient coverage) benefit substantially, while groups already performing well (high baselines indicating good coverage) experience degradation when interpolation introduces unwanted perturbations.
+
+\subsubsection{Comparison with LLM Stability}
+
+LLM methods demonstrate fundamentally different variance profiles. GPT-4.1-mini and Claude-3.5-Haiku exhibit standard deviations 4-5$\times$ smaller than SMOTE, with consistent modest degradation across nearly all groups. This stability stems from text-space generation's inherent properties: LLMs sample from learned language distributions unconstrained by convex hull boundaries, enabling generation of diverse spam variants regardless of specific training sample configurations. While this flexibility introduces linguistic artifacts that degrade SVM performance (-24.1\% for GPT), it provides \emph{predictable} degradation independent of test distribution alignment.
+
+The stability-performance trade-off crystallizes the fundamental paradigm difference:
+
+\begin{itemize}
+    \item \textbf{SMOTE}: High potential improvement (+22.5\% maximum) but high risk (-27.7\% maximum), unpredictable a priori
+    \item \textbf{LLMs}: Moderate, consistent degradation (-2.1\% typical), highly predictable behavior
+\end{itemize}
+
+\subsubsection{Practical Deployment Implications}
+
+The distribution-dependent findings establish a risk-reward framework for method selection:
+
+\textbf{Choose SMOTE when}: (1) Random Forest is the target classifier (SVM suffers consistent degradation), (2) pilot experiments confirm positive performance on validation sets, (3) test distributions likely align with training feature distributions, (4) maximum classification performance is paramount and text interpretability is unnecessary.
+
+\textbf{Choose LLMs when}: (1) performance stability and predictability are critical, (2) test distribution alignment cannot be validated a priori, (3) text interpretability is required for human review or adversarial testing, (4) organizational risk tolerance favors consistent modest degradation over high-variance outcomes.
+
+\textbf{Hybrid strategies}: Organizations might employ SMOTE for Random Forest training while using LLMs for interpretability-requiring tasks. Pilot testing with held-out validation groups can assess SMOTE suitability before production deployment. Adaptive methods that detect distribution alignment could switch between SMOTE and LLMs based on real-time alignment metrics.
+
+\subsubsection{Limitations and Future Directions for Distribution Alignment Research}
+
+Current work leaves critical questions unresolved. We lack \emph{predictive metrics} for identifying which groups will benefit from SMOTE before deployment—a critical gap for practical adoption. The \emph{convex hull hypothesis} requires direct testing through explicit computation of test sample positions relative to training convex hulls, correlating this geometric property with performance outcomes. Investigating \emph{alternative interpolation strategies} beyond linear SMOTE (e.g., Gaussian interpolation, learned manifold-based generation) might reduce variance while preserving benefits. Finally, \emph{hybrid text-feature approaches} that combine LLM semantic generation with SMOTE feature-space refinement represent unexplored territory potentially offering stability without sacrificing performance.
+
+The extreme variance we observe positions SMOTE as a high-risk, high-reward strategy requiring careful validation, contrasting with LLMs' reliable but modest degradation. Understanding when feature-space versus text-space augmentation provides optimal outcomes remains a critical open question for advancing synthetic cybersecurity data effectiveness.
+
 \subsection{The Surprising Irrelevance of Prompt Engineering}
 
 The near-identical performance across our three systematically varied prompt strategies (original, strong, weak) stands as one of the most unexpected findings from our evaluation. With effect sizes below $d = 0.1$ and completely overlapping confidence intervals, the data provides strong evidence that prompt engineering intensity has negligible impact on downstream spam detection performance.

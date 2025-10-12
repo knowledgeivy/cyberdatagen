@@ -205,6 +205,75 @@ For SVM, SMOTE shows moderate degradation from baseline but significantly outper
 
 These comparisons establish SMOTE's statistically significant superiority over LLM methods for classification performance. While SMOTE exhibits moderate SVM degradation from baseline (-19.3\%), it maintains substantial advantages over GPT (+6.3\%) and Claude (+49.7\%) at 100\% synthetic. For Random Forest, SMOTE demonstrates consistent improvement over baseline (+3.7\%) and both LLM methods, with effect sizes ranging from medium to large.
 
+\subsection{SMOTE Performance Variability Analysis}
+
+While SMOTE demonstrates aggregate performance improvement for Random Forest (+3.7\% at 100\% synthetic), this improvement exhibits substantial group-to-group variability that contrasts sharply with LLM methods' consistent behavior. Analysis of individual experimental groups reveals a bimodal distribution of outcomes, with high variance indicating performance is strongly dependent on the alignment between training and test feature distributions.
+
+\subsubsection{Distribution of Outcomes Across Groups}
+
+Table~\ref{tab:smote_variability} presents performance changes across all 20 experimental groups, highlighting extreme cases that illustrate SMOTE's distribution-dependent behavior.
+
+\begin{table}[h]
+\centering
+\caption{SMOTE Random Forest Performance Variability Across Groups (Within-Group, 100\% Synthetic)}
+\label{tab:smote_variability}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Group} & \textbf{Baseline} & \textbf{100\% Syn.} & \textbf{Change} & \textbf{Relative} & \textbf{GPT Change} \\
+& \textbf{F1} & \textbf{F1} & \textbf{($\Delta$)} & \textbf{(\%)} & \textbf{(Ref.)} \\
+\midrule
+\multicolumn{6}{c}{\textit{Best Improvement Cases}} \\
+\midrule
+10 & 0.719 & 0.880 & +0.162 & +22.5\% & +0.017 \\
+19 & 0.740 & 0.862 & +0.123 & +16.6\% & +0.005 \\
+11 & 0.757 & 0.865 & +0.108 & +14.3\% & -0.006 \\
+8 & 0.774 & 0.870 & +0.096 & +12.4\% & +0.028 \\
+12 & 0.772 & 0.847 & +0.075 & +9.7\% & -0.040 \\
+\midrule
+\multicolumn{6}{c}{\textit{Worst Degradation Cases}} \\
+\midrule
+0 & 0.816 & 0.590 & -0.226 & -27.7\% & -0.035 \\
+15 & 0.863 & 0.772 & -0.091 & -10.5\% & -0.017 \\
+3 & 0.847 & 0.832 & -0.015 & -1.8\% & -0.007 \\
+\midrule
+\multicolumn{6}{c}{\textit{Statistical Summary}} \\
+\midrule
+\multicolumn{2}{l}{SMOTE Mean $\pm$ SD:} & \multicolumn{2}{c}{+0.029 $\pm$ 0.083} & \multicolumn{2}{c}{13/20 improved} \\
+\multicolumn{2}{l}{GPT Mean $\pm$ SD:} & \multicolumn{2}{c}{-0.016 $\pm$ 0.020} & \multicolumn{2}{c}{4/20 improved} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+The results reveal dramatic variability: SMOTE exhibits 13 groups (65\%) with improvement and 7 groups (35\%) with degradation, with changes ranging from -22.6\% to +22.5\%. This contrasts sharply with GPT-4.1-mini, which shows only 4 groups (20\%) with improvement and consistent modest degradation across most groups.
+
+\subsubsection{Variance Analysis}
+
+The standard deviation of performance changes quantifies the stability differences:
+
+\begin{itemize}
+    \item \textbf{SMOTE variance}: $\pm$0.083 (extremely high)
+    \item \textbf{GPT variance}: $\pm$0.020 (low)
+    \item \textbf{Claude variance}: $\pm$0.024 (low)
+    \item \textbf{Variance ratio}: SMOTE exhibits \textbf{4.2$\times$ higher variance} than GPT
+\end{itemize}
+
+This high variance indicates SMOTE's performance is highly sensitive to the relationship between training and test feature distributions. Groups with low baseline performance (e.g., Group 10: 0.719) tend to show large improvements (+22.5\%), suggesting SMOTE helps when real data coverage is insufficient. Conversely, groups with high baseline performance (e.g., Group 0: 0.816) tend to show degradation (-27.7\%), suggesting SMOTE may disrupt already-effective feature representations.
+
+\subsubsection{Comparison with LLM Stability}
+
+LLM methods demonstrate fundamentally different variance patterns:
+
+\begin{itemize}
+    \item \textbf{Consistent degradation}: GPT and Claude show modest, predictable degradation across nearly all groups
+    \item \textbf{Low variance}: Standard deviations 4-5$\times$ smaller than SMOTE
+    \item \textbf{Predictable behavior}: Performance changes cluster tightly around mean values
+    \item \textbf{No extreme outliers}: Maximum degradation for GPT is -4.7\% (vs -27.7\% for SMOTE)
+\end{itemize}
+
+This stability-vs-performance trade-off has important implications for practical deployment. SMOTE offers potential for substantial performance gains but with unpredictable group-specific outcomes, while LLM methods provide reliable, consistent behavior with modest degradation. The mechanisms underlying this distribution-dependent behavior and practical implications for method selection are discussed in Section~\ref{sec:discussion}.
+
 \subsection{Summary of Key Findings}
 
 Our comprehensive evaluation across 6,160 experimental configurations establishes five principal conclusions:
