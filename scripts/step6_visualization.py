@@ -35,6 +35,12 @@ def extract_model_from_experiment_name(experiment_name: str) -> str:
     """
     name_lower = experiment_name.lower()
 
+    # Traditional baselines
+    if 'smote' in name_lower:
+        return 'SMOTE'
+    elif 'adasyn' in name_lower:
+        return 'ADASYN'
+
     # GPT models
     if 'gpt41mini' in name_lower or 'gpt-4.1-mini' in name_lower:
         return 'GPT-4.1-mini'
@@ -131,13 +137,17 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
 
     # 从分析结果中获取模型和prompt信息
     model_info = get_model_info_from_analysis(analysis_results)
-    prompt_info = "Original"   # 默认值
 
-    # 从分析结果中读取prompt信息
-    if 'experiment_info' in analysis_results:
-        prompt_from_file = analysis_results['experiment_info'].get('prompt', 'original')
-        # 首字母大写
-        prompt_info = prompt_from_file.capitalize()
+    # 判断是否为传统baseline (SMOTE/ADASYN)
+    is_traditional_baseline = model_info in ['SMOTE', 'ADASYN']
+
+    prompt_info = None
+    if not is_traditional_baseline:
+        # 只有LLM实验才需要prompt信息
+        prompt_info = "Original"   # 默认值
+        if 'experiment_info' in analysis_results:
+            prompt_from_file = analysis_results['experiment_info'].get('prompt', 'original')
+            prompt_info = prompt_from_file.capitalize()
 
     descriptive_stats = analysis_results.get('descriptive_statistics', {})
     if not descriptive_stats:
@@ -185,7 +195,9 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
 
             if not ratios:
                 ax.text(0.5, 0.5, 'No Data', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(f'{classifier.upper()} ({model_info}, {prompt_info})', fontsize=10, pad=10)
+                # 根据是否有prompt信息决定标题格式
+                title = f'{classifier.upper()} ({model_info})' if is_traditional_baseline else f'{classifier.upper()} ({model_info}, {prompt_info})'
+                ax.set_title(title, fontsize=10, pad=10)
                 continue
 
             # 绘制曲线
@@ -193,7 +205,9 @@ def create_performance_curves(analysis_results: dict, output_dir: str, experimen
             ax.fill_between(ratios, ci_lowers, ci_uppers, alpha=0.3)
 
             # 设置标题和标签
-            ax.set_title(f'{classifier.upper()} ({model_info}, {prompt_info})', fontsize=10, pad=10)
+            # 根据是否有prompt信息决定标题格式
+            title = f'{classifier.upper()} ({model_info})' if is_traditional_baseline else f'{classifier.upper()} ({model_info}, {prompt_info})'
+            ax.set_title(title, fontsize=10, pad=10)
             ax.set_xlabel('Synthetic Ratio (%)')
             ax.set_ylabel(metric.replace('_', ' ').title())
             ax.grid(True, alpha=0.3)
@@ -458,7 +472,16 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
 
     # 从分析结果中获取模型和prompt信息
     model_info = get_model_info_from_analysis(analysis_results)
-    prompt_info = "Original"
+
+    # 判断是否为传统baseline
+    is_traditional_baseline = model_info in ['SMOTE', 'ADASYN']
+
+    prompt_info = None
+    if not is_traditional_baseline:
+        prompt_info = "Original"
+        if 'experiment_info' in analysis_results:
+            prompt_from_file = analysis_results['experiment_info'].get('prompt', 'original')
+            prompt_info = prompt_from_file.capitalize()
 
     findings = analysis_results.get('summary_findings', {})
     experiment_info = analysis_results.get('experiment_info', {})
@@ -485,8 +508,8 @@ def create_summary_report(analysis_results: dict, output_dir: str, experiment_na
         <div class="header">
             <h1>Synthetic Spam Email Data Generation - Analysis Report</h1>
             <p><strong>Experiment:</strong> {experiment_info.get('experiment_name', experiment_name)}</p>
-            <p><strong>LLM Model:</strong> {model_info}</p>
-            <p><strong>Prompt Strategy:</strong> {prompt_info}</p>
+            <p><strong>Method:</strong> {model_info}</p>
+            {'<p><strong>Prompt Strategy:</strong> ' + prompt_info + '</p>' if not is_traditional_baseline else ''}
             <p><strong>Analysis Date:</strong> {experiment_info.get('analysis_timestamp', 'N/A')}</p>
             <p><strong>Total Experiments:</strong> {experiment_info.get('total_experiments', 'N/A')}</p>
         </div>

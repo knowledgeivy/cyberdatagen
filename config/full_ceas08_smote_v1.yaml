@@ -7,7 +7,6 @@ experiment:
   name: "full_ceas08_smote_v1"
   description: "Full-scale study using CEAS-08 dataset with SMOTE for traditional baseline comparison"
   dataset: "CEAS-08"
-  method: "smote"
   random_seed: 42
 
 # Data configuration
@@ -46,6 +45,20 @@ smote:
     ngram_range: [1, 2]
     stop_words: "english"
     lowercase: true
+
+# LLM configuration (placeholder - SMOTE doesn't use LLM)
+llm:
+  engines: ["smote"]  # Required by config manager
+  model: "smote"
+  provider: "traditional"
+  description: "SMOTE baseline - no LLM used"
+
+# Prompts configuration (placeholder - SMOTE doesn't use prompts)
+prompts:
+  smote:
+    name: "SMOTE"
+    description: "Traditional SMOTE baseline - no prompts used"
+    template: "N/A - SMOTE uses feature-space interpolation, not prompts"
 
 # Classifier configuration (identical to LLM experiments)
 classifiers:
