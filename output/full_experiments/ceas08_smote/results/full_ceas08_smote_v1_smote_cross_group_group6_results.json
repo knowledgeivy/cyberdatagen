@@ -1,0 +1,644 @@
+{
+  "experiment_name": "full_ceas08_smote_v1",
+  "smote_variant": "smote",
+  "strategy": "cross_group",
+  "group_id": 6,
+  "results": [
+    {
+      "group_id": 6,
+      "synthetic_ratio": 0,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9452220726783311,
+        "precision": 0.9912280701754386,
+        "recall": 0.45625841184387617,
+        "f1_score": 0.6248847926267281,
+        "auc_roc": 0.7641615347751941,
+        "auc_pr": 0.6589044226541684,
+        "balanced_accuracy": 0.7279048900852401
+      },
+      "metadata": {
+        "n_real_spam": 112,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 0,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 0,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 0,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9409152086137281,
+        "precision": 0.6308089500860585,
+        "recall": 0.9865410497981157,
+        "f1_score": 0.7695538057742782,
+        "auc_roc": 0.9928185722644185,
+        "auc_pr": 0.9504325144416912,
+        "balanced_accuracy": 0.9611933602512337
+      },
+      "metadata": {
+        "n_real_spam": 112,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 0,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 0,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 10,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9429340511440107,
+        "precision": 0.9907692307692307,
+        "recall": 0.43337819650067294,
+        "f1_score": 0.602996254681648,
+        "auc_roc": 0.7455336593510923,
+        "auc_pr": 0.6338204718401603,
+        "balanced_accuracy": 0.7164647824136384
+      },
+      "metadata": {
+        "n_real_spam": 101,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 11,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 10,
+        "actual_synthetic_ratio": 9.821428571428571,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 10,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9433378196500672,
+        "precision": 0.6407342657342657,
+        "recall": 0.9865410497981157,
+        "f1_score": 0.7768945416004239,
+        "auc_roc": 0.9924953320367497,
+        "auc_pr": 0.9495485853580659,
+        "balanced_accuracy": 0.9625392552714221
+      },
+      "metadata": {
+        "n_real_spam": 101,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 11,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 10,
+        "actual_synthetic_ratio": 9.821428571428571,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 20,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9426648721399731,
+        "precision": 0.9907120743034056,
+        "recall": 0.4306864064602961,
+        "f1_score": 0.600375234521576,
+        "auc_roc": 0.7416380711776591,
+        "auc_pr": 0.6318474446452093,
+        "balanced_accuracy": 0.71511888739345
+      },
+      "metadata": {
+        "n_real_spam": 90,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 22,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 20,
+        "actual_synthetic_ratio": 19.642857142857142,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 20,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9515477792732167,
+        "precision": 0.6778087279480037,
+        "recall": 0.9825033647375505,
+        "f1_score": 0.8021978021978022,
+        "auc_roc": 0.992584293543991,
+        "auc_pr": 0.9496927649470133,
+        "balanced_accuracy": 0.9653058172573651
+      },
+      "metadata": {
+        "n_real_spam": 90,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 22,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 20,
+        "actual_synthetic_ratio": 19.642857142857142,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 30,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9398384925975773,
+        "precision": 0.9900662251655629,
+        "recall": 0.40242261103633914,
+        "f1_score": 0.5722488038277512,
+        "auc_roc": 0.7321411283740715,
+        "auc_pr": 0.6182133966733407,
+        "balanced_accuracy": 0.7009869896814716
+      },
+      "metadata": {
+        "n_real_spam": 79,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 33,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 30,
+        "actual_synthetic_ratio": 29.464285714285715,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 30,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9637954239569314,
+        "precision": 0.7448347107438017,
+        "recall": 0.9703903095558546,
+        "f1_score": 0.842781998831093,
+        "auc_roc": 0.9942045200899035,
+        "auc_pr": 0.9627044733029361,
+        "balanced_accuracy": 0.9667264842231195
+      },
+      "metadata": {
+        "n_real_spam": 79,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 33,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 30,
+        "actual_synthetic_ratio": 29.464285714285715,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 40,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9387617765814267,
+        "precision": 0.9897959183673469,
+        "recall": 0.3916554508748318,
+        "f1_score": 0.5612343297974928,
+        "auc_roc": 0.7070656570139406,
+        "auc_pr": 0.5880293467643647,
+        "balanced_accuracy": 0.6956034096007178
+      },
+      "metadata": {
+        "n_real_spam": 68,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 44,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 40,
+        "actual_synthetic_ratio": 39.285714285714285,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 40,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9633916554508748,
+        "precision": 0.7405515832482125,
+        "recall": 0.9757738896366084,
+        "f1_score": 0.8420441347270615,
+        "auc_roc": 0.9941272322646078,
+        "auc_pr": 0.9605534006775138,
+        "balanced_accuracy": 0.9688948706445342
+      },
+      "metadata": {
+        "n_real_spam": 68,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 44,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 40,
+        "actual_synthetic_ratio": 39.285714285714285,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 50,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.938492597577389,
+        "precision": 0.993103448275862,
+        "recall": 0.3876177658142665,
+        "f1_score": 0.5575992255566312,
+        "auc_roc": 0.7078680213773295,
+        "auc_pr": 0.5906255927285393,
+        "balanced_accuracy": 0.6936593390160012
+      },
+      "metadata": {
+        "n_real_spam": 56,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 56,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 50,
+        "actual_synthetic_ratio": 50.0,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 50,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9635262449528936,
+        "precision": 0.7418032786885246,
+        "recall": 0.9744279946164199,
+        "f1_score": 0.8423502036067481,
+        "auc_roc": 0.9937771224414258,
+        "auc_pr": 0.9561337038471397,
+        "balanced_accuracy": 0.9683714670255721
+      },
+      "metadata": {
+        "n_real_spam": 56,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 56,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 50,
+        "actual_synthetic_ratio": 50.0,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 60,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9370121130551817,
+        "precision": 0.992831541218638,
+        "recall": 0.3728129205921938,
+        "f1_score": 0.5420743639921722,
+        "auc_roc": 0.6921994243264638,
+        "auc_pr": 0.5683654872469425,
+        "balanced_accuracy": 0.6862569164049649
+      },
+      "metadata": {
+        "n_real_spam": 45,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 67,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 60,
+        "actual_synthetic_ratio": 59.82142857142857,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 60,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9745625841184388,
+        "precision": 0.8198614318706697,
+        "recall": 0.955585464333782,
+        "f1_score": 0.8825357364822871,
+        "auc_roc": 0.9943209550037929,
+        "auc_pr": 0.9604177503740949,
+        "balanced_accuracy": 0.9661283086585913
+      },
+      "metadata": {
+        "n_real_spam": 45,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 67,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 60,
+        "actual_synthetic_ratio": 59.82142857142857,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 70,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9378196500672947,
+        "precision": 0.9929824561403509,
+        "recall": 0.38088829071332436,
+        "f1_score": 0.5505836575875487,
+        "auc_roc": 0.6983782236721741,
+        "auc_pr": 0.5813888498906876,
+        "balanced_accuracy": 0.6902946014655301
+      },
+      "metadata": {
+        "n_real_spam": 34,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 78,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 70,
+        "actual_synthetic_ratio": 69.64285714285714,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 70,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9687752355316286,
+        "precision": 0.7786259541984732,
+        "recall": 0.9609690444145357,
+        "f1_score": 0.8602409638554217,
+        "auc_roc": 0.9933693486548396,
+        "auc_pr": 0.9529448668056106,
+        "balanced_accuracy": 0.965305817257365
+      },
+      "metadata": {
+        "n_real_spam": 34,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 78,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 70,
+        "actual_synthetic_ratio": 69.64285714285714,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 80,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9372812920592194,
+        "precision": 0.9893992932862191,
+        "recall": 0.3768506056527591,
+        "f1_score": 0.5458089668615984,
+        "auc_roc": 0.6848385640485617,
+        "auc_pr": 0.5619692954847935,
+        "balanced_accuracy": 0.6882009869896815
+      },
+      "metadata": {
+        "n_real_spam": 23,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 89,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 80,
+        "actual_synthetic_ratio": 79.46428571428571,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 80,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9757738896366084,
+        "precision": 0.9245852187028658,
+        "recall": 0.8250336473755047,
+        "f1_score": 0.871977240398293,
+        "auc_roc": 0.9932187984118157,
+        "auc_pr": 0.9573636411517978,
+        "balanced_accuracy": 0.9087782264094512
+      },
+      "metadata": {
+        "n_real_spam": 23,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 89,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 80,
+        "actual_synthetic_ratio": 79.46428571428571,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 90,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9363391655450874,
+        "precision": 1.0,
+        "recall": 0.3633916554508748,
+        "f1_score": 0.5330700888450148,
+        "auc_roc": 0.6932516658646042,
+        "auc_pr": 0.5691627663579556,
+        "balanced_accuracy": 0.6816958277254375
+      },
+      "metadata": {
+        "n_real_spam": 12,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 100,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 90,
+        "actual_synthetic_ratio": 89.28571428571429,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 90,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9847913862718708,
+        "precision": 0.9090909090909091,
+        "recall": 0.9421265141318977,
+        "f1_score": 0.9253139458030403,
+        "auc_roc": 0.9952109726169638,
+        "auc_pr": 0.9691655439791526,
+        "balanced_accuracy": 0.9658292208763273
+      },
+      "metadata": {
+        "n_real_spam": 12,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 100,
+        "n_total_spam": 112,
+        "n_total_samples": 1000,
+        "synthetic_ratio": 90,
+        "actual_synthetic_ratio": 89.28571428571429,
+        "spam_ratio": 0.112,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 100,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "svm",
+      "metrics": {
+        "accuracy": 0.9301480484522208,
+        "precision": 0.9912280701754386,
+        "recall": 0.3041722745625841,
+        "f1_score": 0.4654994850669413,
+        "auc_roc": 0.6581438724944102,
+        "auc_pr": 0.5173580189018162,
+        "balanced_accuracy": 0.65193659339016
+      },
+      "metadata": {
+        "n_real_spam": 0,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 111,
+        "n_total_spam": 111,
+        "n_total_samples": 999,
+        "synthetic_ratio": 100,
+        "actual_synthetic_ratio": 100.0,
+        "spam_ratio": 0.1111111111111111,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    },
+    {
+      "group_id": 6,
+      "synthetic_ratio": 100,
+      "method": "smote",
+      "strategy": "cross_group",
+      "classifier": "random_forest",
+      "metrics": {
+        "accuracy": 0.9733512786002692,
+        "precision": 0.9402261712439418,
+        "recall": 0.7833109017496636,
+        "f1_score": 0.8546255506607929,
+        "auc_roc": 0.9940847642147708,
+        "auc_pr": 0.9621245831196328,
+        "balanced_accuracy": 0.8888888888888888
+      },
+      "metadata": {
+        "n_real_spam": 0,
+        "n_real_ham": 888,
+        "n_synthetic_spam": 111,
+        "n_total_spam": 111,
+        "n_total_samples": 999,
+        "synthetic_ratio": 100,
+        "actual_synthetic_ratio": 100.0,
+        "spam_ratio": 0.1111111111111111,
+        "method": "smote",
+        "strategy": "cross_group"
+      },
+      "success": true
+    }
+  ]
+}
