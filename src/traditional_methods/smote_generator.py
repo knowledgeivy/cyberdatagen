@@ -39,13 +39,14 @@ class SMOTEGenerator:
         self.method = method.lower()
         self.random_state = random_state
 
-        # Default vectorizer parameters (consistent with classification pipeline)
+        # Default vectorizer parameters (MUST match classifiers.py exactly!)
+        # classifiers.py line 65-72: max_features, ngram_range, stop_words, lowercase, min_df, max_df
+        # NO sublinear_tf parameter (defaults to False)
         default_vectorizer_params = {
             'max_features': 10000,
             'ngram_range': (1, 2),
             'min_df': 2,
-            'max_df': 0.95,
-            'sublinear_tf': True
+            'max_df': 0.95
         }
         self.vectorizer_params = {**default_vectorizer_params, **(vectorizer_params or {})}
 
@@ -210,11 +211,7 @@ class SMOTEGenerator:
             X_train = X_real
             y_train = y_real
 
-            # Shuffle
-            rng = np.random.RandomState(self.random_state)
-            indices = rng.permutation(X_train.shape[0])
-            X_train = X_train[indices]
-            y_train = y_train[indices]
+            # NO shuffle - must match GPT/Claude which doesn't shuffle
 
             metadata = {
                 'n_real_spam': n_total_real_spam,
