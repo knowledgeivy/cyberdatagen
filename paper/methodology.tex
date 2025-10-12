@@ -33,7 +33,7 @@ SMOTE~\cite{chawla2002smote} addresses class imbalance through feature-space int
 
 where $\mathcal{N}_k(\mathbf{x}_i)$ denotes the $k$ nearest neighbors. This convex-hull interpolation ensures all synthetic samples lie within the feature-space boundaries defined by real minority samples.
 
-\textbf{Critical Limitation:} The synthetic vector exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction, these samples serve only immediate classification purposes and cannot support applications requiring actual text content. Complete SMOTE formalization is provided in Appendix~\ref{appendix:smote_details}.
+\textbf{Critical Limitation:} The synthetic vector exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction, these samples serve only immediate classification purposes and cannot support applications requiring actual text content. 
 
 \subsubsection{Text-Space Generation: LLM Approach}
 

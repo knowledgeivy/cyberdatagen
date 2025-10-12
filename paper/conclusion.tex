@@ -61,13 +61,6 @@ The prompt engineering irrelevance finding redirects optimization resources towa
 
 The distribution matching flexibility simplifies deployment logistics, enabling organizations to leverage synthetic data from diverse sources, time periods, and collaborators without requiring precise statistical alignment. This operational flexibility reduces friction for adoption in privacy-constrained, legally restricted, or rapidly evolving threat environments where real spam collection faces practical barriers.
 
-\subsection{Limitations and Scope}
-
-Several important limitations define the boundaries of our findings. The TF-IDF feature representation captures surface-level lexical patterns but may miss deeper semantic anomalies that deep learning classifiers might detect. The fixed 10\% spam ratio represents only one point in the operational imbalance spectrum; systems under severe imbalance ($<$5\%) or balanced conditions ($>$20\%) may exhibit different sensitivity patterns.
-
-The CEAS-08 dataset represents spam patterns from a specific time period; evolving tactics, especially adversarial techniques, may interact differently with synthetic data. Our evaluation employs GPT-4.1-mini; more capable models might generate higher-quality synthetic data with reduced artifacts, while weaker models might produce more obvious quality issues.
-
-These limitations suggest boundary conditions for generalization and point toward high-priority future research extending the framework to deep learning architectures, diverse class imbalance scenarios, temporal adaptation contexts, and advancing LLM capabilities.
 
 \subsection{Future Research Directions}
 
@@ -98,17 +91,3 @@ The practical impact of this work extends to multiple stakeholder communities. F
 The demonstrated effectiveness of synthetic data has immediate implications for privacy-preserving threat intelligence sharing, where organizations can generate and share synthetic samples without revealing sensitive real attack patterns or distribution characteristics. This capability addresses legal and competitive constraints that currently limit collaborative cybersecurity research.
 
 The accessibility of synthetic generation compared to expensive real data collection may democratize cybersecurity research, enabling academic institutions and small organizations without access to large-scale real attack datasets to conduct meaningful work on realistic problems. Our rigorous evaluation framework ensures that such synthetic-based research meets credibility standards comparable to real-data research.
-
-\subsection{Concluding Remarks}
-
-Our systematic evaluation establishes fundamental principles governing synthetic spam data effectiveness across both neural text generation and traditional feature-space augmentation paradigms. The comparison reveals that effectiveness depends critically on classifier architecture and augmentation method, with ensemble methods demonstrating remarkable robustness to both LLM and SMOTE synthesis while margin-based classifiers exhibit substantial sensitivity to distributional artifacts.
-
-The SMOTE vs LLM comparison crystallizes a fundamental trade-off in synthetic data approaches: feature-space interpolation offers higher maximum performance potential (+22.5\% best case) but unpredictable distribution-dependent risk (-27.7\% worst case), while text-space neural generation provides consistent, predictable behavior (typical -2.1\% degradation) with the critical advantage of interpretable output supporting multiple downstream applications. This paradigm difference—high-risk high-reward versus stable predictable degradation—establishes that method selection must align with operational priorities, risk tolerance, and deployment requirements rather than pursuing a universal optimal approach.
-
-The near-irrelevance of prompt engineering intensity and mixing strategy selection for LLM methods indicates that optimization efforts should focus on fundamental factors—model selection, seed quality, and mixing ratios—rather than peripheral concerns about generation instructions or precise distribution matching. For SMOTE deployment, the critical challenge lies in developing predictive metrics for distribution alignment assessment, enabling a priori identification of scenarios where feature-space interpolation will benefit rather than harm performance.
-
-The rigorous statistical framework we establish transforms synthetic data evaluation from exploratory point estimation to confirmatory hypothesis testing with quantified uncertainty and effect magnitudes. This methodological advance enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting between augmentation paradigms, choosing mixing ratios, and predicting performance impacts.
-
-The convergence of theoretical insights and empirical findings establishes synthetic spam data—whether feature-based or text-based—as a viable but method-dependent and classifier-dependent approach for augmenting training datasets. The systematic framework we present provides empirical benchmarks for future research comparing augmentation paradigms and establishes rigorous standards for evaluation methodology in this rapidly evolving domain.
-
-As LLM capabilities continue to advance and traditional methods evolve through algorithmic refinements, regular re-evaluation using frameworks like ours will be essential to track how improving generation quality affects practical utility. The principles we establish—architectural dependence, distribution matching flexibility for LLMs, distribution alignment criticality for SMOTE, prompt engineering limits—provide a foundation for understanding synthetic cybersecurity data that will inform both research advances and operational deployments. Through systematic evaluation bridging neural and traditional augmentation approaches, this work advances the state of synthetic data research in cybersecurity while providing actionable guidance for leveraging these complementary approaches in operational environments.
