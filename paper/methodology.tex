@@ -96,14 +96,14 @@ This architectural distinction motivates our comparative evaluation: if LLMs ach
 
 \subsection{Framework Overview}
 
-Our methodology presents a systematic framework for rigorously evaluating LLM-generated synthetic spam data through large-scale replication and comprehensive statistical analysis. The framework addresses fundamental challenges in synthetic cybersecurity data assessment: quantifying quality-performance relationships, establishing statistical confidence in observed effects, and providing actionable guidance for operational deployment. As illustrated in Figure~\ref{fig:framework}, our approach integrates controlled generation, systematic mixing, and rigorous statistical evaluation to produce empirically grounded insights into synthetic data effectiveness.
+Our methodology presents a systematic framework for rigorously evaluating synthetic spam data across both neural text generation (LLMs) and traditional feature-space augmentation (SMOTE) paradigms through large-scale replication and comprehensive statistical analysis. The framework addresses fundamental challenges in synthetic cybersecurity data assessment: quantifying quality-performance relationships across augmentation methods, establishing statistical confidence in observed effects, and providing actionable guidance for operational deployment. As illustrated in Figure~\ref{fig:framework}, our approach integrates controlled generation, systematic mixing, and rigorous statistical evaluation to produce empirically grounded insights into synthetic data effectiveness while enabling direct comparison between text-space and feature-space augmentation approaches.
 
 Our framework encompasses four primary stages that collectively enable rigorous assessment of synthetic spam data utility:
 
 \begin{itemize}
 \item \textbf{Stratified Data Preparation}: Systematic partitioning of real spam corpus into independent experimental groups using stratified random sampling, ensuring statistical independence while maintaining representation of diverse spam patterns across all groups.
 
-\item \textbf{Controlled Synthetic Generation}: Application of multiple prompt engineering strategies to generate synthetic variants that systematically explore different aspects of spam semantic space, enabling controlled investigation of generation instruction impact on data quality.
+\item \textbf{Controlled Synthetic Generation}: Application of multiple generation paradigms (LLM text-space generation via prompt engineering, SMOTE feature-space interpolation) to systematically explore different augmentation approaches, enabling controlled investigation of paradigm-specific characteristics on data quality and downstream performance.
 
 \item \textbf{Systematic Mixing and Training}: Implementation of two fundamental mixing strategies (within-group and cross-group) across varying synthetic proportions, combined with multiple classifier architectures to comprehensively evaluate synthetic data utility under diverse conditions.
 
@@ -169,6 +169,10 @@ The explicit comparison of within-group versus cross-group mixing strategies add
 \subsubsection{Comprehensive Performance Degradation Characterization}
 
 Our sensitivity analysis framework, modeling classifier performance as a function of synthetic proportion through linear regression, provides quantitative degradation metrics that enable cost-benefit analysis. The regression slope ($\beta_1$) quantifies expected performance change per percentage point increase in synthetic data, while $R^2$ indicates whether degradation patterns are linear (enabling simple prediction) or non-linear (requiring more complex modeling). This framework transforms qualitative observations about synthetic data impact into quantitative relationships suitable for operational decision support.
+
+\subsubsection{Systematic Paradigm Comparison}
+
+Our framework establishes, to our knowledge, the first rigorous empirical comparison between neural text-space generation (LLMs) and traditional feature-space interpolation (SMOTE) for cybersecurity data augmentation. This paradigm comparison addresses a fundamental question: do neural methods' text interpretability and generation flexibility justify their computational costs compared to established feature-space approaches? By applying identical experimental protocols, statistical analyses, and evaluation metrics across both paradigms, we enable direct performance and reliability comparisons that isolate paradigm-specific characteristics from experimental artifacts. This systematic comparison provides evidence-based guidance for practitioners choosing between augmentation approaches based on operational requirements, computational constraints, and interpretability needs.
 
 \subsection{Evaluation Metrics Framework}
 
@@ -281,6 +285,8 @@ These limitations define boundary conditions for our findings and suggest direct
 
 \subsection{Methodological Contributions}
 
-By integrating large-scale replication, systematic prompt engineering, controlled mixing strategies, and comprehensive statistical analysis, our methodology establishes a rigorous framework for synthetic cybersecurity data evaluation. The framework's emphasis on statistical power, effect size quantification, and degradation characterization moves synthetic data research beyond exploratory single-trial evaluations toward confirmatory hypothesis testing with quantified uncertainty.
+By integrating large-scale replication, systematic paradigm comparison, controlled mixing strategies, and comprehensive statistical analysis, our methodology establishes a rigorous framework for synthetic cybersecurity data evaluation. The framework's emphasis on statistical power, effect size quantification, paradigm-level comparison, and degradation characterization moves synthetic data research beyond exploratory single-trial evaluations toward confirmatory hypothesis testing with quantified uncertainty across augmentation approaches.
 
-This methodological foundation enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting generation strategies, choosing mixing ratios, and predicting performance impacts. The framework's modular design facilitates adaptation to other cybersecurity domains beyond spam detection, potentially advancing synthetic data research across malware analysis, intrusion detection, and threat intelligence applications.
+The systematic comparison between text-space neural generation and feature-space interpolation provides a methodological template for evaluating emerging augmentation techniques against established baselines, enabling researchers to assess whether novel methods offer substantive improvements or merely superficial differences. This comparative foundation prevents premature adoption of complex neural approaches when simpler traditional methods suffice, while identifying scenarios where neural generation's unique capabilities (text interpretability, semantic control) justify additional complexity and cost.
+
+This methodological foundation enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting between augmentation paradigms, choosing mixing ratios, and predicting performance impacts. The framework's modular design facilitates adaptation to other cybersecurity domains beyond spam detection, potentially advancing synthetic data research across malware analysis, intrusion detection, and threat intelligence applications while establishing evaluation standards for comparing traditional and neural augmentation approaches.

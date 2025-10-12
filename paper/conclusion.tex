@@ -5,7 +5,7 @@ This work presents a rigorous evaluation framework for LLM-generated synthetic s
 
 \subsection{Principal Findings}
 
-Our systematic evaluation reveals three fundamental insights that reshape understanding of synthetic cybersecurity data utility.
+Our systematic evaluation reveals four fundamental insights that reshape understanding of synthetic cybersecurity data utility, spanning both neural text generation and traditional feature-space augmentation paradigms.
 
 \subsubsection{Classifier Architecture Dominates Synthetic Data Sensitivity}
 
@@ -24,6 +24,16 @@ This unexpected result has practical value: optimization efforts should focus on
 The near-equivalence of within-group and cross-group mixing strategies demonstrates that precise distribution matching between synthetic and real training samples provides less benefit than anticipated. This finding simplifies operational deployment by enabling temporal flexibility (historical synthetic data augmenting current training), source diversity (pooling synthetic samples from multiple corpora), and organizational collaboration (sharing synthetic data without revealing specific spam distributions).
 
 The slight performance variations between strategies remain within practical tolerance thresholds, suggesting that synthetic data utility depends more on capturing general spam semantics than on precise statistical alignment with specific training distributions.
+
+\subsubsection{Traditional Feature-Space vs Neural Text-Space Augmentation}
+
+Our systematic comparison of SMOTE (feature-space interpolation) against LLM-based generation (text-space neural synthesis) reveals fundamentally different risk-reward profiles with critical implications for method selection. SMOTE demonstrates extreme performance variability across experimental groups (standard deviation $\pm$0.083, 4.2$\times$ higher than GPT-4.1-mini's $\pm$0.020), with 13 of 20 groups showing improvement but 7 experiencing degradation when applied to Random Forest. The aggregate +3.7\% Random Forest improvement masks dramatic group-to-group differences ranging from +22.5\% (Group 10) to -27.7\% (Group 0).
+
+This distribution-dependent behavior stems from SMOTE's convex-hull interpolation mechanism: performance depends critically on whether test samples fall within the feature-space boundaries defined by training samples. When test distributions align with training—indicated by low baseline performance suggesting sparse coverage—SMOTE's interpolated samples fill critical gaps and substantially improve classification. When training already provides adequate coverage—indicated by high baseline performance—SMOTE's additional interpolation provides no benefit and may introduce unwanted perturbations.
+
+In contrast, LLM methods exhibit 4-5$\times$ lower variance with consistent modest degradation (GPT: -2.1\%, Claude: -1.6\% for Random Forest) across nearly all groups, providing predictable behavior independent of specific distribution alignment. This stability-performance trade-off crystallizes a fundamental paradigm difference: SMOTE offers high potential improvement but unpredictable risk, while LLMs provide reliable but modest degradation with the critical advantage of generating interpretable text for human review, adversarial testing, and cross-system transfer.
+
+The comparison establishes that method selection should be driven by operational requirements: SMOTE for maximum Random Forest performance when pilot validation confirms positive effects, LLMs when stability, predictability, and text interpretability are paramount. Notably, SMOTE universally degrades SVM performance (-19.3\% aggregate), eliminating it as a viable option for margin-based classifiers and reinforcing the dominance of classifier architecture in determining synthetic data utility.
 
 \subsection{Methodological Contributions}
 
@@ -45,6 +55,8 @@ The $R^2$ metric distinguishes between linear degradation patterns (enabling sim
 
 Our findings provide strategic guidance for organizations deploying synthetic spam data. The architectural dependence suggests that classifier selection represents the most impactful decision: ensemble methods enable aggressive synthetic utilization while margin-based classifiers require careful proportion management. Organizations should prioritize architectural choice over peripheral optimization efforts.
 
+The SMOTE vs LLM comparison establishes a decision framework based on operational priorities. Organizations should choose SMOTE when: (1) Random Forest is the target classifier (as SVM universally degrades), (2) maximum classification performance is paramount and pilot validation confirms positive effects on held-out validation sets, (3) test distributions likely align with training feature distributions, and (4) text interpretability is unnecessary. Conversely, LLMs should be preferred when: (1) performance stability and predictability outweigh maximum performance potential, (2) test distribution alignment cannot be validated a priori, (3) text interpretability is required for human review or adversarial testing, and (4) organizational risk tolerance favors consistent modest degradation over high-variance outcomes. Hybrid strategies combining SMOTE for training with LLMs for interpretability-requiring tasks may offer optimal risk-reward balance.
+
 The prompt engineering irrelevance finding redirects optimization resources toward fundamentally impactful factors—LLM model capability, seed sample diversity, and post-generation quality control—rather than intensive prompt tuning. This resource reallocation enables more efficient generation pipelines without sacrificing effectiveness.
 
 The distribution matching flexibility simplifies deployment logistics, enabling organizations to leverage synthetic data from diverse sources, time periods, and collaborators without requiring precise statistical alignment. This operational flexibility reduces friction for adoption in privacy-constrained, legally restricted, or rapidly evolving threat environments where real spam collection faces practical barriers.
@@ -64,13 +76,19 @@ Our findings suggest several critical directions for advancing synthetic cyberse
 \begin{itemize}
     \item \textbf{Deep learning evaluation}: Extending the framework to transformer-based classifiers operating on contextualized embeddings to test whether learned representations increase robustness or sensitivity to synthetic artifacts.
 
+    \item \textbf{Predictive distribution alignment metrics}: Developing metrics to predict a priori which groups will benefit from SMOTE before deployment, addressing the critical gap preventing confident SMOTE adoption. This could involve explicit convex hull computation, test sample position analysis relative to training boundaries, or learned predictors of distribution alignment quality.
+
+    \item \textbf{Advanced interpolation strategies}: Investigating alternatives to linear SMOTE interpolation—including Gaussian interpolation, learned manifold-based generation, or adaptive k-neighbor selection—to reduce variance while preserving performance benefits.
+
+    \item \textbf{Hybrid text-feature approaches}: Exploring methods combining LLM semantic generation with SMOTE feature-space refinement, potentially achieving stability without sacrificing performance by leveraging complementary strengths of both paradigms.
+
     \item \textbf{Adversarial robustness}: Systematic testing of whether synthetic-trained classifiers exhibit different adversarial vulnerability compared to real-trained classifiers, informing safe deployment practices.
 
     \item \textbf{Temporal adaptation}: Evaluating synthetic data's contribution to handling concept drift as spam patterns evolve, particularly for generating synthetic examples of emerging threats from limited initial samples.
 
-    \item \textbf{Multimodal extension}: Applying the framework to network traffic, malware binaries, and fraud detection to test generalizability across cybersecurity data modalities beyond text.
+    \item \textbf{Multimodal extension}: Applying the framework to network traffic, malware binaries, and fraud detection to test generalizability across cybersecurity data modalities beyond text, assessing whether feature-space vs text-space distinctions apply to non-textual domains.
 
-    \item \textbf{Active learning integration}: Combining synthetic generation with active learning to optimize the balance between selective real sample labeling and synthetic gap-filling.
+    \item \textbf{Active learning integration}: Combining synthetic generation with active learning to optimize the balance between selective real sample labeling and synthetic gap-filling, potentially using SMOTE for exploration and LLMs for exploitation.
 \end{itemize}
 
 \subsection{Broader Impact}
@@ -83,10 +101,14 @@ The accessibility of synthetic generation compared to expensive real data collec
 
 \subsection{Concluding Remarks}
 
-Our systematic evaluation of LLM-generated synthetic spam data establishes that effectiveness depends critically on classifier architecture, with ensemble methods demonstrating remarkable robustness while margin-based classifiers exhibit substantial sensitivity. The near-irrelevance of prompt engineering intensity and mixing strategy selection indicates that optimization efforts should focus on fundamental factors—model selection, seed quality, and mixing ratios—rather than peripheral concerns about generation instructions or precise distribution matching.
+Our systematic evaluation establishes fundamental principles governing synthetic spam data effectiveness across both neural text generation and traditional feature-space augmentation paradigms. The comparison reveals that effectiveness depends critically on classifier architecture and augmentation method, with ensemble methods demonstrating remarkable robustness to both LLM and SMOTE synthesis while margin-based classifiers exhibit substantial sensitivity to distributional artifacts.
 
-The rigorous statistical framework we establish transforms synthetic data evaluation from exploratory point estimation to confirmatory hypothesis testing with quantified uncertainty and effect magnitudes. This methodological advance enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting generation strategies, choosing mixing ratios, and predicting performance impacts.
+The SMOTE vs LLM comparison crystallizes a fundamental trade-off in synthetic data approaches: feature-space interpolation offers higher maximum performance potential (+22.5\% best case) but unpredictable distribution-dependent risk (-27.7\% worst case), while text-space neural generation provides consistent, predictable behavior (typical -2.1\% degradation) with the critical advantage of interpretable output supporting multiple downstream applications. This paradigm difference—high-risk high-reward versus stable predictable degradation—establishes that method selection must align with operational priorities, risk tolerance, and deployment requirements rather than pursuing a universal optimal approach.
 
-The convergence of theoretical insights and empirical findings establishes synthetic spam data as a viable but classifier-dependent approach for augmenting training datasets. The systematic framework we present provides empirical benchmarks for future research in synthetic cybersecurity data generation and establishes rigorous standards for evaluation methodology in this rapidly evolving domain.
+The near-irrelevance of prompt engineering intensity and mixing strategy selection for LLM methods indicates that optimization efforts should focus on fundamental factors—model selection, seed quality, and mixing ratios—rather than peripheral concerns about generation instructions or precise distribution matching. For SMOTE deployment, the critical challenge lies in developing predictive metrics for distribution alignment assessment, enabling a priori identification of scenarios where feature-space interpolation will benefit rather than harm performance.
 
-As LLM capabilities continue to advance, regular re-evaluation using frameworks like ours will be essential to track how improving generation quality affects practical utility. The principles we establish—architectural dependence, distribution matching flexibility, prompt engineering limits—provide a foundation for understanding synthetic cybersecurity data that will inform both research advances and operational deployments. Through systematic evaluation and principled methodology, this work advances the state of synthetic data research in cybersecurity while providing actionable guidance for leveraging these approaches in operational environments.
+The rigorous statistical framework we establish transforms synthetic data evaluation from exploratory point estimation to confirmatory hypothesis testing with quantified uncertainty and effect magnitudes. This methodological advance enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting between augmentation paradigms, choosing mixing ratios, and predicting performance impacts.
+
+The convergence of theoretical insights and empirical findings establishes synthetic spam data—whether feature-based or text-based—as a viable but method-dependent and classifier-dependent approach for augmenting training datasets. The systematic framework we present provides empirical benchmarks for future research comparing augmentation paradigms and establishes rigorous standards for evaluation methodology in this rapidly evolving domain.
+
+As LLM capabilities continue to advance and traditional methods evolve through algorithmic refinements, regular re-evaluation using frameworks like ours will be essential to track how improving generation quality affects practical utility. The principles we establish—architectural dependence, distribution matching flexibility for LLMs, distribution alignment criticality for SMOTE, prompt engineering limits—provide a foundation for understanding synthetic cybersecurity data that will inform both research advances and operational deployments. Through systematic evaluation bridging neural and traditional augmentation approaches, this work advances the state of synthetic data research in cybersecurity while providing actionable guidance for leveraging these complementary approaches in operational environments.
