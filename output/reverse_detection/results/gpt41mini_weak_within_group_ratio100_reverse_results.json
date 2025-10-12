@@ -1,0 +1,1158 @@
+{
+  "experiment": "reverse_detection_cross_model",
+  "testing_method": "gpt41mini",
+  "testing_prompt": "weak",
+  "testing_strategy": "within_group",
+  "training_synthetic_source": "claude35haiku",
+  "training_synthetic_prompt": "weak",
+  "training_synthetic_strategy": "within_group",
+  "training_synthetic_ratio": 100,
+  "testing_synthetic_ratio": 100,
+  "n_groups": 20,
+  "classifiers": [
+    "svm",
+    "random_forest"
+  ],
+  "results": [
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 0,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.914,
+            "precision": 1.0,
+            "recall": 0.14,
+            "f1_score": 0.24561403508771928,
+            "auc_roc": 0.7948,
+            "auc_pr": 0.6963959005402234,
+            "balanced_accuracy": 0.5700000000000001
+          },
+          "train_size": 977,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 77,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.97,
+            "precision": 1.0,
+            "recall": 0.7,
+            "f1_score": 0.8235294117647058,
+            "auc_roc": 0.9940444444444446,
+            "auc_pr": 0.9558301267741258,
+            "balanced_accuracy": 0.85
+          },
+          "train_size": 977,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 77,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 1,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.914,
+            "precision": 1.0,
+            "recall": 0.14,
+            "f1_score": 0.24561403508771928,
+            "auc_roc": 0.8058888888888888,
+            "auc_pr": 0.6738551941799676,
+            "balanced_accuracy": 0.5700000000000001
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.978,
+            "precision": 0.9431818181818182,
+            "recall": 0.83,
+            "f1_score": 0.8829787234042553,
+            "auc_roc": 0.9980555555555555,
+            "auc_pr": 0.9828838244567892,
+            "balanced_accuracy": 0.9122222222222223
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 2,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.92,
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1_score": 0.3333333333333333,
+            "auc_roc": 0.8051666666666667,
+            "auc_pr": 0.6918084359669721,
+            "balanced_accuracy": 0.6
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.961,
+            "precision": 1.0,
+            "recall": 0.61,
+            "f1_score": 0.7577639751552795,
+            "auc_roc": 0.9922333333333333,
+            "auc_pr": 0.951269686406683,
+            "balanced_accuracy": 0.8049999999999999
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 3,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.912,
+            "precision": 1.0,
+            "recall": 0.12,
+            "f1_score": 0.21428571428571427,
+            "auc_roc": 0.7526222222222223,
+            "auc_pr": 0.6576665521801712,
+            "balanced_accuracy": 0.56
+          },
+          "train_size": 984,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 84,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.976,
+            "precision": 0.9634146341463414,
+            "recall": 0.79,
+            "f1_score": 0.8681318681318682,
+            "auc_roc": 0.9933111111111111,
+            "auc_pr": 0.9681773883990175,
+            "balanced_accuracy": 0.8933333333333333
+          },
+          "train_size": 984,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 84,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 4,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.929,
+            "precision": 1.0,
+            "recall": 0.29,
+            "f1_score": 0.4496124031007752,
+            "auc_roc": 0.8775222222222222,
+            "auc_pr": 0.7688082164359693,
+            "balanced_accuracy": 0.645
+          },
+          "train_size": 978,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 78,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.964,
+            "precision": 0.8404255319148937,
+            "recall": 0.79,
+            "f1_score": 0.8144329896907216,
+            "auc_roc": 0.9908555555555555,
+            "auc_pr": 0.9150256893106714,
+            "balanced_accuracy": 0.8866666666666667
+          },
+          "train_size": 978,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 78,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 5,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.913,
+            "precision": 1.0,
+            "recall": 0.13,
+            "f1_score": 0.23008849557522124,
+            "auc_roc": 0.7527888888888888,
+            "auc_pr": 0.6178817989024822,
+            "balanced_accuracy": 0.565
+          },
+          "train_size": 991,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 91,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.968,
+            "precision": 0.9146341463414634,
+            "recall": 0.75,
+            "f1_score": 0.8241758241758241,
+            "auc_roc": 0.9943666666666666,
+            "auc_pr": 0.9531432694915536,
+            "balanced_accuracy": 0.8711111111111112
+          },
+          "train_size": 991,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 91,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 6,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.916,
+            "precision": 1.0,
+            "recall": 0.16,
+            "f1_score": 0.27586206896551724,
+            "auc_roc": 0.8361,
+            "auc_pr": 0.7445574020566017,
+            "balanced_accuracy": 0.58
+          },
+          "train_size": 981,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 81,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.971,
+            "precision": 0.927710843373494,
+            "recall": 0.77,
+            "f1_score": 0.8415300546448088,
+            "auc_roc": 0.9934999999999999,
+            "auc_pr": 0.9489694357599623,
+            "balanced_accuracy": 0.8816666666666666
+          },
+          "train_size": 981,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 81,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 7,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.93,
+            "precision": 1.0,
+            "recall": 0.3,
+            "f1_score": 0.46153846153846156,
+            "auc_roc": 0.8402333333333333,
+            "auc_pr": 0.732573799544957,
+            "balanced_accuracy": 0.65
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.982,
+            "precision": 0.8796296296296297,
+            "recall": 0.95,
+            "f1_score": 0.9134615384615384,
+            "auc_roc": 0.9965777777777778,
+            "auc_pr": 0.9718491987594821,
+            "balanced_accuracy": 0.9677777777777777
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 8,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.913,
+            "precision": 1.0,
+            "recall": 0.13,
+            "f1_score": 0.23008849557522124,
+            "auc_roc": 0.7443444444444445,
+            "auc_pr": 0.6000037540919407,
+            "balanced_accuracy": 0.565
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.985,
+            "precision": 0.8761061946902655,
+            "recall": 0.99,
+            "f1_score": 0.9295774647887324,
+            "auc_roc": 0.9988111111111112,
+            "auc_pr": 0.9904979946869721,
+            "balanced_accuracy": 0.9872222222222222
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 9,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1_score": 0.4,
+            "auc_roc": 0.8063444444444444,
+            "auc_pr": 0.7174873840200877,
+            "balanced_accuracy": 0.625
+          },
+          "train_size": 982,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 82,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.981,
+            "precision": 0.9354838709677419,
+            "recall": 0.87,
+            "f1_score": 0.9015544041450777,
+            "auc_roc": 0.9962666666666666,
+            "auc_pr": 0.9711487708162847,
+            "balanced_accuracy": 0.9316666666666666
+          },
+          "train_size": 982,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 82,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 10,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.922,
+            "precision": 1.0,
+            "recall": 0.22,
+            "f1_score": 0.36065573770491804,
+            "auc_roc": 0.7647333333333334,
+            "auc_pr": 0.6333078671327551,
+            "balanced_accuracy": 0.61
+          },
+          "train_size": 990,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 90,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.969,
+            "precision": 0.8415841584158416,
+            "recall": 0.85,
+            "f1_score": 0.845771144278607,
+            "auc_roc": 0.9938111111111111,
+            "auc_pr": 0.9531429282947667,
+            "balanced_accuracy": 0.9161111111111111
+          },
+          "train_size": 990,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 90,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 11,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.918,
+            "precision": 1.0,
+            "recall": 0.18,
+            "f1_score": 0.3050847457627119,
+            "auc_roc": 0.8538999999999999,
+            "auc_pr": 0.6876224321998708,
+            "balanced_accuracy": 0.59
+          },
+          "train_size": 987,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 87,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.978,
+            "precision": 0.8421052631578947,
+            "recall": 0.96,
+            "f1_score": 0.897196261682243,
+            "auc_roc": 0.9955833333333333,
+            "auc_pr": 0.9647030567754394,
+            "balanced_accuracy": 0.97
+          },
+          "train_size": 987,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 87,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 12,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.917,
+            "precision": 1.0,
+            "recall": 0.17,
+            "f1_score": 0.2905982905982906,
+            "auc_roc": 0.7788222222222222,
+            "auc_pr": 0.6225258631190073,
+            "balanced_accuracy": 0.585
+          },
+          "train_size": 980,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 80,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.963,
+            "precision": 0.8705882352941177,
+            "recall": 0.74,
+            "f1_score": 0.8,
+            "auc_roc": 0.9893666666666666,
+            "auc_pr": 0.91574159117994,
+            "balanced_accuracy": 0.8638888888888889
+          },
+          "train_size": 980,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 80,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 13,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.931,
+            "precision": 1.0,
+            "recall": 0.31,
+            "f1_score": 0.4732824427480916,
+            "auc_roc": 0.8622555555555556,
+            "auc_pr": 0.7747633009001145,
+            "balanced_accuracy": 0.655
+          },
+          "train_size": 978,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 78,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.97,
+            "precision": 0.9861111111111112,
+            "recall": 0.71,
+            "f1_score": 0.8255813953488372,
+            "auc_roc": 0.9979666666666667,
+            "auc_pr": 0.9845894590179736,
+            "balanced_accuracy": 0.8544444444444445
+          },
+          "train_size": 978,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 78,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 14,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.906,
+            "precision": 1.0,
+            "recall": 0.06,
+            "f1_score": 0.11320754716981132,
+            "auc_roc": 0.6799999999999998,
+            "auc_pr": 0.5244285032870579,
+            "balanced_accuracy": 0.53
+          },
+          "train_size": 975,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 75,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.979,
+            "precision": 0.8910891089108911,
+            "recall": 0.9,
+            "f1_score": 0.8955223880597015,
+            "auc_roc": 0.9943444444444445,
+            "auc_pr": 0.9620115174741407,
+            "balanced_accuracy": 0.9438888888888889
+          },
+          "train_size": 975,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 75,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 15,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.927,
+            "precision": 1.0,
+            "recall": 0.27,
+            "f1_score": 0.4251968503937008,
+            "auc_roc": 0.8628222222222223,
+            "auc_pr": 0.7454726501414388,
+            "balanced_accuracy": 0.635
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.953,
+            "precision": 1.0,
+            "recall": 0.53,
+            "f1_score": 0.6928104575163399,
+            "auc_roc": 0.998688888888889,
+            "auc_pr": 0.9877894222153656,
+            "balanced_accuracy": 0.765
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 16,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.927,
+            "precision": 1.0,
+            "recall": 0.27,
+            "f1_score": 0.4251968503937008,
+            "auc_roc": 0.7450444444444445,
+            "auc_pr": 0.6027111969233206,
+            "balanced_accuracy": 0.635
+          },
+          "train_size": 987,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 87,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.973,
+            "precision": 0.8016528925619835,
+            "recall": 0.97,
+            "f1_score": 0.8778280542986425,
+            "auc_roc": 0.9961777777777778,
+            "auc_pr": 0.9699026420455141,
+            "balanced_accuracy": 0.9716666666666667
+          },
+          "train_size": 987,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 87,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 17,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.926,
+            "precision": 1.0,
+            "recall": 0.26,
+            "f1_score": 0.4126984126984127,
+            "auc_roc": 0.8630444444444445,
+            "auc_pr": 0.7498951740165328,
+            "balanced_accuracy": 0.63
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.986,
+            "precision": 1.0,
+            "recall": 0.86,
+            "f1_score": 0.9247311827956989,
+            "auc_roc": 0.9967277777777778,
+            "auc_pr": 0.9795908974190418,
+            "balanced_accuracy": 0.9299999999999999
+          },
+          "train_size": 979,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 79,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 18,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.91,
+            "precision": 1.0,
+            "recall": 0.1,
+            "f1_score": 0.18181818181818182,
+            "auc_roc": 0.8281555555555555,
+            "auc_pr": 0.7129990921646004,
+            "balanced_accuracy": 0.55
+          },
+          "train_size": 986,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 86,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.981,
+            "precision": 0.9879518072289156,
+            "recall": 0.82,
+            "f1_score": 0.8961748633879781,
+            "auc_roc": 0.9988888888888889,
+            "auc_pr": 0.9901889796196007,
+            "balanced_accuracy": 0.9094444444444445
+          },
+          "train_size": 986,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 86,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    },
+    {
+      "testing_method": "gpt41mini",
+      "testing_prompt": "weak",
+      "testing_strategy": "within_group",
+      "training_source": "claude35haiku",
+      "training_ratio": 100,
+      "group_id": 19,
+      "trial": 0,
+      "classifiers": {
+        "svm": {
+          "classifier": "svm",
+          "metrics": {
+            "accuracy": 0.915,
+            "precision": 1.0,
+            "recall": 0.15,
+            "f1_score": 0.2608695652173913,
+            "auc_roc": 0.8049888888888889,
+            "auc_pr": 0.6909975209809543,
+            "balanced_accuracy": 0.575
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        },
+        "random_forest": {
+          "classifier": "random_forest",
+          "metrics": {
+            "accuracy": 0.982,
+            "precision": 0.91,
+            "recall": 0.91,
+            "f1_score": 0.91,
+            "auc_roc": 0.9966888888888888,
+            "auc_pr": 0.9708311316022284,
+            "balanced_accuracy": 0.95
+          },
+          "train_size": 983,
+          "test_size": 1000,
+          "test_spam_count": 100,
+          "test_ham_count": 900,
+          "test_spam_ratio": 0.1,
+          "train_real_spam_count": 0,
+          "train_synthetic_spam_count": 83,
+          "train_synthetic_source": "claude35haiku",
+          "test_synthetic_source": "gpt41mini"
+        }
+      },
+      "success": true,
+      "error": null,
+      "training_source_full": "claude35haiku-weak-within_group",
+      "testing_target_full": "gpt41mini-weak-within_group"
+    }
+  ]
+}

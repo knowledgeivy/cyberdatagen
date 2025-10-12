@@ -11,9 +11,8 @@ import argparse
 import sys
 import os
 import json
-import pickle
 from pathlib import Path
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any
 import pandas as pd
 import numpy as np
 
@@ -21,11 +20,7 @@ import numpy as np
 sys.path.append(str(Path(__file__).parent.parent))
 
 from loguru import logger
-from src.classification.classifiers import (
-    SVMClassifier,
-    RandomForestClassifier_Custom,
-    FeatureExtractor
-)
+from src.classification.classifiers import SVMClassifier, RandomForestClassifier_Custom
 from src.config.config_manager import ExperimentConfig, load_config
 
 
@@ -34,7 +29,6 @@ class ReverseDetectionExperiment:
 
     def __init__(self, config: ExperimentConfig):
         self.config = config
-        self.feature_extractor = FeatureExtractor(config)
 
     def get_training_source(self, testing_method: str) -> str:
         """
@@ -53,68 +47,87 @@ class ReverseDetectionExperiment:
         else:
             raise ValueError(f"Unknown testing method: {testing_method}")
 
-    def load_baseline_data(self, group_id: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def load_baseline_training(self, strategy: str, group_id: int, trial: int = 0) -> pd.DataFrame:
         """
-        Load baseline real training and testing data
+        Load baseline (r0 = 100% real) training data
 
         Args:
+            strategy: 'within_group' or 'cross_group'
             group_id: Group ID (0-19)
+            trial: Trial number (default 0)
 
         Returns:
-            Tuple of (train_data, test_data)
+            DataFrame with baseline training data
         """
-        train_path = Path('output/prepared_data/groups') / f'group_{group_id}' / 'train.pkl'
-        test_path = Path('output/prepared_data/groups') / f'group_{group_id}' / 'test.pkl'
+        # Use r0 = 100% real data (any prompt works since r0 is the same)
+        dataset_path = f"data/full_experiments/ceas08_gpt41mini/datasets/{strategy}/train_original_r0_g{group_id}_t{trial}.csv.gz"
 
-        if not train_path.exists():
-            raise FileNotFoundError(f"Baseline training data not found: {train_path}")
-        if not test_path.exists():
-            raise FileNotFoundError(f"Baseline test data not found: {test_path}")
+        if not os.path.exists(dataset_path):
+            raise FileNotFoundError(f"Baseline training data not found: {dataset_path}")
 
-        logger.info(f"Loading baseline data from group {group_id}")
-        with open(train_path, 'rb') as f:
-            train_data = pickle.load(f)
-        with open(test_path, 'rb') as f:
-            test_data = pickle.load(f)
+        logger.info(f"Loading baseline training from: {dataset_path}")
+        data = pd.read_csv(dataset_path, compression='gzip')
 
-        logger.info(f"Loaded {len(train_data)} train samples, {len(test_data)} test samples")
+        logger.info(f"Loaded {len(data)} samples - Spam: {(data['label'] == 1).sum()}, Ham: {(data['label'] == 0).sum()}")
 
-        return train_data, test_data
+        return data
+
+    def load_test_set(self, strategy: str) -> pd.DataFrame:
+        """
+        Load shared test set
+
+        Args:
+            strategy: 'within_group' or 'cross_group'
+
+        Returns:
+            DataFrame with test set
+        """
+        # Test set is shared across all methods
+        test_path = f"data/full_experiments/ceas08_gpt41mini/datasets/{strategy}/test_set.csv.gz"
+
+        if not os.path.exists(test_path):
+            raise FileNotFoundError(f"Test set not found: {test_path}")
+
+        logger.info(f"Loading test set from: {test_path}")
+        data = pd.read_csv(test_path, compression='gzip')
+
+        logger.info(f"Test set - Spam: {(data['label'] == 1).sum()}, Ham: {(data['label'] == 0).sum()}")
+
+        return data
 
     def load_synthetic_spam(
         self,
         method: str,
         prompt: str,
         strategy: str,
-        group_id: int
+        group_id: int,
+        trial: int = 0
     ) -> pd.DataFrame:
         """
-        Load synthetic spam samples from forward experiment 100% datasets
+        Load synthetic spam from r100 (100% synthetic) datasets
 
         Args:
             method: 'gpt41mini' or 'claude35haiku'
             prompt: 'original', 'strong', or 'weak'
             strategy: 'within_group' or 'cross_group'
             group_id: Group ID (0-19)
+            trial: Trial number (default 0)
 
         Returns:
             DataFrame with synthetic spam samples only
         """
-        dataset_dir = Path(f'output/full_experiments/ceas08_{method}/datasets')
-        subdir = f'{prompt}_{strategy}_100'
-        dataset_path = dataset_dir / subdir / f'group_{group_id}_train.pkl'
+        dataset_path = f"data/full_experiments/ceas08_{method}/datasets/{strategy}/train_{prompt}_r100_g{group_id}_t{trial}.csv.gz"
 
-        if not dataset_path.exists():
+        if not os.path.exists(dataset_path):
             raise FileNotFoundError(f"Synthetic dataset not found: {dataset_path}")
 
         logger.info(f"Loading synthetic spam from: {dataset_path}")
-        with open(dataset_path, 'rb') as f:
-            synthetic_data = pickle.load(f)
+        data = pd.read_csv(dataset_path, compression='gzip')
 
-        # Extract only spam samples
-        synthetic_spam = synthetic_data[synthetic_data['label'] == 1].copy()
+        # Extract only spam samples (label == 1)
+        synthetic_spam = data[data['label'] == 1].copy()
 
-        logger.info(f"Extracted {len(synthetic_spam)} synthetic spam samples")
+        logger.info(f"Extracted {len(synthetic_spam)} synthetic spam samples from {method}")
 
         return synthetic_spam
 
@@ -173,15 +186,15 @@ class ReverseDetectionExperiment:
     def construct_testing_set(
         self,
         testing_synthetic_spam: pd.DataFrame,
-        baseline_test: pd.DataFrame,
+        test_set: pd.DataFrame,
         target_spam_ratio: float = 0.10
     ) -> pd.DataFrame:
         """
-        Construct testing set: 100% synthetic spam + real ham
+        Construct testing set: 100% synthetic spam + real ham from test set
 
         Args:
-            testing_synthetic_spam: Synthetic spam for testing (from target model)
-            baseline_test: Baseline test data
+            testing_synthetic_spam: Synthetic spam for testing (from target model, r100)
+            test_set: Shared test set
             target_spam_ratio: Target spam ratio (default 0.10)
 
         Returns:
@@ -190,24 +203,22 @@ class ReverseDetectionExperiment:
         n_spam = len(testing_synthetic_spam)
         n_ham_needed = int(n_spam / target_spam_ratio) - n_spam
 
-        # Get real ham from baseline test
-        real_ham = baseline_test[baseline_test['label'] == 0].copy()
+        # Get real ham from test set
+        real_ham = test_set[test_set['label'] == 0].copy()
 
         if n_ham_needed > len(real_ham):
-            logger.warning(
-                f"Not enough ham samples. Needed: {n_ham_needed}, Available: {len(real_ham)}"
-            )
+            logger.warning(f"Not enough ham samples. Needed: {n_ham_needed}, Available: {len(real_ham)}")
             n_ham_needed = len(real_ham)
 
         sampled_ham = real_ham.sample(n=n_ham_needed, random_state=42)
 
         # Combine and shuffle
-        test_set = pd.concat([testing_synthetic_spam, sampled_ham], ignore_index=True)
-        test_set = test_set.sample(frac=1, random_state=42).reset_index(drop=True)
+        test_data = pd.concat([testing_synthetic_spam, sampled_ham], ignore_index=True)
+        test_data = test_data.sample(frac=1, random_state=42).reset_index(drop=True)
 
-        logger.info(f"Testing set: {len(test_set)} samples ({n_spam} synthetic spam + {len(sampled_ham)} ham)")
+        logger.info(f"Testing set: {len(test_data)} samples ({n_spam} synthetic spam + {len(sampled_ham)} ham, ratio={(n_spam/len(test_data)):.2%})")
 
-        return test_set
+        return test_data
 
     def train_and_evaluate(
         self,
@@ -267,7 +278,8 @@ class ReverseDetectionExperiment:
         testing_strategy: str,
         training_ratio: int,
         group_id: int,
-        classifiers: List[str]
+        classifiers: List[str],
+        trial: int = 0
     ) -> Dict[str, Any]:
         """
         Run complete cross-model reverse detection experiment
@@ -279,6 +291,7 @@ class ReverseDetectionExperiment:
             training_ratio: Synthetic ratio in training (0, 50, or 100)
             group_id: Group ID
             classifiers: List of classifier types
+            trial: Trial number (default 0)
 
         Returns:
             Dict with experiment results
@@ -287,7 +300,7 @@ class ReverseDetectionExperiment:
         logger.info(f"Cross-Model Reverse Detection Experiment")
         logger.info(f"Testing: {testing_method}-{testing_prompt}-{testing_strategy}")
         logger.info(f"Training Ratio: {training_ratio}%")
-        logger.info(f"Group: {group_id}")
+        logger.info(f"Group: {group_id}, Trial: {trial}")
         logger.info("=" * 60)
 
         try:
@@ -295,20 +308,26 @@ class ReverseDetectionExperiment:
             training_source = self.get_training_source(testing_method)
             logger.info(f"Training synthetic source: {training_source} (opposite model)")
 
-            # Step 1: Load baseline data
-            baseline_train, baseline_test = self.load_baseline_data(group_id)
+            # Step 1: Load baseline training data (r0 = 100% real)
+            baseline_train = self.load_baseline_training(testing_strategy, group_id, trial)
 
-            # Step 2: Load training synthetic spam (from opposite model)
-            training_synthetic_spam = self.load_synthetic_spam(
-                training_source, testing_prompt, testing_strategy, group_id
-            )
+            # Step 2: Load training synthetic spam (from opposite model, r100)
+            if training_ratio > 0:
+                training_synthetic_spam = self.load_synthetic_spam(
+                    training_source, testing_prompt, testing_strategy, group_id, trial
+                )
+            else:
+                training_synthetic_spam = pd.DataFrame()  # Not used for ratio=0
 
-            # Step 3: Load testing synthetic spam (from target model)
+            # Step 3: Load testing synthetic spam (from target model, r100)
             testing_synthetic_spam = self.load_synthetic_spam(
-                testing_method, testing_prompt, testing_strategy, group_id
+                testing_method, testing_prompt, testing_strategy, group_id, trial
             )
 
-            # Step 4: Construct training set based on ratio
+            # Step 4: Load shared test set
+            test_set = self.load_test_set(testing_strategy)
+
+            # Step 5: Construct training set based on ratio
             train_data = self.construct_training_set(
                 baseline_train, training_synthetic_spam, training_ratio
             )
@@ -321,15 +340,16 @@ class ReverseDetectionExperiment:
             if training_ratio == 0:
                 train_real_spam_count = len(train_spam)
             elif training_ratio == 50:
-                train_real_spam_count = 50
-                train_synthetic_spam_count = 50
+                # Approximate counts (may vary slightly due to sampling)
+                train_real_spam_count = min(50, (baseline_train['label'] == 1).sum())
+                train_synthetic_spam_count = len(train_spam) - train_real_spam_count
             elif training_ratio == 100:
                 train_synthetic_spam_count = len(train_spam)
 
-            # Step 5: Construct testing set (always 100% synthetic spam)
-            test_data = self.construct_testing_set(testing_synthetic_spam, baseline_test)
+            # Step 6: Construct testing set (always 100% synthetic spam + real ham)
+            test_data = self.construct_testing_set(testing_synthetic_spam, test_set)
 
-            # Step 6: Train and evaluate classifiers
+            # Step 7: Train and evaluate classifiers
             results = {
                 'testing_method': testing_method,
                 'testing_prompt': testing_prompt,
@@ -337,6 +357,7 @@ class ReverseDetectionExperiment:
                 'training_source': training_source,
                 'training_ratio': training_ratio,
                 'group_id': group_id,
+                'trial': trial,
                 'classifiers': {},
                 'success': True,
                 'error': None,
@@ -371,6 +392,8 @@ class ReverseDetectionExperiment:
 
         except Exception as e:
             logger.error(f"Experiment failed: {e}")
+            import traceback
+            traceback.print_exc()
             return {
                 'testing_method': testing_method,
                 'testing_prompt': testing_prompt,
@@ -378,6 +401,7 @@ class ReverseDetectionExperiment:
                 'training_source': self.get_training_source(testing_method),
                 'training_ratio': training_ratio,
                 'group_id': group_id,
+                'trial': trial,
                 'classifiers': {},
                 'success': False,
                 'error': str(e)
@@ -422,6 +446,12 @@ def main():
         help='Specific group ID (0-19). If not specified, run all groups'
     )
     parser.add_argument(
+        '--trial',
+        type=int,
+        default=0,
+        help='Trial number (default 0)'
+    )
+    parser.add_argument(
         '--classifiers',
         type=str,
         nargs='+',
@@ -432,7 +462,7 @@ def main():
     parser.add_argument(
         '--config',
         type=str,
-        default='configs/ceas08_gpt41mini_config.yaml',
+        required=True,
         help='Configuration file path'
     )
     parser.add_argument(
@@ -478,7 +508,7 @@ def main():
         if args.group_id is not None:
             groups = [args.group_id]
         else:
-            groups = range(config.n_groups)  # Default: 20 groups
+            groups = range(20)  # Default: 20 groups
 
         # Run experiments
         all_results = []
@@ -490,7 +520,8 @@ def main():
                 testing_strategy=args.testing_strategy,
                 training_ratio=args.training_ratio,
                 group_id=group_id,
-                classifiers=args.classifiers
+                classifiers=args.classifiers,
+                trial=args.trial
             )
             all_results.append(result)
 
