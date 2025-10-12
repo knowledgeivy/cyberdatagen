@@ -1,11 +1,11 @@
 #!/bin/bash
-# Batch runner for all reverse detection experiments
-# Total: 14 configurations × 20 groups × 2 classifiers = 560 experiments
+# Batch runner for cross-model reverse detection experiments
+# Total: 12 configurations × 3 ratios × 20 groups × 2 classifiers = 1,440 experiments
 
 set -e  # Exit on error
 
 echo "=========================================="
-echo "Reverse Detection Experiment - Batch Runner"
+echo "Cross-Model Reverse Detection Experiments"
 echo "=========================================="
 echo ""
 
@@ -13,7 +13,6 @@ echo ""
 OUTPUT_DIR="output/reverse_detection"
 CONFIG_GPT="configs/ceas08_gpt41mini_config.yaml"
 CONFIG_CLAUDE="configs/ceas08_claude35haiku_config.yaml"
-CONFIG_SMOTE="configs/ceas08_smote_config.yaml"
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
@@ -22,102 +21,81 @@ mkdir -p "$OUTPUT_DIR"
 START_TIME=$(date +%s)
 
 # Counter
-TOTAL_CONFIGS=14
+TOTAL_CONFIGS=36  # 12 configs × 3 ratios
 CURRENT_CONFIG=0
 
-echo "Running experiments for all methods, prompts, and strategies..."
+echo "Running experiments for all LLM methods, prompts, strategies, and training ratios..."
 echo ""
 
 #######################################
-# GPT-4.1-mini experiments (6 configs)
+# GPT-4.1-mini testing (trained on Claude)
 #######################################
 echo "=========================================="
-echo "Running GPT-4.1-mini experiments..."
+echo "GPT-4.1-mini Testing (trained on Claude)"
 echo "=========================================="
 
 for PROMPT in original strong weak; do
     for STRATEGY in within_group cross_group; do
-        ((CURRENT_CONFIG++))
-        echo ""
-        echo "[$CURRENT_CONFIG/$TOTAL_CONFIGS] GPT-4.1-mini | Prompt: $PROMPT | Strategy: $STRATEGY"
-        echo "----------------------------------------"
+        for RATIO in 0 50 100; do
+            ((CURRENT_CONFIG++))
+            echo ""
+            echo "[$CURRENT_CONFIG/$TOTAL_CONFIGS] Testing: GPT-4.1-mini | Prompt: $PROMPT | Strategy: $STRATEGY | Ratio: $RATIO%"
+            echo "Training source: Claude-3.5-Haiku (opposite model)"
+            echo "----------------------------------------"
 
-        python scripts/reverse_detection_experiment.py \
-            --method gpt41mini \
-            --prompt $PROMPT \
-            --strategy $STRATEGY \
-            --config $CONFIG_GPT \
-            --classifiers svm random_forest \
-            --output_dir $OUTPUT_DIR
+            python scripts/reverse_detection_experiment.py \
+                --testing_method gpt41mini \
+                --testing_prompt $PROMPT \
+                --testing_strategy $STRATEGY \
+                --training_ratio $RATIO \
+                --config $CONFIG_GPT \
+                --classifiers svm random_forest \
+                --output_dir $OUTPUT_DIR
 
-        if [ $? -eq 0 ]; then
-            echo "✓ Completed successfully"
-        else
-            echo "✗ Failed"
-            exit 1
-        fi
+            if [ $? -eq 0 ]; then
+                echo "✓ Completed successfully"
+            else
+                echo "✗ Failed"
+                exit 1
+            fi
+        done
     done
 done
 
 #######################################
-# Claude-3.5-Haiku experiments (6 configs)
+# Claude-3.5-Haiku testing (trained on GPT)
 #######################################
 echo ""
 echo "=========================================="
-echo "Running Claude-3.5-Haiku experiments..."
+echo "Claude-3.5-Haiku Testing (trained on GPT)"
 echo "=========================================="
 
 for PROMPT in original strong weak; do
     for STRATEGY in within_group cross_group; do
-        ((CURRENT_CONFIG++))
-        echo ""
-        echo "[$CURRENT_CONFIG/$TOTAL_CONFIGS] Claude-3.5-Haiku | Prompt: $PROMPT | Strategy: $STRATEGY"
-        echo "----------------------------------------"
+        for RATIO in 0 50 100; do
+            ((CURRENT_CONFIG++))
+            echo ""
+            echo "[$CURRENT_CONFIG/$TOTAL_CONFIGS] Testing: Claude-3.5-Haiku | Prompt: $PROMPT | Strategy: $STRATEGY | Ratio: $RATIO%"
+            echo "Training source: GPT-4.1-mini (opposite model)"
+            echo "----------------------------------------"
 
-        python scripts/reverse_detection_experiment.py \
-            --method claude35haiku \
-            --prompt $PROMPT \
-            --strategy $STRATEGY \
-            --config $CONFIG_CLAUDE \
-            --classifiers svm random_forest \
-            --output_dir $OUTPUT_DIR
+            python scripts/reverse_detection_experiment.py \
+                --testing_method claude35haiku \
+                --testing_prompt $PROMPT \
+                --testing_strategy $STRATEGY \
+                --training_ratio $RATIO \
+                --config $CONFIG_CLAUDE \
+                --classifiers svm random_forest \
+                --output_dir $OUTPUT_DIR
 
-        if [ $? -eq 0 ]; then
-            echo "✓ Completed successfully"
-        else
-            echo "✗ Failed"
-            exit 1
-        fi
+            if [ $? -eq 0 ]; then
+                echo "✓ Completed successfully"
+            else
+                echo "✗ Failed"
+                exit 1
+            fi
+        done
     done
-done
-
-#######################################
-# SMOTE experiments (2 configs)
-#######################################
-echo ""
-echo "=========================================="
-echo "Running SMOTE experiments..."
-echo "=========================================="
-
-for STRATEGY in within_group cross_group; do
-    ((CURRENT_CONFIG++))
-    echo ""
-    echo "[$CURRENT_CONFIG/$TOTAL_CONFIGS] SMOTE | Strategy: $STRATEGY"
-    echo "----------------------------------------"
-
-    python scripts/reverse_detection_experiment.py \
-        --method smote \
-        --strategy $STRATEGY \
-        --config $CONFIG_SMOTE \
-        --classifiers svm random_forest \
-        --output_dir $OUTPUT_DIR
-
-    if [ $? -eq 0 ]; then
-        echo "✓ Completed successfully"
-    else
-        echo "✗ Failed"
-        exit 1
-    fi
 done
 
 # End time and duration
@@ -129,15 +107,21 @@ SECONDS=$((DURATION % 60))
 
 echo ""
 echo "=========================================="
-echo "All Reverse Detection Experiments Completed!"
+echo "All Cross-Model Reverse Detection Experiments Completed!"
 echo "=========================================="
 echo ""
 echo "Results saved to: $OUTPUT_DIR/results/"
-echo "Total configurations: $TOTAL_CONFIGS"
+echo "Total configurations: $TOTAL_CONFIGS (12 configs × 3 ratios)"
+echo "Total experiments: 1,440 (36 configs × 20 groups × 2 classifiers)"
 echo "Total time: ${HOURS}h ${MINUTES}m ${SECONDS}s"
 echo ""
+echo "Cross-model pairing:"
+echo "  GPT testing → trained on Claude"
+echo "  Claude testing → trained on GPT"
+echo ""
 echo "Next steps:"
-echo "1. Verify all result files exist"
-echo "2. Run analysis script: python scripts/analyze_reverse_detection.py"
-echo "3. Generate plots and integrate into paper"
+echo "1. Verify all 36 result files exist"
+echo "2. Validate cross-model pairing in results"
+echo "3. Run analysis script: python scripts/analyze_reverse_detection.py"
+echo "4. Generate plots and integrate into paper"
 echo ""
