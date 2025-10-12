@@ -54,6 +54,7 @@ Table~\ref{tab:augmentation-comparison} formalizes the architectural differences
 \caption{Formal Comparison of Augmentation Paradigms}
 \label{tab:augmentation-comparison}
 \small
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
 \toprule
 \textbf{Aspect} & \textbf{SMOTE} & \textbf{LLM} \\
@@ -66,6 +67,7 @@ Training data & $\{\phi(\text{real}), \mathbf{x}_{\text{synth}}^{\text{SMOTE}}\}
 Downstream utility & Classification only & Multiple applications \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 This architectural distinction motivates our comparative evaluation: if LLMs achieve competitive classification performance while generating interpretable text, they provide strictly greater utility. Conversely, if SMOTE performs comparably at lower cost, practitioners gain quantitative cost-benefit guidance. Our empirical investigation provides evidence-based resolution to this practical decision problem.
