@@ -41,7 +41,7 @@ class SMOTEGenerator:
 
         # Default vectorizer parameters (MUST match classifiers.py exactly!)
         # classifiers.py line 65-72: max_features, ngram_range, stop_words, lowercase, min_df, max_df
-        # NO sublinear_tf parameter (defaults to False)
+        # CRITICAL: NO sublinear_tf parameter (defaults to False)
         default_vectorizer_params = {
             'max_features': 10000,
             'ngram_range': (1, 2),
@@ -49,6 +49,10 @@ class SMOTEGenerator:
             'max_df': 0.95
         }
         self.vectorizer_params = {**default_vectorizer_params, **(vectorizer_params or {})}
+
+        # Initialize vectorizer
+        self.vectorizer = TfidfVectorizer(**self.vectorizer_params)
+        self.is_fitted = False
 
         # Default SMOTE parameters
         default_smote_params = {
@@ -58,12 +62,8 @@ class SMOTEGenerator:
         }
         self.smote_params = {**default_smote_params, **(smote_params or {})}
 
-        # Initialize components
-        self.vectorizer = TfidfVectorizer(**self.vectorizer_params)
+        # Initialize sampler
         self.sampler = self._init_sampler()
-
-        # Track fitted state
-        self.is_fitted = False
 
         logger.info(f"Initialized {method.upper()} generator with params: {self.smote_params}")
 

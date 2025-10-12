@@ -22,6 +22,7 @@ from types import SimpleNamespace
 from src.traditional_methods import SMOTEGenerator
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     roc_auc_score, average_precision_score, balanced_accuracy_score
@@ -112,7 +113,14 @@ def generate_smote_datasets(
     strategy: str,
     group_id: int
 ):
-    """Generate SMOTE-based datasets for all synthetic ratios"""
+    """Generate SMOTE-based datasets for all synthetic ratios
+
+    Args:
+        config: Experiment configuration
+        smote_variant: SMOTE variant to use
+        strategy: Data mixing strategy
+        group_id: Group ID to process
+    """
     logger.info(f"Generating SMOTE datasets: variant={smote_variant}, strategy={strategy}, group={group_id}")
 
     # Load data
@@ -262,6 +270,14 @@ def run_classification_experiments(
         X_test = dataset['X_test']
         y_test = dataset['y_test']
 
+        # CRITICAL: Convert sparse matrices to dense arrays (matching GPT's implementation)
+        # GPT's classifiers.py line 94: return self.tfidf_vectorizer.transform(texts).toarray()
+        from scipy.sparse import issparse
+        if issparse(X_train):
+            X_train = X_train.toarray()
+        if issparse(X_test):
+            X_test = X_test.toarray()
+
         logger.info(f"Ratio {ratio}%: Training shape {X_train.shape}, Test shape {X_test.shape}")
 
         # Train each classifier
@@ -276,18 +292,32 @@ def run_classification_experiments(
 
                 if clf_name == 'svm':
                     clf = SVC(**params, probability=True)
+
+                    # SVM requires StandardScaler (matching GPT's BaseClassifier line 195)
+                    # GPT uses: self.scaler = StandardScaler() (default with_mean=True)
+                    scaler = StandardScaler()  # Now using dense arrays, so with_mean=True (default)
+                    X_train_scaled = scaler.fit_transform(X_train)
+                    X_test_scaled = scaler.transform(X_test)
+
+                    # Train on scaled features
+                    clf.fit(X_train_scaled, y_train)
+
+                    # Predict on scaled features
+                    y_pred = clf.predict(X_test_scaled)
+                    y_pred_proba = clf.predict_proba(X_test_scaled)[:, 1] if hasattr(clf, 'predict_proba') else y_pred
+
                 elif clf_name == 'random_forest':
-                    clf = RandomForestClassifier(**params)
+                    # GPT's classifiers.py line 355: n_jobs=-1
+                    clf = RandomForestClassifier(**params, n_jobs=-1)
+
+                    # Random Forest doesn't need scaling
+                    clf.fit(X_train, y_train)
+                    y_pred = clf.predict(X_test)
+                    y_pred_proba = clf.predict_proba(X_test)[:, 1] if hasattr(clf, 'predict_proba') else y_pred
+
                 else:
                     logger.warning(f"Unknown classifier: {clf_name}, skipping")
                     continue
-
-                # Train (features already extracted by SMOTE)
-                clf.fit(X_train, y_train)
-
-                # Predict
-                y_pred = clf.predict(X_test)
-                y_pred_proba = clf.predict_proba(X_test)[:, 1] if hasattr(clf, 'predict_proba') else y_pred
 
                 # Calculate metrics
                 metrics = {
