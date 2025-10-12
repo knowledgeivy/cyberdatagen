@@ -128,7 +128,7 @@ The mixing strategy comparison reveals three key patterns:
 
 \subsection{LLM Prompt Strategy Effectiveness Analysis}
 
-Our evaluation of three prompt engineering strategies (original, strong, weak) across both LLM models reveals limited sensitivity to generation instructions. Table~\ref{tab:prompt_comparison} compares strategies at 50\% synthetic proportion where differences are most pronounced.
+Our evaluation of three prompt strategies (original, strong, weak) reveals model-dependent sensitivity. Table~\ref{tab:prompt_comparison} shows results at 50\% synthetic proportion.
 
 \begin{table}[h]
 \centering
@@ -155,15 +155,7 @@ Our evaluation of three prompt engineering strategies (original, strong, weak) a
 }
 \end{table}
 
-The results reveal striking model-dependent sensitivity to prompt engineering:
-
-\textbf{GPT-4.1-mini demonstrates prompt invariance}, with performance variation ranges of only 0.003 for SVM and 0.002 for Random Forest across all three strategies. All configurations produce statistically indistinguishable results with completely overlapping 95\% confidence intervals. This robustness suggests GPT's generation process maintains consistent spam characteristics regardless of prompt instruction intensity, possibly due to strong pre-training on similar content or inherent generation stability.
-
-\textbf{Claude-3.5-Haiku exhibits significant prompt sensitivity}, particularly for weak prompts. Weak prompt degrades SVM performance to 0.496 (10.8\% worse than original, 21\% below baseline), while strong and original prompts perform comparably (0.543-0.550). Random Forest also shows degradation patterns across prompts: original (0.779) $>$ strong (0.768) $>$ weak (0.752), spanning 0.027 F1 points. This sensitivity indicates Claude's generation quality varies substantially with instruction specificity, with weak prompts producing less characteristic spam patterns that confuse classifiers more severely.
-
-\textbf{Method comparison}: At 50\% synthetic, GPT outperforms Claude by 0.015-0.066 F1 for SVM (with gaps widening for weaker prompts) and 0.001-0.030 for Random Forest. SMOTE demonstrates competitive performance: achieving 0.551 (SVM) and 0.841 (RF). For SVM, SMOTE outperforms all Claude configurations (0.496-0.550) and performs comparably to GPT (0.562-0.565). For Random Forest, SMOTE achieves the highest performance (0.841), surpassing both GPT (0.780-0.782) and Claude (0.752-0.779) by 0.059-0.089 F1 points, demonstrating feature-space augmentation's substantial advantages for ensemble classifiers even at moderate synthetic proportions.
-
-\textbf{Practical implications}: For GPT-based augmentation, practitioners can use any prompt strategy without performance concerns, simplifying deployment. For Claude-based systems, original or strong prompts are essential to maintain acceptable performance, with weak prompts causing unacceptable degradation. When classification performance is paramount and text interpretability is not required, SMOTE remains the superior choice regardless of synthetic proportion.
+\textbf{GPT-4.1-mini demonstrates prompt invariance} with negligible variation (0.003 SVM, 0.002 RF range) and completely overlapping confidence intervals. \textbf{Claude-3.5-Haiku shows prompt sensitivity}, particularly for weak prompts: SVM degrades to 0.496 (10.8\% worse than original), while original/strong perform comparably (0.543-0.550). \textbf{SMOTE achieves highest RF performance} (0.841), surpassing GPT (0.780-0.782) and Claude (0.752-0.779) by 0.059-0.089 F1 points. \textbf{Practical implication}: GPT practitioners can use any prompt strategy; Claude requires original/strong prompts; SMOTE provides superior classification performance when text interpretability is not required.
 
 \subsection{Statistical Significance and Hypothesis Testing}
 

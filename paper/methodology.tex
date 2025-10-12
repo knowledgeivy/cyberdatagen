@@ -25,42 +25,25 @@ To contextualize our LLM-based approach, we establish fundamental distinctions b
 
 \subsubsection{Feature-Space Augmentation: SMOTE Baseline}
 
-SMOTE~\cite{chawla2002smote} addresses class imbalance through feature-space interpolation. Given a dataset $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{N}$ where $\mathbf{x}_i \in \mathbb{R}^d$ represents feature vectors and $y_i \in \{0,1\}$ denotes binary labels, SMOTE generates synthetic minority-class samples through:
+SMOTE~\cite{chawla2002smote} addresses class imbalance through feature-space interpolation. After transforming text documents to TF-IDF feature vectors $\mathbf{x}_i \in \mathbb{R}^d$, SMOTE generates synthetic minority-class samples through linear interpolation between each sample and its $k$ nearest minority-class neighbors:
 
-\textbf{Feature Extraction.} Transform text documents to feature vectors:
-\begin{equation}
-\mathbf{x}_i = \phi(\text{doc}_i) \in \mathbb{R}^d
-\end{equation}
-where $\phi(\cdot)$ represents feature extraction (e.g., TF-IDF vectorization).
-
-\textbf{Neighbor Identification.} For each minority sample $\mathbf{x}_i$ with $y_i = 1$, identify $k$ nearest neighbors in feature space:
-\begin{equation}
-\mathcal{N}_k(\mathbf{x}_i) = \{\mathbf{x}_j : y_j = 1, \|\mathbf{x}_i - \mathbf{x}_j\| \text{ minimal}\}
-\end{equation}
-
-\textbf{Linear Interpolation.} Generate synthetic samples through convex combination:
 \begin{equation}
 \mathbf{x}_{\text{synth}}^{\text{SMOTE}} = \mathbf{x}_i + \lambda \cdot (\mathbf{x}_j - \mathbf{x}_i), \quad \lambda \sim \text{Uniform}(0,1), \quad \mathbf{x}_j \in \mathcal{N}_k(\mathbf{x}_i)
 \end{equation}
 
-\textbf{Critical Limitation:} The synthetic vector $\mathbf{x}_{\text{synth}}^{\text{SMOTE}}$ exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction ($\phi^{-1}$ is undefined), these synthetic samples serve only immediate classification purposes and cannot support applications requiring actual text content.
+where $\mathcal{N}_k(\mathbf{x}_i)$ denotes the $k$ nearest neighbors. This convex-hull interpolation ensures all synthetic samples lie within the feature-space boundaries defined by real minority samples.
+
+\textbf{Critical Limitation:} The synthetic vector exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction, these samples serve only immediate classification purposes and cannot support applications requiring actual text content. Complete SMOTE formalization is provided in Appendix~\ref{appendix:smote_details}.
 
 \subsubsection{Text-Space Generation: LLM Approach}
 
-In contrast, LLM-based augmentation operates in the original text space. Given a real minority-class example $\text{doc}_i$ with $y_i = 1$:
+In contrast, LLM-based augmentation operates in the original text space. Given a real minority-class example $\text{doc}_i$, LLMs generate synthetic text through prompt-guided neural generation:
 
-\textbf{Prompt-Guided Generation.} Construct generation instruction and query LLM:
 \begin{equation}
-\text{doc}_{\text{synth}}^{\text{LLM}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta)
-\end{equation}
-where $\Theta$ represents learned parameters and strategy controls generation characteristics. The output $\text{doc}_{\text{synth}}^{\text{LLM}}$ is actual readable text.
-
-\textbf{Standard Vectorization.} Transform generated text to features:
-\begin{equation}
-\mathbf{x}_{\text{synth}}^{\text{LLM}} = \phi(\text{doc}_{\text{synth}}^{\text{LLM}}) \in \mathbb{R}^d
+\text{doc}_{\text{synth}}^{\text{LLM}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta), \quad \mathbf{x}_{\text{synth}}^{\text{LLM}} = \phi(\text{doc}_{\text{synth}}^{\text{LLM}})
 \end{equation}
 
-\textbf{Key Distinction:} The synthetic sample exists as interpretable text \emph{before} vectorization, enabling human inspection, semantic validation, and reuse across multiple tasks. The feature vector derives from genuine text generation rather than mathematical interpolation.
+where $\Theta$ represents learned parameters, strategy controls generation characteristics, and $\phi(\cdot)$ denotes feature extraction. \textbf{Key Distinction:} The synthetic sample exists as interpretable text \emph{before} vectorization, enabling human inspection, semantic validation, and reuse across multiple tasks rather than serving only immediate classification.
 
 \subsubsection{Formal Comparison}
 
@@ -194,78 +177,37 @@ This multi-faceted approach ensures that synthetic data effectiveness is evaluat
 
 \subsubsection{Statistical Analysis Metrics}
 
-Beyond classification performance, our framework employs rigorous statistical metrics to quantify confidence, effect magnitude, and degradation patterns:
+Beyond classification performance, our framework employs rigorous statistical metrics to quantify confidence, effect magnitude, and degradation patterns. The replicated design with $R = 20$ independent groups enables:
 
 \begin{itemize}
-\item \textbf{Descriptive Statistics}: For each configuration, we compute mean and standard deviation across $R = 20$ replications:
-\begin{equation}
-\bar{m} = \frac{1}{R}\sum_{r=1}^{R} m_r, \qquad
-s_m = \sqrt{\frac{1}{R-1}\sum_{r=1}^{R} (m_r - \bar{m})^2}
-\end{equation}
-where $m_r$ denotes the performance metric for the $r$-th experimental group. The mean $\bar{m}$ quantifies expected performance, while standard deviation $s_m$ indicates consistency across operational variability. This replicated measurement approach provides complete distributional characterization rather than single-point estimates.
+\item \textbf{Descriptive Statistics}: Mean and standard deviation quantifying expected performance and consistency across operational variability, providing complete distributional characterization rather than single-point estimates
 
-\item \textbf{Confidence Intervals}: Confidence intervals quantify estimation uncertainty for all performance metrics:
-\begin{equation}
-\text{CI}_{1-\alpha} = \bar{m} \pm t_{\alpha/2, R-1} \cdot \frac{s_m}{\sqrt{R}}
-\end{equation}
-where $t_{\alpha/2, R-1}$ is the critical value from Student's t-distribution with $R-1$ degrees of freedom. For large $R$, the t-distribution approximates the normal distribution: $t \approx z_{\alpha/2}$. Narrow intervals indicate precise estimates, while wide intervals suggest high variability requiring cautious interpretation. The specific confidence level (e.g., 95\%) is determined in Section~\ref{sec:experiment}. Complete derivation is provided in Appendix~\ref{appendix:statistics}.
+\item \textbf{Confidence Intervals}: t-distribution-based intervals quantifying estimation uncertainty for all performance metrics, with narrow intervals indicating precise estimates and wide intervals suggesting high variability requiring cautious interpretation
 
-\item \textbf{Hypothesis Testing}: For each synthetic ratio configuration, we test against the baseline using paired comparisons:
-\begin{equation}
-H_0: \mu_{\text{baseline}} = \mu_{\text{ratio}}, \quad H_1: \mu_{\text{baseline}} \neq \mu_{\text{ratio}}
-\end{equation}
-Given multiple simultaneous tests, we apply Benjamini-Hochberg False Discovery Rate (FDR) correction to control the expected proportion of false discoveries among rejected hypotheses, ensuring that reported significant effects are unlikely to be spurious while maintaining reasonable statistical power.
+\item \textbf{Hypothesis Testing}: Paired comparisons testing each synthetic ratio against the 0\% baseline, with Benjamini-Hochberg False Discovery Rate (FDR) correction controlling the expected proportion of false discoveries across multiple simultaneous tests
 
-\item \textbf{Effect Sizes}: To distinguish statistical significance from practical importance, we compute standardized effect size:
-\begin{equation}
-d = \frac{\mu_1 - \mu_2}{\sigma_{\text{pooled}}}, \quad \text{where} \quad \sigma_{\text{pooled}} = \sqrt{\frac{(n_1-1)\sigma_1^2 + (n_2-1)\sigma_2^2}{n_1 + n_2 - 2}}
-\end{equation}
-Effect magnitude interpretation follows Cohen's conventional guidelines, distinguishing negligible, small, medium, and large effects. Complete thresholds are specified in Section~\ref{sec:experiment}.
+\item \textbf{Effect Sizes}: Cohen's $d$ standardized effect sizes distinguishing statistical significance from practical importance, following conventional guidelines for negligible, small, medium, and large effects
 
-\item \textbf{Sensitivity Analysis}: Linear regression modeling performance as a function of synthetic proportion:
-\[
-\text{Performance} = \beta_0 + \beta_1 \cdot \theta + \epsilon
-\]
-where $\theta$ is synthetic proportion (0-100\%), $\beta_1$ is the degradation rate (slope), and $R^2$ quantifies linearity of the relationship. The slope provides a practical metric for operational planning: expected performance change per 1\% increase in synthetic data.
+\item \textbf{Sensitivity Analysis}: Linear regression modeling performance as a function of synthetic proportion, with regression slope ($\beta_1$) quantifying expected degradation rate and $R^2$ indicating pattern linearity
 \end{itemize}
+
+Complete mathematical formulations for all statistical metrics are provided in Appendix~\ref{appendix:statistics}. Specific parameter values (e.g., confidence levels, significance thresholds) are determined in Section~\ref{sec:experiment}.
 
 \subsection{Quality Assurance and Validation}
 
-Our methodology incorporates multiple quality assurance mechanisms to ensure reliable and reproducible results.
-
-\subsubsection{Sampling Quality Control}
-
-The stratified sampling approach guarantees that each of the 20 groups maintains consistent class distribution (10\% spam) while representing diverse spam patterns. Sampling without replacement ensures group independence, enabling valid application of parametric statistical tests. Post-sampling validation confirms that spam characteristics (e.g., content length, keyword distributions) remain balanced across groups, preventing confounding between group assignment and spam type.
-
-\subsubsection{Generation Quality Verification}
-
-All LLM-generated synthetic samples undergo validation to ensure successful generation and parsability. Failed generations or malformed outputs are logged and excluded from analysis, with generation success rates reported for transparency. This approach ensures that observed performance differences reflect genuine synthetic data quality rather than parsing failures or incomplete samples.
-
-\subsubsection{Experimental Reproducibility}
-
-The framework emphasizes reproducibility through comprehensive documentation and controlled randomization:
+Our methodology incorporates comprehensive quality assurance mechanisms ensuring reliable and reproducible results:
 
 \begin{itemize}
-    \item \textbf{Fixed Random Seeds}: All random processes (sampling, train-test split, model initialization) employ fixed seeds documented in experimental records, enabling exact replication of results.
+    \item \textbf{Sampling Quality Control}: Stratified sampling maintaining consistent 10\% spam ratio across all 20 independent groups, with post-sampling validation confirming balanced spam characteristic distributions
 
-    \item \textbf{Consistent Test Set}: A single fixed out-of-sample test set is used across all 1,320 experimental conditions (3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups), eliminating test set variance as a confounding factor.
+    \item \textbf{Generation Quality Verification}: All LLM-generated samples validated for successful parsing and completeness, with failed generations logged and excluded from analysis
 
-    \item \textbf{Hyperparameter Standardization}: Classifier hyperparameters remain constant across all experiments, isolating synthetic data impact from model configuration effects.
+    \item \textbf{Experimental Reproducibility}: Fixed random seeds for all stochastic processes, consistent test set across all experimental conditions, standardized hyperparameters isolating synthetic data impact, and version-controlled code/prompts/analysis scripts
 
-    \item \textbf{Version Control}: All code, prompts, and analysis scripts are version controlled and archived, enabling future replication and extension.
+    \item \textbf{Statistical Validity}: Shapiro-Wilk tests for normality assumptions with non-parametric alternatives when violated, Benjamini-Hochberg FDR correction controlling false discoveries across multiple comparisons, and Cohen's $d$ effect sizes distinguishing statistical from practical significance
 \end{itemize}
 
-\subsubsection{Statistical Validity}
-
-Our statistical analysis adheres to best practices for multiple comparison correction, assumption verification, and robust estimation:
-
-\begin{itemize}
-    \item \textbf{Assumption Testing}: Normality assumptions for parametric tests are verified using Shapiro-Wilk tests. When violated, we employ non-parametric alternatives (Wilcoxon signed-rank tests) and bootstrap confidence intervals for robust inference.
-
-    \item \textbf{Multiple Comparison Correction}: The Benjamini-Hochberg False Discovery Rate procedure controls the expected proportion of false discoveries across 11 synthetic ratios $\times$ 2 classifiers $\times$ 7 metrics = 154 hypothesis tests per configuration, preventing spurious significance claims.
-
-    \item \textbf{Effect Size Reporting}: All significant effects are accompanied by effect size measures (Cohen's $d$), enabling readers to distinguish between statistically significant but trivial effects versus substantial impacts warranting practical consideration.
-\end{itemize}
+Complete quality assurance specifications and validation procedures are documented in Appendix~\ref{appendix:quality_control}.
 
 \subsection{Methodological Limitations and Scope}
 

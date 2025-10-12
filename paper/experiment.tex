@@ -29,74 +29,19 @@ The training data from each group is further used to construct experimental data
 
 \subsubsection{LLM Configuration}
 
-We employ two state-of-the-art large language models to evaluate the robustness and generalizability of LLM-based synthetic data generation across different model architectures:
-
-\begin{enumerate}
-    \item \textbf{GPT-4.1-mini} (OpenAI): A compact yet capable model optimized for efficiency while maintaining strong generation quality. Configuration: temperature $= 0.7$, max tokens $= 1{,}000$, top-p $= 1.0$, no frequency or presence penalties.
-
-    \item \textbf{Claude-3.5-Haiku} (Anthropic): A fast, cost-effective model designed for high-throughput applications with competitive performance. Configuration: temperature $= 0.7$, max tokens $= 1{,}000$, standard sampling parameters.
-\end{enumerate}
-
-Both models use identical temperature settings and generation parameters to ensure fair comparison. The selection of these two models provides architectural diversity (OpenAI GPT vs Anthropic Claude) while maintaining practical feasibility for large-scale generation. Complete configuration details are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:llm_config}.
+We employ two state-of-the-art large language models to evaluate robustness across different model architectures: \textbf{GPT-4.1-mini} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Both models use identical generation parameters (temperature $= 0.7$, max tokens $= 1{,}000$) ensuring fair comparison. Complete configuration details are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:llm_config}.
 
 \subsubsection{Prompt Engineering Strategies}
 
-To investigate the impact of generation instructions on synthetic data quality, we design three distinct prompt strategies that vary in their guidance intensity:
-
-\begin{enumerate}
-    \item \textbf{Original Prompt}: Instructs the LLM to rewrite spam emails while preserving malicious intent and semantic content. This serves as our baseline generation approach, emphasizing faithful reproduction of spam characteristics.
-
-    \item \textbf{Strong Prompt}: Encourages amplification of spam features by explicitly requesting emphasis on malicious characteristics and obvious spam indicators. This strategy tests whether more explicit spam signals improve classifier training.
-
-    \item \textbf{Weak Prompt}: Promotes subtle spam generation by requesting less obvious malicious content while maintaining spam intent. This strategy explores whether more legitimate-appearing spam variants provide training value.
-\end{enumerate}
-
-All prompts follow a consistent template structure with systematic instructions and JSON-formatted output requirements to ensure parsing reliability. Complete prompt templates are provided in Appendix~\ref{appendix:prompts}.
+We design three prompt strategies varying in guidance intensity: \textbf{Original} (faithful reproduction of spam characteristics), \textbf{Strong} (amplified malicious features), and \textbf{Weak} (subtle spam signals). All prompts use consistent template structure with JSON-formatted output for parsing reliability. Complete templates are provided in Appendix~\ref{appendix:prompts}.
 
 \subsubsection{Synthetic Data Mixing Strategies}
 
-We implement two fundamental mixing strategies to evaluate different synthetic data deployment scenarios:
-
-\begin{enumerate}
-    \item \textbf{Within-Group Strategy}: For each group $i$, synthetic spam is generated from real spam samples \emph{within the same group}. The training set combines real spam from group $i$ with synthetic spam generated from group $i$'s real samples. This strategy tests the effectiveness of synthetic data when it closely matches the target distribution.
-
-    Mathematical formulation:
-    \[
-    \text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}
-    \]
-    where $\theta$ is the synthetic proportion and synthetic samples are generated from $\text{Real}_i$.
-
-    \item \textbf{Cross-Group Strategy}: For each group $i$, synthetic spam is generated from real spam samples in \emph{different groups} ($j \neq i$). This strategy tests the generalization capability of synthetic data when it does not precisely match the target distribution.
-
-    Mathematical formulation:
-    \[
-    \text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}
-    \]
-\end{enumerate}
-
-These two strategies enable us to distinguish between in-distribution synthetic data effectiveness (within-group) and cross-distribution generalization (cross-group), providing insights into the robustness and transfer learning properties of LLM-generated spam.
+We implement two mixing strategies: \textbf{Within-Group} (synthetic samples generated from the same group, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}$) tests in-distribution effectiveness, while \textbf{Cross-Group} (synthetic from different groups, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}$) tests cross-distribution generalization, where $\theta$ denotes synthetic proportion.
 
 \subsubsection{SMOTE Baseline Configuration}
 
-To contextualize the performance and utility of LLM-based text generation, we implement SMOTE (Synthetic Minority Over-sampling Technique)~\cite{chawla2002smote} as a traditional feature-space augmentation baseline. As formalized in Section~\ref{sec:methodology}, SMOTE operates fundamentally differently from LLMs by generating synthetic samples through linear interpolation in the vectorized feature space rather than text space.
-
-\textbf{Implementation Details}: We apply SMOTE using the \texttt{imblearn} library~\cite{lemaitre2017imbalanced} with the following configuration:
-\begin{itemize}
-    \item \textbf{Interpolation method}: Standard SMOTE with $k=5$ nearest neighbors
-    \item \textbf{Sampling strategy}: Oversample minority class (spam) only to achieve target synthetic ratios
-    \item \textbf{Random seed}: Fixed at 42 for reproducibility across all groups
-    \item \textbf{Feature space}: Operates on TF-IDF vectors (identical to LLM pipeline)
-\end{itemize}
-
-\textbf{Experimental Design}: SMOTE baseline experiments follow an analogous structure to LLM experiments:
-\begin{itemize}
-    \item \textbf{Mixing strategies}: Both within-group and cross-group configurations
-    \item \textbf{Synthetic ratios}: Identical 11 levels (0\%, 10\%, ..., 100\%)
-    \item \textbf{Replication}: Same 20 independent groups
-    \item \textbf{Evaluation}: Identical test set and performance metrics
-\end{itemize}
-
-This parallel experimental design enables direct performance comparison while highlighting the fundamental architectural distinction: SMOTE generates abstract feature vectors without corresponding text, whereas LLMs generate interpretable text samples that are subsequently vectorized.
+We implement SMOTE~\cite{chawla2002smote} as a traditional feature-space augmentation baseline using the \texttt{imblearn} library~\cite{lemaitre2017imbalanced} with $k=5$ nearest neighbors, operating on TF-IDF vectors (identical to LLM pipeline). SMOTE experiments follow the same structure as LLM experiments: both mixing strategies, identical 11 synthetic ratios (0\%-100\%), same 20 groups, and identical evaluation metrics. This parallel design enables direct comparison while highlighting the fundamental distinction: SMOTE generates feature vectors without text, whereas LLMs generate interpretable text. Complete SMOTE configuration is provided in Appendix~\ref{appendix:smote_config}.
 
 \subsection{Experimental Factors and Design}
 
@@ -162,23 +107,19 @@ The F1-score serves as our primary evaluation metric due to its balanced treatme
 
 \subsection{Statistical Analysis Framework}
 
-Following the statistical methodology framework established in Section~\ref{sec:methodology}, we apply the following specific configurations:
+We apply the comprehensive statistical methodology established in Section~\ref{sec:methodology} with the following specific configurations:
 
-\subsubsection{Descriptive Statistics and Confidence Intervals}
+\begin{itemize}
+    \item \textbf{Descriptive Statistics}: Mean and standard deviation across $R = 20$ groups with 95\% confidence intervals ($\alpha = 0.05$, 19 degrees of freedom)
 
-For each experimental configuration, we compute sample mean $\bar{m}$ and standard deviation $s_m$ across $R = 20$ groups using Equations~3.2 in Methodology. We report 95\% confidence intervals ($\alpha = 0.05$) using the t-distribution with 19 degrees of freedom (Equation~3.3).
+    \item \textbf{Hypothesis Testing}: Paired t-tests comparing each synthetic ratio against the 0\% baseline, with Benjamini-Hochberg FDR correction at $\alpha = 0.05$ controlling false discovery rate across 140 simultaneous tests per configuration~\cite{benjamini1995controlling}
 
-\subsubsection{Hypothesis Testing with FDR Correction}
+    \item \textbf{Effect Sizes}: Cohen's $d$ with conventional thresholds: negligible ($|d| < 0.2$), small ($0.2 \leq |d| < 0.5$), medium ($0.5 \leq |d| < 0.8$), large ($|d| \geq 0.8$)
 
-We conduct paired t-tests following the hypothesis testing framework (Equation~3.4 in Methodology), comparing each synthetic ratio against the 0\% baseline. Given 140 simultaneous tests per configuration (10 non-baseline ratios $\times$ 2 classifiers $\times$ 7 metrics), we apply Benjamini-Hochberg FDR correction at significance level $\alpha = 0.05$ to control false discovery rate~\cite{benjamini1995controlling}.
+    \item \textbf{Sensitivity Analysis}: Linear regression modeling performance vs synthetic proportion, with $R^2 > 0.9$ indicating strong linearity suitable for extrapolation, $R^2 < 0.7$ suggesting non-linearities requiring empirical validation
+\end{itemize}
 
-\subsubsection{Effect Size Analysis}
-
-We compute Cohen's $d$ standardized effect sizes (Equation~3.5 in Methodology) for all comparisons, interpreting magnitudes following conventional thresholds: negligible ($|d| < 0.2$), small ($0.2 \leq |d| < 0.5$), medium ($0.5 \leq |d| < 0.8$), and large ($|d| \geq 0.8$).
-
-\subsubsection{Sensitivity Regression Analysis}
-
-We apply the linear regression framework (Equation~3.6 in Methodology) to model performance degradation patterns. Following conventional guidelines, we interpret $R^2 > 0.9$ as indicating strong linear relationships suitable for extrapolation, while $R^2 < 0.7$ suggests non-linearities requiring empirical validation for specific proportions.
+Complete mathematical formulations are provided in Section~\ref{sec:methodology}.
 
 \subsection{Experimental Scale and Reproducibility}
 
@@ -207,31 +148,7 @@ All experiments employ fixed random seeds ($\text{seed} = 42$) throughout the pi
 
 \subsection{Quality Control and Validation}
 
-To ensure data quality and experimental validity, we implement multiple quality control mechanisms:
-
-\subsubsection{LLM Generation Quality Checks}
-\begin{itemize}
-    \item Length constraints: $0.3 \leq \frac{|\text{synthetic}|}{|\text{original}|} \leq 3.0$
-    \item Similarity bounds: $0.1 \leq \text{similarity}(\text{synthetic}, \text{original}) \leq 0.95$
-    \item JSON parsing validation: All generated outputs must parse successfully
-    \item Language quality: Automated checks for grammatical coherence
-\end{itemize}
-
-\subsubsection{SMOTE Generation Quality Checks}
-\begin{itemize}
-    \item \textbf{Vector validity}: Verify all synthetic vectors contain finite values (no NaN or infinity)
-    \item \textbf{Feature space bounds}: Ensure synthetic vectors remain within the convex hull of real data feature distributions
-    \item \textbf{Sample count verification}: Confirm exact synthetic sample counts match target ratios for each configuration
-    \item \textbf{Numerical stability}: Validate TF-IDF vectorization produces consistent feature dimensions across all experimental units
-\end{itemize}
-
-\subsubsection{Statistical Validation}
-\begin{itemize}
-    \item \textbf{Distributional checks}: Verify that group sampling maintains overall spam distribution
-    \item \textbf{Assumption testing}: Validate normality and homoscedasticity assumptions for parametric tests
-    \item \textbf{Robustness verification}: Supplement t-tests with non-parametric Wilcoxon signed-rank tests
-    \item \textbf{Outlier analysis}: Identify and investigate extreme performance deviations
-\end{itemize}
+We implement comprehensive quality control mechanisms to ensure data quality and experimental validity. For LLM-generated samples, we validate length constraints, similarity bounds, JSON parsing, and language quality. For SMOTE-generated samples, we verify vector validity, feature space bounds, sample counts, and numerical stability. Statistical validation includes distributional checks, assumption testing (normality and homoscedasticity), robustness verification with non-parametric tests, and outlier analysis. Complete quality control specifications are provided in Appendix~\ref{appendix:quality_control}.
 
 \subsection{Reproducibility and Open Science}
 
