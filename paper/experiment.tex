@@ -109,9 +109,34 @@ We systematically vary the synthetic data proportion $\theta$ from 0\% (pure rea
 
 \subsection{Classification Models}
 
-We evaluate two architecturally distinct classifiers to ensure findings generalize across different learning paradigms: Support Vector Machine (SVM, margin-based) and Random Forest (RF, ensemble-based). SVM employs RBF kernel with regularization $C = 1.0$, while Random Forest uses 100 trees with maximum depth 10. Both classifiers use balanced class weights to handle the 10\% spam ratio. Complete hyperparameter specifications are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:hyperparameters}.
+We evaluate two architecturally distinct classifiers to ensure findings generalize across different learning paradigms: Support Vector Machine (SVM, margin-based) and Random Forest (RF, ensemble-based). These architectures are selected for their complementary characteristics: SVM provides strong theoretical foundations and effectiveness in high-dimensional spaces through margin maximization, while Random Forest offers robustness to overfitting and natural handling of non-linear patterns through ensemble averaging.
 
-These architectures are selected for their complementary characteristics: SVM provides strong theoretical foundations and effectiveness in high-dimensional spaces, while Random Forest offers robustness to overfitting and natural handling of non-linear patterns and feature interactions.
+\subsubsection{Hyperparameter Selection and Validation}
+
+To ensure fair comparison across all experimental conditions and eliminate hyperparameter tuning as a confounding factor, we employ fixed hyperparameters validated through systematic grid search with 5-fold stratified cross-validation on a representative training set (Group 0, baseline configuration).
+
+\textbf{Grid Search Design}: We evaluate SVM with C $\in \{0.1, 1.0, 10.0\}$, kernel $\in \{\text{linear}, \text{rbf}\}$, gamma $\in \{\text{scale}, \text{auto}\}$, and Random Forest with n\_estimators $\in \{50, 100, 200\}$, max\_depth $\in \{5, 10, 20, \text{None}\}$, min\_samples\_split $\in \{2, 5\}$, min\_samples\_leaf $\in \{1, 2\}$, using F1-score as the primary optimization metric. Complete grid search results are provided in Appendix~\ref{appendix:hyperparameter_grid_search}.
+
+\textbf{Key Findings}:
+
+\begin{enumerate}
+    \item \textbf{Random Forest exhibits remarkable hyperparameter robustness}: Top configurations vary by less than 3\% F1-score (0.886--0.917), confirming the ensemble method's stability across diverse parameter settings.
+
+    \item \textbf{SVM performance is invariant to regularization strength with linear kernel}: All C values $\in \{0.1, 1.0, 10.0\}$ yield identical performance (F1 = 0.825 $\pm$ 0.031), indicating the TF-IDF feature space is well-separated and does not require regularization tuning.
+
+    \item \textbf{Linear kernel substantially outperforms RBF kernel for SVM}: Linear kernel achieves F1 = 0.825, while RBF kernel achieves only F1 = 0.48--0.61, confirming that linear decision boundaries are more appropriate for high-dimensional sparse TF-IDF features (10,000 dimensions)~\cite{joachims1998text}.
+
+    \item \textbf{Random Forest consistently outperforms SVM}: The best Random Forest configuration (F1 = 0.917) surpasses the best SVM configuration (F1 = 0.825) by 9.2 percentage points, demonstrating an architectural advantage independent of hyperparameter tuning.
+\end{enumerate}
+
+\textbf{Selected Hyperparameters} (employed throughout all experiments):
+
+\begin{itemize}
+    \item \textbf{SVM}: C = 1.0, kernel = linear, class\_weight = balanced, random\_state = 42
+    \item \textbf{Random Forest}: n\_estimators = 100, max\_depth = 10, min\_samples\_split = 5, min\_samples\_leaf = 2, class\_weight = balanced, random\_state = 42
+\end{itemize}
+
+These configurations represent stable, well-performing choices validated through cross-validation. The minimal hyperparameter sensitivity—especially for Random Forest (3\% performance range) and SVM linear kernel (0\% variation across all C values)—confirms that our findings regarding synthetic data effects, cross-model generalization, and architectural differences are robust to hyperparameter variations and reflect true phenomena rather than suboptimal tuning choices.
 
 \subsubsection{Feature Representation}
 

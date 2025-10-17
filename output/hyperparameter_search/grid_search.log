@@ -1,0 +1,95 @@
+2025-10-17 11:42:10 | INFO | ============================================================
+2025-10-17 11:42:10 | INFO | Hyperparameter Grid Search
+2025-10-17 11:42:10 | INFO | ============================================================
+2025-10-17 11:42:10 | INFO | Training data: data/full_experiments/ceas08_gpt41mini/datasets/within_group/train_original_r0_g0_t0.csv.gz
+2025-10-17 11:42:10 | INFO | Output directory: output/hyperparameter_search
+2025-10-17 11:42:10 | INFO | Cross-validation folds: 5
+2025-10-17 11:42:10 | INFO | Classifiers: ['svm', 'random_forest']
+2025-10-17 11:42:10 | INFO | Loading training data from: data/full_experiments/ceas08_gpt41mini/datasets/within_group/train_original_r0_g0_t0.csv.gz
+2025-10-17 11:42:10 | INFO | Loaded 1000 samples - Spam: 100, Ham: 900
+2025-10-17 11:42:10 | INFO | ============================================================
+2025-10-17 11:42:10 | INFO | SVM Hyperparameter Grid Search
+2025-10-17 11:42:10 | INFO | ============================================================
+2025-10-17 11:42:10 | INFO | Starting SVM grid search...
+2025-10-17 11:42:10 | INFO | Parameter grid: {'classifier__C': [0.1, 1.0, 10.0], 'classifier__kernel': ['linear', 'rbf'], 'classifier__gamma': ['scale', 'auto']}
+2025-10-17 11:42:10 | INFO | Total combinations: 12
+2025-10-17 11:42:23 | INFO | SVM grid search completed!
+2025-10-17 11:42:23 | INFO | Best parameters: {'classifier__C': 0.1, 'classifier__gamma': 'scale', 'classifier__kernel': 'linear'}
+2025-10-17 11:42:23 | INFO | Best F1-score: 0.8152
+2025-10-17 11:42:23 | INFO | 
+Top 5 SVM configurations:
+2025-10-17 11:42:23 | INFO |   {'classifier__C': 0.1, 'classifier__gamma': 'scale', 'classifier__kernel': 'linear'}: F1=0.8152 ± 0.0393
+2025-10-17 11:42:23 | INFO |   {'classifier__C': 0.1, 'classifier__gamma': 'auto', 'classifier__kernel': 'linear'}: F1=0.8152 ± 0.0393
+2025-10-17 11:42:23 | INFO |   {'classifier__C': 1.0, 'classifier__gamma': 'scale', 'classifier__kernel': 'linear'}: F1=0.8152 ± 0.0393
+2025-10-17 11:42:23 | INFO |   {'classifier__C': 1.0, 'classifier__gamma': 'auto', 'classifier__kernel': 'linear'}: F1=0.8152 ± 0.0393
+2025-10-17 11:42:23 | INFO |   {'classifier__C': 10.0, 'classifier__gamma': 'scale', 'classifier__kernel': 'linear'}: F1=0.8152 ± 0.0393
+2025-10-17 11:42:23 | INFO | Creating SVM heatmap...
+2025-10-17 11:42:23 | INFO | SVM heatmap saved to: output/hyperparameter_search/svm_grid_search_heatmap.png
+2025-10-17 11:42:23 | INFO | ============================================================
+2025-10-17 11:42:23 | INFO | Random Forest Hyperparameter Grid Search
+2025-10-17 11:42:23 | INFO | ============================================================
+2025-10-17 11:42:23 | INFO | Starting Random Forest grid search...
+2025-10-17 11:42:23 | INFO | Parameter grid: {'classifier__n_estimators': [50, 100, 200], 'classifier__max_depth': [5, 10, 20, None], 'classifier__min_samples_split': [2, 5], 'classifier__min_samples_leaf': [1, 2]}
+2025-10-17 11:42:23 | INFO | Total combinations: 48
+2025-10-17 11:42:39 | INFO | Random Forest grid search completed!
+2025-10-17 11:42:39 | INFO | Best parameters: {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}
+2025-10-17 11:42:39 | INFO | Best F1-score: 0.9167
+2025-10-17 11:42:39 | INFO | 
+Top 5 Random Forest configurations:
+2025-10-17 11:42:39 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}: F1=0.9167 ± 0.0236
+2025-10-17 11:42:39 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 50}: F1=0.9133 ± 0.0251
+2025-10-17 11:42:39 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}: F1=0.9131 ± 0.0257
+2025-10-17 11:42:39 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}: F1=0.9125 ± 0.0227
+2025-10-17 11:42:39 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}: F1=0.9118 ± 0.0275
+2025-10-17 11:42:39 | INFO | Creating Random Forest heatmap...
+2025-10-17 11:42:40 | INFO | Random Forest heatmap saved to: output/hyperparameter_search/rf_grid_search_heatmap.png
+2025-10-17 11:42:40 | INFO | Creating comparison table...
+2025-10-17 11:42:40 | INFO | Comparison table saved to: output/hyperparameter_search/hyperparameter_comparison.csv
+2025-10-17 11:42:40 | INFO | 
+============================================================
+2025-10-17 11:42:40 | INFO | Top 10 Configurations Overall:
+2025-10-17 11:42:40 | INFO | ============================================================
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9167 ± 0.0236
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9133 ± 0.0251
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 50}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9131 ± 0.0257
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9125 ± 0.0227
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9118 ± 0.0275
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9083 ± 0.0209
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 100}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9081 ± 0.0170
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': 20, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 100}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9081 ± 0.0216
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 2, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9039 ± 0.0146
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 50}
+2025-10-17 11:42:40 | INFO | Random Forest   F1=0.9039 ± 0.0238
+2025-10-17 11:42:40 | INFO |   {'classifier__max_depth': None, 'classifier__min_samples_leaf': 2, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}
+2025-10-17 11:42:40 | INFO | 
+Complete results saved to: output/hyperparameter_search/grid_search_results.json
+2025-10-17 11:42:40 | INFO | Best hyperparameters saved to: output/hyperparameter_search/best_hyperparameters.json
+2025-10-17 11:42:40 | INFO | 
+============================================================
+2025-10-17 11:42:40 | INFO | Grid Search Summary
+2025-10-17 11:42:40 | INFO | ============================================================
+2025-10-17 11:42:40 | INFO | 
+SVM:
+2025-10-17 11:42:40 | INFO |   Best F1-score: 0.8152
+2025-10-17 11:42:40 | INFO |   Best parameters:
+2025-10-17 11:42:40 | INFO |     classifier__C: 0.1
+2025-10-17 11:42:40 | INFO |     classifier__gamma: scale
+2025-10-17 11:42:40 | INFO |     classifier__kernel: linear
+2025-10-17 11:42:40 | INFO | 
+RANDOM_FOREST:
+2025-10-17 11:42:40 | INFO |   Best F1-score: 0.9167
+2025-10-17 11:42:40 | INFO |   Best parameters:
+2025-10-17 11:42:40 | INFO |     classifier__max_depth: 20
+2025-10-17 11:42:40 | INFO |     classifier__min_samples_leaf: 1
+2025-10-17 11:42:40 | INFO |     classifier__min_samples_split: 2
+2025-10-17 11:42:40 | INFO |     classifier__n_estimators: 200
+2025-10-17 11:42:40 | SUCCESS | 
+Hyperparameter grid search completed successfully!
