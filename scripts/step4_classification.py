@@ -85,9 +85,9 @@ def main():
     parser.add_argument(
         '--strategy',
         type=str,
-        default='within_group',
+        default='cross_group',
         choices=['within_group', 'cross_group'],
-        help='Mixing strategy (only within_group and cross_group are used)'
+        help='Mixing strategy (default: cross_group for best performance)'
     )
     parser.add_argument(
         '--prompt',

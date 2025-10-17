@@ -39,6 +39,8 @@ We design three prompt strategies varying in guidance intensity: \textbf{Origina
 
 We implement two mixing strategies: \textbf{Within-Group} (synthetic samples generated from the same group, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}$) tests in-distribution effectiveness, while \textbf{Cross-Group} (synthetic from different groups, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}$) tests cross-distribution generalization, where $\theta$ denotes synthetic proportion.
 
+\textbf{Strategy Selection}: Preliminary experiments comparing both strategies across 3,300 measurements revealed that cross-group mixing consistently outperforms within-group (mean F1: 0.563 vs. 0.554, p$<$0.000001), though with small effect size (Cohen's d$=$0.13). Given cross-group's marginal but consistent advantage and better alignment with real-world scenarios where precise distribution matching is often infeasible, all reported experiments employ cross-group mixing exclusively.
+
 \subsubsection{SMOTE Baseline Configuration}
 
 We implement SMOTE~\cite{chawla2002smote} as a traditional feature-space augmentation baseline using the \texttt{imblearn} library~\cite{lemaitre2017imbalanced} with $k=5$ nearest neighbors, operating on TF-IDF vectors (identical to LLM pipeline). SMOTE experiments follow the same structure as LLM experiments: both mixing strategies, identical 11 synthetic ratios (0\%-100\%), same 20 groups, and identical evaluation metrics. This parallel design enables direct comparison while highlighting the fundamental distinction: SMOTE generates feature vectors without text, whereas LLMs generate interpretable text. Complete SMOTE configuration is provided in Appendix~\ref{appendix:smote_config}.
@@ -54,27 +56,27 @@ The LLM experiments follow a full-factorial design with four primary factors:
 \begin{enumerate}
     \item \textbf{Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
     \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
-    \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
+    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
     \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
 \end{enumerate}
 
-This yields $2 \times 3 \times 2 \times 11 = 132$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 2 classifiers (SVM, Random Forest), resulting in $132 \times 20 \times 2 = 5,280$ training-evaluation units.
+This yields $2 \times 3 \times 1 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 1 classifier (SVM with optimized linear kernel), resulting in $66 \times 20 \times 1 = 1,320$ training-evaluation units.
 
 \subsubsection{SMOTE Baseline Track}
 
 The SMOTE experiments follow a simplified factorial design with three factors:
 
 \begin{enumerate}
-    \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
+    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
     \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
-    \item \textbf{Classifier}: 2 levels (SVM, Random Forest)
+    \item \textbf{Classifier}: 1 level (SVM with optimized linear kernel)
 \end{enumerate}
 
-This yields $2 \times 11 \times 2 = 44$ unique configurations, each replicated across $R = 20$ groups, resulting in $44 \times 20 = 880$ training-evaluation units.
+This yields $1 \times 11 \times 1 = 11$ unique configurations, each replicated across $R = 20$ groups, resulting in $11 \times 20 = 220$ training-evaluation units.
 
 \subsubsection{Combined Experimental Scale}
 
-The complete experimental framework encompasses three complementary evaluation tracks: forward detection (LLM and SMOTE), and reverse detection (cross-model). The LLM and SMOTE tracks comprise $132 + 44 = 176$ distinct configurations with $5,280 + 880 = 6,160$ training-evaluation units, enabling systematic comparison between text-space generation and feature-space interpolation under controlled conditions. Including the reverse detection track adds 36 cross-model configurations with 1,440 training-evaluation units, bringing the total experimental scale to $176 + 36 = 212$ unique configurations and $6,160 + 1,440 = 7,600$ total training-evaluation units across all tracks.
+The complete experimental framework encompasses three complementary evaluation tracks: forward detection (LLM and SMOTE), and reverse detection (cross-model). The LLM and SMOTE tracks comprise $66 + 11 = 77$ distinct configurations with $1,320 + 220 = 1,540$ training-evaluation units, enabling systematic comparison between text-space generation and feature-space interpolation under controlled conditions. Including the reverse detection track adds 18 cross-model configurations with 360 training-evaluation units, bringing the total experimental scale to $77 + 18 = 95$ unique configurations and $1,540 + 360 = 1,900$ total training-evaluation units across all tracks.
 
 \subsubsection{Reverse Detection Track}
 
@@ -90,11 +92,11 @@ This design follows a simplified factorial structure with four factors:
 \begin{enumerate}
     \item \textbf{Testing Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
     \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
-    \item \textbf{Mixing Strategy}: 2 levels (Within-Group, Cross-Group)
+    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
     \item \textbf{Training Synthetic Ratio} ($\theta$): 3 levels (0\%, 50\%, 100\%)
 \end{enumerate}
 
-This yields $2 \times 3 \times 2 \times 3 = 36$ unique cross-model configurations, each replicated across $R = 20$ groups with 2 classifiers, resulting in $36 \times 20 \times 2 = 1,440$ training-evaluation units. The reduced set of synthetic ratios (0\%, 50\%, 100\%) focuses on three critical scenarios: pure real baseline (0\%), balanced mixing (50\%), and pure synthetic (100\%).
+This yields $2 \times 3 \times 1 \times 3 = 18$ unique cross-model configurations, each replicated across $R = 20$ groups with 1 classifier (SVM), resulting in $18 \times 20 \times 1 = 360$ training-evaluation units. The reduced set of synthetic ratios (0\%, 50\%, 100\%) focuses on three critical scenarios: pure real baseline (0\%), balanced mixing (50\%), and pure synthetic (100\%).
 
 For each experiment, the training set consists of real ham (900 samples) and real spam at the specified ratio, augmented with synthetic spam from the \emph{opposite} model. The test set comprises real ham (900 samples) and 100\% synthetic spam from the \emph{target} model being tested. This asymmetric design evaluates whether cross-model generalization occurs—whether features learned from one LLM's synthetic patterns transfer to detecting another LLM's synthetic spam.
 
@@ -175,15 +177,15 @@ Our comprehensive experimental framework encompasses substantial computational i
 \textbf{Data Generation}:
 \begin{itemize}
     \item \textbf{LLM generation}: 12,000 API calls across both models (2 models $\times$ 20 groups $\times$ 100 spam/group $\times$ 3 prompts)
-    \item \textbf{SMOTE generation}: 880 feature-space interpolation operations (2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
+    \item \textbf{SMOTE generation}: 220 feature-space interpolation operations (1 strategy $\times$ 11 ratios $\times$ 20 groups)
 \end{itemize}
 
 \textbf{Model Training and Evaluation}:
 \begin{itemize}
-    \item \textbf{Forward LLM track}: 5,280 classifier training-evaluation runs (2 models $\times$ 3 prompts $\times$ 2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
-    \item \textbf{Forward SMOTE track}: 880 classifier training-evaluation runs (2 strategies $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers)
-    \item \textbf{Reverse detection track}: 1,440 classifier training-evaluation runs (2 testing models $\times$ 3 prompts $\times$ 2 strategies $\times$ 3 ratios $\times$ 20 groups $\times$ 2 classifiers)
-    \item \textbf{Total}: 7,600 training-evaluation units across all three tracks
+    \item \textbf{Forward LLM track}: 1,320 SVM training-evaluation runs (2 models $\times$ 3 prompts $\times$ 1 strategy $\times$ 11 ratios $\times$ 20 groups)
+    \item \textbf{Forward SMOTE track}: 220 SVM training-evaluation runs (1 strategy $\times$ 11 ratios $\times$ 20 groups)
+    \item \textbf{Reverse detection track}: 360 SVM training-evaluation runs (2 testing models $\times$ 3 prompts $\times$ 1 strategy $\times$ 3 ratios $\times$ 20 groups)
+    \item \textbf{Total}: 1,900 training-evaluation units across all three tracks
 \end{itemize}
 
 \textbf{Statistical Analysis}:

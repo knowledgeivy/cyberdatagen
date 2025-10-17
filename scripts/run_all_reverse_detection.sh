@@ -25,7 +25,7 @@ mkdir -p "$OUTPUT_DIR/logs"
 START_TIME=$(date +%s)
 
 # Counter
-TOTAL_CONFIGS=36  # 12 configs × 3 ratios
+TOTAL_CONFIGS=18  # 2 methods × 3 prompts × 1 strategy × 3 ratios (cross_group only)
 CURRENT_CONFIG=0
 
 # Job tracking
@@ -50,6 +50,8 @@ wait_for_slot() {
 
 echo "Running experiments in parallel (max $MAX_PARALLEL_JOBS concurrent jobs)..."
 echo ""
+echo "NOTE: Only using cross_group strategy for best performance"
+echo ""
 
 #######################################
 # GPT-4.1-mini testing (trained on Claude)
@@ -59,8 +61,8 @@ echo "GPT-4.1-mini Testing (trained on Claude)"
 echo "=========================================="
 
 for PROMPT in original strong weak; do
-    for STRATEGY in within_group cross_group; do
-        for RATIO in 0 50 100; do
+    STRATEGY=cross_group  # Using only cross_group strategy
+    for RATIO in 0 50 100; do
             ((CURRENT_CONFIG++))
 
             # Wait for available slot
@@ -107,8 +109,8 @@ echo "Claude-3.5-Haiku Testing (trained on GPT)"
 echo "=========================================="
 
 for PROMPT in original strong weak; do
-    for STRATEGY in within_group cross_group; do
-        for RATIO in 0 50 100; do
+    STRATEGY=cross_group  # Using only cross_group strategy
+    for RATIO in 0 50 100; do
             ((CURRENT_CONFIG++))
 
             # Wait for available slot
@@ -177,8 +179,9 @@ echo "All Cross-Model Reverse Detection Experiments Completed!"
 echo "=========================================="
 echo ""
 echo "Execution Summary:"
-echo "  - Total configurations: $TOTAL_CONFIGS (2 methods × 3 prompts × 2 strategies × 3 ratios)"
-echo "  - Total experiments: 1,440 (36 configs × 20 groups × 2 classifiers)"
+echo "  - Total configurations: $TOTAL_CONFIGS (2 methods × 3 prompts × 1 strategy × 3 ratios)"
+echo "  - Strategy: cross_group only (best performance)"
+echo "  - Total experiments: 360 (18 configs × 20 groups × 1 classifier SVM)"
 echo "  - Parallel jobs: $MAX_PARALLEL_JOBS"
 echo "  - Total time: ${HOURS}h ${MINUTES}m ${SECONDS}s"
 echo ""

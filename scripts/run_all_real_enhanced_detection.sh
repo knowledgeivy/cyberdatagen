@@ -11,14 +11,14 @@ OUTPUT_DIR="output/real_enhanced_detection"
 # Experimental factors
 TESTING_METHODS=("gpt41mini" "claude35haiku")
 TESTING_PROMPTS=("original" "strong" "weak")
-TESTING_STRATEGIES=("within_group" "cross_group")
+TESTING_STRATEGIES=("cross_group")  # Using only cross_group for best performance
 REAL_SPAM_COUNTS=(100 150 200)
 
 # Parallel execution settings
 MAX_PARALLEL_JOBS=6  # Number of experiments to run in parallel
 
-# Total configurations: 2 × 3 × 2 × 3 = 36
-# Total experiments: 36 × 20 groups × 1 classifier (SVM only) = 720
+# Total configurations: 2 × 3 × 1 × 3 = 18 (cross_group only)
+# Total experiments: 18 × 20 groups × 1 classifier (SVM only) = 360
 
 echo "========================================"
 echo "Real-Enhanced Detection Experiments (Parallel)"
@@ -29,11 +29,11 @@ echo ""
 echo "Experimental Factors:"
 echo "  Testing Methods: ${TESTING_METHODS[@]}"
 echo "  Testing Prompts: ${TESTING_PROMPTS[@]}"
-echo "  Testing Strategies: ${TESTING_STRATEGIES[@]}"
+echo "  Testing Strategies: ${TESTING_STRATEGIES[@]} (cross_group only for best performance)"
 echo "  Real Spam Counts: ${REAL_SPAM_COUNTS[@]}"
 echo ""
-echo "Total Configurations: 36"
-echo "Total Experiments: 720 (36 configs × 20 groups × 1 classifier)"
+echo "Total Configurations: 18"
+echo "Total Experiments: 360 (18 configs × 20 groups × 1 classifier)"
 echo "Parallel Jobs: $MAX_PARALLEL_JOBS"
 echo "========================================"
 echo ""
@@ -85,7 +85,7 @@ for testing_method in "${TESTING_METHODS[@]}"; do
                 results_file="$OUTPUT_DIR/results/${testing_method}_${testing_prompt}_${testing_strategy}_count${real_spam_count}_real_enhanced_results.json"
 
                 if [ -f "$results_file" ]; then
-                    echo "[$total_configs/36] ⚠️  Skipping (exists): ${testing_method}-${testing_prompt}-${testing_strategy}-count${real_spam_count}"
+                    echo "[$total_configs/18] ⚠️  Skipping (exists): ${testing_method}-${testing_prompt}-${testing_strategy}-count${real_spam_count}"
                     skipped_configs=$((skipped_configs + 1))
                     continue
                 fi
@@ -96,7 +96,7 @@ for testing_method in "${TESTING_METHODS[@]}"; do
                 JOB_NAME="${testing_method}-${testing_prompt}-${testing_strategy}-count${real_spam_count}"
                 LOG_FILE="$OUTPUT_DIR/logs/${JOB_NAME}.log"
 
-                echo "[$total_configs/36] Launching: $JOB_NAME"
+                echo "[$total_configs/18] Launching: $JOB_NAME"
 
                 # Run in background
                 (
@@ -157,7 +157,8 @@ echo "All Real-Enhanced Detection Experiments Completed!"
 echo "========================================"
 echo ""
 echo "Execution Summary:"
-echo "  - Total configurations: $total_configs (2 methods × 3 prompts × 2 strategies × 3 counts)"
+echo "  - Total configurations: $total_configs (2 methods × 3 prompts × 1 strategy × 3 counts)"
+echo "  - Strategy: cross_group only (best performance)"
 echo "  - Skipped (existing): $skipped_configs"
 echo "  - Parallel jobs: $MAX_PARALLEL_JOBS"
 echo "  - Total time: ${HOURS}h ${MINUTES}m ${SECONDS}s"
