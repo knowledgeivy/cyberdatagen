@@ -29,21 +29,14 @@
 2. **实验设计细节**:
    - Training set: Real ham (900) + Real spam (0%, 50%, 100% of 100 spam)
    - Test set: Real ham (900) + Synthetic spam (100% LLM generated)
-   - 需要测试哪些LLM? GPT and Claude both?
-   - 需要测试哪些prompt? Original, Strong, Weak?
-   - 需要测试哪些mixing strategy? Within-group, Cross-group?
+   - 需要测试哪些LLM? GPT and Claude both? Both
+   - 需要测试哪些prompt? Original, Strong, Weak? all three prompts
+   - 需要测试哪些mixing strategy? No need for mixing strategy here
 
 3. **计算量评估**:
-   - 如果测试 2 models × 3 prompts × 2 strategies × 3 ratios × 20 groups × 2 classifiers = 1,440 experiments
-   - 这与当前的cross-model reverse detection规模相同
+   - 如果测试 2 models × 3 prompts × 3 ratios × 20 groups × 2 classifiers = 720 experiments
 
-**建议行动**:
-- [ ] 与co-author明确实验目的和研究问题
-- [ ] 确定实验参数组合(是否需要所有组合)
-- [ ] 评估是否有足够时间和计算资源
-- [ ] 如果做,需要更新paper的experiment design和evaluation sections
-
-**优先级**: HIGH (需要尽快确认是否要做这个实验)
+**优先级**: HIGH
 
 ---
 
