@@ -455,9 +455,9 @@ def main():
         '--classifiers',
         type=str,
         nargs='+',
-        default=['svm', 'random_forest'],
+        default=['svm'],
         choices=['svm', 'random_forest'],
-        help='Classifiers to run (default: both)'
+        help='Classifiers to run (default: svm only)'
     )
     parser.add_argument(
         '--config',

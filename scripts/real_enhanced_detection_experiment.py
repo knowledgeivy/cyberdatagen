@@ -3,7 +3,7 @@
 Real-Enhanced Detection Experiment
 Evaluates whether increasing real spam training data improves synthetic spam detection
 
-Training: Real ham (900) + Real spam (100, 200, or 300 samples)
+Training: Real ham (900) + Real spam (100, 150, or 200 samples)
 Testing: Real ham (900) + Synthetic spam (100% from target LLM)
 """
 
@@ -92,7 +92,7 @@ class RealEnhancedDetectionExperiment:
         Args:
             strategy: 'within_group' or 'cross_group'
             group_id: Current group ID (to exclude)
-            count: Total number of real spam samples needed (200 or 300)
+            count: Total number of real spam samples needed (150 or 200)
             trial: Trial number
 
         Returns:
@@ -150,7 +150,7 @@ class RealEnhancedDetectionExperiment:
 
         Args:
             baseline_train: Baseline real training data
-            real_spam_count: Number of real spam samples (100, 200, or 300)
+            real_spam_count: Number of real spam samples (100, 150, or 200)
             strategy: Mixing strategy
             group_id: Group ID
             trial: Trial number
@@ -166,7 +166,7 @@ class RealEnhancedDetectionExperiment:
             real_spam = baseline_real_spam
             logger.info(f"Training set (100 spam): {len(real_spam)} real spam (baseline)")
 
-        elif real_spam_count == 200 or real_spam_count == 300:
+        elif real_spam_count == 150 or real_spam_count == 200:
             # Load additional real spam from broader corpus
             additional_spam = self.load_additional_real_spam(
                 strategy, group_id, real_spam_count, trial
@@ -175,7 +175,7 @@ class RealEnhancedDetectionExperiment:
             logger.info(f"Training set ({real_spam_count} spam): {len(real_spam)} real spam (from broader corpus)")
 
         else:
-            raise ValueError(f"Invalid real_spam_count: {real_spam_count}. Must be 100, 200, or 300")
+            raise ValueError(f"Invalid real_spam_count: {real_spam_count}. Must be 100, 150, or 200")
 
         # Combine spam and ham
         train_set = pd.concat([real_spam, real_ham], ignore_index=True)
@@ -328,7 +328,7 @@ class RealEnhancedDetectionExperiment:
             testing_method: Target model for testing ('gpt41mini' or 'claude35haiku')
             testing_prompt: Prompt strategy for testing
             testing_strategy: Mixing strategy for testing
-            real_spam_count: Number of real spam samples in training (100, 200, or 300)
+            real_spam_count: Number of real spam samples in training (100, 150, or 200)
             group_id: Group ID
             classifiers: List of classifier types
             trial: Trial number (default 0)
@@ -441,8 +441,8 @@ def main():
         '--real_spam_count',
         type=int,
         required=True,
-        choices=[100, 200, 300],
-        help='Number of real spam samples in training (100, 200, or 300)'
+        choices=[100, 150, 200],
+        help='Number of real spam samples in training (100, 150, or 200)'
     )
     parser.add_argument(
         '--group_id',
@@ -459,9 +459,9 @@ def main():
         '--classifiers',
         type=str,
         nargs='+',
-        default=['svm', 'random_forest'],
+        default=['svm'],
         choices=['svm', 'random_forest'],
-        help='Classifiers to run (default: both)'
+        help='Classifiers to run (default: svm only)'
     )
     parser.add_argument(
         '--config',

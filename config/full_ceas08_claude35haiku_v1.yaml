@@ -136,14 +136,14 @@ classifiers:
     name: "Support Vector Machine"
     enabled: true
     params:
-      C: 1.0
-      kernel: "rbf"
+      C: 0.1
+      kernel: "linear"
       class_weight: "balanced"  # Handle class imbalance
       random_state: 42
 
   random_forest:
     name: "Random Forest"
-    enabled: true
+    enabled: false  # Disabled - only running SVM experiments
     params:
       n_estimators: 100
       max_depth: 10

@@ -80,7 +80,6 @@ for PROMPT in original strong weak; do
                     --testing_strategy $STRATEGY \
                     --training_ratio $RATIO \
                     --config $CONFIG_GPT \
-                    --classifiers svm random_forest \
                     --output_dir $OUTPUT_DIR \
                     > "$LOG_FILE" 2>&1
 
@@ -129,7 +128,6 @@ for PROMPT in original strong weak; do
                     --testing_strategy $STRATEGY \
                     --training_ratio $RATIO \
                     --config $CONFIG_CLAUDE \
-                    --classifiers svm random_forest \
                     --output_dir $OUTPUT_DIR \
                     > "$LOG_FILE" 2>&1
 
