@@ -1,565 +1,200 @@
 \section{Appendices}
 \label{sec:appendix}
 
-This appendix provides supplementary technical details, mathematical formulations, and additional experimental results that support the main findings presented in the paper.
+\subsection{LLM Configuration and Costs}
+\label{appendix:llm_config}
 
-\subsection{Performance Metrics: Mathematical Definitions}
-\label{appendix:metrics}
-
-We employ a comprehensive suite of classification performance metrics to evaluate synthetic data effectiveness. All metrics are computed on the fixed out-of-sample test set, where $TP$ (True Positives), $TN$ (True Negatives), $FP$ (False Positives), and $FN$ (False Negatives) represent counts from the confusion matrix.
-
-\subsubsection{Primary Classification Metrics}
-
-\paragraph{Accuracy} Overall classification correctness across both classes:
-\begin{equation}
-\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
-\end{equation}
-
-\paragraph{Precision} Proportion of predicted spam that is truly spam, measuring false positive control:
-\begin{equation}
-\text{Precision} = \frac{TP}{TP + FP}
-\end{equation}
-
-\paragraph{Recall} Proportion of actual spam correctly identified, measuring detection sensitivity:
-\begin{equation}
-\text{Recall} = \frac{TP}{TP + FN}
-\end{equation}
-
-\paragraph{F1-Score} Harmonic mean of precision and recall, providing balanced assessment under class imbalance:
-\begin{equation}
-\text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
-\end{equation}
-
-The F1-score serves as our primary performance metric due to its balanced treatment of precision and recall, particularly important given the 10\% spam class imbalance in our experimental design.
-
-\paragraph{Specificity} True negative rate measuring correct identification of legitimate emails:
-\begin{equation}
-\text{Specificity} = \frac{TN}{TN + FP}
-\end{equation}
-
-\paragraph{Matthews Correlation Coefficient (MCC)} Balanced measure considering all confusion matrix elements, robust to class imbalance:
-\begin{equation}
-\text{MCC} = \frac{TP \cdot TN - FP \cdot FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}
-\end{equation}
-
-MCC ranges from -1 (total disagreement) to +1 (perfect prediction), with 0 indicating random performance.
-
-\subsubsection{Threshold-Independent Metrics}
-
-\paragraph{AUC-ROC} Area under the Receiver Operating Characteristic curve, measuring discrimination ability across all classification thresholds. The ROC curve plots True Positive Rate (TPR = Recall) against False Positive Rate (FPR = 1 - Specificity) at varying decision thresholds. AUC-ROC = 1.0 indicates perfect discrimination, while 0.5 indicates random performance.
-
-\paragraph{AUC-PR} Area under the Precision-Recall curve, particularly informative for imbalanced datasets where positive class prevalence is low. AUC-PR emphasizes performance on the minority class (spam) more than AUC-ROC.
-
-\subsection{Statistical Analysis: Detailed Formulations}
-\label{appendix:statistics}
-
-\subsubsection{Confidence Interval Calculation}
-
-For each experimental configuration, we compute 95\% confidence intervals using the t-distribution:
-\begin{equation}
-CI_{95\%} = \mu \pm t_{0.025, R-1} \cdot \frac{\sigma}{\sqrt{R}}
-\end{equation}
-where $\mu$ is the sample mean across $R = 20$ groups, $\sigma$ is the sample standard deviation, and $t_{0.025, R-1}$ is the critical value from Student's t-distribution with 19 degrees of freedom. For large sample sizes, $t_{0.025, 19} \approx 1.96$.
-
-\subsubsection{Effect Size: Cohen's d}
-
-Cohen's $d$ standardized effect size quantifies the magnitude of performance differences in standard deviation units:
-\begin{equation}
-d = \frac{\mu_{\text{baseline}} - \mu_{\text{ratio}}}{\sigma_{\text{pooled}}}
-\end{equation}
-where the pooled standard deviation is:
-\begin{equation}
-\sigma_{\text{pooled}} = \sqrt{\frac{(R-1)\sigma_{\text{baseline}}^2 + (R-1)\sigma_{\text{ratio}}^2}{2R - 2}}
-\end{equation}
-
-Effect size interpretation follows Cohen's conventional guidelines:
-\begin{itemize}
-    \item Negligible: $|d| < 0.2$
-    \item Small: $0.2 \leq |d| < 0.5$
-    \item Medium: $0.5 \leq |d| < 0.8$
-    \item Large: $|d| \geq 0.8$
-\end{itemize}
-
-\subsubsection{Sensitivity Regression Analysis}
-
-Linear regression models performance as a function of synthetic proportion:
-\begin{equation}
-\text{Performance}_i = \beta_0 + \beta_1 \cdot \theta_i + \epsilon_i
-\end{equation}
-where $\theta_i \in \{0, 10, 20, ..., 100\}$ is the synthetic ratio (in percentage), $\beta_0$ is the intercept (estimated baseline performance), $\beta_1$ is the slope (sensitivity coefficient), and $\epsilon_i$ is the residual error.
-
-The coefficient of determination $R^2$ quantifies goodness of fit:
-\begin{equation}
-R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}
-\end{equation}
-where $y_i$ is the observed performance, $\hat{y}_i$ is the predicted performance, and $\bar{y}$ is the mean performance. High $R^2$ ($> 0.9$) indicates strong linear relationship, while low $R^2$ ($< 0.7$) suggests non-linear patterns or threshold effects.
-
-\subsection{Experimental Configuration Details}
-\label{appendix:config}
-
-\subsubsection{Classifier Hyperparameters}
+\subsubsection{Complete LLM API Configurations}
 
 \begin{table}[h]
 \centering
-\caption{Classifier Hyperparameter Configurations}
-\label{tab:hyperparameters}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lp{8cm}}
+\caption{Complete LLM Generation Parameters}
+\label{tab:llm_config_full}
+\begin{tabular}{lcc}
 \toprule
-\textbf{Classifier} & \textbf{Configuration} \\
+\textbf{Parameter} & \textbf{GPT-4.1-mini} & \textbf{Claude-3.5-Haiku} \\
 \midrule
-SVM & kernel='rbf', C=1.0, gamma='scale', random\_state=42, max\_iter=-1 \\
+API endpoint & gpt-4.1-mini-2024-04-14 & claude-3-5-haiku-20241022 \\
+Temperature & 0.7 & 0.7 \\
+Max tokens & 1,000 & 1,000 \\
+Top-p & 1.0 & 1.0 \\
+Top-k & N/A & Default \\
+Frequency penalty & 0.0 & N/A \\
+Presence penalty & 0.0 & N/A \\
+Response format & JSON object & JSON mode \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Cost Comparison}
+\label{appendix:costs}
+
+\begin{table}[h]
+\centering
+\caption{LLM Cost Analysis and Comparison}
+\label{tab:llm_costs}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Input Cost} & \textbf{Output Cost} & \textbf{Avg. Email Cost} \\
 \midrule
-Random Forest & n\_estimators=100, max\_depth=10, min\_samples\_split=5, min\_samples\_leaf=2, class\_weight='balanced', random\_state=42 \\
+GPT-4.1-mini & \$0.150 / 1M tokens & \$0.600 / 1M tokens & \$0.0003 \\
+Claude-3.5-Haiku & \$0.250 / 1M tokens & \$1.250 / 1M tokens & \$0.0005 \\
+\midrule
+\textbf{This Study} & \multicolumn{3}{c}{} \\
+GPT-4.1-mini (6,000 emails) & & & \$1.80 \\
+Claude-3.5-Haiku (6,000 emails) & & & \$1.50 \\
+\textbf{Total cost} & & & \textbf{\$3.30} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both models provide optimal cost-performance trade-offs for spam generation: sufficient context windows (GPT: 128K, Claude: 200K), low per-token costs compared to flagship models (GPT-4: 10× more expensive, Claude Opus: 15× more expensive), and state-of-the-art generation quality. For large-scale spam campaigns, these models represent economically viable choices balancing quality and operational costs.
+
+\subsection{Classifier Hyperparameter Optimization}
+\label{appendix:hyperparameters}
+
+\begin{table}[h]
+\centering
+\caption{Grid Search Results and Final Hyperparameter Configurations}
+\label{tab:hyperparameter_grid}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{llcc}
+\toprule
+\textbf{Classifier} & \textbf{Parameter} & \textbf{Search Range} & \textbf{Optimal Value} \\
+\midrule
+\multirow{3}{*}{SVM} & C & \{0.1, 1.0, 10.0\} & 1.0 \\
+& Kernel & \{linear, rbf\} & linear \\
+& Class weight & \{None, balanced\} & balanced \\
+\midrule
+\multirow{5}{*}{Random Forest} & n\_estimators & \{50, 100, 200\} & 100 \\
+& max\_depth & \{5, 10, 20, None\} & 10 \\
+& min\_samples\_split & \{2, 5\} & 5 \\
+& min\_samples\_leaf & \{1, 2\} & 2 \\
+& Class weight & \{None, balanced\} & balanced \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-All hyperparameters remain constant across all 1,320 experimental configurations, isolating synthetic data impact from model configuration effects.
+Hyperparameters are optimized through 5-fold stratified cross-validation on baseline configuration (Group 0, 0\% synthetic, original prompt), using F1-score as optimization metric. Key finding: SVM linear kernel substantially outperforms RBF (F1 = 0.825 vs 0.48-0.61) for high-dimensional sparse TF-IDF features; Random Forest exhibits remarkable parameter robustness (F1 range 0.886-0.917, $<$3\% variation across all configurations).
 
-\subsubsection{Feature Extraction Configuration}
+\subsection{Feature Extraction Configuration}
+\label{appendix:feature_config}
 
 \begin{table}[h]
 \centering
 \caption{TF-IDF Feature Extraction Parameters}
-\label{tab:tfidf_config}
+\label{tab:feature_config}
 \begin{tabular}{ll}
 \toprule
 \textbf{Parameter} & \textbf{Value} \\
 \midrule
-Maximum features & 10,000 \\
-N-gram range & (1, 2) - unigrams and bigrams \\
-Stop words & English standard list \\
-Lowercase normalization & Enabled \\
-Token pattern & Alphanumeric \\
-Min document frequency & 2 \\
-Max document frequency & 0.95 \\
+max\_features & 10,000 \\
+ngram\_range & (1, 2) - unigrams + bigrams \\
+stop\_words & English standard list \\
+lowercase & True \\
+min\_df & 2 (minimum document frequency) \\
+max\_df & 0.95 (maximum document frequency) \\
+sublinear\_tf & True (log scaling) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsubsection{LLM Generation Configuration}
+Vectorizer fits exclusively on training data; identical transformation applies to test data to prevent information leakage. Configuration captures word-level and phrase-level patterns while limiting dimensionality for computational efficiency.
 
-\begin{table}[h]
-\centering
-\caption{GPT-4.1-mini Generation Configuration}
-\label{tab:llm_config}
-\begin{tabular}{ll}
-\toprule
-\textbf{Parameter} & \textbf{Value} \\
-\midrule
-Model & gpt-4.1-mini \\
-Temperature & 0.7 \\
-Max tokens & 1,000 \\
-Top-p & 1.0 \\
-Frequency penalty & 0.0 \\
-Presence penalty & 0.0 \\
-Response format & JSON object \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Prompt Engineering Templates}
+\subsection{Prompt Templates}
 \label{appendix:prompts}
 
-\begin{table}[h]
-\centering
-\caption{Prompt Strategy Templates for Synthetic Spam Generation}
-\label{tab:prompt_templates}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lp{8cm}}
-\toprule
-\textbf{Strategy} & \textbf{Prompt Template} \\
-\midrule
-Original & "Rewrite the following spam email while preserving its malicious intent and semantic content. Maintain the essential spam characteristics while varying expression. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
-\midrule
-Strong & "Rewrite the following spam email by amplifying spam characteristics. Emphasize obvious spam indicators, promotional language, and suspicious elements while maintaining coherent structure. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
-\midrule
-Weak & "Rewrite the following spam email using subtle language while preserving underlying intent. Make spam indicators less obvious and use more legitimate-appearing phrasing. Output JSON format with 'rewritten\_content' field. Email: [SEED\_CONTENT]" \\
-\bottomrule
-\end{tabular}
+Complete prompt templates for synthetic spam generation across three systematically varied strategies:
+
+\subsubsection{Original Strategy Prompt}
+
+\begin{verbatim}
+You are an expert email content analyzer. Given the following
+spam email, generate a semantically similar but lexically
+distinct spam variant.
+
+Instructions: Faithfully reproduce the spam characteristics
+including urgency signals, persuasive elements, and social
+engineering tactics. Introduce natural lexical variation while
+maintaining semantic similarity and malicious intent.
+
+Original Email:
+{original_spam_content}
+
+Output Format (JSON):
+{
+  "subject": "generated subject line",
+  "body": "generated email body"
 }
-\end{table}
+\end{verbatim}
 
-All prompts follow consistent JSON output formatting to ensure reliable parsing and integration into the experimental pipeline.
+\subsubsection{Strong Strategy Prompt}
 
-\subsection{Supplementary Performance Results}
-\label{appendix:results}
+\begin{verbatim}
+You are an expert email content analyzer. Given the following
+spam email, generate a semantically similar but lexically
+distinct spam variant.
 
-\subsubsection{Complete Performance Metrics: Original Prompt, Within-Group Strategy}
+Instructions: Amplify spam indicators by emphasizing urgency
+signals (limited time, immediate action required), persuasive
+elements (too-good-to-be-true offers, authority figures), and
+social engineering tactics (credential requests, fake
+notifications). Make the spam characteristics more explicit
+and prominent.
 
-\begin{table}[h]
-\centering
-\caption{Precision Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
-\label{tab:precision_original_within}
-\begin{tabular}{ccc}
-\toprule
-\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
-\midrule
-0\% & 0.589 ± 0.032 & 0.741 ± 0.048 \\
-10\% & 0.581 ± 0.034 & 0.732 ± 0.049 \\
-20\% & 0.571 ± 0.035 & 0.728 ± 0.047 \\
-30\% & 0.559 ± 0.036 & 0.730 ± 0.048 \\
-40\% & 0.546 ± 0.039 & 0.727 ± 0.046 \\
-50\% & 0.530 ± 0.040 & 0.728 ± 0.047 \\
-60\% & 0.513 ± 0.046 & 0.726 ± 0.046 \\
-70\% & 0.496 ± 0.047 & 0.725 ± 0.043 \\
-80\% & 0.481 ± 0.046 & 0.723 ± 0.046 \\
-90\% & 0.466 ± 0.051 & 0.721 ± 0.042 \\
-100\% & 0.446 ± 0.046 & 0.724 ± 0.040 \\
-\bottomrule
-\end{tabular}
-\end{table}
+Original Email:
+{original_spam_content}
 
-\begin{table}[h]
-\centering
-\caption{Recall Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
-\label{tab:recall_original_within}
-\begin{tabular}{ccc}
-\toprule
-\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
-\midrule
-0\% & 0.671 ± 0.035 & 0.857 ± 0.047 \\
-10\% & 0.660 ± 0.036 & 0.849 ± 0.048 \\
-20\% & 0.649 ± 0.037 & 0.842 ± 0.046 \\
-30\% & 0.635 ± 0.038 & 0.844 ± 0.047 \\
-40\% & 0.622 ± 0.041 & 0.841 ± 0.045 \\
-50\% & 0.604 ± 0.042 & 0.842 ± 0.046 \\
-60\% & 0.585 ± 0.048 & 0.840 ± 0.045 \\
-70\% & 0.566 ± 0.049 & 0.839 ± 0.042 \\
-80\% & 0.549 ± 0.048 & 0.837 ± 0.045 \\
-90\% & 0.532 ± 0.053 & 0.835 ± 0.041 \\
-100\% & 0.510 ± 0.048 & 0.838 ± 0.039 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h]
-\centering
-\caption{AUC-ROC Performance Across Synthetic Ratios (Original Prompt, Within-Group)}
-\label{tab:aucroc_original_within}
-\begin{tabular}{ccc}
-\toprule
-\textbf{Synthetic Ratio} & \textbf{SVM} & \textbf{Random Forest} \\
-\midrule
-0\% & 0.823 ± 0.021 & 0.918 ± 0.029 \\
-10\% & 0.816 ± 0.022 & 0.912 ± 0.030 \\
-20\% & 0.809 ± 0.023 & 0.908 ± 0.029 \\
-30\% & 0.799 ± 0.024 & 0.910 ± 0.030 \\
-40\% & 0.788 ± 0.026 & 0.907 ± 0.028 \\
-50\% & 0.774 ± 0.027 & 0.908 ± 0.029 \\
-60\% & 0.759 ± 0.031 & 0.906 ± 0.028 \\
-70\% & 0.744 ± 0.032 & 0.905 ± 0.027 \\
-80\% & 0.730 ± 0.031 & 0.903 ± 0.028 \\
-90\% & 0.716 ± 0.035 & 0.901 ± 0.026 \\
-100\% & 0.698 ± 0.031 & 0.904 ± 0.025 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-These supplementary tables demonstrate that the performance degradation patterns observed for F1-score (primary metric) generalize consistently across all evaluation metrics. Random Forest maintains superior robustness across precision, recall, and AUC-ROC, while SVM exhibits linear degradation in all metrics.
-
-\subsubsection{Cross-Prompt Strategy Comparison at 50\% Synthetic Ratio}
-
-\begin{table}[h]
-\centering
-\caption{All Metrics Comparison Across Prompt Strategies at 50\% Synthetic (Within-Group)}
-\label{tab:all_metrics_50pct}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Metric} & \multicolumn{3}{c}{\textbf{SVM}} & \multicolumn{3}{c}{\textbf{Random Forest}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-& Original & Strong & Weak & Original & Strong & Weak \\
-\midrule
-F1-Score & 0.565 & 0.564 & 0.562 & 0.780 & 0.782 & 0.782 \\
-Precision & 0.530 & 0.529 & 0.527 & 0.728 & 0.730 & 0.730 \\
-Recall & 0.604 & 0.603 & 0.601 & 0.842 & 0.844 & 0.844 \\
-AUC-ROC & 0.774 & 0.773 & 0.771 & 0.908 & 0.910 & 0.910 \\
-Accuracy & 0.847 & 0.846 & 0.845 & 0.917 & 0.918 & 0.918 \\
-Specificity & 0.869 & 0.868 & 0.867 & 0.931 & 0.932 & 0.932 \\
-MCC & 0.476 & 0.475 & 0.473 & 0.702 & 0.704 & 0.704 \\
-\bottomrule
-\end{tabular}
+Output Format (JSON):
+{
+  "subject": "generated subject line",
+  "body": "generated email body"
 }
-\end{table}
+\end{verbatim}
 
-The minimal variation across prompt strategies (range $< 0.003$ for all metrics) demonstrates that generation instruction intensity has negligible impact compared to other experimental factors. This finding holds consistently across all performance metrics, not just F1-score.
+\subsubsection{Weak Strategy Prompt}
 
-\subsubsection{Dataset Composition and Sampling Details}
+\begin{verbatim}
+You are an expert email content analyzer. Given the following
+spam email, generate a semantically similar but lexically
+distinct spam variant.
 
-\begin{table}[h]
-\centering
-\caption{Experimental Dataset Composition per Group}
-\label{tab:dataset_composition}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Component} & \textbf{Count} & \textbf{Proportion} \\
-\midrule
-\multicolumn{3}{l}{\textit{Training Set (per group)}} \\
-Real spam samples & 100 & 10\% \\
-Real legitimate samples & 900 & 90\% \\
-Total real training & 1,000 & 100\% \\
-\midrule
-\multicolumn{3}{l}{\textit{Synthetic Augmentation (variable)}} \\
-Synthetic spam (0\% ratio) & 0 & 0\% replacement \\
-Synthetic spam (50\% ratio) & 50 & 50\% replacement \\
-Synthetic spam (100\% ratio) & 100 & 100\% replacement \\
-\midrule
-\multicolumn{3}{l}{\textit{Fixed Test Set (shared across all experiments)}} \\
-Total test samples & 7,831 & 20\% of CEAS-08 \\
-Test spam & 4,368 & 55.8\% \\
-Test legitimate & 3,463 & 44.2\% \\
-\bottomrule
-\end{tabular}
-\end{table}
+Instructions: Generate subtle spam with reduced explicit
+indicators. Create content that appears more legitimate while
+retaining underlying spam nature. Use professional language
+and minimize obvious urgency signals, making the spam more
+difficult to detect.
 
-The stratified sampling design ensures consistent 10\% spam ratio in training sets across all 20 groups, while the fixed test set maintains the original CEAS-08 class distribution for realistic evaluation.
+Original Email:
+{original_spam_content}
 
-\subsection{SMOTE Baseline Configuration}
-\label{appendix:smote_config}
-
-\subsubsection{SMOTE Algorithm Parameters}
-
-\begin{table}[h]
-\centering
-\caption{SMOTE Generation Configuration}
-\label{tab:smote_config}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{ll}
-\toprule
-\textbf{Parameter} & \textbf{Value} \\
-\midrule
-Method & SMOTE (Synthetic Minority Over-sampling Technique) \\
-Sampling strategy & Auto (balance to majority class) \\
-k-neighbors & 5 (default) \\
-Random state & 42 (reproducibility) \\
-\midrule
-\multicolumn{2}{l}{\textit{Feature Extraction (must match LLM experiments)}} \\
-Vectorization & TF-IDF (identical to Table~\ref{tab:tfidf_config}) \\
-Max features & 10,000 \\
-N-gram range & (1, 2) \\
-Interpolation space & TF-IDF feature vectors (10,000-dimensional) \\
-\bottomrule
-\end{tabular}
+Output Format (JSON):
+{
+  "subject": "generated subject line",
+  "body": "generated email body"
 }
-\end{table}
+\end{verbatim}
 
-SMOTE operates entirely in TF-IDF feature space, generating synthetic spam samples via linear interpolation between existing minority class samples and their $k$ nearest neighbors. Unlike LLM methods that generate text and then extract features, SMOTE directly manipulates feature vectors, ensuring all synthetic samples lie within the convex hull of real spam features.
+All prompts follow consistent JSON-formatted template structure ensuring reliable parsing and automated integration into experimental pipeline. The \texttt{\{original\_spam\_content\}} placeholder is replaced with actual spam email text during generation.
 
-\subsubsection{SMOTE Implementation Verification}
+\subsection{Performance Metrics Definitions}
+\label{appendix:metrics}
 
-To ensure fair comparison with LLM methods, we verified baseline consistency:
+Classification performance metrics computed on fixed out-of-sample test set, where $TP$, $TN$, $FP$, $FN$ represent confusion matrix elements (True/False Positives/Negatives):
 
+\paragraph{F1-Score (Primary Metric):} Harmonic mean of precision and recall:
+\[
+\text{F1} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
+\]
+
+\paragraph{Supporting Metrics:}
 \begin{itemize}
-    \item \textbf{SVM Baseline}: SMOTE 0.627 vs GPT/Claude 0.627 (0.00\% difference)
-    \item \textbf{Random Forest Baseline}: SMOTE 0.788 vs GPT/Claude 0.793 (0.63\% difference)
-    \item \textbf{Identical preprocessing}: Same TF-IDF parameters, same StandardScaler for SVM
-    \item \textbf{Identical test set}: All methods evaluate on same 7,430 test samples
+    \item \textbf{Accuracy:} $(TP + TN) / (TP + TN + FP + FN)$
+    \item \textbf{Precision:} $TP / (TP + FP)$ - false positive control
+    \item \textbf{Recall:} $TP / (TP + FN)$ - detection sensitivity
+    \item \textbf{AUC-ROC:} Area under ROC curve, threshold-independent discrimination
+    \item \textbf{Balanced Accuracy:} $\frac{1}{2}\left(\frac{TP}{TP+FN} + \frac{TN}{TN+FP}\right)$ - class-imbalance robust
 \end{itemize}
 
-The near-perfect baseline alignment (mean difference 0.0002 across 20 groups) confirms implementation correctness and enables direct performance comparisons.
-
-\subsection{SMOTE Performance Variability: Complete Group-Level Analysis}
-\label{appendix:smote_variability}
-
-This section provides comprehensive group-by-group performance data supporting the distribution-dependent behavior analysis in Section~\ref{sec:evaluation} (Section 5.7) and theoretical interpretation in Section~\ref{sec:discussion} (Section 6.2).
-
-\subsubsection{Complete 20-Group Performance Breakdown}
-
-Table~\ref{tab:smote_all_groups} presents Random Forest F1-scores for all 20 experimental groups at baseline (0\%) and maximum synthetic (100\%) proportions, comparing SMOTE with GPT-4.1-mini to illustrate variance differences.
-
-\begin{table}[h]
-\centering
-\caption{Complete Group-Level Performance: SMOTE vs GPT-4.1-mini (Random Forest, Within-Group)}
-\label{tab:smote_all_groups}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{ccccccccc}
-\toprule
-& \multicolumn{4}{c}{\textbf{SMOTE}} & \multicolumn{4}{c}{\textbf{GPT-4.1-mini}} \\
-\cmidrule(lr){2-5} \cmidrule(lr){6-9}
-\textbf{Group} & \textbf{0\%} & \textbf{100\%} & \textbf{$\Delta$} & \textbf{Rel. \%} & \textbf{0\%} & \textbf{100\%} & \textbf{$\Delta$} & \textbf{Rel. \%} \\
-\midrule
-0 & 0.816 & 0.590 & -0.226 & -27.7 & 0.853 & 0.818 & -0.035 & -4.1 \\
-1 & 0.830 & 0.802 & -0.028 & -3.4 & 0.835 & 0.819 & -0.016 & -1.9 \\
-2 & 0.745 & 0.832 & +0.088 & +11.8 & 0.793 & 0.751 & -0.043 & -5.4 \\
-3 & 0.847 & 0.832 & -0.015 & -1.8 & 0.815 & 0.808 & -0.007 & -0.9 \\
-4 & 0.787 & 0.831 & +0.044 & +5.6 & 0.813 & 0.784 & -0.029 & -3.6 \\
-5 & 0.781 & 0.849 & +0.069 & +8.8 & 0.749 & 0.746 & -0.003 & -0.4 \\
-6 & 0.782 & 0.824 & +0.042 & +5.4 & 0.808 & 0.783 & -0.025 & -3.1 \\
-7 & 0.794 & 0.793 & -0.001 & -0.1 & 0.812 & 0.796 & -0.016 & -2.0 \\
-8 & 0.774 & 0.870 & +0.096 & +12.4 & 0.739 & 0.767 & +0.028 & +3.8 \\
-9 & 0.801 & 0.803 & +0.002 & +0.2 & 0.831 & 0.814 & -0.017 & -2.0 \\
-10 & 0.719 & 0.880 & +0.162 & +22.5 & 0.705 & 0.722 & +0.017 & +2.4 \\
-11 & 0.757 & 0.865 & +0.108 & +14.3 & 0.767 & 0.761 & -0.006 & -0.8 \\
-12 & 0.772 & 0.847 & +0.075 & +9.7 & 0.782 & 0.742 & -0.040 & -5.1 \\
-13 & 0.851 & 0.848 & -0.003 & -0.4 & 0.864 & 0.818 & -0.047 & -5.4 \\
-14 & 0.752 & 0.811 & +0.060 & +8.0 & 0.742 & 0.755 & +0.013 & +1.8 \\
-15 & 0.863 & 0.772 & -0.091 & -10.5 & 0.876 & 0.859 & -0.017 & -1.9 \\
-16 & 0.740 & 0.817 & +0.077 & +10.4 & 0.756 & 0.740 & -0.016 & -2.1 \\
-17 & 0.811 & 0.791 & -0.020 & -2.5 & 0.827 & 0.802 & -0.025 & -3.0 \\
-18 & 0.797 & 0.816 & +0.018 & +2.3 & 0.813 & 0.781 & -0.033 & -4.1 \\
-19 & 0.740 & 0.862 & +0.123 & +16.6 & 0.743 & 0.749 & +0.005 & +0.7 \\
-\midrule
-\textbf{Mean} & 0.788 & 0.817 & +0.029 & +3.7 & 0.796 & 0.781 & -0.016 & -2.0 \\
-\textbf{Std Dev} & 0.039 & 0.059 & 0.083 & 10.5 & 0.046 & 0.035 & 0.020 & 2.5 \\
-\midrule
-\multicolumn{5}{l}{\textit{Improvement Count: 13/20 (65\%)}} & \multicolumn{4}{l}{\textit{Improvement Count: 4/20 (20\%)}} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-\subsubsection{Variance Analysis and Distribution Patterns}
-
-The complete group-level data reveals striking differences in variability between SMOTE and LLM methods:
-
-\paragraph{SMOTE Variance Characteristics:}
-\begin{itemize}
-    \item Standard deviation of changes: $\pm$0.083 F1 points
-    \item Range of changes: -0.226 to +0.162 (-27.7\% to +22.5\%)
-    \item Coefficient of variation: $\sigma / |\mu| = 0.083 / 0.029 = 2.86$ (extremely high)
-    \item Bimodal distribution: 13 improvements, 7 degradations
-    \item Variance ratio vs GPT: 4.2× higher
-\end{itemize}
-
-\paragraph{GPT-4.1-mini Variance Characteristics:}
-\begin{itemize}
-    \item Standard deviation of changes: $\pm$0.020 F1 points
-    \item Range of changes: -0.047 to +0.028 (-5.4\% to +3.8\%)
-    \item Coefficient of variation: $\sigma / |\mu| = 0.020 / 0.016 = 1.25$ (moderate)
-    \item Unimodal distribution: Consistent modest degradation
-    \item Predictable behavior: No extreme outliers
-\end{itemize}
-
-\paragraph{Correlation Analysis:}
-
-We observe a negative correlation between baseline performance and SMOTE improvement ($r = -0.47$, $p = 0.036$):
-\begin{itemize}
-    \item \textbf{Low baseline groups} (F1 $< 0.75$): Mean improvement +9.8\% (Groups 2, 10, 11, 12, 14, 16, 19)
-    \item \textbf{High baseline groups} (F1 $> 0.82$): Mean degradation -5.9\% (Groups 0, 1, 13, 15)
-    \item \textbf{Medium baseline groups} (0.75 $\leq$ F1 $\leq 0.82$): Mixed results, mean +2.1\%
-\end{itemize}
-
-This correlation supports the distribution alignment hypothesis: groups with insufficient real data coverage (low baselines) benefit from SMOTE's interpolation, while groups with already-good coverage (high baselines) experience disruption from synthetic augmentation.
-
-\subsubsection{Comparison with Claude-3.5-Haiku}
-
-\begin{table}[h]
-\centering
-\caption{Variance Comparison: SMOTE vs Both LLM Methods (Random Forest, 100\% Synthetic)}
-\label{tab:variance_comparison}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lccc}
-\toprule
-\textbf{Metric} & \textbf{SMOTE} & \textbf{GPT-4.1-mini} & \textbf{Claude-3.5-Haiku} \\
-\midrule
-Mean F1 change & +0.029 & -0.016 & -0.013 \\
-Std deviation of changes & 0.083 & 0.020 & 0.024 \\
-Min change & -0.226 & -0.047 & -0.051 \\
-Max change & +0.162 & +0.028 & +0.035 \\
-Improvement ratio & 13/20 (65\%) & 4/20 (20\%) & 5/20 (25\%) \\
-\midrule
-Variance ratio vs SMOTE & 1.00× & 0.24× & 0.29× \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Both LLM methods demonstrate comparable low-variance behavior (0.24-0.29× SMOTE's variance), with Claude showing slightly higher variance than GPT but still 3.5× more stable than SMOTE. The consistent behavior across LLM methods suggests text-space generation provides inherent stability advantages over feature-space interpolation.
-
-\subsubsection{SVM Performance for Completeness}
-
-While the main text focuses on Random Forest due to its superior performance, Table~\ref{tab:smote_svm_groups} provides SVM results for completeness:
-
-\begin{table}[h]
-\centering
-\caption{SMOTE SVM Performance: Group-Level Summary (Within-Group)}
-\label{tab:smote_svm_groups}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Statistic} & \textbf{Baseline (0\%)} & \textbf{100\% Synthetic} & \textbf{Change} & \textbf{Relative} \\
-\midrule
-Mean & 0.627 & 0.506 & -0.121 & -19.3\% \\
-Std Dev & 0.027 & 0.027 & 0.032 & 5.1\% \\
-Min & 0.576 & 0.448 & -0.178 & -30.9\% \\
-Max & 0.682 & 0.558 & -0.067 & -9.8\% \\
-\midrule
-\multicolumn{5}{l}{\textit{All 20 groups show degradation (0/20 improvements)}} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Unlike Random Forest's bimodal distribution, SVM shows \emph{universal degradation} across all groups with SMOTE, confirming margin-based classifiers' fundamental incompatibility with feature-space interpolation methods. The variance for SVM (±0.032) is also lower than Random Forest's SMOTE variance (±0.083), indicating more predictable (but universally negative) behavior.
-
-\subsection{Computational Resources and Reproducibility}
-\label{appendix:reproducibility}
-
-\subsubsection{Experimental Infrastructure}
-
-All experiments were conducted on a standardized computational infrastructure:
-\begin{itemize}
-    \item \textbf{Operating System}: Ubuntu 20.04 LTS
-    \item \textbf{Python Version}: 3.9.7
-    \item \textbf{Key Libraries}: scikit-learn 1.0.2, pandas 1.3.5, numpy 1.21.5, scipy 1.7.3
-    \item \textbf{LLM API}: OpenAI GPT-4.1-mini via official Python client (openai 1.0.0)
-    \item \textbf{Hardware}: CPU-based training (no GPU required for SVM/Random Forest)
-\end{itemize}
-
-\subsubsection{Reproducibility Measures}
-
-To ensure complete reproducibility of our findings:
-\begin{itemize}
-    \item \textbf{Random Seed}: Fixed at 42 for all random processes (sampling, train-test split, classifier initialization)
-    \item \textbf{Deterministic Operations}: All operations use deterministic algorithms where available
-    \item \textbf{Version Control}: All code, configurations, and analysis scripts archived with version tags
-    \item \textbf{Data Availability}: CEAS-08 dataset publicly available; sampling indices and generated synthetic data archived
-    \item \textbf{Statistical Analysis Scripts}: All hypothesis tests, effect size calculations, and visualizations generated from reproducible Python scripts
-\end{itemize}
-
-\subsubsection{Computational Cost Estimation}
-
-\begin{table}[h]
-\centering
-\caption{Computational Cost Breakdown (Complete Study)}
-\label{tab:computational_cost}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lcc}
-\toprule
-\textbf{Operation} & \textbf{Count} & \textbf{Estimated Time} \\
-\midrule
-\multicolumn{3}{l}{\textit{LLM Experiments (GPT-4.1-mini + Claude-3.5-Haiku)}} \\
-LLM API calls (generation) & 6,000 & $\sim$12 hours \\
-TF-IDF feature extraction & 2,640 & $\sim$2 hours \\
-SVM training & 1,320 & $\sim$8 hours \\
-Random Forest training & 1,320 & $\sim$6 hours \\
-\midrule
-\multicolumn{3}{l}{\textit{SMOTE Baseline Experiments}} \\
-SMOTE generation (feature-space) & 440 & $\sim$30 minutes \\
-TF-IDF feature extraction & 440 & $\sim$20 minutes \\
-SVM training & 440 & $\sim$3 hours \\
-Random Forest training & 440 & $\sim$2 hours \\
-\midrule
-\multicolumn{3}{l}{\textit{Statistical Analysis and Visualization}} \\
-Hypothesis testing & 12,000+ tests & $\sim$1 hour \\
-Visualization generation & 100+ plots & $\sim$30 minutes \\
-\midrule
-\textbf{Total estimated} & \textbf{6,160 experiments} & $\sim$35 hours \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-The LLM generation phase dominates computational cost due to API latency. SMOTE generation is significantly faster ($<$1 hour vs 12 hours for LLMs) as it operates directly in feature space without API calls. All classifier training and statistical analysis can be completed in under 20 hours on standard CPU hardware, making the experimental framework accessible without specialized computational resources.
-
-\paragraph{Cost Efficiency Comparison:}
-\begin{itemize}
-    \item \textbf{LLM methods}: Higher generation cost (\$50-100 API fees), longer runtime (12 hours)
-    \item \textbf{SMOTE}: Minimal cost (no API fees), fast generation (30 minutes)
-    \item \textbf{Trade-off}: SMOTE saves 95\% generation time but sacrifices text interpretability
-\end{itemize}
-
-For the complete study (6,160 experiments across 3 methods), total computational cost remains under 40 hours on standard hardware, with LLM API fees representing the primary monetary cost ($\sim$\$150 total for GPT-4.1-mini and Claude-3.5-Haiku).
+F1-score serves as primary metric due to balanced treatment of precision and recall under 10\% class imbalance.
