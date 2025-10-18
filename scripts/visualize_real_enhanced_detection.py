@@ -179,7 +179,8 @@ def create_prompt_comparison_plots(plotting_data: dict, output_dir: str):
     for method, method_data in plotting_data.items():
         method_display = 'GPT-4.1-mini' if method == 'gpt41mini' else 'Claude-3.5-Haiku'
 
-        for strategy in ['within_group', 'cross_group']:
+        # Only generate cross_group plots (within_group experiments not run)
+        for strategy in ['cross_group']:
             logger.info(f"  {method} - {strategy}")
 
             # Create figure: 3 rows (prompts) x 5 cols (metrics)
@@ -301,7 +302,8 @@ def create_cross_method_comparison(plotting_data: dict, output_dir: str):
     logger.info("Creating cross-method comparison plots...")
 
     prompts = ['original', 'strong', 'weak']
-    strategies = ['within_group', 'cross_group']
+    # Only generate cross_group plots (within_group experiments not run)
+    strategies = ['cross_group']
     metrics = ['f1_score', 'accuracy']
 
     metric_labels = {
@@ -447,34 +449,48 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
     improvement_dir = os.path.join(output_dir, 'improvement')
     os.makedirs(improvement_dir, exist_ok=True)
 
-    # Plot 1: Heatmap of improvement (300 - 100)
+    # Plot 1: Heatmap of improvement (200 - 100)
     logger.info("  Creating improvement heatmap...")
 
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-
     methods = df['Method'].unique()
+    strategies = df['Strategy'].unique()
     prompts = ['original', 'strong', 'weak']
+
+    fig, axes = plt.subplots(len(methods), len(strategies), figsize=(8 * len(strategies), 6 * len(methods)))
+
+    # Handle single strategy case
+    if len(strategies) == 1:
+        axes = axes.reshape(-1, 1)
 
     for method_idx, method in enumerate(methods):
         method_display = 'GPT-4.1-mini' if method == 'gpt41mini' else 'Claude-3.5-Haiku'
 
-        for strategy_idx, strategy in enumerate(['within_group', 'cross_group']):
+        for strategy_idx, strategy in enumerate(strategies):
             ax = axes[method_idx, strategy_idx]
 
             # Filter data
             mask = (df['Method'] == method) & (df['Strategy'] == strategy)
             subset = df[mask]
 
+            if subset.empty:
+                ax.text(0.5, 0.5, f'No data for {method}-{strategy}',
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f'{method_display} - {strategy.replace("_", "-").title()}',
+                           fontsize=12, fontweight='bold')
+                continue
+
             # Create pivot table
             pivot_data = subset.pivot_table(
-                values='Improvement_300_Pct',
+                values='Improvement_200_Pct',
                 index='Classifier',
                 columns='Prompt',
                 aggfunc='mean'
             )
 
-            # Reorder columns
-            pivot_data = pivot_data[prompts]
+            # Reorder columns - only keep columns that exist
+            existing_prompts = [p for p in prompts if p in pivot_data.columns]
+            if existing_prompts:
+                pivot_data = pivot_data[existing_prompts]
 
             # Create heatmap
             sns.heatmap(
@@ -494,7 +510,7 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
             ax.set_xlabel('Prompt', fontsize=10)
             ax.set_ylabel('Classifier', fontsize=10)
 
-    fig.suptitle('Performance Improvement: Real Spam 100 → 300\n(F1-Score Percentage Change)',
+    fig.suptitle('Performance Improvement: Real Spam 100 → 200\n(F1-Score Percentage Change)',
                 fontsize=14, fontweight='bold')
 
     plt.tight_layout(rect=[0, 0, 1, 0.97])
@@ -512,12 +528,12 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
 
     # By classifier
     ax = axes[0]
-    avg_by_clf = df.groupby('Classifier')['Improvement_300_Pct'].mean().sort_values(ascending=False)
+    avg_by_clf = df.groupby('Classifier')['Improvement_200_Pct'].mean().sort_values(ascending=False)
     bars = ax.bar(range(len(avg_by_clf)), avg_by_clf.values, color=['#1f77b4', '#ff7f0e'])
     ax.set_xticks(range(len(avg_by_clf)))
     ax.set_xticklabels([c.replace('_', ' ').upper() for c in avg_by_clf.index], rotation=0)
     ax.set_ylabel('Average Improvement (%)', fontsize=11)
-    ax.set_title('Average Improvement by Classifier\n(100 → 300 Real Spam)', fontsize=12, fontweight='bold')
+    ax.set_title('Average Improvement by Classifier\n(100 → 200 Real Spam)', fontsize=12, fontweight='bold')
     ax.axhline(y=0, color='black', linestyle='--', linewidth=1)
     ax.grid(True, alpha=0.3, axis='y')
 
@@ -528,13 +544,13 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
 
     # By method
     ax = axes[1]
-    avg_by_method = df.groupby('Method')['Improvement_300_Pct'].mean().sort_values(ascending=False)
+    avg_by_method = df.groupby('Method')['Improvement_200_Pct'].mean().sort_values(ascending=False)
     method_labels = ['GPT-4.1-mini' if m == 'gpt41mini' else 'Claude-3.5-Haiku' for m in avg_by_method.index]
     bars = ax.bar(range(len(avg_by_method)), avg_by_method.values, color=['#2ca02c', '#d62728'])
     ax.set_xticks(range(len(avg_by_method)))
     ax.set_xticklabels(method_labels, rotation=0)
     ax.set_ylabel('Average Improvement (%)', fontsize=11)
-    ax.set_title('Average Improvement by Method\n(100 → 300 Real Spam)', fontsize=12, fontweight='bold')
+    ax.set_title('Average Improvement by Method\n(100 → 200 Real Spam)', fontsize=12, fontweight='bold')
     ax.axhline(y=0, color='black', linestyle='--', linewidth=1)
     ax.grid(True, alpha=0.3, axis='y')
 

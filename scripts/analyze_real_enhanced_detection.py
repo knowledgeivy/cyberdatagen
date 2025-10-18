@@ -263,13 +263,13 @@ def compute_improvement_analysis(statistics: Dict[str, Any]) -> Dict[str, Any]:
         method, prompt, strategy = key
 
         for clf_name, counts_data in classifiers.items():
-            if 100 in counts_data and 200 in counts_data and 300 in counts_data:
+            if 100 in counts_data and 150 in counts_data and 200 in counts_data:
                 baseline_f1 = counts_data[100]['f1_score']['mean']
+                count150_f1 = counts_data[150]['f1_score']['mean']
                 count200_f1 = counts_data[200]['f1_score']['mean']
-                count300_f1 = counts_data[300]['f1_score']['mean']
 
+                improvement_150 = count150_f1 - baseline_f1
                 improvement_200 = count200_f1 - baseline_f1
-                improvement_300 = count300_f1 - baseline_f1
 
                 improvement_key = f"{method}_{prompt}_{strategy}_{clf_name}"
                 improvement_data[improvement_key] = {
@@ -278,12 +278,12 @@ def compute_improvement_analysis(statistics: Dict[str, Any]) -> Dict[str, Any]:
                     'strategy': strategy,
                     'classifier': clf_name,
                     'baseline_f1': baseline_f1,
+                    'count150_f1': count150_f1,
                     'count200_f1': count200_f1,
-                    'count300_f1': count300_f1,
+                    'improvement_150': improvement_150,
                     'improvement_200': improvement_200,
-                    'improvement_300': improvement_300,
-                    'improvement_200_pct': (improvement_200 / baseline_f1) * 100 if baseline_f1 > 0 else 0,
-                    'improvement_300_pct': (improvement_300 / baseline_f1) * 100 if baseline_f1 > 0 else 0
+                    'improvement_150_pct': (improvement_150 / baseline_f1) * 100 if baseline_f1 > 0 else 0,
+                    'improvement_200_pct': (improvement_200 / baseline_f1) * 100 if baseline_f1 > 0 else 0
                 }
 
     return improvement_data
@@ -306,18 +306,18 @@ def create_improvement_table(improvement_data: Dict[str, Any], output_dir: str):
             'Strategy': data['strategy'],
             'Classifier': data['classifier'],
             'Baseline_F1': data['baseline_f1'],
+            'Count150_F1': data['count150_f1'],
             'Count200_F1': data['count200_f1'],
-            'Count300_F1': data['count300_f1'],
+            'Improvement_150': data['improvement_150'],
             'Improvement_200': data['improvement_200'],
-            'Improvement_300': data['improvement_300'],
-            'Improvement_200_Pct': data['improvement_200_pct'],
-            'Improvement_300_Pct': data['improvement_300_pct']
+            'Improvement_150_Pct': data['improvement_150_pct'],
+            'Improvement_200_Pct': data['improvement_200_pct']
         })
 
     df = pd.DataFrame(rows)
 
-    # Sort by improvement_300_pct descending
-    df = df.sort_values('Improvement_300_Pct', ascending=False)
+    # Sort by improvement_200_pct descending
+    df = df.sort_values('Improvement_200_Pct', ascending=False)
 
     improvement_csv = os.path.join(output_dir, 'real_enhanced_improvement_analysis.csv')
     df.to_csv(improvement_csv, index=False)
@@ -411,12 +411,12 @@ def main():
 
         # Display top improvements
         logger.info("\n" + "=" * 60)
-        logger.info("Top 10 Improvements (100 -> 300 spam count)")
+        logger.info("Top 10 Improvements (100 -> 200 spam count)")
         logger.info("=" * 60)
         for idx, row in improvement_df.head(10).iterrows():
             logger.info(f"{row['Method']:15s} {row['Prompt']:8s} {row['Strategy']:12s} {row['Classifier']:15s}: "
-                       f"F1 {row['Baseline_F1']:.4f} -> {row['Count300_F1']:.4f} "
-                       f"(+{row['Improvement_300_Pct']:.2f}%)")
+                       f"F1 {row['Baseline_F1']:.4f} -> {row['Count200_F1']:.4f} "
+                       f"(+{row['Improvement_200_Pct']:.2f}%)")
 
         logger.success("\nReal-enhanced detection analysis completed successfully!")
         logger.info(f"Results saved to: {args.output_dir}")
