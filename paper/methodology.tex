@@ -1,236 +1,186 @@
 \section{Methodology}
 \label{sec:methodology}
 
-\subsection{Research Motivation and Significance}
+\subsection{Framework Overview}
 
-The effectiveness of machine learning-based cybersecurity defenses fundamentally depends on training data quality and quantity. However, acquiring sufficient labeled cybersecurity data confronts persistent challenges: high annotation costs requiring domain expertise, severe class imbalance where malicious samples constitute small minorities, privacy concerns preventing cross-organizational data sharing, and temporal drift as attack patterns evolve faster than dataset collection cycles. These constraints create critical bottlenecks in developing robust detection systems, particularly for emerging threat variants with limited real-world examples.
+Our methodology implements a four-stage evaluation framework designed to rigorously assess synthetic spam data across generation quality, detection effectiveness, and cross-model generalization. Figure~\ref{fig:framework} illustrates the complete experimental pipeline from data preparation through statistical analysis.
 
-Large Language Models (LLMs) offer a transformative paradigm for addressing data scarcity in cybersecurity domains. Unlike traditional data augmentation methods operating in fixed feature spaces, LLMs generate semantically coherent text in the original input space, providing several unique capabilities:
-
-\begin{itemize}
-\item \textbf{Semantic Generation}: LLMs produce contextually appropriate content preserving linguistic coherence and domain-specific characteristics, generating samples exhibiting realistic patterns rather than artificial feature combinations.
-
-\item \textbf{Controllable Generation}: Prompt engineering enables systematic manipulation of generation parameters, allowing specification of desired characteristics and exploration of diverse threat scenarios without collecting new real-world samples.
-
-\item \textbf{Text-Space Augmentation}: By generating actual text rather than abstract feature vectors, LLM-produced samples support multiple downstream applications including adversarial testing, human review, and transfer learning across detection systems.
-
-\item \textbf{Rapid Adaptability}: LLM generation requires no manual annotation once initial prompts are designed, enabling adaptation to emerging patterns through prompt modifications rather than expensive data collection campaigns.
-\end{itemize}
-
-Despite these theoretical advantages, the practical utility of LLM-generated synthetic data for cybersecurity training remains empirically underexplored. Critical questions persist: Does synthetic data improve classification performance? How does effectiveness scale with varying synthetic proportions? Most fundamentally, \emph{do LLMs provide advantages over established augmentation methods?} This research addresses these questions through rigorous empirical comparison of neural text generation against traditional feature-space augmentation, establishing evidence-based guidance for synthetic data deployment in operational systems.
-
-\subsection{Data Augmentation Paradigms: Text-Space vs Feature-Space}
-
-To contextualize our LLM-based approach, we establish fundamental distinctions between neural text generation and traditional augmentation methods, focusing on SMOTE (Synthetic Minority Over-sampling Technique) as a widely-adopted baseline for imbalanced learning tasks.
-
-\subsubsection{Feature-Space Augmentation: SMOTE Baseline}
-
-SMOTE~\cite{chawla2002smote} addresses class imbalance through feature-space interpolation. After transforming text documents to TF-IDF feature vectors $\mathbf{x}_i \in \mathbb{R}^d$, SMOTE generates synthetic minority-class samples through linear interpolation between each sample and its $k$ nearest minority-class neighbors:
-
-\begin{equation}
-\mathbf{x}_{\text{synth}}^{\text{SMOTE}} = \mathbf{x}_i + \lambda \cdot (\mathbf{x}_j - \mathbf{x}_i), \quad \lambda \sim \text{Uniform}(0,1), \quad \mathbf{x}_j \in \mathcal{N}_k(\mathbf{x}_i)
-\end{equation}
-
-where $\mathcal{N}_k(\mathbf{x}_i)$ denotes the $k$ nearest neighbors. This convex-hull interpolation ensures all synthetic samples lie within the feature-space boundaries defined by real minority samples.
-
-\textbf{Critical Limitation:} The synthetic vector exists solely in feature space with \emph{no corresponding text representation}. Due to non-invertibility of feature extraction, these samples serve only immediate classification purposes and cannot support applications requiring actual text content. 
-
-\subsubsection{Text-Space Generation: LLM Approach}
-
-In contrast, LLM-based augmentation operates in the original text space. Given a real minority-class example $\text{doc}_i$, LLMs generate synthetic text through prompt-guided neural generation:
-
-\begin{equation}
-\text{doc}_{\text{synth}}^{\text{LLM}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta), \quad \mathbf{x}_{\text{synth}}^{\text{LLM}} = \phi(\text{doc}_{\text{synth}}^{\text{LLM}})
-\end{equation}
-
-where $\Theta$ represents learned parameters, strategy controls generation characteristics, and $\phi(\cdot)$ denotes feature extraction. \textbf{Key Distinction:} The synthetic sample exists as interpretable text \emph{before} vectorization, enabling human inspection, semantic validation, and reuse across multiple tasks rather than serving only immediate classification.
-
-\subsubsection{Formal Comparison}
-
-Table~\ref{tab:augmentation-comparison} formalizes the architectural differences. Both methods augment only the minority class while preserving majority-class samples, but differ fundamentally in synthetic sample representation.
-
-\begin{table}[h]
-\centering
-\caption{Formal Comparison of Augmentation Paradigms}
-\label{tab:augmentation-comparison}
-\small
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
-\toprule
-\textbf{Aspect} & \textbf{SMOTE} & \textbf{LLM} \\
-\midrule
-Operation space & Feature space $\mathbb{R}^d$ & Text space $\mathcal{T}$ \\
-Generation method & Linear interpolation & Neural generation \\
-Synthetic output & $\mathbf{x}_{\text{synth}} \in \mathbb{R}^d$ & $\text{doc}_{\text{synth}} \in \mathcal{T}$ \\
-Text representation & None (vector only) & Full text available \\
-Training data & $\{\phi(\text{real}), \mathbf{x}_{\text{synth}}^{\text{SMOTE}}\}$ & $\{\phi(\text{real}), \phi(\text{doc}_{\text{synth}}^{\text{LLM}})\}$ \\
-Downstream utility & Classification only & Multiple applications \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-This architectural distinction motivates our comparative evaluation: if LLMs achieve competitive classification performance while generating interpretable text, they provide strictly greater utility. Conversely, if SMOTE performs comparably at lower cost, practitioners gain quantitative cost-benefit guidance. Our empirical investigation provides evidence-based resolution to this practical decision problem.
-
-\begin{figure}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\linewidth]{pic/model_flowchart.png}
-    \caption{Framework Flowchart}
+    \includegraphics[width=\linewidth]{pic/model_flowchart.png}
+    \caption{Experimental framework for evaluating LLM-generated synthetic spam. The pipeline encompasses stratified sampling, controlled generation with multiple prompt strategies, systematic mixing under different strategies, and comprehensive statistical analysis across three experimental tracks.}
     \label{fig:framework}
 \end{figure}
 
-\subsection{Framework Overview}
+The framework consists of four sequential stages that collectively enable systematic evaluation of synthetic data utility:
 
-Our methodology presents a systematic framework for rigorously evaluating synthetic spam data across both neural text generation (LLMs) and traditional feature-space augmentation (SMOTE) paradigms through large-scale replication and comprehensive statistical analysis. The framework addresses fundamental challenges in synthetic cybersecurity data assessment: quantifying quality-performance relationships across augmentation methods, establishing statistical confidence in observed effects, and providing actionable guidance for operational deployment. As illustrated in Figure~\ref{fig:framework}, our approach integrates controlled generation, systematic mixing, and rigorous statistical evaluation to produce empirically grounded insights into synthetic data effectiveness while enabling direct comparison between text-space and feature-space augmentation approaches.
+\textbf{Stage 1: Stratified Data Preparation.} Partition the spam corpus into $R$ independent groups using stratified random sampling, with each group containing $N$ samples maintaining fixed spam ratio $\rho$. This design enables statistical replication while ensuring distributional balance across groups.
 
-Our framework encompasses four primary stages that collectively enable rigorous assessment of synthetic spam data utility:
+\textbf{Stage 2: Controlled Synthetic Generation.} Apply multiple LLMs with systematically varied prompt strategies to generate synthetic spam from real seed samples, exploring the generation parameter space through controlled manipulation of generation instructions.
 
-\begin{itemize}
-\item \textbf{Stratified Data Preparation}: Systematic partitioning of real spam corpus into independent experimental groups using stratified random sampling, ensuring statistical independence while maintaining representation of diverse spam patterns across all groups.
+\textbf{Stage 3: Systematic Mixing and Training.} Implement two fundamental mixing strategies (within-group and cross-group) across varying synthetic proportions $\theta \in [0, 1]$, training classifiers on mixed real-synthetic datasets under diverse distributional conditions.
 
-\item \textbf{Controlled Synthetic Generation}: Application of multiple generation paradigms (LLM text-space generation via prompt engineering, SMOTE feature-space interpolation) to systematically explore different augmentation approaches, enabling controlled investigation of paradigm-specific characteristics on data quality and downstream performance.
+\textbf{Stage 4: Statistical Evaluation.} Employ comprehensive statistical analysis including hypothesis testing with multiple comparison correction, effect size quantification, and performance degradation modeling to establish rigorous conclusions about synthetic data effectiveness.
 
-\item \textbf{Systematic Mixing and Training}: Implementation of two fundamental mixing strategies (within-group and cross-group) across varying synthetic proportions, combined with multiple classifier architectures to comprehensively evaluate synthetic data utility under diverse conditions.
+This modular design enables systematic investigation of each component's contribution to overall synthetic data quality and utility, with clear separation between data preparation, generation, experimental manipulation, and statistical inference.
 
-\item \textbf{Statistical Evaluation and Analysis}: Comprehensive assessment employing replicated measurements, hypothesis testing with multiple comparison correction, effect size quantification, and sensitivity analysis to establish statistically rigorous conclusions about synthetic data effectiveness.
-\end{itemize}
+\subsection{Data Sampling Design}
 
-This sequential approach ensures that each stage builds upon the previous one while maintaining clear separation of concerns, enabling systematic analysis of each component's contribution to overall synthetic data quality and utility.
+\subsubsection{Stratified Group Partitioning}
 
-\subsection{Theoretical Foundations and Design Rationale}
-
-The framework is grounded in four fundamental principles that address key challenges in synthetic cybersecurity data evaluation.
-
-\subsubsection{Statistical Replication for Robust Inference}
-
-Our adoption of replicated experimental design reflects statistical power analysis requirements for detecting practically meaningful effects. The required sample size $R$ (number of independent groups) is determined through power analysis:
+We employ stratified random sampling to partition the spam corpus into $R$ independent experimental groups. Each group $G_i$ ($i = 1, \ldots, R$) contains $N$ samples with fixed spam-to-ham ratio $\rho$:
 \begin{equation}
-\text{Power}(R, \delta, \alpha) = P(\text{reject } H_0 | H_1 \text{ true}) = f(R, \delta, \alpha, \sigma)
+G_i = \{(\mathbf{x}_j, y_j)\}_{j=1}^{N}, \quad |\{j : y_j = 1\}| = \lfloor \rho \cdot N \rfloor
 \end{equation}
-where $\delta$ is the minimum detectable effect size, $\alpha$ is the significance level, and $\sigma$ is the expected standard deviation. This design choice transforms synthetic data evaluation from exploratory single-point estimation to rigorous hypothesis testing with quantified uncertainty, enabling confident conclusions about synthetic data effectiveness across operational variability. The specific value of $R$ for our experiments is determined in Section~\ref{sec:experiment}.
+where $\mathbf{x}_j$ represents email features, $y_j \in \{0, 1\}$ denotes class labels (0=ham, 1=spam), and $\rho$ is the target spam proportion.
 
-The replication approach addresses a critical limitation in existing synthetic data research, where single-trial experiments cannot distinguish genuine treatment effects from random variation. By observing performance across $R$ independent groups, we can quantify both central tendency (mean performance) and dispersion (standard deviation, confidence intervals), providing complete characterization of synthetic data impact rather than point estimates that may be unrepresentative.
+This stratified design serves two critical functions:
 
-\subsubsection{Controlled Prompt Engineering for Systematic Exploration}
+\textbf{Statistical Independence.} Sampling without replacement ensures groups are statistically independent experimental units, satisfying the independence assumption required for parametric hypothesis testing and enabling valid application of t-tests and ANOVA.
 
-The three-strategy prompt design (original, strong, weak) reflects our hypothesis that generation instructions systematically influence synthetic data characteristics along an intensity continuum. Rather than arbitrary prompt selection, we deliberately vary instruction emphasis on spam features to explore the generation parameter space systematically. This approach enables us to test whether explicit amplification of malicious characteristics (strong prompts) improves training utility compared to faithful reproduction (original) or subtle generation (weak prompts).
+\textbf{Replication for Robust Inference.} Multiple independent groups enable calculation of performance variance, construction of confidence intervals, and hypothesis testing across experimental conditions. The required sample size $R$ is determined through statistical power analysis:
+\begin{equation}
+R \geq \frac{2(z_{\alpha/2} + z_{\beta})^2 \sigma^2}{\delta^2}
+\end{equation}
+where $\delta$ is the minimum detectable effect size, $\alpha$ is the significance level (type I error rate), $\beta$ is type II error rate, and $\sigma$ is the expected standard deviation across groups. Specific parameter values are determined through pilot experiments and specified in Section~\ref{sec:experiment}.
 
-The controlled variation design follows principles from experimental psychology and human-computer interaction, where systematic manipulation of independent variables enables causal inference about their effects. By varying only prompt intensity while holding other factors constant, we isolate the contribution of generation instructions to downstream classifier performance.
+\subsubsection{Training-Testing Split}
 
-\subsubsection{Distribution Matching Through Mixing Strategies}
+To eliminate test set variance as a confounding factor, we maintain a fixed test set across all experimental conditions. The test set, held out before any experimental manipulation, remains constant while training sets vary according to synthetic ratios and mixing strategies. This design ensures that observed performance differences reflect genuine treatment effects rather than evaluation artifacts arising from test set composition variability.
 
-Our within-group versus cross-group mixing strategies address fundamental questions about synthetic data generalization. The within-group strategy tests synthetic data effectiveness under ideal conditions where generated samples closely match the target training distribution, representing best-case scenarios where synthetic generation successfully captures local distributional characteristics.
+\subsection{Synthetic Data Generation}
 
-The cross-group strategy deliberately introduces distributional mismatch by sourcing synthetic samples from different spam groups, testing whether synthetic data provides value through diversity and coverage rather than precise distribution matching. This design enables us to distinguish between two competing hypotheses about synthetic data mechanisms: (1) effectiveness requires close distribution matching, versus (2) effectiveness derives from semantic diversity that improves generalization. Real-world deployment often cannot guarantee precise distribution matching, making cross-group performance critical for assessing practical utility.
+\subsubsection{LLM-Based Text Generation}
 
-\subsubsection{Multi-Architecture Evaluation for Generalizability}
+We employ Large Language Models to generate synthetic spam through prompt-guided neural generation. Given a real spam email $\text{doc}_i$ as a seed, the LLM produces a synthetic variant maintaining semantic similarity while introducing lexical and structural variation:
+\begin{equation}
+\text{doc}_{\text{synth}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta)
+\end{equation}
+where $\Theta$ represents learned model parameters and $\text{strategy}$ controls generation characteristics through prompt engineering.
 
-The inclusion of both Support Vector Machine (margin-based) and Random Forest (ensemble-based) classifiers addresses the concern that synthetic data effectiveness may be classifier-specific. Different classification architectures make fundamentally different assumptions about decision boundaries and data characteristics. SVMs construct optimal separating hyperplanes based on support vectors, potentially exhibiting sensitivity to distributional shifts in synthetic data. Random Forests aggregate multiple weak learners, potentially showing robustness to individual sample quality issues through ensemble averaging.
+Unlike traditional feature-space augmentation methods (e.g., SMOTE) that operate on vectorized representations, LLM generation produces actual text content before feature extraction. This text-space generation enables human inspection, semantic validation, and reuse across multiple downstream applications beyond immediate classification.
 
-By evaluating synthetic data impact across architecturally distinct classifiers, we can distinguish between universal synthetic data properties and architecture-specific sensitivities, providing guidance for selecting appropriate classifiers when incorporating synthetic training data.
+\subsubsection{Prompt Engineering Strategies}
 
-\subsection{Methodological Innovation}
+We design three systematically varied prompt strategies to explore how generation instructions influence synthetic data quality and downstream classifier performance:
 
-The framework introduces several methodological innovations that advance the state of synthetic data evaluation in cybersecurity contexts.
+\textbf{Original Strategy.} Instructs the LLM to faithfully reproduce spam characteristics while introducing natural lexical variation. Prompts emphasize maintaining semantic similarity and malicious intent of source emails without amplification or attenuation.
 
-\subsubsection{Large-Scale Replication for Statistical Rigor}
+\textbf{Strong Strategy.} Explicitly amplifies spam indicators by instructing the LLM to emphasize representative phishing characteristics. Generates samples with explicit urgency signals, persuasive elements, and social engineering techniques.
 
-Our $R = 20$ replication design represents, to our knowledge, the first application of large-scale statistical replication to synthetic cybersecurity data evaluation. Prior work typically reports single-trial results or limited replication ($R \leq 5$), providing insufficient statistical power for confident inference. Our design enables:
+\textbf{Weak Strategy.} Produces subtle spam with reduced explicit indicators, instructing the LLM to generate content that appears more legitimate while retaining underlying spam nature. Tests whether synthetic data with attenuated features impacts classifier effectiveness.
 
-\begin{itemize}
-    \item \textbf{Hypothesis testing with multiplicity control}: Application of False Discovery Rate correction to control type I error inflation across multiple comparisons, ensuring reported significant effects are unlikely to be spurious.
+This controlled three-point variation enables systematic investigation of prompt influence on generation quality. The hypothesis is that explicit instruction intensity (weak → original → strong) systematically affects synthetic data characteristics along a continuum. Complete prompt templates are specified in Section~\ref{sec:experiment} and Appendix~\ref{appendix:prompts}.
 
-    \item \textbf{Effect size quantification}: Calculation of Cohen's $d$ effect sizes to distinguish between statistically significant but practically negligible effects versus substantial impacts that warrant operational consideration.
+\subsection{Data Distribution Analysis}
+\label{sec:methodology:distribution_analysis}
 
-    \item \textbf{Confidence interval estimation}: Precise quantification of uncertainty in performance estimates, enabling risk-aware decision making about synthetic data deployment.
+\textbf{[PLACEHOLDER: PCA/Embeddings Analysis]}
 
-    \item \textbf{Sensitivity analysis}: Regression modeling of performance as a function of synthetic proportion, quantifying degradation rates and enabling performance prediction for arbitrary mixing ratios.
-\end{itemize}
+This section will present distributional analysis comparing LLM-generated synthetic spam versus real spam in high-dimensional embedding spaces. We employ dimensionality reduction techniques including Principal Component Analysis (PCA) and t-SNE to visualize whether synthetic data overlaps with or separates from real spam distributions. This analysis provides qualitative insights into generation quality before conducting classification experiments, revealing whether different LLMs and prompt strategies produce distributional alignment or divergence relative to real spam patterns.
 
-\subsubsection{Systematic Mixing Strategy Investigation}
+\textit{Content to be added: 2 visualization figures showing PCA/t-SNE projections of real vs synthetic spam embeddings for both LLM models.}
 
-The explicit comparison of within-group versus cross-group mixing strategies addresses a gap in existing research, which typically employs a single mixing approach without investigating alternatives. Our systematic investigation enables empirical answers to critical deployment questions: Can synthetic data from one source effectively augment training data from another source? Does precise distribution matching matter, or is semantic diversity sufficient? These questions directly impact operational decisions about synthetic data sourcing, transfer learning, and temporal adaptation.
+\subsection{Mixing Strategies}
 
-\subsubsection{Comprehensive Performance Degradation Characterization}
+We implement two fundamental mixing strategies that systematically vary the distributional relationship between training data and synthetic generation sources.
 
-Our sensitivity analysis framework, modeling classifier performance as a function of synthetic proportion through linear regression, provides quantitative degradation metrics that enable cost-benefit analysis. The regression slope ($\beta_1$) quantifies expected performance change per percentage point increase in synthetic data, while $R^2$ indicates whether degradation patterns are linear (enabling simple prediction) or non-linear (requiring more complex modeling). This framework transforms qualitative observations about synthetic data impact into quantitative relationships suitable for operational decision support.
+\subsubsection{Within-Group Mixing}
 
-\subsubsection{Systematic Paradigm Comparison}
+Within-group mixing combines real data from group $i$ with synthetic data generated from the \emph{same} group $i$. The training set for group $i$ is constructed as:
+\begin{equation}
+\text{Train}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_i^{(\theta)}
+\end{equation}
+where $\theta \in [0, 1]$ denotes the synthetic proportion, $\text{Real}_i^{(1-\theta)}$ represents a $(1-\theta)$ fraction of real samples from group $i$, and $\text{Synthetic}_i^{(\theta)}$ represents synthetic samples generated using real spam from group $i$ as seeds.
 
-Our framework establishes, to our knowledge, the first rigorous empirical comparison between neural text-space generation (LLMs) and traditional feature-space interpolation (SMOTE) for cybersecurity data augmentation. This paradigm comparison addresses a fundamental question: do neural methods' text interpretability and generation flexibility justify their computational costs compared to established feature-space approaches? By applying identical experimental protocols, statistical analyses, and evaluation metrics across both paradigms, we enable direct performance and reliability comparisons that isolate paradigm-specific characteristics from experimental artifacts. This systematic comparison provides evidence-based guidance for practitioners choosing between augmentation approaches based on operational requirements, computational constraints, and interpretability needs.
+This strategy represents ideal conditions where synthetic generation sources match the target training distribution, testing effectiveness under optimal distributional alignment. Within-group performance establishes an upper bound on synthetic data utility, representing best-case scenarios where generation successfully captures local distributional characteristics.
 
-\subsection{Evaluation Metrics Framework}
+\subsubsection{Cross-Group Mixing}
 
-Our methodology employs a comprehensive metrics suite that captures synthetic data effectiveness from multiple perspectives, enabling both immediate performance assessment and long-term optimization guidance.
+Cross-group mixing combines real data from group $i$ with synthetic data generated from a \emph{different} group $j \neq i$. The training set construction is:
+\begin{equation}
+\text{Train}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}
+\end{equation}
+where synthetic samples are sourced from a group different from the one providing real training data.
 
-\subsubsection{Classification Performance Metrics}
+This strategy deliberately introduces distributional mismatch between generation sources and training targets, testing whether synthetic data provides value through semantic diversity rather than precise distribution matching. Cross-group performance is critical for assessing practical utility in real-world deployments where exact distribution matching between synthetic generation sources and operational training data is often infeasible or unverifiable.
 
-Comprehensive evaluation requires multiple metrics capturing different performance aspects. We employ a balanced metrics suite combining:
+\subsubsection{Comparing Strategies: Statistical Significance}
 
-\begin{itemize}
-\item \textbf{Threshold-dependent metrics}: Measures evaluated at fixed decision thresholds, including precision (false positive control), recall (false negative control), and their harmonic mean F1-score (balanced assessment under class imbalance).
+The choice between mixing strategies has fundamental implications for generalization and operational deployment:
 
-\item \textbf{Threshold-independent metrics}: Measures aggregating performance across all decision thresholds, such as AUC-ROC (overall discrimination ability) and AUC-PR (performance under severe imbalance).
+\textbf{Within-Group} tests the hypothesis that synthetic data utility requires close distributional alignment between generation sources and training targets. Strong within-group performance with weak cross-group performance would indicate that precise distribution matching is critical.
 
-\item \textbf{Balanced measures}: Metrics designed to handle class imbalance through normalization or comprehensive confusion matrix consideration, providing robust assessment when class distributions are skewed.
-\end{itemize}
+\textbf{Cross-Group} tests the hypothesis that semantic diversity and coverage matter more than precise distribution matching. Comparable performance under both strategies would indicate that exact distributional alignment is unnecessary, substantially simplifying deployment logistics.
 
-This multi-faceted approach ensures that synthetic data effectiveness is evaluated comprehensively rather than through single-aspect assessment. The specific metrics employed and their mathematical definitions are detailed in Section~\ref{sec:experiment} and Appendix~\ref{appendix:metrics} respectively.
+Systematic comparison enables empirical answers to the critical question: \emph{Does distribution matching matter for synthetic data effectiveness?} The answer has direct operational implications for temporal flexibility (using historical synthetic data to augment current training), source diversity (pooling synthetic data from multiple corpora), and organizational collaboration (sharing synthetic samples without revealing specific operational distributions).
 
-\subsubsection{Statistical Analysis Metrics}
+\subsection{Evaluation Framework: Three Experimental Tracks}
 
-Beyond classification performance, our framework employs rigorous statistical metrics to quantify confidence, effect magnitude, and degradation patterns. The replicated design with $R = 20$ independent groups enables:
+Our evaluation framework encompasses three complementary experimental tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}.
 
-\begin{itemize}
-\item \textbf{Descriptive Statistics}: Mean and standard deviation quantifying expected performance and consistency across operational variability, providing complete distributional characterization rather than single-point estimates
+\subsubsection{Track 1: Synthetic-to-Real Detection (RQ1)}
 
-\item \textbf{Confidence Intervals}: t-distribution-based intervals quantifying estimation uncertainty for all performance metrics, with narrow intervals indicating precise estimates and wide intervals suggesting high variability requiring cautious interpretation
+This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam, addressing the training augmentation question.
 
-\item \textbf{Hypothesis Testing}: Paired comparisons testing each synthetic ratio against the 0\% baseline, with Benjamini-Hochberg False Discovery Rate (FDR) correction controlling the expected proportion of false discoveries across multiple simultaneous tests
+\textbf{Training Paradigm:} Classifiers train on mixtures of real ham (fixed) and varying proportions of real spam $(1-\theta)$ combined with synthetic spam $\theta$:
+\begin{equation}
+\text{Train} = \text{Ham}_{\text{real}} \cup \left[\text{Spam}_{\text{real}}^{(1-\theta)} \cup \text{Spam}_{\text{synth}}^{(\theta)}\right]
+\end{equation}
 
-\item \textbf{Effect Sizes}: Cohen's $d$ standardized effect sizes distinguishing statistical significance from practical importance, following conventional guidelines for negligible, small, medium, and large effects
+\textbf{Testing Paradigm:} All classifiers test on identical real-world data comprising real ham and real spam:
+\begin{equation}
+\text{Test} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{real}}
+\end{equation}
 
-\item \textbf{Sensitivity Analysis}: Linear regression modeling performance as a function of synthetic proportion, with regression slope ($\beta_1$) quantifying expected degradation rate and $R^2$ indicating pattern linearity
-\end{itemize}
+This design isolates the impact of synthetic training data on real-world detection effectiveness. As synthetic proportion $\theta$ increases from 0 (pure real training) to 1 (pure synthetic training), we quantify performance degradation, establishing the trade-off between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring that results reflect operational deployment scenarios where detectors must identify genuine spam.
 
-Complete mathematical formulations for all statistical metrics are provided in Appendix~\ref{appendix:statistics}. Specific parameter values (e.g., confidence levels, significance thresholds) are determined in Section~\ref{sec:experiment}.
+\subsubsection{Track 2: Detecting AI-Generated Spam}
 
-\subsection{Quality Assurance and Validation}
+This track evaluates defensive capabilities against AI-powered spam threats through two complementary approaches that vary in whether synthetic training data is available.
 
-Our methodology incorporates comprehensive quality assurance mechanisms ensuring reliable and reproducible results:
+\textbf{Approach 2a: Baseline (Real-Data-Only Detection, RQ2a)}
 
-\begin{itemize}
-    \item \textbf{Sampling Quality Control}: Stratified sampling maintaining consistent 10\% spam ratio across all 20 independent groups, with post-sampling validation confirming balanced spam characteristic distributions
+This approach evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios.
 
-    \item \textbf{Generation Quality Verification}: All LLM-generated samples validated for successful parsing and completeness, with failed generations logged and excluded from analysis
+\textit{Training:} Real ham + real spam only (no synthetic exposure)
+\begin{equation}
+\text{Train}_{\text{baseline}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{real}}
+\end{equation}
 
-    \item \textbf{Experimental Reproducibility}: Fixed random seeds for all stochastic processes, consistent test set across all experimental conditions, standardized hyperparameters isolating synthetic data impact, and version-controlled code/prompts/analysis scripts
+\textit{Testing:} Real ham + LLM-generated synthetic spam from model A
+\begin{equation}
+\text{Test}_{\text{baseline}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_A}
+\end{equation}
 
-    \item \textbf{Statistical Validity}: Shapiro-Wilk tests for normality assumptions with non-parametric alternatives when violated, Benjamini-Hochberg FDR correction controlling false discoveries across multiple comparisons, and Cohen's $d$ effect sizes distinguishing statistical from practical significance
-\end{itemize}
+This baseline establishes defenders' readiness against AI-powered attacks when training data contains only traditional real spam samples. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to detecting LLM-generated spam, suggesting current classifiers provide inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
 
-Complete quality assurance specifications and validation procedures are documented in Appendix~\ref{appendix:quality_control}.
+\textbf{Approach 2b: Enhanced (Hybrid-Data Detection, RQ2b)}
 
-\subsection{Methodological Limitations and Scope}
+This approach investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation.
 
-While our framework provides rigorous evaluation of synthetic spam data, several limitations define the scope of our conclusions:
+\textit{Training:} Real ham + varying mixtures of real spam and synthetic spam from LLM B
+\begin{equation}
+\text{Train}_{\text{enhanced}} = \text{Ham}_{\text{real}} \cup \left[\text{Spam}_{\text{real}}^{(1-\theta)} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_B,(\theta)}\right]
+\end{equation}
 
-\begin{itemize}
-    \item \textbf{Feature Representation}: Our evaluation employs TF-IDF feature representation, which captures lexical patterns but may miss deeper semantic or structural characteristics. Deep learning classifiers operating on embeddings might exhibit different sensitivity profiles.
+\textit{Testing:} Real ham + synthetic spam from LLM A (different from training)
+\begin{equation}
+\text{Test}_{\text{enhanced}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_A}
+\end{equation}
 
-    \item \textbf{Dataset Specificity}: Results are based on the CEAS-08 spam corpus, which represents spam patterns from a specific time period and threat landscape. Generalization to other spam datasets or evolving spam tactics requires empirical validation.
+This cross-model design evaluates whether features learned from one LLM's synthetic patterns ($\text{LLM}_B$) generalize to detecting another LLM's spam ($\text{LLM}_A$). The approach tests hybrid training strategies where defenders augment real training data with synthetic samples from available LLM sources to improve readiness against attacks from different LLM sources. Performance improvement over baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.
 
-    \item \textbf{Class Imbalance Range}: Our fixed 10\% spam ratio reflects common operational conditions but does not explore the full spectrum of possible imbalance scenarios. More extreme imbalances may exhibit different synthetic data effectiveness patterns.
+\subsection{Methodological Design Rationale}
 
-    \item \textbf{LLM Selection}: We employ GPT-4.1-mini as our generation engine. Different LLMs with varying capabilities may produce synthetic data with different quality characteristics and performance impacts.
-\end{itemize}
+Several key design choices warrant explicit justification:
 
-These limitations define boundary conditions for our findings and suggest directions for future research extending the framework to additional datasets, classifiers, and generation models.
+\textbf{Fixed Test Set Design.} By maintaining identical test sets across all experimental conditions while varying only training configurations, we eliminate test set composition as a confounding factor. This enables confident attribution of performance differences to training manipulations (synthetic ratios, mixing strategies) rather than artifacts of evaluation set selection.
 
-\subsection{Methodological Contributions}
+\textbf{Cross-Model Evaluation.} The decision to train on one LLM's synthetic data ($\text{LLM}_B$) while testing on another's ($\text{LLM}_A$) reflects practical defensive scenarios where attackers may employ different generation models than those available to defenders. Cross-model generalization is critical for operational robustness, as defenders cannot guarantee access to attackers' exact generation tools.
 
-By integrating large-scale replication, systematic paradigm comparison, controlled mixing strategies, and comprehensive statistical analysis, our methodology establishes a rigorous framework for synthetic cybersecurity data evaluation. The framework's emphasis on statistical power, effect size quantification, paradigm-level comparison, and degradation characterization moves synthetic data research beyond exploratory single-trial evaluations toward confirmatory hypothesis testing with quantified uncertainty across augmentation approaches.
+\textbf{Stratified Replication Design.} The choice of $R$ independent groups (rather than single-trial evaluation) enables rigorous statistical inference with quantified uncertainty. Multiple groups provide variance estimates enabling confidence intervals, hypothesis testing to distinguish genuine effects from random variation, and sensitivity analysis to model performance-proportion relationships.
 
-The systematic comparison between text-space neural generation and feature-space interpolation provides a methodological template for evaluating emerging augmentation techniques against established baselines, enabling researchers to assess whether novel methods offer substantive improvements or merely superficial differences. This comparative foundation prevents premature adoption of complex neural approaches when simpler traditional methods suffice, while identifying scenarios where neural generation's unique capabilities (text interpretability, semantic control) justify additional complexity and cost.
+\textbf{Controlled Prompt Variation.} The three-point prompt strategy design (original, strong, weak) enables systematic exploration of how generation instructions influence synthetic data quality. Rather than arbitrary prompt selection, controlled variation along an intensity continuum permits testing whether explicit feature amplification improves downstream utility.
 
-This methodological foundation enables evidence-based decision making about synthetic data deployment in operational cybersecurity systems, providing practitioners with quantitative guidance for selecting between augmentation paradigms, choosing mixing ratios, and predicting performance impacts. The framework's modular design facilitates adaptation to other cybersecurity domains beyond spam detection, potentially advancing synthetic data research across malware analysis, intrusion detection, and threat intelligence applications while establishing evaluation standards for comparing traditional and neural augmentation approaches.
+These design choices collectively establish a rigorous methodological foundation for answering the core research questions with statistical confidence and operational relevance.

@@ -1,217 +1,405 @@
-\section{Experimental Design}
+\section{Experimental Configuration}
 \label{sec:experiment}
 
-This section describes our comprehensive experimental framework designed to rigorously evaluate the effectiveness and limitations of LLM-generated synthetic spam data for training spam classifiers. Our design employs a multi-factorial approach with systematic replication to ensure statistical reliability and generalizability of findings.
+This section specifies the complete experimental configuration, detailing all parameters required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete values for all design parameters including dataset composition, LLM configurations, prompt templates, classifier hyperparameters, and statistical analysis procedures.
 
-\subsection{Dataset and Sampling Strategy}
+\subsection{Dataset and Sampling Configuration}
 
 \subsubsection{Source Dataset}
 
-We conduct our experiments using the CEAS-08 spam email dataset~\cite{champa2024curated}, which contains 39,154 real-world email samples with 21,842 labeled as spam (55.8\%) and 17,312 as legitimate (44.2\%). This dataset provides a substantial corpus of authentic spam emails that capture diverse spam patterns and tactics observed in real-world email systems.
+We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples: 21,842 spam (55.8\%) and 17,312 legitimate emails (44.2\%). This publicly available corpus captures diverse spam tactics and patterns observed in operational email systems, providing sufficient scale for statistical replication while representing realistic spam characteristics.
 
-\subsubsection{Stratified Group Sampling}
+\subsubsection{Stratified Group Partitioning}
 
-Following the replicated design framework established in Section~\ref{sec:methodology}, we employ stratified random sampling to partition the spam corpus into $R = 20$ independent groups. This sample size is determined through power analysis (Equation~3.1 in Methodology): with $R = 20$, we achieve statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) at significance level $\alpha = 0.05$, assuming typical performance variance $\sigma \approx 0.03$ observed in preliminary experiments.
+Following the sampling design in Section~\ref{sec:methodology}, we partition the corpus into $R = 20$ independent groups through stratified random sampling. The sample size determination follows from power analysis (Equation 2 in Methodology):
 
-Each group contains $N = 1,000$ samples with a fixed spam ratio of 10\% (100 spam, 900 legitimate), reflecting realistic class imbalance commonly observed in operational email filtering systems. The stratification process ensures:
+With $R = 20$ groups, we achieve statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) at significance level $\alpha = 0.05$, assuming typical performance variance $\sigma \approx 0.03$ observed in preliminary experiments. This configuration provides sufficient power for rigorous hypothesis testing while maintaining computational feasibility.
+
+Each group contains $N = 1{,}000$ samples with fixed spam proportion $\rho = 0.1$:
 \begin{itemize}
-    \item \textbf{Statistical independence}: Each group is sampled without replacement, creating 20 statistically independent experimental units.
-    \item \textbf{Distributional balance}: Stratified sampling maintains representation of diverse spam patterns across all groups.
+    \item Spam samples: 100 per group
+    \item Ham samples: 900 per group
+    \item Total across 20 groups: 2,000 spam, 18,000 ham
 \end{itemize}
+
+The 10\% spam ratio reflects realistic class imbalance in operational email filtering systems. Stratified sampling ensures representation of diverse spam patterns across all groups while maintaining statistical independence through sampling without replacement.
 
 \subsubsection{Train-Test Split}
 
-We employ a fixed out-of-sample test set to ensure consistent evaluation across all experimental conditions. The test set, comprising 20\% of the total dataset, is held out before any experimental manipulation and remains constant across all configurations. This approach eliminates test set variance as a confounding factor and enables fair comparison across different synthetic data strategies and ratios.
+We employ an 80-20 train-test split with a fixed held-out test set:
+\begin{itemize}
+    \item Training: 16 groups (1,600 spam, 14,400 ham) for experimental manipulation
+    \item Testing: 4 groups (400 spam, 3,600 ham) held constant across all experiments
+\end{itemize}
 
-The training data from each group is further used to construct experimental datasets with varying synthetic data proportions, while the test set remains pure real-world data throughout all experiments.
+The test set, established before any experimental manipulation, remains identical across all configurations. This eliminates test set variance as a confounding factor, ensuring performance differences reflect genuine treatment effects rather than evaluation artifacts.
 
-\subsection{Synthetic Data Generation}
+\subsection{Synthetic Data Generation Configuration}
 
-\subsubsection{LLM Configuration}
+\subsubsection{LLM Models and Parameters}
 
-We employ two state-of-the-art large language models to evaluate robustness across different model architectures: \textbf{GPT-4.1-mini} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Both models use identical generation parameters (temperature $= 0.7$, max tokens $= 1{,}000$) ensuring fair comparison. Complete configuration details are provided in Appendix~\ref{appendix:config}, Table~\ref{tab:llm_config}.
+We employ two state-of-the-art large language models to evaluate robustness across different architectures:
+
+\textbf{Model 1: GPT-4.1-mini} (OpenAI)
+\begin{itemize}
+    \item API endpoint: \texttt{gpt-4-1106-preview}
+    \item Temperature: 0.7 (balanced creativity vs consistency)
+    \item Max tokens: 1,000 per generation
+    \item Top-p: 1.0 (no nucleus sampling restriction)
+    \item Frequency penalty: 0.0
+    \item Presence penalty: 0.0
+\end{itemize}
+
+\textbf{Model 2: Claude-3.5-Haiku} (Anthropic)
+\begin{itemize}
+    \item API endpoint: \texttt{claude-3-5-haiku-20241022}
+    \item Temperature: 0.7 (matched to GPT-4.1-mini)
+    \item Max tokens: 1,000 per generation
+    \item Top-p: 1.0
+    \item Top-k: Not specified (model default)
+\end{itemize}
+
+Both models use identical generation parameters (temperature = 0.7, max tokens = 1,000) to ensure fair comparison. The temperature setting balances between deterministic reproduction (temperature → 0) and creative variation (temperature → 1), enabling diverse synthetic samples while maintaining semantic coherence.
 
 \subsubsection{Prompt Engineering Strategies}
 
-We design three prompt strategies varying in guidance intensity: \textbf{Original} (faithful reproduction of spam characteristics), \textbf{Strong} (amplified malicious features), and \textbf{Weak} (subtle spam signals). All prompts use consistent template structure with JSON-formatted output for parsing reliability. Complete templates are provided in Appendix~\ref{appendix:prompts}.
+We implement three systematically varied prompt strategies. Each prompt follows a consistent template structure with JSON-formatted output for reliable parsing:
 
-\subsubsection{Synthetic Data Mixing Strategies}
+\textbf{Template Structure:}
+\begin{verbatim}
+You are an expert email content analyzer. Given the
+following spam email, generate a semantically similar
+but lexically distinct spam variant.
 
-We implement two mixing strategies to evaluate the impact of distribution matching on synthetic data effectiveness:
+[Strategy-Specific Instructions]
 
+Original Email:
+{original_spam_content}
+
+Output Format (JSON):
+{
+  "subject": "generated subject line",
+  "body": "generated email body"
+}
+\end{verbatim}
+
+\textbf{Strategy-Specific Instructions:}
+
+\textit{Original Strategy:} "Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent."
+
+\textit{Strong Strategy:} "Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required), persuasive elements (too good to be true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make the spam characteristics more explicit and prominent."
+
+\textit{Weak Strategy:} "Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect."
+
+Complete prompt templates with exact wording are provided in Appendix~\ref{appendix:prompts}.
+
+\subsubsection{Generation Protocol}
+
+For each of the 20 groups and 2 LLM models:
 \begin{itemize}
-    \item \textbf{Within-Group}: Synthetic samples generated from the same group ($\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}$) tests in-distribution effectiveness
-    \item \textbf{Cross-Group}: Synthetic samples from different groups ($\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}$) tests cross-distribution generalization
+    \item Input: 100 real spam samples per group
+    \item Process: Apply each of 3 prompt strategies to each sample
+    \item Output: 300 synthetic spam variants per group per model (100 × 3 prompts)
+    \item Total generation: 12,000 synthetic samples (20 groups × 2 models × 3 prompts × 100 samples)
 \end{itemize}
 
-where $\theta$ denotes the synthetic proportion.
+All generations employ fixed random seeds (\texttt{seed=42}) for reproducibility. Failed generations (parsing errors, length violations) are logged and excluded from analysis, with success rates reported in Appendix~\ref{appendix:generation_stats}.
 
-\textbf{Strategy Selection}: Preliminary experiments comparing both strategies across 3,300 measurements (2 models $\times$ 3 prompts $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers $\times$ 2 strategies) revealed that cross-group mixing consistently outperforms within-group (mean F1: 0.563 vs. 0.554, $p < 10^{-6}$), though with small effect size (Cohen's $d = 0.13$). Given cross-group's marginal but consistent advantage and better alignment with real-world deployment scenarios where precise distribution matching is often infeasible, \textbf{all reported experiments employ cross-group mixing exclusively}.
+\subsection{Experimental Track Configurations}
 
-\subsection{Experimental Factors and Design}
+\subsubsection{Track 1: Synthetic-to-Real Detection}
 
-Our comprehensive experimental design encompasses two complementary evaluation tracks: \textbf{forward detection} evaluating whether LLM-generated synthetic spam data can effectively train spam classifiers, and \textbf{reverse detection} assessing whether classifiers trained on real data can detect AI-powered spam from different LLM sources.
+This track evaluates training augmentation effectiveness (RQ1) through systematic variation of synthetic data proportion.
 
-\subsubsection{Forward Detection Track}
-
-The forward detection experiments evaluate whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. This track follows a full-factorial design with four primary factors:
-
-\begin{enumerate}
-    \item \textbf{Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
-    \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
-    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
-    \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
-\end{enumerate}
-
-This yields $2 \times 3 \times 1 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 1 classifier (Support Vector Machine with optimized linear kernel, selected based on systematic hyperparameter tuning as described in Section~\ref{sec:experiment:hyperparameters}), resulting in $66 \times 20 \times 1 = 1,320$ training-evaluation units.
-
-\textbf{Training-Testing Paradigm}: Each experiment trains on a mixture of real ham (900 samples) and varying proportions of real spam ($(1-\theta) \times 100$) combined with synthetic spam ($\theta \times 100$), then tests on a fixed out-of-sample set comprising real ham (900 samples) and real spam (100\% real). This setup evaluates whether synthetic data can substitute for real spam in training effective real-world spam detectors.
-
-\subsubsection{Reverse Detection Track}
-
-The reverse detection experiments address the complementary question: can classifiers trained on real spam data detect AI-generated spam from different LLM sources? This evaluates defensive capabilities against emerging AI-powered spam threats. We employ a \textbf{1-vs-Rest cross-model design}:
-
+\textbf{Configuration:}
 \begin{itemize}
-    \item \textbf{GPT-4.1-mini Testing}: Classifiers trained on real ham + Claude-3.5-Haiku synthetic spam, evaluated on detecting GPT-4.1-mini synthetic spam
-    \item \textbf{Claude-3.5-Haiku Testing}: Classifiers trained on real ham + GPT-4.1-mini synthetic spam, evaluated on detecting Claude-3.5-Haiku synthetic spam
+    \item Models: 2 (GPT-4.1-mini, Claude-3.5-Haiku)
+    \item Prompt strategies: 3 (Original, Strong, Weak)
+    \item Mixing strategy: Cross-group only
+    \item Synthetic ratios: 11 levels (0\%, 10\%, 20\%, ..., 100\%)
+    \item Classifiers: 1 (SVM with linear kernel)
+    \item Groups: 20 independent replications
 \end{itemize}
 
-This design follows a factorial structure with five factors:
+\textbf{Experimental units:} $2 \times 3 \times 1 \times 11 \times 1 \times 20 = 1{,}320$ training-evaluation runs
 
-\begin{enumerate}
-    \item \textbf{Testing Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
-    \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
-    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
-    \item \textbf{Training Synthetic Ratio} ($\theta$): 3 levels (0\%, 50\%, 100\%)
-    \item \textbf{Classifier}: 2 levels (SVM with linear kernel, Random Forest with optimized hyperparameters)
-\end{enumerate}
+\textbf{Training composition at ratio $\theta$:}
+\begin{itemize}
+    \item Ham (fixed): 900 real samples
+    \item Spam (variable): $(1-\theta) \times 100$ real + $\theta \times 100$ synthetic
+    \item Example ($\theta = 0.5$): 900 ham, 50 real spam, 50 synthetic spam
+\end{itemize}
 
-This yields $2 \times 3 \times 1 \times 3 \times 2 = 36$ unique cross-model configurations, each replicated across $R = 20$ groups, resulting in $36 \times 20 = 720$ training-evaluation units. The reduced set of synthetic ratios (0\%, 50\%, 100\%) focuses on three critical scenarios: pure real baseline (0\%), balanced mixing (50\%), and pure synthetic (100\%).
+\textbf{Testing composition (fixed):}
+\begin{itemize}
+    \item Ham: 900 real samples
+    \item Spam: 100 real samples
+    \item Total: 1,000 samples (10\% spam ratio)
+\end{itemize}
 
-\textbf{Training-Testing Paradigm}: For each experiment, the training set consists of real ham (900 samples) and real spam at the specified ratio, augmented with synthetic spam from the \emph{opposite} model. Critically, the test set comprises real ham (900 samples) and 100\% synthetic spam from the \emph{target} model being tested. This asymmetric design evaluates whether cross-model generalization occurs—whether features learned from one LLM's synthetic patterns transfer to detecting another LLM's synthetic spam. Unlike forward detection which uses SVM only, reverse detection employs both SVM and Random Forest to assess architectural differences in cross-model detection capabilities.
+\textbf{Strategy justification:} Preliminary experiments comparing within-group and cross-group mixing across 3,300 measurements revealed cross-group consistently outperforms within-group (mean F1: 0.563 vs 0.554, $p < 10^{-6}$, Cohen's $d = 0.13$). Given cross-group's consistent advantage and better alignment with realistic deployment scenarios where precise distribution matching is infeasible, all experiments employ cross-group mixing exclusively.
+
+\subsubsection{Track 2a: Baseline Detection (Real-Data-Only)}
+
+This track evaluates zero-shot AI-spam detection capabilities (RQ2a).
+
+\textbf{Configuration:}
+\begin{itemize}
+    \item Testing models: 2 (GPT-4.1-mini, Claude-3.5-Haiku)
+    \item Prompt strategies: 3 (Original, Strong, Weak)
+    \item Training synthetic ratio: 1 level (0\% - pure real baseline)
+    \item Classifiers: 2 (SVM, Random Forest)
+    \item Groups: 20 independent replications
+\end{itemize}
+
+\textbf{Experimental units:} $2 \times 3 \times 1 \times 2 \times 20 = 240$ training-evaluation runs
+
+\textbf{Training composition (fixed):}
+\begin{itemize}
+    \item Ham: 900 real samples
+    \item Spam: 100 real samples (no synthetic exposure)
+\end{itemize}
+
+\textbf{Testing composition (varies by condition):}
+\begin{itemize}
+    \item Ham: 900 real samples
+    \item Spam: 100 synthetic samples from target LLM and prompt strategy
+\end{itemize}
+
+This configuration establishes defenders' readiness when encountering AI-generated spam without prior training exposure to synthetic data.
+
+\subsubsection{Track 2b: Enhanced Detection (Hybrid-Data)}
+
+This track evaluates cross-model augmentation effectiveness (RQ2b).
+
+\textbf{Configuration:}
+\begin{itemize}
+    \item Testing models: 2 (GPT-4.1-mini, Claude-3.5-Haiku)
+    \item Prompt strategies: 3 (Original, Strong, Weak)
+    \item Training synthetic ratios: 3 levels (0\%, 50\%, 100\%)
+    \item Classifiers: 2 (SVM, Random Forest)
+    \item Groups: 20 independent replications
+\end{itemize}
+
+\textbf{Experimental units:} $2 \times 3 \times 3 \times 2 \times 20 = 720$ training-evaluation runs
+
+\textbf{Training composition at ratio $\theta$ (cross-model):}
+\begin{itemize}
+    \item Ham: 900 real samples
+    \item Spam: $(1-\theta) \times 100$ real + $\theta \times 100$ synthetic from \emph{opposite} model
+    \item Example (testing GPT-4.1-mini, $\theta=0.5$): train on 50 real + 50 Claude-3.5-Haiku synthetic
+\end{itemize}
+
+\textbf{Testing composition (fixed per condition):}
+\begin{itemize}
+    \item Ham: 900 real samples
+    \item Spam: 100 synthetic samples from \emph{target} model (opposite of training)
+\end{itemize}
+
+The cross-model design tests whether synthetic data from LLM\_B improves detection of spam from LLM\_A, evaluating whether "fighting fire with fire" strategies enhance defensive capabilities.
 
 \subsubsection{Combined Experimental Scale}
 
-The complete experimental framework comprises $66 + 36 = 102$ unique configurations with $1,320 + 720 = 2,040$ total training-evaluation units across both tracks. This substantial scale—systematically replicated across 20 independent groups—enables rigorous statistical analysis with high power ($>$80\%) for detecting medium effect sizes (Cohen's $d \geq 0.5$) while providing comprehensive coverage of LLM-based spam generation and detection scenarios.
+Total experimental units: $1{,}320 + 240 + 720 = 2{,}280$ training-evaluation runs across all tracks, models, strategies, and replications.
 
-\subsubsection{Synthetic Ratio Progression}
+\subsection{Classification Models and Hyperparameters}
 
-We systematically vary the synthetic data proportion $\theta$ from 0\% (pure real data baseline) to 100\% (pure synthetic data) in 10\% increments. This granular progression enables:
+We employ two architecturally distinct classifiers with hyperparameters optimized through systematic grid search.
+
+\subsubsection{Hyperparameter Optimization}
+
+To eliminate hyperparameter tuning as a confounding factor, we conduct systematic grid search with 5-fold stratified cross-validation on a representative baseline configuration (Group 0, 0\% synthetic, original prompt). F1-score serves as the optimization metric given class imbalance.
+
+\textbf{SVM Grid Search:}
 \begin{itemize}
-    \item Detection of non-linear effects and threshold phenomena
-    \item Sensitivity analysis to quantify performance degradation rates
-    \item Identification of optimal mixing ratios for operational deployment
+    \item C: \{0.1, 1.0, 10.0\}
+    \item Kernel: \{linear, rbf\}
+    \item Gamma (for rbf): \{scale, auto\}
 \end{itemize}
 
-\subsection{Classification Models}
-
-We employ two architecturally distinct classifiers across our experimental tracks to ensure findings generalize across different learning paradigms:
-
+\textbf{Random Forest Grid Search:}
 \begin{itemize}
-    \item \textbf{Support Vector Machine (SVM)}: Margin-based classifier used in both forward and reverse detection tracks. Selected for its strong theoretical foundations and effectiveness in high-dimensional sparse feature spaces through margin maximization.
-    \item \textbf{Random Forest (RF)}: Ensemble-based classifier used exclusively in reverse detection track. Included to assess architectural differences in cross-model detection capabilities, offering robustness to overfitting and natural handling of non-linear patterns through ensemble averaging.
+    \item n\_estimators: \{50, 100, 200\}
+    \item max\_depth: \{5, 10, 20, None\}
+    \item min\_samples\_split: \{2, 5\}
+    \item min\_samples\_leaf: \{1, 2\}
 \end{itemize}
 
-\textbf{Track-Specific Usage}: Forward detection experiments employ SVM only to maintain focus on LLM generation quality assessment, while reverse detection experiments employ both SVM and Random Forest to evaluate architectural robustness in detecting AI-powered spam from different sources.\label{sec:experiment:hyperparameters}
+\textbf{Key Findings:} Linear kernel outperforms RBF for SVM (F1 = 0.825 vs 0.48-0.61), confirming appropriateness of linear decision boundaries for high-dimensional sparse TF-IDF features. Random Forest shows remarkable hyperparameter robustness (F1 range: 0.886-0.917, < 3\% variation). SVM performance is invariant to C values with linear kernel (all configurations yield F1 = 0.825 ± 0.031). Complete grid search results are in Appendix~\ref{appendix:hyperparameter_grid_search}.
 
-\subsubsection{Hyperparameter Selection and Validation}
+\subsubsection{Final Classifier Configurations}
 
-To ensure fair comparison across all experimental conditions and eliminate hyperparameter tuning as a confounding factor, we employ fixed hyperparameters validated through systematic grid search with 5-fold stratified cross-validation on a representative training set (Group 0, baseline configuration).
-
-\textbf{Grid Search Design}: We evaluate SVM with C $\in \{0.1, 1.0, 10.0\}$, kernel $\in \{\text{linear}, \text{rbf}\}$, gamma $\in \{\text{scale}, \text{auto}\}$, and Random Forest with n\_estimators $\in \{50, 100, 200\}$, max\_depth $\in \{5, 10, 20, \text{None}\}$, min\_samples\_split $\in \{2, 5\}$, min\_samples\_leaf $\in \{1, 2\}$, using F1-score as the primary optimization metric. Complete grid search results are provided in Appendix~\ref{appendix:hyperparameter_grid_search}.
-
-\textbf{Key Findings}:
-
-\begin{enumerate}
-    \item \textbf{Random Forest exhibits remarkable hyperparameter robustness}: Top configurations vary by less than 3\% F1-score (0.886--0.917), confirming the ensemble method's stability across diverse parameter settings.
-
-    \item \textbf{SVM performance is invariant to regularization strength with linear kernel}: All C values $\in \{0.1, 1.0, 10.0\}$ yield identical performance (F1 = 0.825 $\pm$ 0.031), indicating the TF-IDF feature space is well-separated and does not require regularization tuning.
-
-    \item \textbf{Linear kernel substantially outperforms RBF kernel for SVM}: Linear kernel achieves F1 = 0.825, while RBF kernel achieves only F1 = 0.48--0.61, confirming that linear decision boundaries are more appropriate for high-dimensional sparse TF-IDF features (10,000 dimensions)~\cite{joachims1998text}.
-
-    \item \textbf{Random Forest consistently outperforms SVM}: The best Random Forest configuration (F1 = 0.917) surpasses the best SVM configuration (F1 = 0.825) by 9.2 percentage points, demonstrating an architectural advantage independent of hyperparameter tuning.
-\end{enumerate}
-
-\textbf{Selected Hyperparameters} (employed throughout all experiments):
-
+\textbf{Support Vector Machine (SVM):}
 \begin{itemize}
-    \item \textbf{SVM}: C = 1.0, kernel = linear, class\_weight = balanced, random\_state = 42
-    \item \textbf{Random Forest}: n\_estimators = 100, max\_depth = 10, min\_samples\_split = 5, min\_samples\_leaf = 2, class\_weight = balanced, random\_state = 42
+    \item Implementation: \texttt{sklearn.svm.LinearSVC}
+    \item C: 1.0 (regularization parameter)
+    \item Kernel: linear
+    \item Class weight: balanced (handles 10\% imbalance)
+    \item Max iterations: 10,000
+    \item Random state: 42
 \end{itemize}
 
-These configurations represent stable, well-performing choices validated through cross-validation. The minimal hyperparameter sensitivity—especially for Random Forest (3\% performance range) and SVM linear kernel (0\% variation across all C values)—confirms that our findings regarding synthetic data effects, cross-model generalization, and architectural differences are robust to hyperparameter variations and reflect true phenomena rather than suboptimal tuning choices.
+\textbf{Random Forest (RF):}
+\begin{itemize}
+    \item Implementation: \texttt{sklearn.ensemble.RandomForestClassifier}
+    \item n\_estimators: 100 trees
+    \item max\_depth: 10
+    \item min\_samples\_split: 5
+    \item min\_samples\_leaf: 2
+    \item Class weight: balanced
+    \item Random state: 42
+\end{itemize}
 
-\subsubsection{Feature Representation}
+\textbf{Track-specific usage:} Track 1 (Synthetic-to-Real) employs SVM only to focus evaluation on generation quality. Tracks 2a-2b (Detecting AI-Generated Spam) employ both classifiers to assess architectural robustness in cross-model detection scenarios.
 
-All emails are represented using TF-IDF features with maximum 10,000 features, unigram-bigram range (1-2), English stop word filtering, and lowercase normalization. This representation captures both word-level semantics and local phrase patterns relevant to spam detection. Complete TF-IDF configuration is detailed in Appendix~\ref{appendix:config}, Table~\ref{tab:tfidf_config}.
+\subsection{Feature Representation}
+
+All email texts are transformed to TF-IDF (Term Frequency-Inverse Document Frequency) feature vectors using the following configuration:
+
+\begin{itemize}
+    \item Implementation: \texttt{sklearn.feature\_extraction.text.TfidfVectorizer}
+    \item max\_features: 10,000 (vocabulary size)
+    \item ngram\_range: (1, 2) (unigrams and bigrams)
+    \item stop\_words: 'english' (remove common words)
+    \item lowercase: True (normalize case)
+    \item min\_df: 2 (ignore terms appearing in fewer than 2 documents)
+    \item max\_df: 0.95 (ignore terms appearing in > 95\% of documents)
+    \item sublinear\_tf: True (apply log scaling to term frequencies)
+\end{itemize}
+
+The TF-IDF vectorizer is fit exclusively on training data, with the same transformation applied to test data to prevent information leakage. This configuration captures both word-level semantics (unigrams) and local phrase patterns (bigrams) relevant to spam detection, while limiting dimensionality to 10,000 features for computational efficiency.
+
+\subsection{Statistical Analysis Configuration}
+
+Following the statistical framework established in Section~\ref{sec:methodology}, we employ the following specific procedures and parameters:
+
+\subsubsection{Descriptive Statistics}
+
+For each experimental configuration, we compute across $R = 20$ groups:
+\begin{itemize}
+    \item Mean: $\bar{x} = \frac{1}{R}\sum_{i=1}^{R} x_i$
+    \item Standard deviation: $s = \sqrt{\frac{1}{R-1}\sum_{i=1}^{R}(x_i - \bar{x})^2}$
+    \item 95\% confidence intervals: $\bar{x} \pm t_{0.025, 19} \cdot \frac{s}{\sqrt{R}}$ where $t_{0.025, 19} = 2.093$
+\end{itemize}
+
+\subsubsection{Hypothesis Testing}
+
+We employ paired t-tests comparing each synthetic ratio against the 0\% baseline (pure real data):
+\begin{itemize}
+    \item Null hypothesis: $H_0: \mu_{\theta} = \mu_{0}$ (no performance difference)
+    \item Alternative: $H_1: \mu_{\theta} \neq \mu_{0}$ (two-tailed test)
+    \item Significance level: $\alpha = 0.05$
+    \item Degrees of freedom: $df = R - 1 = 19$
+\end{itemize}
+
+\textbf{Multiple comparison correction:} Given multiple simultaneous tests (11 ratios × 5 metrics = 55 tests per configuration), we apply Benjamini-Hochberg False Discovery Rate (FDR) correction at $q = 0.05$ to control the expected proportion of false discoveries~\cite{benjamini1995controlling}.
+
+\subsubsection{Effect Size Quantification}
+
+We compute Cohen's $d$ standardized effect sizes to distinguish statistical significance from practical importance:
+\begin{equation}
+d = \frac{\bar{x}_{\theta} - \bar{x}_0}{s_{\text{pooled}}}, \quad s_{\text{pooled}} = \sqrt{\frac{s_{\theta}^2 + s_0^2}{2}}
+\end{equation}
+
+Interpretation follows conventional thresholds:
+\begin{itemize}
+    \item Negligible: $|d| < 0.2$
+    \item Small: $0.2 \leq |d| < 0.5$
+    \item Medium: $0.5 \leq |d| < 0.8$
+    \item Large: $|d| \geq 0.8$
+\end{itemize}
+
+\subsubsection{Performance Degradation Analysis}
+
+We model classification performance as a linear function of synthetic proportion through ordinary least squares regression:
+\begin{equation}
+\text{Performance}_{\theta} = \beta_0 + \beta_1 \cdot \theta + \epsilon
+\end{equation}
+
+The regression slope $\beta_1$ quantifies expected performance change per 1\% increase in synthetic data. $R^2$ values indicate pattern linearity: $R^2 > 0.9$ suggests strong linear relationships enabling extrapolation, while $R^2 < 0.7$ indicates non-linearities requiring empirical validation at specific ratios.
 
 \subsection{Performance Metrics}
 
-Following the multi-faceted evaluation framework established in Section~\ref{sec:methodology}, we employ seven metrics (complete mathematical definitions in Appendix~\ref{appendix:metrics}):
+We evaluate classifier performance using a comprehensive metrics suite capturing different aspects of detection effectiveness:
 
-\textbf{Primary metric}: F1-Score (harmonic mean of precision and recall, balanced assessment under class imbalance)
-
-\textbf{Supporting metrics}: Accuracy (overall correctness), Precision (false positive control), Recall (detection sensitivity), AUC-ROC (threshold-independent discrimination), Specificity (true negative rate), and MCC (balanced measure considering all confusion matrix elements)
-
-The F1-score serves as our primary evaluation metric due to its balanced treatment of precision and recall, particularly appropriate given the 10\% spam class imbalance.
-
-\subsection{Statistical Analysis Framework}
-
-We apply the comprehensive statistical methodology established in Section~\ref{sec:methodology} with the following specific configurations:
-
+\textbf{Primary Metric:}
 \begin{itemize}
-    \item \textbf{Descriptive Statistics}: Mean and standard deviation across $R = 20$ groups with 95\% confidence intervals ($\alpha = 0.05$, 19 degrees of freedom)
-
-    \item \textbf{Hypothesis Testing}: Paired t-tests comparing each synthetic ratio against the 0\% baseline, with Benjamini-Hochberg FDR correction at $\alpha = 0.05$ controlling false discovery rate across 140 simultaneous tests per configuration~\cite{benjamini1995controlling}
-
-    \item \textbf{Effect Sizes}: Cohen's $d$ with conventional thresholds: negligible ($|d| < 0.2$), small ($0.2 \leq |d| < 0.5$), medium ($0.5 \leq |d| < 0.8$), large ($|d| \geq 0.8$)
-
-    \item \textbf{Sensitivity Analysis}: Linear regression modeling performance vs synthetic proportion, with $R^2 > 0.9$ indicating strong linearity suitable for extrapolation, $R^2 < 0.7$ suggesting non-linearities requiring empirical validation
+    \item F1-Score: Harmonic mean of precision and recall, balanced assessment under class imbalance
 \end{itemize}
 
-Complete mathematical formulations are provided in Section~\ref{sec:methodology}.
-
-\subsection{Experimental Scale and Reproducibility}
-
-Our comprehensive experimental framework encompasses substantial computational investment to ensure rigorous evaluation:
-
-\textbf{Data Generation}:
+\textbf{Supporting Metrics:}
 \begin{itemize}
-    \item \textbf{LLM generation}: 12,000 API calls across both models (2 models $\times$ 20 groups $\times$ 100 spam/group $\times$ 3 prompts)
+    \item Accuracy: Overall correctness, $(TP + TN) / (TP + TN + FP + FN)$
+    \item Precision: False positive control, $TP / (TP + FP)$
+    \item Recall: Detection sensitivity, $TP / (TP + FN)$
+    \item AUC-ROC: Threshold-independent discrimination ability
+    \item Balanced Accuracy: Class-imbalance robust measure, $\frac{1}{2}(\frac{TP}{TP+FN} + \frac{TN}{TN+FP})$
 \end{itemize}
 
-\textbf{Model Training and Evaluation}:
+F1-score serves as the primary evaluation metric due to its balanced treatment of precision (false positive control) and recall (false negative control), particularly appropriate given the 10\% spam class imbalance. Complete mathematical definitions are provided in Appendix~\ref{appendix:metrics}.
+
+\subsection{Reproducibility and Quality Control}
+
+\subsubsection{Reproducibility Measures}
+
+All experiments employ fixed random seeds throughout the pipeline:
 \begin{itemize}
-    \item \textbf{Forward detection track}: 1,320 SVM training-evaluation runs (2 models $\times$ 3 prompts $\times$ 1 strategy $\times$ 11 ratios $\times$ 20 groups $\times$ 1 classifier)
-    \item \textbf{Reverse detection track}: 720 training-evaluation runs (2 testing models $\times$ 3 prompts $\times$ 1 strategy $\times$ 3 ratios $\times$ 20 groups $\times$ 2 classifiers)
-    \item \textbf{Total}: 2,040 training-evaluation units across both tracks
+    \item Data sampling: \texttt{random\_state = 42}
+    \item LLM generation: \texttt{seed = 42} (where supported by API)
+    \item Classifier training: \texttt{random\_state = 42}
+    \item Cross-validation splits: \texttt{random\_state = 42}
 \end{itemize}
 
-\textbf{Statistical Analysis}:
+Complete configuration files, prompt templates, and analysis scripts are version-controlled and documented in our public repository (URL to be provided upon publication).
+
+\subsubsection{Quality Control}
+
+We implement comprehensive quality control for LLM-generated samples:
+
+\textbf{Generation validation:}
 \begin{itemize}
-    \item Approximately 10,000 hypothesis tests across all configurations, metrics, and comparisons
-    \item Benjamini-Hochberg FDR correction applied to control false discovery rate across multiple testing
+    \item \textbf{JSON parsing:} All outputs must parse successfully
+    \item \textbf{Length constraints:} $10 \leq \text{tokens} \leq 1{,}000$
+    \item \textbf{Completeness:} Both subject and body fields required
+    \item \textbf{Language detection:} Verify English language content
 \end{itemize}
 
-All experiments employ fixed random seeds ($\text{seed} = 42$) throughout the pipeline—from data sampling and LLM generation to classifier training—ensuring complete reproducibility of all results. The systematic replication with $R = 20$ independent groups provides statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
+Failed generations are logged with error codes and excluded from analysis. Generation success rates and failure modes are reported in Appendix~\ref{appendix:generation_stats}.
 
-\subsection{Quality Control and Validation}
-
-We implement comprehensive quality control mechanisms to ensure data quality and experimental validity. For LLM-generated samples, we validate length constraints, similarity bounds, JSON parsing, and language quality. Statistical validation includes distributional checks, assumption testing (normality and homoscedasticity), robustness verification with non-parametric tests, and outlier analysis. Complete quality control specifications are provided in Appendix~\ref{appendix:quality_control}.
-
-\subsection{Reproducibility and Open Science}
-
-To facilitate reproducibility and enable future research, we provide:
+\textbf{Statistical validation:}
 \begin{itemize}
-    \item Complete configuration files specifying all experimental parameters
-    \item Detailed random seed documentation for all stochastic processes
-    \item Comprehensive logging of all experimental runs with timestamps
-    \item Statistical analysis scripts with documented data processing steps
-    \item Result tables with mean $\pm$ standard deviation and 95\% confidence intervals
+    \item Normality tests: Shapiro-Wilk tests for each group ($p > 0.05$ confirms normality assumption)
+    \item Outlier detection: Identify groups with performance $> 3$ standard deviations from mean
+    \item Variance homogeneity: Levene's test for equal variances across conditions
 \end{itemize}
 
-All experimental code, configurations, and analysis scripts are version-controlled and documented to enable exact replication of our findings.
+Violations of statistical assumptions trigger non-parametric alternatives (Wilcoxon signed-rank test for non-normal distributions).
 
-\subsection{Ethical Considerations}
+\subsection{Computational Resources and Timeline}
 
-Our experiments use publicly available spam datasets collected with appropriate consent and ethical review. The synthetic spam generation is conducted solely for research purposes to improve spam detection capabilities, with all generated data secured and not disseminated publicly to prevent misuse. We do not conduct experiments involving real user data or operational email systems.
+\textbf{LLM API Costs:}
+
+\begin{itemize}
+    \item Total API calls: \textbf{12,000} generations
+    \item \textbf{GPT-4.1-mini:} 6,000 calls $\times\ \$$0.00015/1K tokens $\approx\ \$$1.80
+    \item \textbf{Claude-3.5-Haiku:} 6,000 calls $\times\ \$$0.00025/1K tokens $\approx\ \$$1.50
+    \item \textbf{Total estimated cost:} $\$$3.30
+\end{itemize}
+
+\textbf{Computational Time:}
+\begin{itemize}
+    \item LLM generation: ~8 hours (with API rate limiting)
+    \item Classifier training (2,280 runs): ~12 hours on 32-core CPU
+    \item Statistical analysis: ~2 hours
+    \item Total pipeline: ~22 hours
+\end{itemize}
+
+\textbf{Hardware:}
+\begin{itemize}
+    \item CPU: Intel Xeon 32-core processor
+    \item RAM: 128 GB
+    \item Storage: 1 TB SSD
+    \item No GPU required (TF-IDF + classical ML)
+\end{itemize}
+
+All experiments are reproducible on standard computing infrastructure without specialized hardware requirements.
