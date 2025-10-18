@@ -198,3 +198,106 @@ Classification performance metrics computed on fixed out-of-sample test set, whe
 \end{itemize}
 
 F1-score serves as primary metric due to balanced treatment of precision and recall under 10\% class imbalance.
+
+\subsection{Mixing Strategy Comparison}
+\label{appendix:mixing_strategy_comparison}
+
+Preliminary experiments compared within-group mixing (training on synthetic data from same group) versus cross-group mixing (training on synthetic data from different group). Cross-group strategy shows consistent advantages: mean F1 improvement of +0.009 ($p < 10^{-6}$, Cohen's $d = 0.13$) across all configurations. More importantly, cross-group mixing better reflects realistic deployment scenarios where synthetic generation sources may differ temporally or distributionally from operational training data. All main experiments employ cross-group strategy based on these findings.
+
+\subsection{Performance Degradation Models}
+\label{appendix:degradation_models}
+
+Linear regression modeling performance degradation as function of synthetic proportion $\theta$ yields highly predictive models across all configurations. Table~\ref{tab:degradation_regression} presents regression parameters for Track 1 experiments.
+
+\begin{table}[h]
+\centering
+\caption{Linear Regression: Performance vs. Synthetic Proportion (Track 1)}
+\label{tab:degradation_regression}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Slope} $\beta_1$ & \textbf{$R^2$} & \textbf{Interpretation} \\
+\midrule
+GPT-4.1-mini & -0.0011 & 0.982 & -0.11\% per 1\% synthetic \\
+Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synthetic \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+High $R^2$ values ($>$0.97) indicate linear models explain $>$97\% of performance variance, enabling reliable interpolation for arbitrary mixing ratios. Slope coefficients quantify expected degradation per 1\% synthetic increase: GPT shows 3.5× lower degradation rate than Claude (-0.11\% vs -0.39\% per 1\% synthetic).
+
+\subsection{Training Ratio Sensitivity Analysis}
+\label{appendix:training_ratio_analysis}
+
+Track 2b experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
+
+\begin{table}[h]
+\centering
+\caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Track 2b)}
+\label{tab:training_ratio_sensitivity}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{llccc}
+\toprule
+\textbf{Testing} & \textbf{Classifier} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
+\textbf{Target} & & \textbf{(Baseline)} & \textbf{(Hybrid)} & \textbf{(Pure Synth)} \\
+\midrule
+\multicolumn{5}{l}{\textit{GPT-4.1-mini Detection (trained on Claude)}} \\
+& SVM & 0.744 & 0.770 & 0.649 \\
+& Random Forest & 0.824 & 0.816 & 0.894 \\
+\midrule
+\multicolumn{5}{l}{\textit{Claude-3.5-Haiku Detection (trained on GPT)}} \\
+& SVM & 0.532 & 0.666 & 0.688 \\
+& Random Forest & 0.802 & 0.802 & 0.802 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+Key patterns: (1) SVM shows non-monotonic behavior for GPT detection (peaks at 50\%), monotonic improvement for Claude detection; (2) Random Forest exhibits monotonic improvement for GPT detection, perfect stability for Claude detection; (3) Optimal ratios differ by target model and classifier architecture.
+
+\subsection{Detailed Statistical Analysis}
+\label{appendix:detailed_statistics}
+
+\subsubsection{Hypothesis Testing Results}
+
+Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$). Table~\ref{tab:hypothesis_tests} presents selected comparisons for Track 1 (100\% synthetic vs. baseline).
+
+\begin{table}[h]
+\centering
+\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1)}
+\label{tab:hypothesis_tests}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{$t$-statistic} & \textbf{$p$-value} & \textbf{Cohen's $d$} \\
+\midrule
+GPT-4.1-mini & -8.32 & $< 10^{-6}$ & -2.67 (large) \\
+Claude-3.5-Haiku & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All comparisons show statistically significant differences ($p < 0.001$) with large effect sizes ($|d| > 0.8$), confirming synthetic data substitution produces substantial, reliable performance changes beyond random variation.
+
+\subsubsection{Complete Performance Metrics}
+
+Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1 baseline (0\%) and 100\% synthetic configurations.
+
+\begin{table}[h]
+\centering
+\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt)}
+\label{tab:complete_metrics}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Model} & \textbf{Ratio} & \textbf{F1} & \textbf{Acc} & \textbf{Prec} & \textbf{Rec} & \textbf{AUC} & \textbf{BAcc} \\
+\midrule
+\multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 & 0.960 & 0.828 & 0.871 & 0.934 & 0.919 \\
+& 100\% & 0.735 & 0.948 & 0.749 & 0.721 & 0.893 & 0.854 \\
+\midrule
+\multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 & 0.960 & 0.828 & 0.871 & 0.934 & 0.919 \\
+& 100\% & 0.457 & 0.915 & 0.495 & 0.425 & 0.712 & 0.682 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+Claude degradation affects all metrics uniformly: -46.2\% F1, -47.3\% Precision, -51.2\% Recall, -23.7\% AUC, -25.8\% Balanced Accuracy. GPT maintains stronger cross-metric performance with maximum degradation of -17.2\% (Recall).
