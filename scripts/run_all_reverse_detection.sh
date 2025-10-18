@@ -81,6 +81,7 @@ for PROMPT in original strong weak; do
                     --testing_prompt $PROMPT \
                     --testing_strategy $STRATEGY \
                     --training_ratio $RATIO \
+                    --classifiers svm random_forest \
                     --config $CONFIG_GPT \
                     --output_dir $OUTPUT_DIR \
                     > "$LOG_FILE" 2>&1
@@ -96,7 +97,6 @@ for PROMPT in original strong weak; do
             PIDS+=($!)
             JOB_NAMES+=("$JOB_NAME")
             echo "  → Job started (PID: $!)"
-        done
     done
 done
 
@@ -129,6 +129,7 @@ for PROMPT in original strong weak; do
                     --testing_prompt $PROMPT \
                     --testing_strategy $STRATEGY \
                     --training_ratio $RATIO \
+                    --classifiers svm random_forest \
                     --config $CONFIG_CLAUDE \
                     --output_dir $OUTPUT_DIR \
                     > "$LOG_FILE" 2>&1
@@ -144,7 +145,6 @@ for PROMPT in original strong weak; do
             PIDS+=($!)
             JOB_NAMES+=("$JOB_NAME")
             echo "  → Job started (PID: $!)"
-        done
     done
 done
 
@@ -181,7 +181,7 @@ echo ""
 echo "Execution Summary:"
 echo "  - Total configurations: $TOTAL_CONFIGS (2 methods × 3 prompts × 1 strategy × 3 ratios)"
 echo "  - Strategy: cross_group only (best performance)"
-echo "  - Total experiments: 360 (18 configs × 20 groups × 1 classifier SVM)"
+echo "  - Total experiments: 720 (18 configs × 20 groups × 2 classifiers: SVM linear + Random Forest)"
 echo "  - Parallel jobs: $MAX_PARALLEL_JOBS"
 echo "  - Total time: ${HOURS}h ${MINUTES}m ${SECONDS}s"
 echo ""

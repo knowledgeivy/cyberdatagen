@@ -18,7 +18,7 @@ REAL_SPAM_COUNTS=(100 150 200)
 MAX_PARALLEL_JOBS=6  # Number of experiments to run in parallel
 
 # Total configurations: 2 × 3 × 1 × 3 = 18 (cross_group only)
-# Total experiments: 18 × 20 groups × 1 classifier (SVM only) = 360
+# Total experiments: 18 × 20 groups × 2 classifiers (SVM linear + Random Forest) = 720
 
 echo "========================================"
 echo "Real-Enhanced Detection Experiments (Parallel)"
@@ -33,7 +33,7 @@ echo "  Testing Strategies: ${TESTING_STRATEGIES[@]} (cross_group only for best 
 echo "  Real Spam Counts: ${REAL_SPAM_COUNTS[@]}"
 echo ""
 echo "Total Configurations: 18"
-echo "Total Experiments: 360 (18 configs × 20 groups × 1 classifier)"
+echo "Total Experiments: 720 (18 configs × 20 groups × 2 classifiers: SVM linear + Random Forest)"
 echo "Parallel Jobs: $MAX_PARALLEL_JOBS"
 echo "========================================"
 echo ""
@@ -105,6 +105,7 @@ for testing_method in "${TESTING_METHODS[@]}"; do
                         --testing_prompt "$testing_prompt" \
                         --testing_strategy "$testing_strategy" \
                         --real_spam_count $real_spam_count \
+                        --classifiers svm random_forest \
                         --config "$CONFIG" \
                         --output_dir "$OUTPUT_DIR" \
                         > "$LOG_FILE" 2>&1
