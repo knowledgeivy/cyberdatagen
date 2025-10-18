@@ -759,7 +759,7 @@ def create_combined_prompt_comparison(base_dir: str, strategy: str, experiment_n
 
     # 设置总标题
     strategy_title = strategy.replace('_', '-').title()
-    fig.suptitle(f'Performance Comparison Across Prompts - {strategy_title} Strategy',
+    fig.suptitle(f'Synthetic-to-Real Detection: Performance Across Prompts ({strategy_title} Strategy)',
                 fontsize=16, fontweight='bold', y=0.995)
 
     # 调整布局

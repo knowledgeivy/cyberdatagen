@@ -131,7 +131,7 @@ def create_performance_curves_by_method(plotting_data: dict, output_dir: str):
                 # Overall title
                 strategy_display = strategy.replace('_', '-').title()
                 fig.suptitle(
-                    f'Cross-Model Reverse Detection: {method_display} Testing '
+                    f'Detecting AI-Generated Spam (Enhanced): {method_display} Testing '
                     f'(Trained on {opposite_method})\n'
                     f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
                     fontsize=14, fontweight='bold'
@@ -270,7 +270,7 @@ def create_prompt_comparison_plots(plotting_data: dict, output_dir: str):
             # Overall title
             strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Cross-Model Reverse Detection: {method_display} Testing (Trained on {opposite_method})\n'
+                f'Detecting AI-Generated Spam (Enhanced): {method_display} Testing (Trained on {opposite_method})\n'
                 f'Prompt Comparison - {strategy_display} Strategy',
                 fontsize=14, fontweight='bold', y=0.995
             )
@@ -404,7 +404,7 @@ def create_cross_method_comparison(plotting_data: dict, output_dir: str):
             # Overall title
             strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Cross-Model Reverse Detection: Method Comparison\n'
+                f'Detecting AI-Generated Spam (Enhanced): Method Comparison\n'
                 f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
                 fontsize=14, fontweight='bold'
             )
