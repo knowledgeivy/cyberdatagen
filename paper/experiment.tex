@@ -37,21 +37,24 @@ We design three prompt strategies varying in guidance intensity: \textbf{Origina
 
 \subsubsection{Synthetic Data Mixing Strategies}
 
-We implement two mixing strategies: \textbf{Within-Group} (synthetic samples generated from the same group, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}$) tests in-distribution effectiveness, while \textbf{Cross-Group} (synthetic from different groups, $\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}$) tests cross-distribution generalization, where $\theta$ denotes synthetic proportion.
+We implement two mixing strategies to evaluate the impact of distribution matching on synthetic data effectiveness:
 
-\textbf{Strategy Selection}: Preliminary experiments comparing both strategies across 3,300 measurements revealed that cross-group mixing consistently outperforms within-group (mean F1: 0.563 vs. 0.554, p$<$0.000001), though with small effect size (Cohen's d$=$0.13). Given cross-group's marginal but consistent advantage and better alignment with real-world scenarios where precise distribution matching is often infeasible, all reported experiments employ cross-group mixing exclusively.
+\begin{itemize}
+    \item \textbf{Within-Group}: Synthetic samples generated from the same group ($\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{i}^{(\theta)}$) tests in-distribution effectiveness
+    \item \textbf{Cross-Group}: Synthetic samples from different groups ($\text{Training}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}$) tests cross-distribution generalization
+\end{itemize}
 
-\subsubsection{SMOTE Baseline Configuration}
+where $\theta$ denotes the synthetic proportion.
 
-We implement SMOTE~\cite{chawla2002smote} as a traditional feature-space augmentation baseline using the \texttt{imblearn} library~\cite{lemaitre2017imbalanced} with $k=5$ nearest neighbors, operating on TF-IDF vectors (identical to LLM pipeline). SMOTE experiments follow the same structure as LLM experiments: both mixing strategies, identical 11 synthetic ratios (0\%-100\%), same 20 groups, and identical evaluation metrics. This parallel design enables direct comparison while highlighting the fundamental distinction: SMOTE generates feature vectors without text, whereas LLMs generate interpretable text. Complete SMOTE configuration is provided in Appendix~\ref{appendix:smote_config}.
+\textbf{Strategy Selection}: Preliminary experiments comparing both strategies across 3,300 measurements (2 models $\times$ 3 prompts $\times$ 11 ratios $\times$ 20 groups $\times$ 2 classifiers $\times$ 2 strategies) revealed that cross-group mixing consistently outperforms within-group (mean F1: 0.563 vs. 0.554, $p < 10^{-6}$), though with small effect size (Cohen's $d = 0.13$). Given cross-group's marginal but consistent advantage and better alignment with real-world deployment scenarios where precise distribution matching is often infeasible, \textbf{all reported experiments employ cross-group mixing exclusively}.
 
 \subsection{Experimental Factors and Design}
 
-Our comprehensive experimental design encompasses two complementary evaluation tracks that enable rigorous assessment of both LLM-based and traditional augmentation approaches.
+Our comprehensive experimental design encompasses two complementary evaluation tracks: \textbf{forward detection} evaluating whether LLM-generated synthetic spam data can effectively train spam classifiers, and \textbf{reverse detection} assessing whether classifiers trained on real data can detect AI-powered spam from different LLM sources.
 
-\subsubsection{LLM Experiment Track}
+\subsubsection{Forward Detection Track}
 
-The LLM experiments follow a full-factorial design with four primary factors:
+The forward detection experiments evaluate whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. This track follows a full-factorial design with four primary factors:
 
 \begin{enumerate}
     \item \textbf{Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
@@ -60,45 +63,36 @@ The LLM experiments follow a full-factorial design with four primary factors:
     \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
 \end{enumerate}
 
-This yields $2 \times 3 \times 1 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 1 classifier (SVM with optimized linear kernel), resulting in $66 \times 20 \times 1 = 1,320$ training-evaluation units.
+This yields $2 \times 3 \times 1 \times 11 = 66$ unique experimental configurations. Each configuration is replicated across $R = 20$ independent groups and evaluated with 1 classifier (Support Vector Machine with optimized linear kernel, selected based on systematic hyperparameter tuning as described in Section~\ref{sec:experiment:hyperparameters}), resulting in $66 \times 20 \times 1 = 1,320$ training-evaluation units.
 
-\subsubsection{SMOTE Baseline Track}
-
-The SMOTE experiments follow a simplified factorial design with three factors:
-
-\begin{enumerate}
-    \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
-    \item \textbf{Synthetic Ratio} ($\theta$): 11 levels (0\%, 10\%, 20\%, ..., 100\%)
-    \item \textbf{Classifier}: 1 level (SVM with optimized linear kernel)
-\end{enumerate}
-
-This yields $1 \times 11 \times 1 = 11$ unique configurations, each replicated across $R = 20$ groups, resulting in $11 \times 20 = 220$ training-evaluation units.
-
-\subsubsection{Combined Experimental Scale}
-
-The complete experimental framework encompasses three complementary evaluation tracks: forward detection (LLM and SMOTE), and reverse detection (cross-model). The LLM and SMOTE tracks comprise $66 + 11 = 77$ distinct configurations with $1,320 + 220 = 1,540$ training-evaluation units, enabling systematic comparison between text-space generation and feature-space interpolation under controlled conditions. Including the reverse detection track adds 18 cross-model configurations with 360 training-evaluation units, bringing the total experimental scale to $77 + 18 = 95$ unique configurations and $1,540 + 360 = 1,900$ total training-evaluation units across all tracks.
+\textbf{Training-Testing Paradigm}: Each experiment trains on a mixture of real ham (900 samples) and varying proportions of real spam ($(1-\theta) \times 100$) combined with synthetic spam ($\theta \times 100$), then tests on a fixed out-of-sample set comprising real ham (900 samples) and real spam (100\% real). This setup evaluates whether synthetic data can substitute for real spam in training effective real-world spam detectors.
 
 \subsubsection{Reverse Detection Track}
 
-To evaluate cross-model detectability and assess whether synthetic spam generated by one LLM can be effectively detected using classifiers trained on another LLM's synthetic data, we conduct a complementary \textbf{reverse detection} experiment using a \textbf{1-vs-Rest cross-model design}:
+The reverse detection experiments address the complementary question: can classifiers trained on real spam data detect AI-generated spam from different LLM sources? This evaluates defensive capabilities against emerging AI-powered spam threats. We employ a \textbf{1-vs-Rest cross-model design}:
 
 \begin{itemize}
-    \item \textbf{GPT-4.1-mini Testing}: Classifiers trained on Claude-3.5-Haiku synthetic data, evaluated on GPT-4.1-mini synthetic spam detection
-    \item \textbf{Claude-3.5-Haiku Testing}: Classifiers trained on GPT-4.1-mini synthetic data, evaluated on Claude-3.5-Haiku synthetic spam detection
+    \item \textbf{GPT-4.1-mini Testing}: Classifiers trained on real ham + Claude-3.5-Haiku synthetic spam, evaluated on detecting GPT-4.1-mini synthetic spam
+    \item \textbf{Claude-3.5-Haiku Testing}: Classifiers trained on real ham + GPT-4.1-mini synthetic spam, evaluated on detecting Claude-3.5-Haiku synthetic spam
 \end{itemize}
 
-This design follows a simplified factorial structure with four factors:
+This design follows a factorial structure with five factors:
 
 \begin{enumerate}
     \item \textbf{Testing Model}: 2 levels (GPT-4.1-mini, Claude-3.5-Haiku)
     \item \textbf{Prompt Strategy}: 3 levels (Original, Strong, Weak)
     \item \textbf{Mixing Strategy}: 1 level (Cross-Group only)
     \item \textbf{Training Synthetic Ratio} ($\theta$): 3 levels (0\%, 50\%, 100\%)
+    \item \textbf{Classifier}: 2 levels (SVM with linear kernel, Random Forest with optimized hyperparameters)
 \end{enumerate}
 
-This yields $2 \times 3 \times 1 \times 3 = 18$ unique cross-model configurations, each replicated across $R = 20$ groups with 1 classifier (SVM), resulting in $18 \times 20 \times 1 = 360$ training-evaluation units. The reduced set of synthetic ratios (0\%, 50\%, 100\%) focuses on three critical scenarios: pure real baseline (0\%), balanced mixing (50\%), and pure synthetic (100\%).
+This yields $2 \times 3 \times 1 \times 3 \times 2 = 36$ unique cross-model configurations, each replicated across $R = 20$ groups, resulting in $36 \times 20 = 720$ training-evaluation units. The reduced set of synthetic ratios (0\%, 50\%, 100\%) focuses on three critical scenarios: pure real baseline (0\%), balanced mixing (50\%), and pure synthetic (100\%).
 
-For each experiment, the training set consists of real ham (900 samples) and real spam at the specified ratio, augmented with synthetic spam from the \emph{opposite} model. The test set comprises real ham (900 samples) and 100\% synthetic spam from the \emph{target} model being tested. This asymmetric design evaluates whether cross-model generalization occurs—whether features learned from one LLM's synthetic patterns transfer to detecting another LLM's synthetic spam.
+\textbf{Training-Testing Paradigm}: For each experiment, the training set consists of real ham (900 samples) and real spam at the specified ratio, augmented with synthetic spam from the \emph{opposite} model. Critically, the test set comprises real ham (900 samples) and 100\% synthetic spam from the \emph{target} model being tested. This asymmetric design evaluates whether cross-model generalization occurs—whether features learned from one LLM's synthetic patterns transfer to detecting another LLM's synthetic spam. Unlike forward detection which uses SVM only, reverse detection employs both SVM and Random Forest to assess architectural differences in cross-model detection capabilities.
+
+\subsubsection{Combined Experimental Scale}
+
+The complete experimental framework comprises $66 + 36 = 102$ unique configurations with $1,320 + 720 = 2,040$ total training-evaluation units across both tracks. This substantial scale—systematically replicated across 20 independent groups—enables rigorous statistical analysis with high power ($>$80\%) for detecting medium effect sizes (Cohen's $d \geq 0.5$) while providing comprehensive coverage of LLM-based spam generation and detection scenarios.
 
 \subsubsection{Synthetic Ratio Progression}
 
@@ -111,7 +105,14 @@ We systematically vary the synthetic data proportion $\theta$ from 0\% (pure rea
 
 \subsection{Classification Models}
 
-We evaluate two architecturally distinct classifiers to ensure findings generalize across different learning paradigms: Support Vector Machine (SVM, margin-based) and Random Forest (RF, ensemble-based). These architectures are selected for their complementary characteristics: SVM provides strong theoretical foundations and effectiveness in high-dimensional spaces through margin maximization, while Random Forest offers robustness to overfitting and natural handling of non-linear patterns through ensemble averaging.
+We employ two architecturally distinct classifiers across our experimental tracks to ensure findings generalize across different learning paradigms:
+
+\begin{itemize}
+    \item \textbf{Support Vector Machine (SVM)}: Margin-based classifier used in both forward and reverse detection tracks. Selected for its strong theoretical foundations and effectiveness in high-dimensional sparse feature spaces through margin maximization.
+    \item \textbf{Random Forest (RF)}: Ensemble-based classifier used exclusively in reverse detection track. Included to assess architectural differences in cross-model detection capabilities, offering robustness to overfitting and natural handling of non-linear patterns through ensemble averaging.
+\end{itemize}
+
+\textbf{Track-Specific Usage}: Forward detection experiments employ SVM only to maintain focus on LLM generation quality assessment, while reverse detection experiments employ both SVM and Random Forest to evaluate architectural robustness in detecting AI-powered spam from different sources.\label{sec:experiment:hyperparameters}
 
 \subsubsection{Hyperparameter Selection and Validation}
 
@@ -177,28 +178,26 @@ Our comprehensive experimental framework encompasses substantial computational i
 \textbf{Data Generation}:
 \begin{itemize}
     \item \textbf{LLM generation}: 12,000 API calls across both models (2 models $\times$ 20 groups $\times$ 100 spam/group $\times$ 3 prompts)
-    \item \textbf{SMOTE generation}: 220 feature-space interpolation operations (1 strategy $\times$ 11 ratios $\times$ 20 groups)
 \end{itemize}
 
 \textbf{Model Training and Evaluation}:
 \begin{itemize}
-    \item \textbf{Forward LLM track}: 1,320 SVM training-evaluation runs (2 models $\times$ 3 prompts $\times$ 1 strategy $\times$ 11 ratios $\times$ 20 groups)
-    \item \textbf{Forward SMOTE track}: 220 SVM training-evaluation runs (1 strategy $\times$ 11 ratios $\times$ 20 groups)
-    \item \textbf{Reverse detection track}: 360 SVM training-evaluation runs (2 testing models $\times$ 3 prompts $\times$ 1 strategy $\times$ 3 ratios $\times$ 20 groups)
-    \item \textbf{Total}: 1,900 training-evaluation units across all three tracks
+    \item \textbf{Forward detection track}: 1,320 SVM training-evaluation runs (2 models $\times$ 3 prompts $\times$ 1 strategy $\times$ 11 ratios $\times$ 20 groups $\times$ 1 classifier)
+    \item \textbf{Reverse detection track}: 720 training-evaluation runs (2 testing models $\times$ 3 prompts $\times$ 1 strategy $\times$ 3 ratios $\times$ 20 groups $\times$ 2 classifiers)
+    \item \textbf{Total}: 2,040 training-evaluation units across both tracks
 \end{itemize}
 
 \textbf{Statistical Analysis}:
 \begin{itemize}
-    \item Approximately 15,000 hypothesis tests across all configurations, metrics, and comparisons
-    \item FDR correction applied to control false discovery rate across multiple testing
+    \item Approximately 10,000 hypothesis tests across all configurations, metrics, and comparisons
+    \item Benjamini-Hochberg FDR correction applied to control false discovery rate across multiple testing
 \end{itemize}
 
-All experiments employ fixed random seeds ($\text{seed} = 42$) throughout the pipeline—from data sampling and LLM generation to SMOTE interpolation and classifier training—ensuring complete reproducibility of all results. The systematic replication with $R = 20$ independent groups provides statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
+All experiments employ fixed random seeds ($\text{seed} = 42$) throughout the pipeline—from data sampling and LLM generation to classifier training—ensuring complete reproducibility of all results. The systematic replication with $R = 20$ independent groups provides statistical power exceeding 80\% for detecting medium effect sizes (Cohen's $d \geq 0.5$) while maintaining computational feasibility. Detailed computational requirements and reproducibility measures are documented in Appendix~\ref{appendix:reproducibility}.
 
 \subsection{Quality Control and Validation}
 
-We implement comprehensive quality control mechanisms to ensure data quality and experimental validity. For LLM-generated samples, we validate length constraints, similarity bounds, JSON parsing, and language quality. For SMOTE-generated samples, we verify vector validity, feature space bounds, sample counts, and numerical stability. Statistical validation includes distributional checks, assumption testing (normality and homoscedasticity), robustness verification with non-parametric tests, and outlier analysis. Complete quality control specifications are provided in Appendix~\ref{appendix:quality_control}.
+We implement comprehensive quality control mechanisms to ensure data quality and experimental validity. For LLM-generated samples, we validate length constraints, similarity bounds, JSON parsing, and language quality. Statistical validation includes distributional checks, assumption testing (normality and homoscedasticity), robustness verification with non-parametric tests, and outlier analysis. Complete quality control specifications are provided in Appendix~\ref{appendix:quality_control}.
 
 \subsection{Reproducibility and Open Science}
 

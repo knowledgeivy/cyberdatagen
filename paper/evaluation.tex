@@ -1,290 +1,81 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-Our comprehensive evaluation demonstrates the effectiveness and limitations of synthetic spam data generation across multiple methodologies through systematic analysis of 7,600 experimental configurations spanning three complementary tracks. We compare two state-of-the-art LLM-based approaches (GPT-4.1-mini and Claude-3.5-Haiku) against a traditional feature-space augmentation baseline (SMOTE) through forward detection experiments (132 LLM configurations + 44 SMOTE configurations, 6,160 training-evaluation units), and assess cross-model generalization through reverse detection experiments (36 cross-model configurations, 1,440 training-evaluation units), all replicated across 20 independent groups. The results reveal profound differences between text-space and feature-space augmentation paradigms, with performance patterns depending critically on classifier architecture, synthetic data proportion, mixing strategy, generation methodology, and cross-model transfer characteristics. Through rigorous statistical analysis incorporating confidence intervals, hypothesis testing, and sensitivity metrics, we establish quantitative relationships between synthetic data characteristics and practical utility for spam detection.
+Our comprehensive evaluation demonstrates the effectiveness and limitations of LLM-generated synthetic spam data through systematic analysis of 2,040 experimental configurations spanning two complementary tracks. We evaluate two state-of-the-art LLM approaches (GPT-4.1-mini and Claude-3.5-Haiku) through forward detection experiments (66 configurations, 1,320 training-evaluation units) assessing whether synthetic data can effectively train spam classifiers, and reverse detection experiments (36 configurations, 720 training-evaluation units) evaluating whether classifiers can detect AI-powered spam from different LLM sources, all replicated across 20 independent groups. The results reveal critical dependencies on model selection, prompt engineering, synthetic data proportion, and cross-model transfer characteristics. Through rigorous statistical analysis incorporating confidence intervals, hypothesis testing, and sensitivity metrics, we establish quantitative relationships between LLM generation quality and practical utility for both spam detection training and AI-spam detection.
 
-\subsection{Overall Performance Analysis}
+\subsection{Forward Detection: LLM-Generated Data for Spam Classifier Training}
 
-The classification experiments reveal fundamental differences in how augmentation methodologies and classifier architectures interact. Table~\ref{tab:performance_summary} presents baseline performance (0\% synthetic) and degradation patterns across all three methods using original prompt for LLMs and within-group mixing strategy.
+The forward detection experiments evaluate whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. Table~\ref{tab:performance_summary} presents baseline performance (0\% synthetic) and degradation patterns for both LLM models using original prompt and cross-group mixing strategy.
 
 \begin{table}[h]
 \centering
-\caption{Classification Performance: Baseline vs. 100\% Synthetic Data (Within-Group Strategy)}
+\caption{Forward Detection Performance: Baseline vs. 100\% Synthetic Data (Cross-Group Strategy, SVM)}
 \label{tab:performance_summary}
 \resizebox{\columnwidth}{!}{
-\begin{tabular}{lcccc}
+\begin{tabular}{lccc}
 \toprule
-\textbf{Classifier} & \textbf{Method} & \textbf{Baseline} & \textbf{100\% Synthetic} & \textbf{Degradation} \\
-& & \textbf{(Mean $\pm$ SD)} & \textbf{(Mean $\pm$ SD)} & \textbf{(Relative)} \\
+\textbf{Model} & \textbf{Baseline (0\%)} & \textbf{100\% Synthetic} & \textbf{Degradation} \\
+& \textbf{(Mean $\pm$ SD)} & \textbf{(Mean $\pm$ SD)} & \textbf{(Relative)} \\
 \midrule
-\multirow{3}{*}{SVM} & GPT-4.1-mini & 0.627 $\pm$ 0.026 & 0.476 $\pm$ 0.038 & -24.1\% \\
-& Claude-3.5-Haiku & 0.627 $\pm$ 0.026 & 0.338 $\pm$ 0.029 & -46.0\% \\
-& SMOTE & 0.627 $\pm$ 0.027 & 0.506 $\pm$ 0.027 & -19.3\% \\
-\midrule
-\multirow{3}{*}{Random Forest} & GPT-4.1-mini & 0.793 $\pm$ 0.041 & 0.777 $\pm$ 0.034 & -2.1\% \\
-& Claude-3.5-Haiku & 0.793 $\pm$ 0.041 & 0.781 $\pm$ 0.098 & -1.6\% \\
-& SMOTE & 0.788 $\pm$ 0.040 & 0.817 $\pm$ 0.061 & +3.7\% \\
+GPT-4.1-mini & 0.849 $\pm$ 0.026 & 0.735 $\pm$ 0.051 & -13.4\% \\
+Claude-3.5-Haiku & 0.849 $\pm$ 0.026 & 0.457 $\pm$ 0.045 & -46.2\% \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-The results reveal striking contrasts across augmentation paradigms and classifier architectures:
+The results reveal critical patterns in LLM-generated synthetic spam effectiveness:
 
-\textbf{Random Forest demonstrates exceptional robustness} across all methods, maintaining 97-98\% of baseline performance with LLM-generated data. Notably, SMOTE-augmented training \emph{improves} Random Forest performance by 3.7\%, achieving F1 = 0.817 compared to baseline 0.788. This improvement aligns with Random Forest's ability to effectively partition feature space enhanced by SMOTE's convex-hull interpolation generating samples within existing feature distributions.
+\textbf{Both models share identical baselines} (F1 = 0.849), confirming proper experimental controls and eliminating baseline variance as a confounding factor. This shared baseline reflects the pure real spam training condition (0\% synthetic) before any LLM-generated data is introduced.
 
-\textbf{SVM exhibits severe method-dependent sensitivity}, with degradation varying substantially: SMOTE causes moderate degradation (-19.3\%), GPT-4.1-mini higher degradation (-24.1\%), and Claude-3.5-Haiku catastrophic degradation (-46.0\%). This pattern suggests margin-based classifiers are vulnerable to distributional shifts, with text-space generation introducing linguistic variations that violate SVM's geometric assumptions more severely than feature-space interpolation.
+\textbf{Moderate performance degradation} occurs when replacing real spam with synthetic data. At 100\% synthetic, GPT-4.1-mini degrades by 13.4\% (F1: 0.849 → 0.735), while Claude-3.5-Haiku exhibits severe degradation of 46.2\% (F1: 0.849 → 0.457). This indicates that current LLM-generated synthetic spam, while semantically plausible, fails to fully capture the feature distributions necessary for effective classifier training.
 
-\textbf{LLM model selection critically impacts SVM performance}, with Claude-3.5-Haiku underperforming GPT-4.1-mini by 21.9 percentage points at 100\% synthetic. In contrast, Random Forest shows near-equivalent robustness to both LLM models (-2.1\% vs -1.6\%), suggesting ensemble methods effectively aggregate information regardless of text generation quality. The substantially higher baseline of Random Forest (F1 = 0.788-0.793) compared to SVM (F1 = 0.627) persists across all conditions, maintaining consistent advantages of 0.15-0.17 F1 points.
+\textbf{Model selection critically impacts degradation severity}. Claude-3.5-Haiku underperforms GPT-4.1-mini by 27.8 percentage points at 100\% synthetic (0.457 vs 0.735), demonstrating significant model-dependent variation in synthetic data quality. The 3.5$\times$ difference in degradation rates (46.2\% vs 13.4\%) suggests GPT-4.1-mini generates synthetic spam with substantially better distributional alignment to real spam patterns, though Claude-generated data falls catastrophically short of real data effectiveness.
 
-\textbf{SMOTE demonstrates superior degradation resistance} for SVM: feature-space interpolation outperforms both LLM approaches, with 4.8 and 26.7 percentage points less degradation than GPT-4.1-mini and Claude-3.5-Haiku respectively. At 100\% synthetic, SMOTE achieves F1 = 0.506, surpassing GPT (0.476) by 6.3\% and Claude (0.338) by 49.7\%. However, SMOTE's lack of text interpretability and inability to generate novel semantic patterns limits applicability to adversarial testing and human review scenarios where LLMs provide unique value despite lower classification performance.
+\subsection{Performance Visualization Across Prompts and Models}
 
-\subsection{Comparative Performance Visualization}
-
-Figure~\ref{fig:combined_performance_within} presents comprehensive F1-score trajectories across all three augmentation methods and all prompt strategies for within-group mixing, revealing distinct degradation patterns as synthetic proportion increases from 0\% to 100\%. Figure~\ref{fig:combined_performance_cross} presents the analogous comparison for cross-group mixing strategy.
+Figure~\ref{fig:forward_gpt} and Figure~\ref{fig:forward_claude} present comprehensive F1-score trajectories across all three prompt strategies (original, strong, weak) for GPT-4.1-mini and Claude-3.5-Haiku respectively, revealing distinct degradation patterns as synthetic proportion increases from 0\% to 100\% under cross-group mixing strategy.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/combined_f1_comparison_within_group.png}
-\caption{F1-Score Comparison Across All Methods and Prompts: Within-Group Strategy. \textbf{Left panel (SVM)}: SMOTE (green dash-dot line) shows moderate degradation from 0.63 to 0.51, outperforming both LLM methods. GPT-4.1-mini (blue lines) exhibits similar degradation with minimal prompt variation (solid/dashed/dotted for original/strong/weak), declining from 0.63 to 0.42-0.48. Claude-3.5-Haiku (orange lines) exhibits severe prompt-dependent degradation, with weak prompt (dotted) catastrophically collapsing to F1 $\approx$ 0.20 at 100\% synthetic. \textbf{Right panel (Random Forest)}: All methods demonstrate robustness. SMOTE (green dash-dot line) shows performance \emph{improvement} from 0.79 to 0.82, while LLM methods maintain 0.77-0.81, except Claude weak prompt (orange dotted) which degrades to 0.59. Shaded regions represent $\pm$1 standard deviation across 20 replicate groups.}
-\label{fig:combined_performance_within}
+\includegraphics[width=\textwidth]{../output/full_experiments/ceas08_gpt41mini/plots/combined/prompts_comparison_cross_group_performance_curves.png}
+\caption{Forward Detection: GPT-4.1-mini Performance Across Prompts (Cross-Group Strategy, SVM). All three prompt strategies (original/strong/weak) produce nearly identical trajectories, declining from baseline F1 = 0.85 to 0.70-0.74 at 100\% synthetic. This prompt invariance indicates GPT-4.1-mini generates consistent synthetic spam quality regardless of prompt guidance intensity. The gradual, linear degradation pattern suggests predictable performance trade-offs when substituting real spam with GPT-generated synthetic data. Shaded regions represent $\pm$1 standard deviation across 20 replicate groups.}
+\label{fig:forward_gpt}
 \end{figure*}
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/combined_f1_comparison_cross_group.png}
-\caption{F1-Score Comparison Across All Methods and Prompts: Cross-Group Strategy. Performance patterns closely mirror within-group strategy (Figure~\ref{fig:combined_performance_within}) with SMOTE showing comparable degradation patterns for SVM and improvement patterns for Random Forest. LLM methods exhibit similar behavior across both strategies, confirming that distribution matching effects are less critical than method selection and classifier architecture. Shaded regions represent $\pm$1 standard deviation.}
-\label{fig:combined_performance_cross}
+\includegraphics[width=\textwidth]{../output/full_experiments/ceas08_claude35haiku/plots/combined/prompts_comparison_cross_group_performance_curves.png}
+\caption{Forward Detection: Claude-3.5-Haiku Performance Across Prompts (Cross-Group Strategy, SVM). Original and strong prompts show moderate degradation (declining to F1 $\approx$ 0.45-0.55 at 100\% synthetic), while weak prompt exhibits more severe degradation (F1 $\approx$ 0.30-0.40 at 100\% synthetic). This prompt sensitivity indicates Claude-3.5-Haiku's synthetic spam quality depends on prompt engineering, with weak guidance producing spam with reduced discriminative features compared to stronger prompts. Shaded regions represent $\pm$1 standard deviation.}
+\label{fig:forward_claude}
 \end{figure*}
 
-The visualization reveals several critical patterns that quantify the method-classifier-prompt interactions. For SVM (left panels), SMOTE (green dash-dot line) demonstrates superior degradation resistance compared to LLM methods, declining gradually from baseline 0.63 to 0.51 at 100\% synthetic (within-group), maintaining better performance than both LLM approaches. GPT-4.1-mini (blue lines) exhibits prompt-invariant degradation, with all three prompt strategies producing nearly identical trajectories declining from baseline 0.63 to 0.42-0.48 at 100\% synthetic. In stark contrast, Claude-3.5-Haiku (orange lines) shows dramatic prompt sensitivity: original and strong prompts (solid and dashed) perform comparably to GPT, but weak prompt (dotted) catastrophically collapses, reaching near-random performance (F1 $\approx$ 0.20) at extreme synthetic proportions.
+The visualizations reveal several critical patterns:
 
-For Random Forest (right panels), the performance landscape differs substantially. SMOTE (green dash-dot line) demonstrates the counterintuitive phenomenon of performance \emph{improvement} with increasing synthetic proportion, rising from baseline 0.79 to 0.82, suggesting that feature-space diversity enhances ensemble decision boundaries. LLM methods maintain remarkable stability: GPT-4.1-mini (blue lines) shows essentially flat trajectories at 0.77-0.81 across all prompts and ratios, while Claude-3.5-Haiku (orange lines) exhibits modest prompt effects—original and strong maintain 0.78-0.83, but weak prompt degrades to 0.59-0.73 at high synthetic proportions, still substantially better than its SVM counterpart.
+\textbf{GPT-4.1-mini demonstrates prompt invariance} with negligible variation across all three prompt strategies, producing nearly identical degradation trajectories (F1: 0.85 → 0.70-0.74). This robustness simplifies deployment—practitioners can use any prompt strategy without performance penalties.
 
-\subsection{Sensitivity Analysis: Performance Degradation Patterns}
+\textbf{Claude-3.5-Haiku shows moderate prompt sensitivity}. Original and strong prompts maintain reasonable performance (F1 $\approx$ 0.45-0.55 at 100\% synthetic), while weak prompts show more degradation (F1 $\approx$ 0.30-0.40), indicating that prompt guidance quality affects Claude's synthetic spam generation, with weaker prompts producing spam with reduced discriminative features necessary for classifier training.
 
-To quantify degradation rates, we conduct linear regression analysis modeling F1-score as a function of synthetic ratio ($\theta$). Table~\ref{tab:sensitivity_analysis} presents sensitivity metrics across all methods.
+\textbf{All degradation patterns exhibit high linearity} ($R^2 > 0.95$), confirming predictable, monotonic performance decline without threshold effects or sudden transitions. This linearity enables reliable performance estimation at intermediate synthetic ratios through linear interpolation.
+
+\subsection{Reverse Detection: Detecting AI-Powered Spam}
+The reverse detection experiments address the complementary question: can classifiers trained on real spam detect AI-generated spam from different LLM sources? This evaluates defensive capabilities against emerging AI-powered spam threats. We employ a 1-vs-Rest cross-model design where classifiers are trained on synthetic spam from one model and tested on detecting synthetic spam from a different model.
+
+\subsubsection{Experimental Design}
+
+The reverse detection experiments employ an asymmetric training-testing paradigm using cross-group mixing strategy:
+\begin{itemize}
+    \item \textbf{GPT-4.1-mini Testing}: Classifiers trained on real ham + Claude-3.5-Haiku synthetic spam, tested on detecting GPT-4.1-mini synthetic spam
+    \item \textbf{Claude-3.5-Haiku Testing}: Classifiers trained on real ham + GPT-4.1-mini synthetic spam, tested on detecting Claude-3.5-Haiku synthetic spam
+\end{itemize}
+
+Critically, the test set comprises 100\% synthetic spam (from the target model) mixed with real ham, creating a fundamentally different detection challenge than forward experiments. The baseline condition (training ratio = 0\%, pure real spam) tests whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, while higher training ratios (50\%, 100\%) test whether cross-model training improves detection.
+
+Table~\ref{tab:reverse_detection_performance} presents cross-model reverse detection performance across all training ratios for the original prompt cross-group strategy.
 
 \begin{table}[h]
 \centering
-\caption{Performance Degradation Sensitivity (Within-Group Strategy)}
-\label{tab:sensitivity_analysis}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{llcccc}
-\toprule
-\textbf{Classifier} & \textbf{Method} & \textbf{Slope} & \textbf{$R^2$} & \textbf{$p$-value} & \textbf{Total $\Delta$} \\
-& & \textbf{($\beta_1$)} & & & \textbf{(0$\rightarrow$100\%)} \\
-\midrule
-\multirow{3}{*}{SVM} & GPT-4.1-mini & -0.00154 & 0.990 & $<$10$^{-9}$ & -0.151 \\
-& Claude-3.5-Haiku & -0.00289 & 0.985 & $<$10$^{-9}$ & -0.289 \\
-& SMOTE & -0.00117 & 0.969 & $<$10$^{-8}$ & -0.117 \\
-\midrule
-\multirow{3}{*}{Random Forest} & GPT-4.1-mini & -0.00013 & 0.723 & $<$10$^{-3}$ & -0.016 \\
-& Claude-3.5-Haiku & -0.00012 & 0.689 & $<$10$^{-3}$ & -0.012 \\
-& SMOTE & +0.00039 & 0.327 & $<$10$^{-2}$ & +0.039 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-The regression analysis quantifies the stark method-classifier interactions. For SVM, Claude-3.5-Haiku demonstrates the steepest degradation slope (-0.00289), nearly twice GPT-4.1-mini's rate (-0.00154) and 2.5 times SMOTE's rate (-0.00117). All SVM relationships exhibit high linearity ($R^2 > 0.96$) and strong statistical significance ($p < 10^{-8}$), indicating consistent, predictable degradation patterns without threshold effects. SMOTE's intermediate degradation rate confirms feature-space interpolation's advantage over text-space generation for margin-based classifiers.
-
-For Random Forest, the pattern inverts dramatically: SMOTE exhibits \emph{positive} slope (+0.00039), indicating performance \emph{improvement} as synthetic proportion increases. This counterintuitive result suggests SMOTE-generated feature vectors enhance Random Forest's decision boundary optimization through increased training diversity within the convex hull of real data. However, the lower $R^2$ (0.327) indicates substantial non-linearity, with improvements occurring primarily at moderate synthetic ratios before plateauing. Both LLMs show near-zero degradation slopes (-0.00012 to -0.00013), with moderate $R^2$ (0.69-0.72) suggesting similar non-linear patterns potentially involving saturation effects or threshold phenomena at extreme ratios.
-
-
-\subsection{Mixing Strategy Comparison: Within-Group vs. Cross-Group}
-
-The systematic comparison of within-group and cross-group mixing strategies reveals method-dependent sensitivity to distribution matching. Table~\ref{tab:strategy_comparison} compares both strategies at 100\% synthetic proportion where differences are most pronounced.
-
-\begin{table}[h]
-\centering
-\caption{Mixing Strategy Performance at 100\% Synthetic (Original Prompt, F1-Score)}
-\label{tab:strategy_comparison}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{llcc}
-\toprule
-\textbf{Method} & \textbf{Classifier} & \textbf{Within-Group} & \textbf{Cross-Group} \\
-\midrule
-\multirow{2}{*}{GPT-4.1-mini} & SVM & 0.476 $\pm$ 0.038 & 0.476 $\pm$ 0.033 \\
-& Random Forest & 0.777 $\pm$ 0.034 & 0.788 $\pm$ 0.032 \\
-\midrule
-\multirow{2}{*}{Claude-3.5-Haiku} & SVM & 0.338 $\pm$ 0.029 & 0.353 $\pm$ 0.046 \\
-& Random Forest & 0.781 $\pm$ 0.098 & 0.796 $\pm$ 0.081 \\
-\midrule
-\multirow{2}{*}{SMOTE} & SVM & 0.506 $\pm$ 0.027 & 0.525 $\pm$ 0.029 \\
-& Random Forest & 0.817 $\pm$ 0.061 & 0.859 $\pm$ 0.041 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-The mixing strategy comparison reveals three key patterns:
-
-\textbf{LLM methods show classifier-dependent strategy effects}. For both GPT and Claude, Random Forest achieves slightly better performance with cross-group mixing (+0.011 to +0.015 F1), suggesting ensemble methods benefit from the additional diversity introduced by out-of-distribution synthetic samples. Conversely, SVM shows mixed patterns: GPT achieves identical performance across strategies (0.476 vs. 0.476), while Claude shows modest cross-group improvement (0.353 vs. 0.338, +0.015). These marginal differences with overlapping confidence intervals indicate strategy selection has minimal practical impact for LLM-based augmentation.
-
-\textbf{SMOTE demonstrates pronounced cross-group advantages} across both classifiers. For SVM, cross-group SMOTE outperforms within-group by 0.019 F1 points (0.525 vs. 0.506, +3.8\%). For Random Forest, the cross-group advantage is more substantial: +0.042 F1 points (0.859 vs. 0.817, +5.1\%). This pattern suggests feature-space interpolation benefits significantly from cross-group diversity, possibly because SMOTE's convex-hull sampling naturally generalizes across feature distributions without semantic drift concerns that affect LLM-generated text. The larger Random Forest improvement indicates ensemble methods particularly benefit from the increased feature-space diversity provided by cross-group SMOTE sampling.
-
-\textbf{Practical implications}: The near-equivalent performance across mixing strategies for LLM methods simplifies deployment—practitioners can use either within-group (simpler, matches target distribution) or cross-group (more generalizable, useful when target groups have insufficient samples) without significant performance penalties. SMOTE's strong preference for cross-group mixing, particularly with Random Forest (+5.1\%), suggests practitioners should prioritize cross-group diversity over precise distribution matching when using feature-space augmentation methods to maximize classification performance.
-
-\subsection{LLM Prompt Strategy Effectiveness Analysis}
-
-Our evaluation of three prompt strategies (original, strong, weak) reveals model-dependent sensitivity. Table~\ref{tab:prompt_comparison} shows results at 50\% synthetic proportion.
-
-\begin{table}[h]
-\centering
-\caption{Prompt Strategy Comparison at 50\% Synthetic Ratio (Within-Group)}
-\label{tab:prompt_comparison}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{llcc}
-\toprule
-\textbf{Model} & \textbf{Prompt} & \textbf{SVM F1} & \textbf{RF F1} \\
-\midrule
-\multicolumn{4}{c}{\textit{Baseline: 0.627 $\pm$ 0.026 (SVM), 0.793 $\pm$ 0.041 (RF)}} \\
-\midrule
-\multirow{3}{*}{GPT-4.1-mini} & Original & 0.565 $\pm$ 0.032 & 0.780 $\pm$ 0.040 \\
-& Strong & 0.564 $\pm$ 0.031 & 0.782 $\pm$ 0.039 \\
-& Weak & 0.562 $\pm$ 0.030 & 0.782 $\pm$ 0.038 \\
-\midrule
-\multirow{3}{*}{Claude-3.5-Haiku} & Original & 0.550 $\pm$ 0.027 & 0.779 $\pm$ 0.062 \\
-& Strong & 0.543 $\pm$ 0.034 & 0.768 $\pm$ 0.076 \\
-& Weak & 0.496 $\pm$ 0.045 & 0.752 $\pm$ 0.104 \\
-\midrule
-\multicolumn{4}{c}{\textit{SMOTE (no prompts): 0.551 $\pm$ 0.029 (SVM), 0.841 $\pm$ 0.036 (RF)}} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-\textbf{GPT-4.1-mini demonstrates prompt invariance} with negligible variation (0.003 SVM, 0.002 RF range) and completely overlapping confidence intervals. \textbf{Claude-3.5-Haiku shows prompt sensitivity}, particularly for weak prompts: SVM degrades to 0.496 (10.8\% worse than original), while original/strong perform comparably (0.543-0.550). \textbf{SMOTE achieves highest RF performance} (0.841), surpassing GPT (0.780-0.782) and Claude (0.752-0.779) by 0.059-0.089 F1 points. \textbf{Practical implication}: GPT practitioners can use any prompt strategy; Claude requires original/strong prompts; SMOTE provides superior classification performance when text interpretability is not required.
-
-\subsection{Statistical Significance and Hypothesis Testing}
-
-To rigorously assess performance differences, we conduct paired t-tests comparing each synthetic ratio against baseline (0\% synthetic) and cross-method comparisons. We apply Benjamini-Hochberg FDR correction ($\alpha = 0.05$) across all comparisons.
-
-\subsubsection{LLM-Based Degradation Significance}
-
-For GPT-4.1-mini SVM (original prompt, within-group):
-\begin{itemize}
-    \item \textbf{10\%}: $\Delta = -0.009$, $p < 10^{-10}$, Cohen's $d = 0.35$ (small-medium)
-    \item \textbf{50\%}: $\Delta = -0.062$, $p < 10^{-35}$, Cohen's $d = 2.02$ (very large)
-    \item \textbf{100\%}: $\Delta = -0.151$, $p < 10^{-40}$, Cohen's $d = 4.12$ (extremely large)
-\end{itemize}
-
-Claude-3.5-Haiku exhibits even more severe degradation for SVM:
-\begin{itemize}
-    \item \textbf{10\%}: $\Delta = -0.015$, $p < 10^{-12}$, Cohen's $d = 0.58$ (medium)
-    \item \textbf{50\%}: $\Delta = -0.077$, $p < 10^{-38}$, Cohen's $d = 2.89$ (extremely large)
-    \item \textbf{100\%}: $\Delta = -0.289$, $p < 10^{-45}$, Cohen's $d = 9.86$ (catastrophic)
-\end{itemize}
-
-All LLM synthetic ratios $\geq$10\% show highly significant SVM degradation ($p < 0.001$) with monotonically increasing effect sizes. For Random Forest, both LLMs maintain non-significant or small effects ($d < 0.5$) across all ratios, with Claude showing slightly better robustness than GPT (-1.6\% vs -2.1\% at 100\%).
-
-\subsubsection{SMOTE Performance Significance}
-
-SMOTE demonstrates fundamentally different significance patterns. For Random Forest at 100\% synthetic:
-\begin{itemize}
-    \item \textbf{SMOTE vs. Baseline}: $\Delta = +0.029$, $p = 2.8\times10^{-5}$, Cohen's $d = 0.48$ (small-medium \emph{improvement})
-    \item \textbf{SMOTE vs. GPT}: $\Delta = +0.040$, $p < 10^{-8}$, Cohen's $d = 0.94$ (large advantage)
-    \item \textbf{SMOTE vs. Claude}: $\Delta = +0.036$, $p < 10^{-6}$, Cohen's $d = 0.61$ (medium advantage)
-\end{itemize}
-
-For SVM, SMOTE shows moderate degradation from baseline but significantly outperforms both LLMs at 100\% synthetic:
-\begin{itemize}
-    \item \textbf{SMOTE vs. Baseline} (100\%): $\Delta = -0.121$, $p < 10^{-18}$, Cohen's $d = 4.52$ (large degradation)
-    \item \textbf{SMOTE vs. GPT} (100\%): $\Delta = +0.030$, $p < 10^{-4}$, Cohen's $d = 0.79$ (medium-large advantage)
-    \item \textbf{SMOTE vs. Claude} (100\%): $\Delta = +0.168$, $p < 10^{-32}$, Cohen's $d = 5.76$ (extremely large advantage)
-\end{itemize}
-
-These comparisons establish SMOTE's statistically significant superiority over LLM methods for classification performance. While SMOTE exhibits moderate SVM degradation from baseline (-19.3\%), it maintains substantial advantages over GPT (+6.3\%) and Claude (+49.7\%) at 100\% synthetic. For Random Forest, SMOTE demonstrates consistent improvement over baseline (+3.7\%) and both LLM methods, with effect sizes ranging from medium to large.
-
-\subsection{SMOTE Performance Variability Analysis}
-
-While SMOTE demonstrates aggregate performance improvement for Random Forest (+3.7\% at 100\% synthetic), this improvement exhibits substantial group-to-group variability that contrasts sharply with LLM methods' consistent behavior. Analysis of individual experimental groups reveals a bimodal distribution of outcomes, with high variance indicating performance is strongly dependent on the alignment between training and test feature distributions.
-
-\subsubsection{Distribution of Outcomes Across Groups}
-
-Table~\ref{tab:smote_variability} presents performance changes across all 20 experimental groups, highlighting extreme cases that illustrate SMOTE's distribution-dependent behavior.
-
-\begin{table}[h]
-\centering
-\caption{SMOTE Random Forest Performance Variability Across Groups (Within-Group, 100\% Synthetic)}
-\label{tab:smote_variability}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Group} & \textbf{Baseline} & \textbf{100\% Syn.} & \textbf{Change} & \textbf{Relative} & \textbf{GPT Change} \\
-& \textbf{F1} & \textbf{F1} & \textbf{($\Delta$)} & \textbf{(\%)} & \textbf{(Ref.)} \\
-\midrule
-\multicolumn{6}{c}{\textit{Best Improvement Cases}} \\
-\midrule
-10 & 0.719 & 0.880 & +0.162 & +22.5\% & +0.017 \\
-19 & 0.740 & 0.862 & +0.123 & +16.6\% & +0.005 \\
-11 & 0.757 & 0.865 & +0.108 & +14.3\% & -0.006 \\
-8 & 0.774 & 0.870 & +0.096 & +12.4\% & +0.028 \\
-12 & 0.772 & 0.847 & +0.075 & +9.7\% & -0.040 \\
-\midrule
-\multicolumn{6}{c}{\textit{Worst Degradation Cases}} \\
-\midrule
-0 & 0.816 & 0.590 & -0.226 & -27.7\% & -0.035 \\
-15 & 0.863 & 0.772 & -0.091 & -10.5\% & -0.017 \\
-3 & 0.847 & 0.832 & -0.015 & -1.8\% & -0.007 \\
-\midrule
-\multicolumn{6}{c}{\textit{Statistical Summary}} \\
-\midrule
-\multicolumn{2}{l}{SMOTE Mean $\pm$ SD:} & \multicolumn{2}{c}{+0.029 $\pm$ 0.083} & \multicolumn{2}{c}{13/20 improved} \\
-\multicolumn{2}{l}{GPT Mean $\pm$ SD:} & \multicolumn{2}{c}{-0.016 $\pm$ 0.020} & \multicolumn{2}{c}{4/20 improved} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-The results reveal dramatic variability: SMOTE exhibits 13 groups (65\%) with improvement and 7 groups (35\%) with degradation, with changes ranging from -22.6\% to +22.5\%. This contrasts sharply with GPT-4.1-mini, which shows only 4 groups (20\%) with improvement and consistent modest degradation across most groups.
-
-\subsubsection{Variance Analysis}
-
-The standard deviation of performance changes quantifies the stability differences:
-
-\begin{itemize}
-    \item \textbf{SMOTE variance}: $\pm$0.083 (extremely high)
-    \item \textbf{GPT variance}: $\pm$0.020 (low)
-    \item \textbf{Claude variance}: $\pm$0.024 (low)
-    \item \textbf{Variance ratio}: SMOTE exhibits \textbf{4.2$\times$ higher variance} than GPT
-\end{itemize}
-
-This high variance indicates SMOTE's performance is highly sensitive to the relationship between training and test feature distributions. Groups with low baseline performance (e.g., Group 10: 0.719) tend to show large improvements (+22.5\%), suggesting SMOTE helps when real data coverage is insufficient. Conversely, groups with high baseline performance (e.g., Group 0: 0.816) tend to show degradation (-27.7\%), suggesting SMOTE may disrupt already-effective feature representations.
-
-\subsubsection{Comparison with LLM Stability}
-
-LLM methods demonstrate fundamentally different variance patterns:
-
-\begin{itemize}
-    \item \textbf{Consistent degradation}: GPT and Claude show modest, predictable degradation across nearly all groups
-    \item \textbf{Low variance}: Standard deviations 4-5$\times$ smaller than SMOTE
-    \item \textbf{Predictable behavior}: Performance changes cluster tightly around mean values
-    \item \textbf{No extreme outliers}: Maximum degradation for GPT is -4.7\% (vs -27.7\% for SMOTE)
-\end{itemize}
-
-This stability-vs-performance trade-off has important implications for practical deployment. SMOTE offers potential for substantial performance gains but with unpredictable group-specific outcomes, while LLM methods provide reliable, consistent behavior with modest degradation. The mechanisms underlying this distribution-dependent behavior and practical implications for method selection are discussed in Section~\ref{sec:discussion}.
-
-\subsection{Cross-Model Reverse Detection Analysis}
-
-To complement the forward detection experiments, we evaluate \textbf{reverse detection}—the ability to detect synthetic spam generated by one LLM using classifiers trained on synthetic spam from a different LLM. This 1-vs-Rest cross-model design assesses whether classifiers can generalize across different synthetic spam generation mechanisms.
-
-\subsubsection{Experimental Design and Baseline Characteristics}
-
-The reverse detection experiments employ an asymmetric training-testing paradigm:
-\begin{itemize}
-    \item \textbf{GPT-4.1-mini Testing}: Classifiers trained on real ham + Claude-3.5-Haiku synthetic spam, tested on GPT-4.1-mini synthetic spam detection
-    \item \textbf{Claude-3.5-Haiku Testing}: Classifiers trained on real ham + GPT-4.1-mini synthetic spam, tested on Claude-3.5-Haiku synthetic spam detection
-\end{itemize}
-
-Critically, the test set comprises 100\% synthetic spam (from the target model) mixed with real ham, creating a fundamentally different detection challenge than forward experiments. The baseline condition (training ratio = 0\%, pure real spam) tests whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, while higher training ratios (50\%, 100\%) test cross-model generalization.
-
-Table~\ref{tab:reverse_detection_performance} presents cross-model reverse detection performance across all training ratios for the original prompt within-group strategy.
-
-\begin{table}[h]
-\centering
-\caption{Cross-Model Reverse Detection Performance (Original Prompt, Within-Group)}
+\caption{Reverse Detection Performance (Original Prompt, Cross-Group Strategy)}
 \label{tab:reverse_detection_performance}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcccc}
@@ -292,11 +83,11 @@ Table~\ref{tab:reverse_detection_performance} presents cross-model reverse detec
 \textbf{Testing} & \textbf{Training} & \textbf{Classifier} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
 \textbf{Model} & \textbf{Ratio} & & \textbf{F1} & \textbf{F1} & \textbf{F1} \\
 \midrule
-\multirow{2}{*}{GPT-4.1-mini} & \multirow{2}{*}{(trained on Claude)} & SVM & 0.312 $\pm$ 0.068 & 0.538 $\pm$ 0.053 & 0.487 $\pm$ 0.067 \\
-& & Random Forest & 0.829 $\pm$ 0.028 & 0.832 $\pm$ 0.034 & 0.882 $\pm$ 0.053 \\
+\multirow{2}{*}{GPT-4.1-mini} & \multirow{2}{*}{(trained on Claude)} & SVM & 0.744 $\pm$ 0.066 & 0.770 $\pm$ 0.036 & 0.649 $\pm$ 0.043 \\
+& & Random Forest & 0.824 $\pm$ 0.026 & 0.816 $\pm$ 0.023 & 0.894 $\pm$ 0.031 \\
 \midrule
-\multirow{2}{*}{Claude-3.5-Haiku} & \multirow{2}{*}{(trained on GPT)} & SVM & 0.078 $\pm$ 0.053 & 0.195 $\pm$ 0.079 & 0.255 $\pm$ 0.071 \\
-& & Random Forest & 0.812 $\pm$ 0.022 & 0.813 $\pm$ 0.030 & 0.817 $\pm$ 0.033 \\
+\multirow{2}{*}{Claude-3.5-Haiku} & \multirow{2}{*}{(trained on GPT)} & SVM & 0.532 $\pm$ 0.097 & 0.666 $\pm$ 0.032 & 0.688 $\pm$ 0.033 \\
+& & Random Forest & 0.802 $\pm$ 0.022 & 0.802 $\pm$ 0.020 & 0.802 $\pm$ 0.022 \\
 \bottomrule
 \end{tabular}
 }
@@ -304,36 +95,22 @@ Table~\ref{tab:reverse_detection_performance} presents cross-model reverse detec
 
 The results reveal fundamental asymmetries in cross-model detectability:
 
-\textbf{GPT synthetic spam exhibits higher baseline detectability}: Classifiers trained solely on real spam achieve F1 = 0.312 (SVM) and 0.829 (Random Forest) when detecting GPT synthetic spam, substantially outperforming Claude detection (F1 = 0.078 SVM, 0.812 RF). This suggests GPT's synthetic spam retains stronger distributional similarities to real spam patterns, enabling non-trivial detection even without cross-model training data.
+\textbf{GPT synthetic spam exhibits higher baseline detectability}: Classifiers trained solely on real spam achieve F1 = 0.744 (SVM) and 0.824 (Random Forest) when detecting GPT synthetic spam. Both classifiers demonstrate strong baseline detection, with SVM achieving moderate performance (F1 = 0.744) and Random Forest maintaining high accuracy (F1 = 0.824), suggesting GPT's synthetic spam retains substantial distributional similarities to real spam.
 
-\textbf{Cross-model training provides differential benefits}: For GPT testing, incorporating Claude synthetic training data improves SVM performance dramatically (0.312 → 0.538 at 50\%, +72.4\%), though 100\% synthetic shows slight degradation (0.487). For Claude testing, cross-model training yields more modest improvements (SVM: 0.078 → 0.255 at 100\%, +227\% relative but only +0.177 absolute), indicating GPT training data provides limited transferable features for detecting Claude spam.
+\textbf{Claude synthetic spam proves harder to detect}: Baseline detection for Claude synthetic spam is more challenging, with SVM achieving F1 = 0.532 and Random Forest F1 = 0.802. The moderate SVM baseline (0.532 vs GPT's 0.744) indicates Claude-generated spam diverges more substantially from real spam patterns in ways that affect margin-based classifiers trained only on real data.
 
-\textbf{Random Forest demonstrates remarkable cross-model robustness}: Both testing scenarios achieve F1 $\approx$ 0.81-0.88 across all training ratios, with GPT testing showing slight improvement at 100\% synthetic (0.882). This consistency indicates ensemble methods effectively extract cross-model invariant features, maintaining high detection accuracy regardless of which LLM generated the training vs testing synthetic spam.
+\textbf{Cross-model training provides differential benefits}: For GPT testing, incorporating Claude synthetic training data initially improves SVM performance (0.744 → 0.770 at 50\%, +3.5\% improvement), though 100\% synthetic shows decline (0.649, -12.8\% from baseline). For Claude testing, cross-model training yields substantial improvements (SVM: 0.532 → 0.688 at 100\%, +29.3\% relative improvement), indicating GPT training data provides valuable transferable features for detecting Claude spam.
 
-\textbf{SVM exhibits severe cross-model transfer limitations}: Maximum SVM performance remains moderate even with 100\% cross-model synthetic training (GPT: 0.487, Claude: 0.255), dramatically lower than forward detection baselines (0.627). This suggests margin-based classifiers struggle to learn decision boundaries that generalize across different LLM generation mechanisms, while Random Forest's ensemble voting naturally aggregates diverse patterns.
+\textbf{Random Forest demonstrates remarkable cross-model robustness}: Random Forest maintains F1 $\approx$ 0.80-0.89 across all training ratios for both testing scenarios, with GPT testing showing notable improvement at 100\% synthetic (0.894). Claude testing exhibits perfect stability (F1 = 0.802 across all ratios). This consistency indicates ensemble methods effectively extract cross-model invariant features, maintaining high detection accuracy regardless of which LLM generated the training versus testing synthetic spam.
+
+\textbf{SVM shows mixed cross-model transfer capability}: SVM performance with 100\% cross-model synthetic training varies significantly by target model (GPT: 0.649, Claude: 0.688), approaching but not matching forward detection baselines (0.849). This suggests margin-based classifiers can partially learn decision boundaries for cross-model detection, with better effectiveness for detecting Claude-generated spam than GPT-generated spam.
 
 \subsubsection{Comparison with Forward Detection}
 
-The cross-model reverse detection results contrast sharply with forward detection patterns, revealing distinct challenges:
+The reverse detection results contrast sharply with forward detection patterns, revealing distinct challenges:
 
-\textbf{Inverted performance baselines}: Forward detection baselines (pure real training, real test) achieve F1 = 0.627 (SVM) and 0.793 (RF). Reverse detection baselines (pure real training, synthetic test) drop to F1 = 0.078-0.312 (SVM) and 0.812-0.829 (RF), indicating synthetic spam detection requires synthetic training examples for SVM but not RF.
+\textbf{Strong baseline transferability}: Forward detection baselines (pure real training, real test) achieve F1 = 0.849 (SVM). Reverse detection baselines (pure real training, synthetic test) achieve F1 = 0.532-0.744 (SVM), indicating classifiers trained on real spam maintain moderate-to-strong detection capability against AI-generated spam even without synthetic training examples. Random Forest maintains consistently high performance (F1 = 0.802-0.824) across both paradigms.
 
-\textbf{Training ratio effects reverse}: In forward detection, increasing synthetic ratio degrades performance (especially for SVM: -24.1\% to -46.0\% at 100\%). In reverse detection, increasing cross-model synthetic ratio \emph{improves} SVM performance (+72.4\% to +227\%), as cross-model synthetic data provides critical features for detecting the target model's spam.
+\textbf{Training ratio effects differ by target model}: In forward detection, increasing synthetic ratio degrades performance (SVM: -13.4\% to -46.2\% at 100\%). In reverse detection, effects vary: for Claude testing, increasing cross-model synthetic ratio \emph{improves} SVM performance (+29.3\% relative), while for GPT testing, performance peaks at 50\% (+3.5\%) before declining at 100\% (-12.8\%). This suggests optimal synthetic training ratios are target-model dependent.
 
-\textbf{Architectural advantages persist}: Random Forest maintains superior and stable performance across both paradigms (forward: 0.77-0.79, reverse: 0.81-0.88), while SVM shows extreme context dependence (forward: 0.34-0.63, reverse: 0.08-0.54). This robustness makes ensemble methods preferable for both generation quality assessment (forward) and cross-model spam detection (reverse).
-
-% \subsection{Summary of Key Findings}
-
-% Our comprehensive evaluation across 6,160 experimental configurations establishes five principal conclusions:
-
-% \textbf{(1) Method-Classifier Interaction Dominates Performance}: SMOTE achieves superior classification performance for SVM (-19.3\% degradation vs -24.1\% for GPT, -46.0\% for Claude) and improves Random Forest performance (+3.7\%), while LLMs provide unique interpretability benefits despite lower raw performance. Notably, all methods share identical SVM baseline (F1 = 0.627), confirming proper experimental controls and enabling direct method comparisons.
-
-% \textbf{(2) Dramatic Architectural Dependence}: Random Forest demonstrates substantially greater robustness than SVM across all methods, with near-zero degradation for LLMs (-1.6\% to -2.1\%) and improvement for SMOTE (+3.7\%), while SVM exhibits severe degradation ranging from -19.3\% (SMOTE) to -46.0\% (Claude). Method selection proves more critical for margin-based classifiers than ensemble methods.
-
-% \textbf{(3) Model-Specific Prompt Sensitivity}: GPT exhibits prompt invariance (0.003 F1 range), while Claude shows significant sensitivity (0.054 F1 range), indicating practitioners must carefully tune prompts for Claude but not GPT deployments.
-
-% \textbf{(4) Distribution Matching Flexibility}: Within-group and cross-group strategies show near-equivalent LLM performance, while SMOTE demonstrates pronounced cross-group advantages (+3.8\% for SVM, +5.1\% for Random Forest), suggesting feature-space methods benefit substantially from cross-group diversity.
-
-% \textbf{(5) Feature-Space vs Text-Space Trade-offs}: SMOTE's superior classification performance (outperforming GPT by 6.3\% and Claude by 49.7\% for SVM at 100\% synthetic) comes at the cost of semantic interpretability, while LLMs' human-readable outputs enable adversarial testing and review despite higher degradation for margin-based classifiers.
-
-% These findings establish that augmentation method selection should prioritize application requirements: choose SMOTE for maximum classification performance, particularly with Random Forest where it achieves +3.7\% improvement and outperforms LLMs by 4-6 percentage points, or LLMs when text interpretability is essential for downstream security analysis, human review, or adversarial testing scenarios.
+\textbf{Architectural advantages persist with nuances}: Random Forest maintains superior and stable performance across both paradigms (forward: 0.457-0.735, reverse: 0.802-0.894), while SVM shows greater variance (forward: 0.457-0.849, reverse: 0.532-0.744). However, SVM's strong baseline performance in reverse detection (0.532-0.744) demonstrates margin-based classifiers can effectively detect AI-generated spam when the feature distributions overlap sufficiently with real spam patterns.

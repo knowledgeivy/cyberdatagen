@@ -57,7 +57,8 @@ def create_performance_curves_by_method(plotting_data: dict, output_dir: str):
     """
     logger.info("Creating performance curves by method...")
 
-    metrics = ['f1_score', 'accuracy', 'precision', 'recall', 'auc_roc']
+    # Metric order for ACM academic paper: accuracy, precision, recall, f1, auc-roc
+    metrics = ['accuracy', 'precision', 'recall', 'f1_score', 'auc_roc']
     metric_labels = {
         'f1_score': 'F1-Score',
         'accuracy': 'Accuracy',
@@ -161,7 +162,8 @@ def create_prompt_comparison_plots(plotting_data: dict, output_dir: str):
     logger.info("Creating prompt comparison plots...")
 
     prompts = ['original', 'strong', 'weak']
-    metrics = ['f1_score', 'accuracy', 'precision', 'recall', 'auc_roc']
+    # Metric order for ACM academic paper: accuracy, precision, recall, f1, auc-roc
+    metrics = ['accuracy', 'precision', 'recall', 'f1_score', 'auc_roc']
     metric_labels = {
         'f1_score': 'F1-Score',
         'accuracy': 'Accuracy',
