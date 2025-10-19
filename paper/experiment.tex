@@ -5,7 +5,7 @@ This section specifies the complete experimental configuration required to repro
 
 \subsection{Dataset and Sampling}
 
-We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate). The corpus is partitioned into $R = 20$ independent groups through stratified random sampling, with each group containing $N = 1{,}000$ samples at fixed spam ratio $\rho = 0.1$ (100 spam, 900 ham). This 10\% imbalance reflects realistic operational conditions. An 80-20 train-test split establishes a fixed held-out test set (4 groups) held constant across all experiments, eliminating test set variance as a confounding factor. All stochastic processes employ fixed random seed (42) for reproducibility.
+We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Our complete experimental dataset (2,000 real spam, 18,000 real ham, and 12,000 LLM-generated synthetic spam samples) is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark} to facilitate reproducibility and enable standardized comparisons across future studies.} The corpus is partitioned into $R = 20$ independent groups through stratified random sampling, with each group containing $N = 1{,}000$ samples at fixed spam ratio $\rho = 0.1$ (100 spam, 900 ham). This 10\% imbalance reflects realistic operational conditions. An 80-20 train-test split establishes a fixed held-out test set (4 groups) held constant across all experiments, eliminating test set variance as a confounding factor. All stochastic processes employ fixed random seed (42) for reproducibility.
 
 \subsection{LLM Models and Generation}
 
