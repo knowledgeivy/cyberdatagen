@@ -23,12 +23,15 @@ To eliminate test set variance as a confounding factor, we maintain a fixed held
 We employ Large Language Models to generate synthetic spam through prompt-guided text generation. Given a real spam email as seed, the LLM produces a synthetic variant maintaining semantic similarity while introducing lexical and structural variation. Unlike feature-space augmentation methods that operate on vectorized representations, LLM generation produces actual text content enabling human inspection, semantic validation, and reuse across multiple downstream applications.
 
 We design three systematically varied prompt strategies to explore how generation instructions influence synthetic data quality:
+\begin{itemize}
+    \item \textbf{Original:} Faithfully reproduces spam characteristics while introducing natural lexical variation, maintaining semantic similarity and malicious intent without amplification or attenuation.
 
-\textbf{Original:} Faithfully reproduces spam characteristics while introducing natural lexical variation, maintaining semantic similarity and malicious intent without amplification or attenuation.
+    \item \textbf{Strong:} Explicitly amplifies spam indicators by emphasizing urgency signals, persuasive elements, and social engineering techniques.
 
-\textbf{Strong:} Explicitly amplifies spam indicators by emphasizing urgency signals, persuasive elements, and social engineering techniques.
+    \item \textbf{Weak:} Produces subtle spam with reduced explicit indicators, generating content that appears more legitimate while retaining underlying spam nature.
+    
+\end{itemize}
 
-\textbf{Weak:} Produces subtle spam with reduced explicit indicators, generating content that appears more legitimate while retaining underlying spam nature.
 
 This controlled variation enables systematic investigation of whether prompt intensity affects generation quality and classifier performance. Complete prompt templates are specified in Section~\ref{sec:experiment} and Appendix~\ref{appendix:prompts}.
 
@@ -40,30 +43,8 @@ Cross-group mixing provides two critical advantages over within-group alternativ
 
 \subsection{Evaluation Framework: Three Experimental Tracks}
 
-Our evaluation framework encompasses three complementary tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}. Table~\ref{tab:tracks_overview} summarizes the training-testing configurations for each track.
+Our evaluation framework encompasses three complementary tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}. 
 
-\begin{table}[h]
-\centering
-\caption{Experimental Track Configurations}
-\label{tab:tracks_overview}
-\small
-\begin{tabular}{lll}
-\toprule
-\textbf{Track} & \textbf{Training Data} & \textbf{Testing Data} \\
-\midrule
-\textbf{Track 1} & Real ham + & Real ham + \\
-\textit{(RQ1)} & (1-$\theta$) real spam + & real spam \\
- & $\theta$ synthetic spam & \\
-\midrule
-\textbf{Track 2a} & Real ham + & Real ham + \\
-\textit{(RQ2a)} & real spam only & synthetic spam (LLM A) \\
-\midrule
-\textbf{Track 2b} & Real ham + & Real ham + \\
-\textit{(RQ2b)} & (1-$\theta$) real spam + & synthetic spam (LLM A) \\
- & $\theta$ synthetic (LLM B) & \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsubsection{Track 1: Synthetic-to-Real Detection (RQ1)}
 

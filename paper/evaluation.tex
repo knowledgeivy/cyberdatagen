@@ -1,12 +1,10 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units. Following the methodology framework (Section~\ref{sec:methodology}), we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b). All experiments employ cross-group mixing strategy based on preliminary analysis showing consistent advantages over within-group mixing (detailed comparison in Appendix~\ref{appendix:mixing_strategy_comparison}).
+Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units. Following the methodology framework (Section~\ref{sec:methodology}), we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b).
 
 \subsection{Track 1: Synthetic-to-Real Detection}
 \label{sec:eval:track1}
-
-This track addresses RQ1: \textit{Can LLM-generated synthetic spam effectively train classifiers to detect real spam?} We systematically vary synthetic proportion $\theta$ from 0\% (pure real) to 100\% (pure synthetic) while testing on identical real spam.
 
 Figure~\ref{fig:track1} presents performance trajectories (Precision, Recall, F1-Score) across all three prompt strategies (original/strong/weak) for both LLM models and both classifiers. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
@@ -61,8 +59,6 @@ Figure~\ref{fig:track1} presents performance trajectories (Precision, Recall, F1
 \subsection{Track 2a: Real-to-Synthetic Detection}
 \label{sec:eval:track2a}
 
-This track addresses RQ2a: \textit{Can classifiers trained on real data detect LLM-generated spam?} Classifiers train exclusively on real spam (no synthetic exposure), then test on detecting LLM-generated synthetic spam, representing zero-shot AI-spam detection scenarios.
-
 Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Recall, F1-Score) across both classifiers, all prompt strategies, and varying training data sizes. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
 
 \begin{figure*}[t]
@@ -115,8 +111,6 @@ Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Reca
 
 \subsection{Track 2b: Mixed-to-Synthetic Detection}
 \label{sec:eval:track2b}
-
-This track addresses RQ2b: \textit{Does incorporating synthetic data from other LLMs improve detection?} We train classifiers on varying mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test detection of synthetic spam from a \emph{different} LLM, evaluating cross-model hybrid training strategies.
 
 Figure~\ref{fig:track2b} presents detection performance metrics (Precision, Recall, F1-Score) across varying synthetic training ratios and prompt strategies. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 

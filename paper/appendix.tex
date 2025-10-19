@@ -25,13 +25,10 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 }
 \end{table}
 
-\subsection{Hyperparameter \& Configuration}
-\label{appendix:hyperparameters}
-
 \begin{table}[h]
 \centering
 \caption{Grid Search Results and Final Hyperparameter Configurations}
-\label{tab:hyperparameter_grid}
+\label{appendix:hyperparameter_grid}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcc}
 \toprule
@@ -54,7 +51,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 \begin{table}[h]
 \centering
 \caption{TF-IDF Feature Extraction Parameters}
-\label{tab:feature_config}
+\label{appendix:feature_config}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{ll}
 \toprule
@@ -106,10 +103,10 @@ sublinear\_tf & True (log scaling) \\
 
 % F1-score serves as primary metric due to balanced treatment of precision and recall under 10\% class imbalance.
 
-\subsection{Mixing Strategy Comparison}
-\label{appendix:mixing_strategy_comparison}
+% \subsection{Mixing Strategy Comparison}
+% \label{appendix:mixing_strategy_comparison}
 
-Preliminary experiments compared within-group mixing (training on synthetic data from same group) versus cross-group mixing (training on synthetic data from different group). Cross-group strategy shows consistent advantages: mean F1 improvement of +0.009 ($p < 10^{-6}$, Cohen's $d = 0.13$) across all configurations. More importantly, cross-group mixing better reflects realistic deployment scenarios where synthetic generation sources may differ temporally or distributionally from operational training data. All main experiments employ cross-group strategy based on these findings.
+% Preliminary experiments compared within-group mixing (training on synthetic data from same group) versus cross-group mixing (training on synthetic data from different group). Cross-group strategy shows consistent advantages: mean F1 improvement of +0.009 ($p < 10^{-6}$, Cohen's $d = 0.13$) across all configurations. More importantly, cross-group mixing better reflects realistic deployment scenarios where synthetic generation sources may differ temporally or distributionally from operational training data. All main experiments employ cross-group strategy based on these findings.
 
 \subsection{Performance Degradation Models}
 \label{appendix:degradation_models}

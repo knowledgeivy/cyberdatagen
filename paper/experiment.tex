@@ -1,7 +1,7 @@
 \section{Experimental Configuration}
 \label{sec:experiment}
 
-This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{appendix:hyperparameters}, \ref{appendix:prompts}, and \ref{appendix:llm_config}.
+This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{appendix:hyperparameter_grid}, \ref{appendix:prompts}, and \ref{appendix:llm_config}.
 
 \subsection{Dataset and Sampling}
 We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Our dataset is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
@@ -89,11 +89,11 @@ Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
 
 \textbf{Track 2a (RQ2a):} Varies training data size to evaluate whether additional real spam improves zero-shot detection of LLM-generated synthetic spam. Training employs 100\%, 150\%, or 200\% real spam (100, 150, or 200 samples) with 900 ham, no synthetic exposure. Testing evaluates detection of LLM-generated synthetic spam across both models and all prompt strategies.
 
-\textbf{Track 2b (RQ2b):} Evaluates cross-model augmentation effectiveness at three synthetic ratios ($\theta = 0\%, 50\%, 100\%$). Training employs synthetic spam from one LLM while testing evaluates detection of synthetic spam from the opposite LLM. For example, training on Claude-3.5-Haiku synthetic spam tests detection of GPT-4.1-mini synthetic spam.
+\textbf{Track 2b (RQ2b):} Evaluates cross-model augmentation effectiveness at three synthetic ratios ($\theta = 0\%, 50\%, 100\%$). Training employs synthetic spam from one LLM while testing evaluates detection of synthetic spam from the opposite LLM. For example, training on Claude synthetic spam tests detection of GPT synthetic spam.
 
 \subsection{Classification and Feature Representation}
 
-We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{appendix:hyperparameters}.
+We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{appendix:hyperparameter_grid,appendix:feature_config}.
 
 \subsection{Statistical Analysis}
 
