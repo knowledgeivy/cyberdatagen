@@ -4,43 +4,41 @@
 This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{appendix:hyperparameters}, \ref{appendix:prompts}, and \ref{appendix:llm_config}.
 
 \subsection{Dataset and Sampling}
+We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Our dataset is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
+The corpus is partitioned into $R = 20$ independent groups through stratified random sampling, with each group containing $N = 1{,}000$ samples at fixed spam ratio $\rho = 0.1$ (100 spam, 900 ham). This 10\% imbalance reflects realistic operational conditions. An 80-20 train-test split establishes a fixed held-out test set (4 groups) held constant across all experiments, eliminating test set variance as a confounding factor. All stochastic processes employ fixed random seed (42) for reproducibility.
 
-We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Our dataset is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark} to facilitate reproducibility and enable standardized comparisons across future studies.} The corpus is partitioned into $R = 20$ independent groups through stratified random sampling, with each group containing $N = 1{,}000$ samples at fixed spam ratio $\rho = 0.1$ (100 spam, 900 ham). This 10\% imbalance reflects realistic operational conditions. An 80-20 train-test split establishes a fixed held-out test set (4 groups) held constant across all experiments, eliminating test set variance as a confounding factor. All stochastic processes employ fixed random seed (42) for reproducibility.
+
 
 \subsection{LLM Models and Generation}
 
 \subsubsection{Model Selection}
 
-We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini-2024-04-14} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Beyond state-of-the-art generation quality, these models offer optimal cost-performance trade-offs for spam attackers (see Appendix~\ref{appendix:llm_config}, Table~\ref{tab:llm_config_costs} for detailed cost comparison). Both models provide sufficient context windows for email generation while maintaining low per-token costs, making them economically viable for large-scale spam campaigns. This selection reflects realistic attacker constraints where generation quality must balance against operational costs.
-
-Both models employ identical generation parameters: temperature = 0.7 (balancing creativity and consistency), max tokens = 1,000, top-p = 1.0. Complete API configurations and parameter justifications are provided in Appendix~\ref{appendix:llm_config}.
+We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini-2024-04-14} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Beyond state-of-the-art generation quality, these models offer optimal cost-performance trade-offs for spam attackers (see Appendix~\ref{appendix:llm_config}, Table~\ref{tab:llm_config_costs} for detailed cost comparison). Both models provide sufficient context windows for email generation while maintaining low per-token costs, making them economically viable for large-scale spam campaigns. This selection reflects realistic attacker constraints where generation quality must balance against operational costs. Both models employ identical generation parameters. Complete API configurations and parameter justifications are provided in Appendix~\ref{appendix:llm_config}.
 
 \subsubsection{Prompt Engineering Strategies}
 
-We implement three systematically varied prompt strategies to explore generation intensity: \textbf{Original} (faithful reproduction with lexical variation), \textbf{Strong} (amplified spam indicators), and \textbf{Weak} (subtle spam with reduced explicit signals). Each prompt follows a consistent JSON-formatted template ensuring reliable parsing.
+We implement three systematically varied prompt strategies to explore generation intensity: \textbf{Original} (faithful reproduction with lexical variation), \textbf{Strong} (amplified spam indicators), and \textbf{Weak} (subtle spam with reduced explicit signals). Each prompt follows a consistent JSON-formatted template ensuring reliable parsing. Complete prompt templates with exact wording are provided in Appendix~\ref{appendix:prompts}. Table~\ref{tab:spam_examples_gpt} illustrates how prompt variation affects generation quality across the three strategies. Complete synthetic datasets for both GPT-4.1-mini and Claude-3.5-Haiku are publicly available in our repository.
 
-\begin{verbatim}
-You are an expert email content analyzer. Given the
-following spam email, generate a semantically similar
-but lexically distinct spam variant.
 
-[Strategy-Specific Instructions]
+\vspace{0.5em}
+\noindent\fbox{\parbox{0.95\columnwidth}{\small
+\textbf{Prompt Template Structure:}
 
-Original Email: {original_spam_content}
+\texttt{You are an expert email content analyzer. Given the following spam email, generate a semantically similar but lexically distinct spam variant.}
 
-Output Format (JSON):
-{"subject": "...", "body": "..."}
-\end{verbatim}
+\textbf{[\,Strategy-Specific Instructions\,]}
 
-Complete prompt templates with exact wording are provided in Appendix~\ref{appendix:prompts}.
+\texttt{Original Email:} \textbf{\{\,original\_spam\_content\,\}}
 
-\subsubsection{Sample Synthetic Spam}
+\texttt{Output Format (JSON):}\\
+\texttt{\{\,"subject": "...", "body": "..."\,\}}
+}}
+\vspace{0.5em}
 
-Table~\ref{tab:spam_examples_gpt} presents representative examples of synthetic spam generated by GPT-4.1-mini across all three prompt strategies. These examples illustrate how prompt variation affects generation quality: \textit{original} prompts produce natural spam with realistic language patterns, \textit{strong} prompts amplify spam indicators (urgency cues, explicit offers), and \textit{weak} prompts generate subtle spam with professional tone and reduced explicit markers. Complete synthetic datasets for both GPT-4.1-mini and Claude-3.5-Haiku, including all 12,000 generated samples across all prompt strategies, are publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark}.
 
 \begin{table}[t]
 \centering
-\caption{Representative Synthetic Spam Examples (GPT-4.1-mini)}
+\caption{Representative Synthetic Spam Examples (GPT-4.1-mini). Original prompts produce natural spam with realistic language patterns, strong prompts amplify urgency cues and explicit offers, while weak prompts generate subtle spam with professional tone\footnotemark[2].}
 \label{tab:spam_examples_gpt}
 \small
 \resizebox{\columnwidth}{!}{
