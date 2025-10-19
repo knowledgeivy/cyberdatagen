@@ -25,7 +25,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 }
 \end{table}
 
-\subsection{Classifier Hyperparameter Optimization}
+\subsection{Hyperparameter \& Configuration}
 \label{appendix:hyperparameters}
 
 \begin{table}[h]
@@ -51,11 +51,6 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 }
 \end{table}
 
-Hyperparameters are optimized through 5-fold stratified cross-validation on baseline configuration (Group 0, 0\% synthetic, original prompt), using F1-score as optimization metric. Key finding: SVM linear kernel substantially outperforms RBF (F1 = 0.825 vs 0.48-0.61) for high-dimensional sparse TF-IDF features; Random Forest exhibits remarkable parameter robustness (F1 range 0.886-0.917, $<$3\% variation across all configurations).
-
-\subsection{Feature Extraction Configuration}
-\label{appendix:feature_config}
-
 \begin{table}[h]
 \centering
 \caption{TF-IDF Feature Extraction Parameters}
@@ -77,29 +72,8 @@ sublinear\_tf & True (log scaling) \\
 }
 \end{table}
 
-Vectorizer fits exclusively on training data; identical transformation applies to test data to prevent information leakage. Configuration captures word-level and phrase-level patterns while limiting dimensionality for computational efficiency.
-
 \subsection{Prompt Templates}
 \label{appendix:prompts}
-
-All prompts follow a consistent template structure with only the strategy-specific instructions varying. The general template format is:
-
-\begin{verbatim}
-You are an expert email content analyzer. Given the following
-spam email, generate a semantically similar but lexically
-distinct spam variant.
-
-Instructions: [Strategy-Specific Instructions]
-
-Original Email:
-{original_spam_content}
-
-Output Format (JSON):
-{
-  "subject": "generated subject line",
-  "body": "generated email body"
-}
-\end{verbatim}
 
 \noindent\textbf{Strategy-Specific Instructions:}
 
@@ -111,28 +85,26 @@ Output Format (JSON):
     \item \textbf{Weak Strategy:} Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect.
 \end{itemize}
 
-The \texttt{\{original\_spam\_content\}} placeholder is replaced with actual spam email text during generation, ensuring automated integration into the experimental pipeline.
+% \subsection{Performance Metrics Definitions}
+% \label{appendix:metrics}
 
-\subsection{Performance Metrics Definitions}
-\label{appendix:metrics}
+% Classification performance metrics computed on fixed out-of-sample test set, where $TP$, $TN$, $FP$, $FN$ represent confusion matrix elements (True/False Positives/Negatives):
 
-Classification performance metrics computed on fixed out-of-sample test set, where $TP$, $TN$, $FP$, $FN$ represent confusion matrix elements (True/False Positives/Negatives):
+% \paragraph{F1-Score (Primary Metric):} Harmonic mean of precision and recall:
+% \[
+% \text{F1} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
+% \]
 
-\paragraph{F1-Score (Primary Metric):} Harmonic mean of precision and recall:
-\[
-\text{F1} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
-\]
+% \paragraph{Supporting Metrics:}
+% \begin{itemize}
+%     \item \textbf{Accuracy:} $(TP + TN) / (TP + TN + FP + FN)$
+%     \item \textbf{Precision:} $TP / (TP + FP)$ - false positive control
+%     \item \textbf{Recall:} $TP / (TP + FN)$ - detection sensitivity
+%     \item \textbf{AUC-ROC:} Area under ROC curve, threshold-independent discrimination
+%     \item \textbf{Balanced Accuracy:} $\frac{1}{2}\left(\frac{TP}{TP+FN} + \frac{TN}{TN+FP}\right)$ - class-imbalance robust
+% \end{itemize}
 
-\paragraph{Supporting Metrics:}
-\begin{itemize}
-    \item \textbf{Accuracy:} $(TP + TN) / (TP + TN + FP + FN)$
-    \item \textbf{Precision:} $TP / (TP + FP)$ - false positive control
-    \item \textbf{Recall:} $TP / (TP + FN)$ - detection sensitivity
-    \item \textbf{AUC-ROC:} Area under ROC curve, threshold-independent discrimination
-    \item \textbf{Balanced Accuracy:} $\frac{1}{2}\left(\frac{TP}{TP+FN} + \frac{TN}{TN+FP}\right)$ - class-imbalance robust
-\end{itemize}
-
-F1-score serves as primary metric due to balanced treatment of precision and recall under 10\% class imbalance.
+% F1-score serves as primary metric due to balanced treatment of precision and recall under 10\% class imbalance.
 
 \subsection{Mixing Strategy Comparison}
 \label{appendix:mixing_strategy_comparison}
@@ -189,8 +161,6 @@ Track 2b experiments evaluate detection performance at three training ratios: 0\
 }
 \end{table}
 
-Key patterns: (1) SVM shows non-monotonic behavior for GPT detection (peaks at 50\%), monotonic improvement for Claude detection; (2) Random Forest exhibits monotonic improvement for GPT detection, perfect stability for Claude detection; (3) Optimal ratios differ by target model and classifier architecture.
-
 \subsection{Detailed Statistical Analysis}
 \label{appendix:detailed_statistics}
 
@@ -239,4 +209,3 @@ Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1
 }
 \end{table}
 
-Claude degradation affects all metrics uniformly: -46.2\% F1, -47.3\% Precision, -51.2\% Recall, -23.7\% AUC, -25.8\% Balanced Accuracy. GPT maintains stronger cross-metric performance with maximum degradation of -17.2\% (Recall).
