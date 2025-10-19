@@ -59,7 +59,7 @@ Figure~\ref{fig:track1} presents performance trajectories (Precision, Recall, F1
 \subsection{Track 2a: Real-to-Synthetic Detection}
 \label{sec:eval:track2a}
 
-Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Recall, F1-Score) across both classifiers, all prompt strategies, and varying training data sizes. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
+Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Recall, F1-Score) across both classifiers, all prompt strategies, and varying training data sizes. Table~\ref{tab:track2a_2b_combined} (Track 2a columns) presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
@@ -74,28 +74,28 @@ Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Reca
 
 \begin{table*}[t]
 \centering
-\caption{Track 2a: Real-to-Synthetic Detection Performance (Cross-Group)}
-\label{tab:track2a_summary}
+\caption{Track 2a \& 2b: Real-to-Synthetic and Mixed-to-Synthetic Detection Performance (Cross-Group)}
+\label{tab:track2a_2b_combined}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{llllccc}
+\begin{tabular}{lllcccccc}
 \toprule
-\textbf{Testing} & \textbf{Prompt} & \textbf{Classifier} & \multicolumn{3}{c}{\textbf{Training Real Spam Count}} \\
-\cmidrule(lr){4-6}
-\textbf{Target} & & & \textbf{100 (100\%)} & \textbf{150 (150\%)} & \textbf{200 (200\%)} \\
+\textbf{Testing} & \textbf{Prompt} & \textbf{Classifier} & \multicolumn{3}{c}{\textbf{Track 2a: Real-to-Synthetic}} & \multicolumn{3}{c}{\textbf{Track 2b: Mixed-to-Synthetic}} \\
+\cmidrule(lr){4-6} \cmidrule(lr){7-9}
+\textbf{Target} & & & \textbf{100} & \textbf{150} & \textbf{200} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
 \midrule
-\multirow{6}{*}{GPT-4.1-mini} & \multirow{2}{*}{Original} & SVM & 0.744 $\pm$ 0.064 & 0.846 $\pm$ 0.025 & 0.881 $\pm$ 0.025 \\
- & & Random Forest & 0.831 $\pm$ 0.035 & 0.809 $\pm$ 0.014 & 0.792 $\pm$ 0.026 \\
- & \multirow{2}{*}{Strong} & SVM & 0.718 $\pm$ 0.072 & 0.827 $\pm$ 0.028 & 0.862 $\pm$ 0.027 \\
- & & Random Forest & 0.830 $\pm$ 0.035 & 0.808 $\pm$ 0.014 & 0.792 $\pm$ 0.026 \\
- & \multirow{2}{*}{Weak} & SVM & 0.636 $\pm$ 0.087 & 0.747 $\pm$ 0.043 & 0.803 $\pm$ 0.041 \\
- & & Random Forest & 0.830 $\pm$ 0.036 & 0.808 $\pm$ 0.014 & 0.792 $\pm$ 0.026 \\
+\multirow{6}{*}{GPT-4.1-mini} & \multirow{2}{*}{Original} & SVM & 0.744 $\pm$ 0.064 & 0.846 $\pm$ 0.025 & 0.881 $\pm$ 0.025 & 0.744 $\pm$ 0.064 & 0.770 $\pm$ 0.035 & 0.649 $\pm$ 0.042 \\
+ & & Random Forest & 0.831 $\pm$ 0.035 & 0.809 $\pm$ 0.014 & 0.792 $\pm$ 0.026 & 0.824 $\pm$ 0.025 & 0.816 $\pm$ 0.023 & 0.894 $\pm$ 0.030 \\
+ & \multirow{2}{*}{Strong} & SVM & 0.718 $\pm$ 0.072 & 0.827 $\pm$ 0.028 & 0.862 $\pm$ 0.027 & 0.718 $\pm$ 0.072 & 0.822 $\pm$ 0.040 & 0.696 $\pm$ 0.110 \\
+ & & Random Forest & 0.830 $\pm$ 0.035 & 0.808 $\pm$ 0.014 & 0.792 $\pm$ 0.026 & 0.824 $\pm$ 0.026 & 0.827 $\pm$ 0.032 & 0.908 $\pm$ 0.040 \\
+ & \multirow{2}{*}{Weak} & SVM & 0.636 $\pm$ 0.087 & 0.747 $\pm$ 0.043 & 0.803 $\pm$ 0.041 & 0.636 $\pm$ 0.086 & 0.822 $\pm$ 0.038 & 0.688 $\pm$ 0.119 \\
+ & & Random Forest & 0.830 $\pm$ 0.036 & 0.808 $\pm$ 0.014 & 0.792 $\pm$ 0.026 & 0.824 $\pm$ 0.028 & 0.822 $\pm$ 0.026 & 0.834 $\pm$ 0.061 \\
 \midrule
-\multirow{6}{*}{Claude-3.5-Haiku} & \multirow{2}{*}{Original} & SVM & 0.532 $\pm$ 0.095 & 0.582 $\pm$ 0.049 & 0.624 $\pm$ 0.066 \\
- & & Random Forest & 0.800 $\pm$ 0.027 & 0.797 $\pm$ 0.018 & 0.781 $\pm$ 0.026 \\
- & \multirow{2}{*}{Strong} & SVM & 0.589 $\pm$ 0.104 & 0.687 $\pm$ 0.044 & 0.737 $\pm$ 0.040 \\
- & & Random Forest & 0.811 $\pm$ 0.026 & 0.798 $\pm$ 0.013 & 0.784 $\pm$ 0.022 \\
- & \multirow{2}{*}{Weak} & SVM & 0.335 $\pm$ 0.160 & 0.452 $\pm$ 0.086 & 0.529 $\pm$ 0.083 \\
- & & Random Forest & 0.747 $\pm$ 0.033 & 0.747 $\pm$ 0.023 & 0.732 $\pm$ 0.030 \\
+\multirow{6}{*}{Claude-3.5-Haiku} & \multirow{2}{*}{Original} & SVM & 0.532 $\pm$ 0.095 & 0.582 $\pm$ 0.049 & 0.624 $\pm$ 0.066 & 0.532 $\pm$ 0.094 & 0.666 $\pm$ 0.031 & 0.688 $\pm$ 0.033 \\
+ & & Random Forest & 0.800 $\pm$ 0.027 & 0.797 $\pm$ 0.018 & 0.781 $\pm$ 0.026 & 0.802 $\pm$ 0.021 & 0.802 $\pm$ 0.020 & 0.802 $\pm$ 0.022 \\
+ & \multirow{2}{*}{Strong} & SVM & 0.589 $\pm$ 0.104 & 0.687 $\pm$ 0.044 & 0.737 $\pm$ 0.040 & 0.590 $\pm$ 0.104 & 0.827 $\pm$ 0.032 & 0.860 $\pm$ 0.033 \\
+ & & Random Forest & 0.811 $\pm$ 0.026 & 0.798 $\pm$ 0.013 & 0.784 $\pm$ 0.022 & 0.806 $\pm$ 0.023 & 0.814 $\pm$ 0.024 & 0.823 $\pm$ 0.027 \\
+ & \multirow{2}{*}{Weak} & SVM & 0.335 $\pm$ 0.160 & 0.452 $\pm$ 0.086 & 0.529 $\pm$ 0.083 & 0.335 $\pm$ 0.160 & 0.748 $\pm$ 0.038 & 0.805 $\pm$ 0.026 \\
+ & & Random Forest & 0.747 $\pm$ 0.033 & 0.747 $\pm$ 0.023 & 0.732 $\pm$ 0.030 & 0.748 $\pm$ 0.031 & 0.777 $\pm$ 0.032 & 0.813 $\pm$ 0.021 \\
 \bottomrule
 \end{tabular}
 }
@@ -112,7 +112,7 @@ Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Reca
 \subsection{Track 2b: Mixed-to-Synthetic Detection}
 \label{sec:eval:track2b}
 
-Figure~\ref{fig:track2b} presents detection performance metrics (Precision, Recall, F1-Score) across varying synthetic training ratios and prompt strategies. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
+Figure~\ref{fig:track2b} presents detection performance metrics (Precision, Recall, F1-Score) across varying synthetic training ratios and prompt strategies. Table~\ref{tab:track2a_2b_combined} (Track 2b columns) presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 
 \begin{figure*}[t]
 \centering
@@ -123,35 +123,6 @@ Figure~\ref{fig:track2b} presents detection performance metrics (Precision, Reca
 
 
 
-
-\begin{table*}[t]
-\centering
-\caption{Track 2b: Mixed-to-Synthetic Detection Performance (Cross-Group)}
-\label{tab:track2b_summary}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{llllccc}
-\toprule
-\textbf{Testing} & \textbf{Prompt} & \textbf{Classifier} & \multicolumn{3}{c}{\textbf{Training Synthetic Ratio}} \\
-\cmidrule(lr){4-6}
-\textbf{Target} & & & \textbf{0\% (Baseline)} & \textbf{50\%} & \textbf{100\%} \\
-\midrule
-\multirow{6}{*}{GPT-4.1-mini} & \multirow{2}{*}{Original} & SVM & 0.744 $\pm$ 0.064 & 0.770 $\pm$ 0.035 & 0.649 $\pm$ 0.042 \\
- & & Random Forest & 0.824 $\pm$ 0.025 & 0.816 $\pm$ 0.023 & 0.894 $\pm$ 0.030 \\
- & \multirow{2}{*}{Strong} & SVM & 0.718 $\pm$ 0.072 & 0.822 $\pm$ 0.040 & 0.696 $\pm$ 0.110 \\
- & & Random Forest & 0.824 $\pm$ 0.026 & 0.827 $\pm$ 0.032 & 0.908 $\pm$ 0.040 \\
- & \multirow{2}{*}{Weak} & SVM & 0.636 $\pm$ 0.086 & 0.822 $\pm$ 0.038 & 0.688 $\pm$ 0.119 \\
- & & Random Forest & 0.824 $\pm$ 0.028 & 0.822 $\pm$ 0.026 & 0.834 $\pm$ 0.061 \\
-\midrule
-\multirow{6}{*}{Claude-3.5-Haiku} & \multirow{2}{*}{Original} & SVM & 0.532 $\pm$ 0.094 & 0.666 $\pm$ 0.031 & 0.688 $\pm$ 0.033 \\
- & & Random Forest & 0.802 $\pm$ 0.021 & 0.802 $\pm$ 0.020 & 0.802 $\pm$ 0.022 \\
- & \multirow{2}{*}{Strong} & SVM & 0.590 $\pm$ 0.104 & 0.827 $\pm$ 0.032 & 0.860 $\pm$ 0.033 \\
- & & Random Forest & 0.806 $\pm$ 0.023 & 0.814 $\pm$ 0.024 & 0.823 $\pm$ 0.027 \\
- & \multirow{2}{*}{Weak} & SVM & 0.335 $\pm$ 0.160 & 0.748 $\pm$ 0.038 & 0.805 $\pm$ 0.026 \\
- & & Random Forest & 0.748 $\pm$ 0.031 & 0.777 $\pm$ 0.032 & 0.813 $\pm$ 0.021 \\
-\bottomrule
-\end{tabular}
-}
-\end{table*}
 
 \textbf{(1) Cross-model synthetic augmentation provides substantial but highly variable detection improvements depending on baseline performance.} As shown in Figure~\ref{fig:track2b}, training with synthetic spam from one LLM significantly improves detection of another LLM's synthetic spam, with gains ranging from moderate to dramatic. For Claude detection using GPT synthetic training data, SVM achieves improvements from baseline F1 to 100\% synthetic ranging from +29.3\% relative (original prompt: 0.532 $\rightarrow$ 0.688) to +45.8\% (strong prompt: 0.590 $\rightarrow$ 0.860) to +140.3\% (weak prompt: 0.335 $\rightarrow$ 0.805). The extreme 140\% improvement for weak prompt reflects very low baseline performance rather than exceptional augmentation effectiveness—weak prompt baseline (F1 = 0.335) represents near-random detection, amplifying relative gains despite modest absolute improvement (+0.470 F1 points). For GPT detection using Claude synthetic training data, improvements prove more modest: Random Forest achieves +8.5\% to +10.2\% relative (0.824 $\rightarrow$ 0.894-0.908 at 100\% synthetic), while SVM shows non-monotonic patterns. These findings indicate cross-model augmentation provides measurable benefits across configurations, though absolute gains matter more than relative percentages when baselines differ substantially.
 
