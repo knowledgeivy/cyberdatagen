@@ -4,12 +4,12 @@
 \subsection{LLM Configuration and Costs}
 \label{appendix:llm_config}
 
-\subsubsection{Complete LLM API Configurations}
+Table~\ref{tab:llm_config_costs} summarizes key LLM parameters and API costs. Both models use identical generation parameters (temperature = 0.7, max tokens = 1,000) with remaining parameters set to defaults (top-p = 1.0, JSON response format).
 
 \begin{table}[h]
 \centering
-\caption{Complete LLM Generation Parameters}
-\label{tab:llm_config_full}
+\caption{LLM Configuration and API Costs}
+\label{tab:llm_config_costs}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{lcc}
 \toprule
@@ -18,41 +18,13 @@
 API endpoint & gpt-4.1-mini-2024-04-14 & claude-3-5-haiku-20241022 \\
 Temperature & 0.7 & 0.7 \\
 Max tokens & 1,000 & 1,000 \\
-Top-p & 1.0 & 1.0 \\
-Top-k & N/A & Default \\
-Frequency penalty & 0.0 & N/A \\
-Presence penalty & 0.0 & N/A \\
-Response format & JSON object & JSON mode \\
+\midrule
+Input cost & \$0.150 / 1M tokens & \$0.250 / 1M tokens \\
+Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
-
-\subsubsection{Cost Comparison}
-\label{appendix:costs}
-
-\begin{table}[h]
-\centering
-\caption{LLM Cost Analysis and Comparison}
-\resizebox{\columnwidth}{!}{
-\label{tab:llm_costs}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Model} & \textbf{Input Cost} & \textbf{Output Cost} & \textbf{Avg. Email Cost} \\
-\midrule
-GPT-4.1-mini & \$0.150 / 1M tokens & \$0.600 / 1M tokens & \$0.0003 \\
-Claude-3.5-Haiku & \$0.250 / 1M tokens & \$1.250 / 1M tokens & \$0.0005 \\
-\midrule
-\textbf{This Study} & \multicolumn{3}{c}{} \\
-GPT-4.1-mini (6,000 emails) & & & \$1.80 \\
-Claude-3.5-Haiku (6,000 emails) & & & \$1.50 \\
-\textbf{Total cost} & & & \textbf{\$3.30} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Both models provide optimal cost-performance trade-offs for spam generation: sufficient context windows (GPT: 128K, Claude: 200K), low per-token costs compared to flagship models (GPT-4: 10× more expensive, Claude Opus: 15× more expensive), and state-of-the-art generation quality. For large-scale spam campaigns, these models represent economically viable choices balancing quality and operational costs.
 
 \subsection{Classifier Hyperparameter Optimization}
 \label{appendix:hyperparameters}
@@ -287,18 +259,18 @@ Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1
 
 \begin{table}[h]
 \centering
-\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt)}
+\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt, Cross-Group)}
 \label{tab:complete_metrics}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcccccc}
 \toprule
 \textbf{Model} & \textbf{Ratio} & \textbf{F1} & \textbf{Acc} & \textbf{Prec} & \textbf{Rec} & \textbf{AUC} & \textbf{BAcc} \\
 \midrule
-\multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 & 0.960 & 0.828 & 0.871 & 0.934 & 0.919 \\
-& 100\% & 0.735 & 0.948 & 0.749 & 0.721 & 0.893 & 0.854 \\
+\multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+& 100\% & 0.735 $\pm$ 0.051 & 0.958 $\pm$ 0.006 & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.986 $\pm$ 0.005 & 0.800 $\pm$ 0.049 \\
 \midrule
-\multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 & 0.960 & 0.828 & 0.871 & 0.934 & 0.919 \\
-& 100\% & 0.457 & 0.915 & 0.495 & 0.425 & 0.712 & 0.682 \\
+\multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+& 100\% & 0.457 $\pm$ 0.045 & 0.930 $\pm$ 0.004 & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.969 $\pm$ 0.010 & 0.649 $\pm$ 0.019 \\
 \bottomrule
 \end{tabular}
 }

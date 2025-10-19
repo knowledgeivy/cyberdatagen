@@ -1,0 +1,18 @@
+\begin{table}[h]
+\centering
+\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt, Cross-Group)}
+\label{tab:complete_metrics}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Model} & \textbf{Ratio} & \textbf{F1} & \textbf{Acc} & \textbf{Prec} & \textbf{Rec} & \textbf{AUC} & \textbf{BAcc} \\
+\midrule
+\multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+& 100\% & 0.735 $\pm$ 0.051 & 0.958 $\pm$ 0.006 & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.986 $\pm$ 0.005 & 0.800 $\pm$ 0.049 \\
+\midrule
+\multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+& 100\% & 0.457 $\pm$ 0.045 & 0.930 $\pm$ 0.004 & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.969 $\pm$ 0.010 & 0.649 $\pm$ 0.019 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
