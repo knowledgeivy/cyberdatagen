@@ -19,7 +19,6 @@ Both models employ identical generation parameters: temperature = 0.7 (balancing
 
 We implement three systematically varied prompt strategies to explore generation intensity: \textbf{Original} (faithful reproduction with lexical variation), \textbf{Strong} (amplified spam indicators), and \textbf{Weak} (subtle spam with reduced explicit signals). Each prompt follows a consistent JSON-formatted template ensuring reliable parsing.
 
-\textbf{Example Template Structure:}
 \begin{verbatim}
 You are an expert email content analyzer. Given the
 following spam email, generate a semantically similar
@@ -32,14 +31,6 @@ Original Email: {original_spam_content}
 Output Format (JSON):
 {"subject": "...", "body": "..."}
 \end{verbatim}
-
-\textbf{Strategy-Specific Instructions:}
-
-\textit{Original:} "Faithfully reproduce spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent."
-
-\textit{Strong:} "Amplify spam indicators by emphasizing urgency signals (limited time, immediate action), persuasive elements (too-good-to-be-true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make spam characteristics explicit and prominent."
-
-\textit{Weak:} "Generate subtle spam with reduced explicit indicators. Create content appearing more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals."
 
 Complete prompt templates with exact wording are provided in Appendix~\ref{appendix:prompts}.
 
