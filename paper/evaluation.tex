@@ -8,20 +8,13 @@ Our evaluation systematically assesses LLM-generated synthetic spam across three
 
 This track addresses RQ1: \textit{Can LLM-generated synthetic spam effectively train classifiers to detect real spam?} We systematically vary synthetic proportion $\theta$ from 0\% (pure real) to 100\% (pure synthetic) while testing on identical real spam.
 
-Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score trajectories across all three prompt strategies for both LLM models using SVM classification. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
+Figure~\ref{fig:track1} presents F1-score trajectories across all three prompt strategies for both LLM models using SVM classification. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/prompts_comparison_cross_group_performance_curves_gpt.png}
-\caption{Track 1 - GPT-4.1-mini: Synthetic-to-Real Detection across prompt strategies (original/strong/weak). All strategies exhibit prompt invariance with nearly identical degradation (F1: 0.85 $\rightarrow$ 0.70-0.74 at 100\% synthetic, -13.4\% relative). Linear decline ($R^2 > 0.98$) enables predictable performance estimation. Shaded regions: $\pm$1 SD across 20 groups.}
-\label{fig:track1_gpt}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pic/prompts_comparison_cross_group_performance_curves_claude.png}
-\caption{Track 1 - Claude-3.5-Haiku: Synthetic-to-Real Detection across prompts. Original/strong prompts show moderate degradation (F1 $\rightarrow$ 0.45-0.55 at 100\%, -46.2\% relative), while weak prompt exhibits severe degradation (F1 $\rightarrow$ 0.30-0.40). Prompt sensitivity indicates generation quality dependence on instruction strength.}
-\label{fig:track1_claude}
+\includegraphics[width=\textwidth]{pic/track1_combined_gpt_claude.png}
+\caption{Track 1 - Synthetic-to-Real Detection across prompt strategies (original/strong/weak). (a) GPT-4.1-mini exhibits prompt invariance with nearly identical degradation (F1: 0.85 $\rightarrow$ 0.70-0.74 at 100\% synthetic, -13.4\% relative) and linear decline ($R^2 > 0.98$). (b) Claude-3.5-Haiku shows prompt sensitivity: original/strong prompts degrade moderately (F1 $\rightarrow$ 0.45-0.55 at 100\%, -46.2\% relative), while weak prompt exhibits severe degradation (F1 $\rightarrow$ 0.30-0.40). Shaded regions: $\pm$1 SD across 20 groups.}
+\label{fig:track1}
 \end{figure*}
 
 
@@ -63,27 +56,20 @@ Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score 
 
 \textbf{(4) GPT-4.1-mini generates substantially higher-quality synthetic training data than Claude-3.5-Haiku across all configurations.} The model-dependent quality gap proves dramatic: at 100\% synthetic with original prompts, GPT maintains 86.6\% of baseline F1 performance (SVM: 0.849 $\rightarrow$ 0.735), while Claude retains only 53.8\% (SVM: 0.849 $\rightarrow$ 0.457)—a 2-4$\times$ difference establishing model selection as the most impactful decision for synthetic data generation. Even Claude's best configuration (Random Forest + original prompt, F1 = 0.796) barely matches GPT's worst configuration (SVM + weak prompt, F1 = 0.617). This quality gap persists across all prompt strategies and classifiers, indicating fundamental differences in generation capabilities rather than prompt engineering artifacts. The superior performance of GPT synthetic data likely stems from better preservation of real spam's lexical diversity and feature co-occurrence patterns, enabling classifiers to learn decision boundaries that generalize effectively to real detection tasks.
 
-\textbf{(5) Linear degradation patterns enable predictable performance estimation.} Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} demonstrate highly linear F1 decline as synthetic ratio increases ($R^2 > 0.95$ for SVM configurations, detailed regression analysis in Appendix~\ref{appendix:degradation_models}). This linearity enables reliable interpolation for intermediate mixing ratios and predictable performance boundaries for operational deployment. Random Forest exhibits near-zero slopes across most configurations, indicating stable performance across the full synthetic ratio spectrum.
+\textbf{(5) Linear degradation patterns enable predictable performance estimation.} Figure~\ref{fig:track1} demonstrates highly linear F1 decline as synthetic ratio increases ($R^2 > 0.95$ for SVM configurations, detailed regression analysis in Appendix~\ref{appendix:degradation_models}). This linearity enables reliable interpolation for intermediate mixing ratios and predictable performance boundaries for operational deployment. Random Forest exhibits near-zero slopes across most configurations, indicating stable performance across the full synthetic ratio spectrum.
 
 \subsection{Track 2a: Real-to-Synthetic Detection}
 \label{sec:eval:track2a}
 
 This track addresses RQ2a: \textit{Can classifiers trained on real data detect LLM-generated spam?} Classifiers train exclusively on real spam (no synthetic exposure), then test on detecting LLM-generated synthetic spam, representing zero-shot AI-spam detection scenarios.
 
-Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baseline detection performance across both classifiers (SVM, Random Forest) and all prompt strategies. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
+Figure~\ref{fig:track2a} presents baseline detection performance across both classifiers (SVM, Random Forest) and all prompt strategies. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_real_enhanced_curves.png}
-\caption{Track 2a - Detecting GPT-4.1-mini synthetic spam (Baseline). Both classifiers achieve strong baseline detection: SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87. Higher detectability indicates GPT synthetic spam retains stronger distributional similarities to real spam compared to Claude.}
-\label{fig:track2a_gpt}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pic/claude35haiku_prompts_comparison_cross_group_real_enhanced_curves.png}
-\caption{Track 2a - Detecting Claude-3.5-Haiku synthetic spam (Baseline). SVM shows moderate baseline detection (F1 = 0.53-0.74 across prompts), while Random Forest maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability: weak prompts produce more detectable synthetic spam.}
-\label{fig:track2a_claude}
+\includegraphics[width=\textwidth]{pic/track2a_combined_gpt_claude.png}
+\caption{Track 2a - Real-to-Synthetic Detection (Baseline). (a) GPT-4.1-mini: Both classifiers achieve strong baseline detection (SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87), indicating GPT synthetic spam retains stronger distributional similarities to real spam. (b) Claude-3.5-Haiku: SVM shows moderate baseline detection (F1 = 0.53-0.74 across prompts), while Random Forest maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability.}
+\label{fig:track2a}
 \end{figure*}
 
 
@@ -119,7 +105,7 @@ Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baselin
 }
 \end{table*}
 
-\textbf{(1) Classifier architecture determines sensitivity to training data quantity for zero-shot AI-spam detection.} As shown in Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt}, SVM exhibits substantial monotonic improvement with additional real spam: for GPT detection, F1 increases from 0.744 (100 spam) to 0.881 (200 spam, +18.4\% relative); for Claude detection, F1 improves from 0.532 to 0.624 (+17.3\%). In contrast, Random Forest maintains stable or slightly declining performance (F1: 0.831 $\rightarrow$ 0.792 for GPT, 0.800 $\rightarrow$ 0.781 for Claude). This divergent behavior reflects fundamental architectural differences: SVM's margin-based learning requires more training examples to accurately position decision boundaries for distinguishing synthetic from real spam patterns, with performance scaling predictably with data quantity. Random Forest achieves near-optimal feature learning at minimal training size (100 samples) through ensemble aggregation across bootstrap samples, with additional data providing diminishing returns or slight performance degradation potentially from increased model complexity. This finding suggests resource-constrained defenders should prioritize Random Forest for zero-shot AI-spam detection, as it delivers strong performance without requiring large training datasets.
+\textbf{(1) Classifier architecture determines sensitivity to training data quantity for zero-shot AI-spam detection.} As shown in Figure~\ref{fig:track2a}, SVM exhibits substantial monotonic improvement with additional real spam: for GPT detection, F1 increases from 0.744 (100 spam) to 0.881 (200 spam, +18.4\% relative); for Claude detection, F1 improves from 0.532 to 0.624 (+17.3\%). In contrast, Random Forest maintains stable or slightly declining performance (F1: 0.831 $\rightarrow$ 0.792 for GPT, 0.800 $\rightarrow$ 0.781 for Claude). This divergent behavior reflects fundamental architectural differences: SVM's margin-based learning requires more training examples to accurately position decision boundaries for distinguishing synthetic from real spam patterns, with performance scaling predictably with data quantity. Random Forest achieves near-optimal feature learning at minimal training size (100 samples) through ensemble aggregation across bootstrap samples, with additional data providing diminishing returns or slight performance degradation potentially from increased model complexity. This finding suggests resource-constrained defenders should prioritize Random Forest for zero-shot AI-spam detection, as it delivers strong performance without requiring large training datasets.
 
 \textbf{(2) Detection difficulty varies by model and prompt strategy: original prompts produce most detectable GPT spam, while strong prompts yield most detectable Claude spam.} At baseline training (100 real spam), prompt strategy dramatically affects zero-shot detection success with model-dependent patterns. For GPT-4.1-mini synthetic spam detection, SVM achieves highest performance on original prompts (F1 = 0.744) compared to strong (0.718) and weak (0.636), while Random Forest shows near-perfect prompt invariance (F1 $\approx$ 0.830 across all prompts). This indicates original prompts produce GPT synthetic spam most similar to real spam's feature distribution, making it paradoxically both easier to detect and more useful for training. For Claude-3.5-Haiku synthetic spam, the pattern reverses: strong prompts yield highest detectability (SVM: original = 0.532, strong = 0.589, weak = 0.335; RF: original = 0.800, strong = 0.811, weak = 0.747), suggesting Claude's original prompts produce spam diverging more from real spam than strong prompts. Weak prompts universally yield lowest detection across both models, creating spam that confounds classifiers trained on real data through distributional divergence. These findings establish that prompt optimization for evasiveness differs by LLM: attackers using GPT should avoid original prompts, while attackers using Claude should avoid strong prompts to minimize detection risk.
 
@@ -132,20 +118,13 @@ Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baselin
 
 This track addresses RQ2b: \textit{Does incorporating synthetic data from other LLMs improve detection?} We train classifiers on varying mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test detection of synthetic spam from a \emph{different} LLM, evaluating cross-model hybrid training strategies.
 
-Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detection performance across training ratios. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
+Figure~\ref{fig:track2b} presents detection performance across training ratios. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_reverse_performance_curves.png}
-\caption{Track 2b - Detecting GPT-4.1-mini spam (trained on Claude-3.5-Haiku synthetic). SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%), declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially (F1: 0.82 $\rightarrow$ 0.89, +8.5\%), demonstrating effective cross-model feature learning.}
-\label{fig:track2b_gpt}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pic/claude35haiku_prompts_comparison_cross_group_reverse_performance_curves.png}
-\caption{Track 2b - Detecting Claude-3.5-Haiku spam (trained on GPT-4.1-mini synthetic). SVM shows monotonic improvement with synthetic augmentation (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). Random Forest maintains stable high performance (F1 $\approx$ 0.80) across all ratios, indicating inherent cross-model robustness.}
-\label{fig:track2b_claude}
+\includegraphics[width=\textwidth]{pic/track2b_combined_gpt_claude.png}
+\caption{Track 2b - Mixed-to-Synthetic Detection (Cross-Model Augmentation). (a) Detecting GPT-4.1-mini spam (trained on Claude-3.5-Haiku synthetic): SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%) before declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially (F1: 0.82 $\rightarrow$ 0.89, +8.5\%). (b) Detecting Claude-3.5-Haiku spam (trained on GPT-4.1-mini synthetic): SVM shows monotonic improvement (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). Random Forest maintains stable high performance (F1 $\approx$ 0.80) across all ratios.}
+\label{fig:track2b}
 \end{figure*}
 
 
@@ -180,7 +159,7 @@ Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detecti
 }
 \end{table*}
 
-\textbf{(1) Cross-model synthetic augmentation provides substantial but highly variable detection improvements depending on baseline performance.} As shown in Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt}, training with synthetic spam from one LLM significantly improves detection of another LLM's synthetic spam, with gains ranging from moderate to dramatic. For Claude detection using GPT synthetic training data, SVM achieves improvements from baseline F1 to 100\% synthetic ranging from +29.3\% relative (original prompt: 0.532 $\rightarrow$ 0.688) to +45.8\% (strong prompt: 0.590 $\rightarrow$ 0.860) to +140.3\% (weak prompt: 0.335 $\rightarrow$ 0.805). The extreme 140\% improvement for weak prompt reflects very low baseline performance rather than exceptional augmentation effectiveness—weak prompt baseline (F1 = 0.335) represents near-random detection, amplifying relative gains despite modest absolute improvement (+0.470 F1 points). For GPT detection using Claude synthetic training data, improvements prove more modest: Random Forest achieves +8.5\% to +10.2\% relative (0.824 $\rightarrow$ 0.894-0.908 at 100\% synthetic), while SVM shows non-monotonic patterns. These findings indicate cross-model augmentation provides measurable benefits across configurations, though absolute gains matter more than relative percentages when baselines differ substantially.
+\textbf{(1) Cross-model synthetic augmentation provides substantial but highly variable detection improvements depending on baseline performance.} As shown in Figure~\ref{fig:track2b}, training with synthetic spam from one LLM significantly improves detection of another LLM's synthetic spam, with gains ranging from moderate to dramatic. For Claude detection using GPT synthetic training data, SVM achieves improvements from baseline F1 to 100\% synthetic ranging from +29.3\% relative (original prompt: 0.532 $\rightarrow$ 0.688) to +45.8\% (strong prompt: 0.590 $\rightarrow$ 0.860) to +140.3\% (weak prompt: 0.335 $\rightarrow$ 0.805). The extreme 140\% improvement for weak prompt reflects very low baseline performance rather than exceptional augmentation effectiveness—weak prompt baseline (F1 = 0.335) represents near-random detection, amplifying relative gains despite modest absolute improvement (+0.470 F1 points). For GPT detection using Claude synthetic training data, improvements prove more modest: Random Forest achieves +8.5\% to +10.2\% relative (0.824 $\rightarrow$ 0.894-0.908 at 100\% synthetic), while SVM shows non-monotonic patterns. These findings indicate cross-model augmentation provides measurable benefits across configurations, though absolute gains matter more than relative percentages when baselines differ substantially.
 
 \textbf{(2) Prompt-dependent augmentation effectiveness reveals generation diversity impact.} Weak prompt training data provides the largest improvements for detecting strong/original prompt synthetic spam: for Claude detection, weak prompt training at 100\% synthetic achieves F1 = 0.805 (SVM), surpassing original prompt training (F1 = 0.688, +17.0\% relative). Strong prompt training data produces intermediate improvements (F1 = 0.860). This counterintuitive pattern suggests diverse, lower-quality synthetic spam (from weak prompts) better captures the full feature space of AI-generated content, enabling more robust detection across varied generation strategies. Training on higher-quality synthetic spam (strong/original prompts) may overfit to specific generation characteristics.
 
