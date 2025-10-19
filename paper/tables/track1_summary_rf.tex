@@ -1,0 +1,30 @@
+\begin{table*}[t]
+\centering
+\caption{Track 1: Synthetic-to-Real Detection Performance (Cross-Group) - SVM and Random Forest Comparison}
+\label{tab:track1_summary_rf}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllcccccc}
+\toprule
+\textbf{Model} & \textbf{Classifier} & \textbf{Prompt} & \multicolumn{3}{c}{\textbf{Baseline (0\% Synthetic)}} & \multicolumn{3}{c}{\textbf{100\% Synthetic}} \\
+\cmidrule(lr){4-6} \cmidrule(lr){7-9}
+& & & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+\multirow{3}{*}{GPT-4.1-mini} & \multirow{3}{*}{SVM} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.026} & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.735 $\pm$ 0.051 \\
+& & Strong & & & & 0.970 $\pm$ 0.054 & 0.546 $\pm$ 0.125 & 0.687 $\pm$ 0.071 \\
+& & Weak & & & & 0.969 $\pm$ 0.056 & 0.471 $\pm$ 0.148 & 0.617 $\pm$ 0.095 \\
+\cmidrule{2-9}
+\multirow{3}{*}{GPT-4.1-mini} & \multirow{3}{*}{Random Forest} & Original & \multirow{3}{*}{0.668 $\pm$ 0.061} & \multirow{3}{*}{0.982 $\pm$ 0.008} & \multirow{3}{*}{0.793 $\pm$ 0.041} & 0.670 $\pm$ 0.051 & 0.959 $\pm$ 0.022 & 0.788 $\pm$ 0.032 \\
+& & Strong & & & & 0.697 $\pm$ 0.051 & 0.949 $\pm$ 0.021 & 0.802 $\pm$ 0.030 \\
+& & Weak & & & & 0.743 $\pm$ 0.053 & 0.938 $\pm$ 0.029 & 0.827 $\pm$ 0.026 \\
+\midrule
+\multirow{3}{*}{Claude-3.5-Haiku} & \multirow{3}{*}{SVM} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.026} & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.457 $\pm$ 0.045 \\
+& & Strong & & & & 0.976 $\pm$ 0.054 & 0.284 $\pm$ 0.164 & 0.414 $\pm$ 0.142 \\
+& & Weak & & & & 0.954 $\pm$ 0.075 & 0.284 $\pm$ 0.220 & 0.387 $\pm$ 0.205 \\
+\cmidrule{2-9}
+\multirow{3}{*}{Claude-3.5-Haiku} & \multirow{3}{*}{Random Forest} & Original & \multirow{3}{*}{0.668 $\pm$ 0.061} & \multirow{3}{*}{0.982 $\pm$ 0.008} & \multirow{3}{*}{0.793 $\pm$ 0.041} & 0.852 $\pm$ 0.078 & 0.776 $\pm$ 0.150 & 0.796 $\pm$ 0.081 \\
+& & Strong & & & & 0.911 $\pm$ 0.057 & 0.630 $\pm$ 0.162 & 0.727 $\pm$ 0.110 \\
+& & Weak & & & & 0.852 $\pm$ 0.072 & 0.547 $\pm$ 0.192 & 0.637 $\pm$ 0.156 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

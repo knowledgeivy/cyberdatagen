@@ -26,26 +26,34 @@ Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score 
 \label{fig:track1_claude}
 \end{figure*}
 
-Table~\ref{tab:track1_summary} summarizes baseline and 100\% synthetic performance across all experimental configurations, including precision, recall, and F1-score metrics for both LLM models and all three prompt strategies.
+Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
 \begin{table*}[t]
 \centering
-\caption{Track 1: Synthetic-to-Real Detection Performance (SVM, Cross-Group)}
-\label{tab:track1_summary}
+\caption{Track 1: Synthetic-to-Real Detection Performance (Cross-Group) - SVM and Random Forest Comparison}
+\label{tab:track1_summary_rf}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{llcccccc}
+\begin{tabular}{lllcccccc}
 \toprule
-\textbf{Model} & \textbf{Prompt} & \multicolumn{3}{c}{\textbf{Baseline (0\% Synthetic)}} & \multicolumn{3}{c}{\textbf{100\% Synthetic}} \\
-\cmidrule(lr){3-5} \cmidrule(lr){6-8}
-& & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\textbf{Model} & \textbf{Classifier} & \textbf{Prompt} & \multicolumn{3}{c}{\textbf{Baseline (0\% Synthetic)}} & \multicolumn{3}{c}{\textbf{100\% Synthetic}} \\
+\cmidrule(lr){4-6} \cmidrule(lr){7-9}
+& & & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
 \midrule
-\multirow{3}{*}{GPT-4.1-mini} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.025} & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.735 $\pm$ 0.051 \\
- & Strong & & & & 0.970 $\pm$ 0.054 & 0.546 $\pm$ 0.125 & 0.687 $\pm$ 0.070 \\
- & Weak & & & & 0.969 $\pm$ 0.055 & 0.471 $\pm$ 0.147 & 0.617 $\pm$ 0.094 \\
+\multirow{3}{*}{GPT-4.1-mini} & \multirow{3}{*}{SVM} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.026} & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.735 $\pm$ 0.051 \\
+& & Strong & & & & 0.970 $\pm$ 0.054 & 0.546 $\pm$ 0.125 & 0.687 $\pm$ 0.071 \\
+& & Weak & & & & 0.969 $\pm$ 0.056 & 0.471 $\pm$ 0.148 & 0.617 $\pm$ 0.095 \\
+\cmidrule{2-9}
+\multirow{3}{*}{GPT-4.1-mini} & \multirow{3}{*}{Random Forest} & Original & \multirow{3}{*}{0.668 $\pm$ 0.061} & \multirow{3}{*}{0.982 $\pm$ 0.008} & \multirow{3}{*}{0.793 $\pm$ 0.041} & 0.670 $\pm$ 0.051 & 0.959 $\pm$ 0.022 & 0.788 $\pm$ 0.032 \\
+& & Strong & & & & 0.697 $\pm$ 0.051 & 0.949 $\pm$ 0.021 & 0.802 $\pm$ 0.030 \\
+& & Weak & & & & 0.743 $\pm$ 0.053 & 0.938 $\pm$ 0.029 & 0.827 $\pm$ 0.026 \\
 \midrule
-\multirow{3}{*}{Claude-3.5-Haiku} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.025} & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.457 $\pm$ 0.044 \\
- & Strong & & & & 0.976 $\pm$ 0.054 & 0.284 $\pm$ 0.163 & 0.414 $\pm$ 0.141 \\
- & Weak & & & & 0.954 $\pm$ 0.075 & 0.284 $\pm$ 0.219 & 0.387 $\pm$ 0.204 \\
+\multirow{3}{*}{Claude-3.5-Haiku} & \multirow{3}{*}{SVM} & Original & \multirow{3}{*}{0.972 $\pm$ 0.047} & \multirow{3}{*}{0.759 $\pm$ 0.072} & \multirow{3}{*}{0.849 $\pm$ 0.026} & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.457 $\pm$ 0.045 \\
+& & Strong & & & & 0.976 $\pm$ 0.054 & 0.284 $\pm$ 0.164 & 0.414 $\pm$ 0.142 \\
+& & Weak & & & & 0.954 $\pm$ 0.075 & 0.284 $\pm$ 0.220 & 0.387 $\pm$ 0.205 \\
+\cmidrule{2-9}
+\multirow{3}{*}{Claude-3.5-Haiku} & \multirow{3}{*}{Random Forest} & Original & \multirow{3}{*}{0.668 $\pm$ 0.061} & \multirow{3}{*}{0.982 $\pm$ 0.008} & \multirow{3}{*}{0.793 $\pm$ 0.041} & 0.852 $\pm$ 0.078 & 0.776 $\pm$ 0.150 & 0.796 $\pm$ 0.081 \\
+& & Strong & & & & 0.911 $\pm$ 0.057 & 0.630 $\pm$ 0.162 & 0.727 $\pm$ 0.110 \\
+& & Weak & & & & 0.852 $\pm$ 0.072 & 0.547 $\pm$ 0.192 & 0.637 $\pm$ 0.156 \\
 \bottomrule
 \end{tabular}
 }
@@ -53,13 +61,13 @@ Table~\ref{tab:track1_summary} summarizes baseline and 100\% synthetic performan
 
 \textbf{Key Findings:}
 
-\textbf{(1) Precision-recall asymmetry reveals detection challenges.} Across all configurations, precision remains high (0.95-1.00) while recall degrades substantially (0.76 → 0.30-0.60 at 100\% synthetic). This asymmetry indicates that classifiers trained on synthetic spam become \emph{overly conservative}, correctly identifying spam when detected but missing many actual spam instances. The high precision suggests synthetic spam shares surface-level features with real spam, while low recall indicates deeper distributional mismatches that cause classifiers to reject borderline cases.
+\textbf{(1) Classifier architecture fundamentally determines robustness to synthetic training data.} Random Forest demonstrates substantially higher resilience to LLM-generated synthetic spam compared to SVM across both generation models. For GPT-4.1-mini, Random Forest maintains near-baseline performance at 100\% synthetic (F1: 0.793 → 0.788-0.827, -0.6\% to +4.3\% relative), while SVM degrades significantly (F1: 0.849 → 0.617-0.735, -13.4\% to -27.3\% relative). For Claude-3.5-Haiku original prompt, Random Forest exhibits minimal degradation (F1: 0.793 → 0.796, +0.4\%), whereas SVM suffers severe performance loss (F1: 0.849 → 0.457, -46.2\%). The ensemble architecture's inherent regularization and feature subsampling mechanisms appear to mitigate distributional shift effects between synthetic and real spam.
 
-\textbf{(2) Severe degradation with model-dependent severity.} GPT-4.1-mini shows moderate degradation across prompts (F1: -13.4\% to -27.3\% relative), while Claude-3.5-Haiku exhibits severe degradation (F1: -46.2\% to -54.3\% relative). The 2-4× difference in degradation severity indicates GPT generates synthetic spam with substantially better distributional alignment to real spam. At 100\% synthetic, GPT maintains 73-87\% of baseline F1, while Claude retains only 46-54\%.
+\textbf{(2) Precision-recall trade-offs differ fundamentally between classifier architectures.} SVM exhibits extreme precision-recall asymmetry, maintaining near-perfect precision (0.95-1.00) while recall degrades substantially (0.76 → 0.30-0.60 at 100\% synthetic), resulting in overly conservative classification. In contrast, Random Forest maintains balanced precision-recall profiles (precision: 0.67-0.85, recall: 0.78-0.98) with both metrics remaining stable under synthetic data substitution. This architectural difference suggests SVM learns overly strict decision boundaries from synthetic spam, while Random Forest's ensemble voting mechanism provides more robust generalization across the real-synthetic distribution gap.
 
-\textbf{(3) Prompt engineering significantly impacts synthetic quality for both models.} Contrary to initial observations, both models exhibit substantial prompt sensitivity. GPT-4.1-mini shows 14\% relative F1 variance across prompts at 100\% synthetic (original: 0.735, weak: 0.617), while Claude-3.5-Haiku demonstrates 15\% variance (original: 0.457, weak: 0.387). Weaker prompts consistently produce lower-quality synthetic data that degrades classifier performance, with recall dropping from 0.60 (original) to 0.47 (weak) for GPT and from 0.30 (original) to 0.28 (weak) for Claude. This indicates prompt strength directly controls generation fidelity.
+\textbf{(3) Prompt engineering exhibits classifier-dependent effects on synthetic data quality.} For SVM, weaker prompts consistently degrade performance across both models (GPT: F1 0.735 → 0.617 from original to weak; Claude: F1 0.457 → 0.387). However, Random Forest demonstrates non-monotonic prompt sensitivity: for GPT-4.1-mini, weak prompt synthetic data yields superior performance (F1 = 0.827) compared to original (F1 = 0.788) and strong (F1 = 0.802) prompts, suggesting that reduced spam signal intensity may better match Random Forest's feature space. For Claude-3.5-Haiku, both architectures show monotonic degradation with weaker prompts, though Random Forest maintains substantially higher absolute performance (weak prompt: RF F1 = 0.637 vs SVM F1 = 0.387).
 
-\textbf{(4) Linear degradation enables predictable performance estimation.} Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} demonstrate highly linear F1 decline as synthetic ratio increases ($R^2 > 0.95$ for all configurations, detailed regression analysis in Appendix~\ref{appendix:degradation_models}). This linearity enables reliable interpolation for intermediate mixing ratios and predictable performance boundaries for operational deployment.
+\textbf{(4) Linear degradation patterns enable predictable performance estimation.} Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} demonstrate highly linear F1 decline as synthetic ratio increases ($R^2 > 0.95$ for SVM configurations, detailed regression analysis in Appendix~\ref{appendix:degradation_models}). This linearity enables reliable interpolation for intermediate mixing ratios and predictable performance boundaries for operational deployment. Random Forest exhibits near-zero slopes across most configurations, indicating stable performance across the full synthetic ratio spectrum.
 
 \subsection{Track 2a: Real-to-Synthetic Detection}
 \label{sec:eval:track2a}

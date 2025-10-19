@@ -77,7 +77,7 @@ Our evaluation comprises three complementary tracks systematically addressing th
 
 \subsubsection{Track 1: Synthetic-to-Real Detection (RQ1)}
 
-This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. We systematically vary synthetic data proportion $\theta$ from 0\% (pure real baseline) to 100\% (pure synthetic) in 10\% increments across both LLM models, all three prompt strategies, and 20 replications using SVM classification. Training sets contain fixed 900 ham samples with varying mixtures of real and synthetic spam ($(1-\theta) \times 100$ real + $\theta \times 100$ synthetic). All classifiers test on identical held-out real data (900 ham, 100 spam), isolating synthetic training data impact on real-world detection effectiveness.
+This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. We systematically vary synthetic data proportion $\theta$ from 0\% (pure real baseline) to 100\% (pure synthetic) in 10\% increments across both LLM models, all three prompt strategies, and 20 replications using both SVM and Random Forest classifiers. Training sets contain fixed 900 ham samples with varying mixtures of real and synthetic spam ($(1-\theta) \times 100$ real + $\theta \times 100$ synthetic). All classifiers test on identical held-out real data (900 ham, 100 spam), isolating synthetic training data impact on real-world detection effectiveness.
 
 \subsubsection{Track 2a: Real-to-Synthetic Detection (RQ2a)}
 
@@ -89,11 +89,11 @@ This track evaluates whether cross-model synthetic augmentation improves detecti
 
 \subsubsection{Experimental Scale}
 
-The complete framework comprises 2,280 training-evaluation units: 1,320 (Track 1: 2 models × 3 prompts × 11 ratios × 20 groups), 240 (Track 2a: 2 models × 3 prompts × 2 classifiers × 20 groups), and 720 (Track 2b: 2 models × 3 prompts × 3 ratios × 2 classifiers × 20 groups). This systematic coverage provides comprehensive evaluation across generation models, prompt strategies, mixing ratios, and classifier architectures with high statistical power ($>$80\% for medium effects, Cohen's $d \geq 0.5$).
+The complete framework comprises 3,000 training-evaluation units: 2,640 (Track 1: 2 models × 3 prompts × 11 ratios × 2 classifiers × 20 groups), 240 (Track 2a: 2 models × 3 prompts × 2 classifiers × 20 groups), and 720 (Track 2b: 2 models × 3 prompts × 3 ratios × 2 classifiers × 20 groups). This systematic coverage provides comprehensive evaluation across generation models, prompt strategies, mixing ratios, and classifier architectures with high statistical power ($>$80\% for medium effects, Cohen's $d \geq 0.5$).
 
 \subsection{Classification Models}
 
-We employ two widely-adopted classifiers representing distinct learning paradigms: \textbf{Support Vector Machine} (margin-based, linear kernel) and \textbf{Random Forest} (ensemble-based). Hyperparameters are optimized through systematic grid search with 5-fold stratified cross-validation on representative baseline configurations, using F1-score as the optimization metric. Track 1 employs SVM exclusively to focus evaluation on generation quality, while Tracks 2a-2b employ both classifiers to assess architectural robustness in cross-model detection scenarios.
+We employ two widely-adopted classifiers representing distinct learning paradigms: \textbf{Support Vector Machine} (margin-based, linear kernel) and \textbf{Random Forest} (ensemble-based). Hyperparameters are optimized through systematic grid search with 5-fold stratified cross-validation on representative baseline configurations, using F1-score as the optimization metric. All three tracks employ both classifiers to evaluate architectural robustness: Track 1 assesses classifier resilience to synthetic training data, while Tracks 2a-2b evaluate architectural differences in detecting AI-generated spam.
 
 \subsection{Feature Representation}
 
