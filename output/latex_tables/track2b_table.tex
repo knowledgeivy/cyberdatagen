@@ -1,0 +1,28 @@
+\begin{table*}[t]
+\centering
+\caption{Track 2b: Mixed-to-Synthetic Detection Performance (Cross-Group)}
+\label{tab:track2b_summary}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llllccc}
+\toprule
+\textbf{Testing} & \textbf{Prompt} & \textbf{Classifier} & \multicolumn{3}{c}{\textbf{Training Synthetic Ratio}} \\
+\cmidrule(lr){4-6}
+\textbf{Target} & & & \textbf{0\% (Baseline)} & \textbf{50\%} & \textbf{100\%} \\
+\midrule
+\multirow{6}{*}{GPT-4.1-mini} & Original & SVM & 0.744 $\pm$ 0.064 & 0.770 $\pm$ 0.035 & 0.649 $\pm$ 0.042 \\
+ & Original & Random Forest & 0.824 $\pm$ 0.025 & 0.816 $\pm$ 0.023 & 0.894 $\pm$ 0.030 \\
+ & Strong & SVM & 0.718 $\pm$ 0.072 & 0.822 $\pm$ 0.040 & 0.696 $\pm$ 0.110 \\
+ & Strong & Random Forest & 0.824 $\pm$ 0.026 & 0.827 $\pm$ 0.032 & 0.908 $\pm$ 0.040 \\
+ & Weak & SVM & 0.636 $\pm$ 0.086 & 0.822 $\pm$ 0.038 & 0.688 $\pm$ 0.119 \\
+ & Weak & Random Forest & 0.824 $\pm$ 0.028 & 0.822 $\pm$ 0.026 & 0.834 $\pm$ 0.061 \\
+\midrule
+\multirow{6}{*}{Claude-3.5-Haiku} & Original & SVM & 0.532 $\pm$ 0.094 & 0.666 $\pm$ 0.031 & 0.688 $\pm$ 0.033 \\
+ & Original & Random Forest & 0.802 $\pm$ 0.021 & 0.802 $\pm$ 0.020 & 0.802 $\pm$ 0.022 \\
+ & Strong & SVM & 0.590 $\pm$ 0.104 & 0.827 $\pm$ 0.032 & 0.860 $\pm$ 0.033 \\
+ & Strong & Random Forest & 0.806 $\pm$ 0.023 & 0.814 $\pm$ 0.024 & 0.823 $\pm$ 0.027 \\
+ & Weak & SVM & 0.335 $\pm$ 0.160 & 0.748 $\pm$ 0.038 & 0.805 $\pm$ 0.026 \\
+ & Weak & Random Forest & 0.748 $\pm$ 0.031 & 0.777 $\pm$ 0.032 & 0.813 $\pm$ 0.021 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

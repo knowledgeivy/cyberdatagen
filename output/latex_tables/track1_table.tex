@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{Track 1: Synthetic-to-Real Detection Performance (SVM, Cross-Group)}
+\label{tab:track1_summary}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Model} & \textbf{Prompt} & \multicolumn{3}{c}{\textbf{Baseline (0\% Synthetic)}} & \multicolumn{3}{c}{\textbf{100\% Synthetic}} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-8}
+& & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+\multirow{3}{*}{GPT-4.1-mini} & Original & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.735 $\pm$ 0.051 \\
+ & Strong & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.970 $\pm$ 0.054 & 0.546 $\pm$ 0.125 & 0.687 $\pm$ 0.070 \\
+ & Weak & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.969 $\pm$ 0.055 & 0.471 $\pm$ 0.147 & 0.617 $\pm$ 0.094 \\
+\midrule
+\multirow{3}{*}{Claude-3.5-Haiku} & Original & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.457 $\pm$ 0.044 \\
+ & Strong & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.976 $\pm$ 0.054 & 0.284 $\pm$ 0.163 & 0.414 $\pm$ 0.141 \\
+ & Weak & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.849 $\pm$ 0.025 & 0.954 $\pm$ 0.075 & 0.284 $\pm$ 0.219 & 0.387 $\pm$ 0.204 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
