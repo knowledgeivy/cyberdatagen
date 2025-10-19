@@ -74,17 +74,19 @@ Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baselin
 
 \begin{figure*}[t]
 \centering
+\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_real_enhanced_curves.png}
+\caption{Track 2a - Detecting GPT-4.1-mini synthetic spam (Baseline). Both classifiers achieve strong baseline detection: SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87. Higher detectability indicates GPT synthetic spam retains stronger distributional similarities to real spam compared to Claude.}
+\label{fig:track2a_gpt}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
 \includegraphics[width=\textwidth]{pic/claude35haiku_prompts_comparison_cross_group_real_enhanced_curves.png}
 \caption{Track 2a - Detecting Claude-3.5-Haiku synthetic spam (Baseline). SVM shows moderate baseline detection (F1 = 0.53-0.74 across prompts), while Random Forest maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability: weak prompts produce more detectable synthetic spam.}
 \label{fig:track2a_claude}
 \end{figure*}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_real_enhanced_curves.png}
-\caption{Track 2a - Detecting GPT-4.1-mini synthetic spam (Baseline). Both classifiers achieve strong baseline detection: SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87. Higher detectability indicates GPT synthetic spam retains stronger distributional similarities to real spam compared to Claude.}
-\label{fig:track2a_gpt}
-\end{figure*}
+
 
 
 
@@ -132,6 +134,12 @@ This track addresses RQ2b: \textit{Does incorporating synthetic data from other 
 
 Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detection performance across training ratios. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_reverse_performance_curves.png}
+\caption{Track 2b - Detecting GPT-4.1-mini spam (trained on Claude-3.5-Haiku synthetic). SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%), declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially (F1: 0.82 $\rightarrow$ 0.89, +8.5\%), demonstrating effective cross-model feature learning.}
+\label{fig:track2b_gpt}
+\end{figure*}
 
 \begin{figure*}[t]
 \centering
@@ -140,12 +148,7 @@ Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detecti
 \label{fig:track2b_claude}
 \end{figure*}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pic/gpt41mini_prompts_comparison_cross_group_reverse_performance_curves.png}
-\caption{Track 2b - Detecting GPT-4.1-mini spam (trained on Claude-3.5-Haiku synthetic). SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%), declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially (F1: 0.82 $\rightarrow$ 0.89, +8.5\%), demonstrating effective cross-model feature learning.}
-\label{fig:track2b_gpt}
-\end{figure*}
+
 
 
 \begin{table*}[t]
