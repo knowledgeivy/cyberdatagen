@@ -72,14 +72,14 @@ We design three systematically varied prompt strategies to explore how generatio
 
 This controlled three-point variation enables systematic investigation of prompt influence on generation quality. The hypothesis is that explicit instruction intensity (weak → original → strong) systematically affects synthetic data characteristics along a continuum. Complete prompt templates are specified in Section~\ref{sec:experiment} and Appendix~\ref{appendix:prompts}.
 
-\subsection{Data Distribution Analysis}
-\label{sec:methodology:distribution_analysis}
+% \subsection{Data Distribution Analysis}
+% \label{sec:methodology:distribution_analysis}
 
-\textbf{[PLACEHOLDER: PCA/Embeddings Analysis]}
+% \textbf{[PLACEHOLDER: PCA/Embeddings Analysis]}
 
-This section will present distributional analysis comparing LLM-generated synthetic spam versus real spam in high-dimensional embedding spaces. We employ dimensionality reduction techniques including Principal Component Analysis (PCA) and t-SNE to visualize whether synthetic data overlaps with or separates from real spam distributions. This analysis provides qualitative insights into generation quality before conducting classification experiments, revealing whether different LLMs and prompt strategies produce distributional alignment or divergence relative to real spam patterns.
+% This section will present distributional analysis comparing LLM-generated synthetic spam versus real spam in high-dimensional embedding spaces. We employ dimensionality reduction techniques including Principal Component Analysis (PCA) and t-SNE to visualize whether synthetic data overlaps with or separates from real spam distributions. This analysis provides qualitative insights into generation quality before conducting classification experiments, revealing whether different LLMs and prompt strategies produce distributional alignment or divergence relative to real spam patterns.
 
-\textit{Content to be added: 2 visualization figures showing PCA/t-SNE projections of real vs synthetic spam embeddings for both LLM models.}
+% \textit{Content to be added: 2 visualization figures showing PCA/t-SNE projections of real vs synthetic spam embeddings for both LLM models.}
 
 \subsection{Mixing Strategies}
 
@@ -135,11 +135,11 @@ This track evaluates whether LLM-generated synthetic spam can effectively train 
 
 This design isolates the impact of synthetic training data on real-world detection effectiveness. As synthetic proportion $\theta$ increases from 0 (pure real training) to 1 (pure synthetic training), we quantify performance degradation, establishing the trade-off between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring that results reflect operational deployment scenarios where detectors must identify genuine spam.
 
-\subsubsection{Track 2: Detecting AI-Generated Spam}
+\subsubsection{Tracks 2a-2b: AI-Generated Spam Detection}
 
 This track evaluates defensive capabilities against AI-powered spam threats through two complementary approaches that vary in whether synthetic training data is available.
 
-\textbf{Approach 2a: Baseline (Real-Data-Only Detection, RQ2a)}
+\textbf{Track 2a: Real-to-Synthetic Detection (RQ2a)}
 
 This approach evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios.
 
@@ -155,7 +155,7 @@ This approach evaluates whether classifiers trained solely on real spam can dete
 
 This baseline establishes defenders' readiness against AI-powered attacks when training data contains only traditional real spam samples. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to detecting LLM-generated spam, suggesting current classifiers provide inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
 
-\textbf{Approach 2b: Enhanced (Hybrid-Data Detection, RQ2b)}
+\textbf{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}
 
 This approach investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation.
 
@@ -170,17 +170,3 @@ This approach investigates whether incorporating synthetic data from other LLMs 
 \end{equation}
 
 This cross-model design evaluates whether features learned from one LLM's synthetic patterns ($\text{LLM}_B$) generalize to detecting another LLM's spam ($\text{LLM}_A$). The approach tests hybrid training strategies where defenders augment real training data with synthetic samples from available LLM sources to improve readiness against attacks from different LLM sources. Performance improvement over baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.
-
-\subsection{Methodological Design Rationale}
-
-Several key design choices warrant explicit justification:
-
-\textbf{Fixed Test Set Design.} By maintaining identical test sets across all experimental conditions while varying only training configurations, we eliminate test set composition as a confounding factor. This enables confident attribution of performance differences to training manipulations (synthetic ratios, mixing strategies) rather than artifacts of evaluation set selection.
-
-\textbf{Cross-Model Evaluation.} The decision to train on one LLM's synthetic data ($\text{LLM}_B$) while testing on another's ($\text{LLM}_A$) reflects practical defensive scenarios where attackers may employ different generation models than those available to defenders. Cross-model generalization is critical for operational robustness, as defenders cannot guarantee access to attackers' exact generation tools.
-
-\textbf{Stratified Replication Design.} The choice of $R$ independent groups (rather than single-trial evaluation) enables rigorous statistical inference with quantified uncertainty. Multiple groups provide variance estimates enabling confidence intervals, hypothesis testing to distinguish genuine effects from random variation, and sensitivity analysis to model performance-proportion relationships.
-
-\textbf{Controlled Prompt Variation.} The three-point prompt strategy design (original, strong, weak) enables systematic exploration of how generation instructions influence synthetic data quality. Rather than arbitrary prompt selection, controlled variation along an intensity continuum permits testing whether explicit feature amplification improves downstream utility.
-
-These design choices collectively establish a rigorous methodological foundation for answering the core research questions with statistical confidence and operational relevance.

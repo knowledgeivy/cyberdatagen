@@ -61,7 +61,7 @@ Table~\ref{tab:track1_summary} summarizes baseline and 100\% synthetic performan
 
 \textbf{(4) Linear degradation enables predictable performance estimation.} Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} demonstrate highly linear F1 decline as synthetic ratio increases ($R^2 > 0.95$ for all configurations, detailed regression analysis in Appendix~\ref{appendix:degradation_models}). This linearity enables reliable interpolation for intermediate mixing ratios and predictable performance boundaries for operational deployment.
 
-\subsection{Track 2a: Detecting AI-Generated Spam (Baseline)}
+\subsection{Track 2a: Real-to-Synthetic Detection}
 \label{sec:eval:track2a}
 
 This track addresses RQ2a: \textit{Can classifiers trained on real data detect LLM-generated spam?} Classifiers train exclusively on real spam (no synthetic exposure), then test on detecting LLM-generated synthetic spam, representing zero-shot AI-spam detection scenarios.
@@ -123,7 +123,7 @@ Table~\ref{tab:track2a_summary} presents detection performance across varying tr
 
 \textbf{(4) Random Forest demonstrates superior prompt invariance.} Random Forest maintains remarkably consistent performance across all three prompt strategies for GPT detection (F1 $\approx$ 0.79-0.83 across all configurations, $<$5\% variance), while SVM shows 17-29\% variance across prompts. This robustness indicates ensemble methods effectively extract prompt-invariant features for AI-spam detection, providing more reliable defense against varied generation strategies.
 
-\subsection{Track 2b: Detecting AI-Generated Spam (Enhanced)}
+\subsection{Track 2b: Mixed-to-Synthetic Detection}
 \label{sec:eval:track2b}
 
 This track addresses RQ2b: \textit{Does incorporating synthetic data from other LLMs improve detection?} We train classifiers on varying mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test detection of synthetic spam from a \emph{different} LLM, evaluating cross-model hybrid training strategies.

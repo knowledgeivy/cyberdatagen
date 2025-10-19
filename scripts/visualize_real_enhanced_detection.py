@@ -131,10 +131,9 @@ def create_performance_curves_by_method(plotting_data: dict, output_dir: str):
                         ax.grid(True, alpha=0.3)
 
                 # Overall title
-                strategy_display = strategy.replace('_', '-').title()
                 fig.suptitle(
-                    f'Detecting AI-Generated Spam (Baseline): {method_display} Testing\n'
-                    f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
+                    f'Real-to-Synthetic Detection: {method_display} Testing\n'
+                    f'Prompt: {prompt.capitalize()}',
                     fontsize=14, fontweight='bold'
                 )
 
@@ -270,10 +269,9 @@ def create_prompt_comparison_plots(plotting_data: dict, output_dir: str):
                     ax.set_axisbelow(True)
 
             # Overall title
-            strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Detecting AI-Generated Spam (Baseline): {method_display} Testing\n'
-                f'Prompt Comparison - {strategy_display} Strategy',
+                f'Real-to-Synthetic Detection: {method_display} Testing\n'
+                f'Prompt Comparison',
                 fontsize=14, fontweight='bold', y=0.995
             )
 
@@ -406,10 +404,9 @@ def create_cross_method_comparison(plotting_data: dict, output_dir: str):
                     ax.grid(True, alpha=0.3)
 
             # Overall title
-            strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Detecting AI-Generated Spam (Baseline): Method Comparison\n'
-                f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
+                f'Real-to-Synthetic Detection: Method Comparison\n'
+                f'Prompt: {prompt.capitalize()}',
                 fontsize=14, fontweight='bold'
             )
 
@@ -475,9 +472,9 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
             subset = df[mask]
 
             if subset.empty:
-                ax.text(0.5, 0.5, f'No data for {method}-{strategy}',
+                ax.text(0.5, 0.5, f'No data for {method}',
                        ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(f'{method_display} - {strategy.replace("_", "-").title()}',
+                ax.set_title(f'{method_display}',
                            fontsize=12, fontweight='bold')
                 continue
 
@@ -507,12 +504,11 @@ def create_improvement_plots(analysis_dir: str, output_dir: str):
                 cbar_kws={'label': 'Improvement (%)'}
             )
 
-            strategy_display = strategy.replace('_', '-').title()
-            ax.set_title(f'{method_display} - {strategy_display}', fontsize=12, fontweight='bold')
+            ax.set_title(f'{method_display}', fontsize=12, fontweight='bold')
             ax.set_xlabel('Prompt', fontsize=10)
             ax.set_ylabel('Classifier', fontsize=10)
 
-    fig.suptitle('Detecting AI-Generated Spam (Baseline): Performance Improvement\nReal Spam 100 → 200 (F1-Score Percentage Change)',
+    fig.suptitle('Real-to-Synthetic Detection: Performance Improvement\nReal Spam 100 → 200 (F1-Score Percentage Change)',
                 fontsize=14, fontweight='bold')
 
     plt.tight_layout(rect=[0, 0, 1, 0.97])

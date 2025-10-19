@@ -1,13 +1,10 @@
 \section{Introduction}
 \label{sec:introduction}
-
-\subsection{The Dual Impact of Generative AI on Spam Detection}
-
 Generative AI, particularly Large Language Models (LLMs), has fundamentally transformed the landscape of spam and phishing attacks. Traditional spam relied on template-based generation with characteristic indicators—spelling errors, grammar mistakes, repetitive patterns—that enabled relatively straightforward detection. Modern LLMs eliminate these telltale signs, producing spam emails with natural language characteristics, contextual coherence, and grammatical correctness that closely mimic legitimate communications. This transformation presents attackers with unprecedented capabilities: automated generation of convincing phishing campaigns at scale, personalized spear-phishing attacks leveraging web-scraped information, and adaptive content generation that evades pattern-based detection systems.
 
 Simultaneously, LLMs offer defenders new capabilities for addressing persistent training data challenges. Spam detection systems require large, diverse training datasets, yet acquiring such data confronts privacy constraints, legal restrictions on maintaining malicious content, and the inherent rarity of spam samples in operational environments where class imbalance ($<$10\% spam) represents the norm. LLMs promise to alleviate these constraints through synthetic data generation, potentially augmenting limited real datasets without requiring access to sensitive information or expensive manual collection efforts.
 
-This duality raises a fundamental question that motivates our research: \textbf{Does Generative AI favor attackers or defenders in spam detection?} Answering this question requires systematic evaluation of both offensive capabilities (whether LLM-generated spam evades detection) and defensive capabilities (whether synthetic training data improves detection systems).
+This duality raises a fundamental question that motivates our research: Does Generative AI favor attackers or defenders in spam detection? Answering this question requires systematic evaluation of both offensive capabilities (whether LLM-generated spam evades detection) and defensive capabilities (whether synthetic training data improves detection systems).
 
 \subsection{Research Questions}
 
@@ -26,20 +23,6 @@ This question addresses the defensive challenge of detecting AI-powered spam usi
 This question investigates whether cross-model synthetic data augmentation enhances detection capabilities. By training classifiers on mixtures of real spam and synthetic data from one LLM, then testing detection of spam from a different LLM, we evaluate whether hybrid training strategies improve defensive readiness. The answer reveals whether defenders can "fight fire with fire" by using AI-generated data to detect AI-powered attacks.
 
 Together, these questions provide comprehensive evaluation of LLMs' dual impact, assessing both the threat they pose to defenders and the opportunities they offer for improving detection systems.
-
-\subsection{Methodology Overview}
-
-We employ a rigorous four-stage evaluation framework designed to provide statistically sound answers to these research questions:
-
-\textbf{Stage 1: Stratified Data Preparation.} We partition the spam corpus into $R = 20$ independent groups using stratified random sampling, enabling statistical replication with sufficient power ($>$80\%) to detect medium effect sizes (Cohen's $d \geq 0.5$) at standard significance levels ($\alpha = 0.05$).
-
-\textbf{Stage 2: Controlled Synthetic Generation.} We employ two state-of-the-art LLMs (GPT-4.1-mini, Claude-3.5-Haiku) with three systematically varied prompt strategies (original, strong, weak) to explore the generation parameter space, generating synthetic spam variants from real seed samples.
-
-\textbf{Stage 3: Systematic Evaluation Across Tracks.} We implement three experimental tracks that collectively address our research questions: (1) Synthetic-to-Real Detection evaluating training augmentation effectiveness (RQ1), (2) Baseline Detection assessing zero-shot AI-spam detection (RQ2a), and (3) Enhanced Detection investigating cross-model hybrid training (RQ2b).
-
-\textbf{Stage 4: Comprehensive Statistical Analysis.} We employ rigorous statistical frameworks including hypothesis testing with False Discovery Rate correction, effect size quantification (Cohen's $d$), confidence interval estimation, and performance degradation modeling to establish statistically sound conclusions with quantified uncertainty.
-
-This methodology produces 2,040 training-evaluation units across both LLM models, all prompt strategies, multiple synthetic proportions, two classifier architectures, and 20 independent replications, providing comprehensive coverage of the experimental space with high statistical power.
 
 \subsection{Principal Contributions}
 

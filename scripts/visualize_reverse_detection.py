@@ -129,11 +129,10 @@ def create_performance_curves_by_method(plotting_data: dict, output_dir: str):
                         ax.grid(True, alpha=0.3)
 
                 # Overall title
-                strategy_display = strategy.replace('_', '-').title()
                 fig.suptitle(
-                    f'Detecting AI-Generated Spam (Enhanced): {method_display} Testing '
+                    f'Mixed-to-Synthetic Detection: {method_display} Testing '
                     f'(Trained on {opposite_method})\n'
-                    f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
+                    f'Prompt: {prompt.capitalize()}',
                     fontsize=14, fontweight='bold'
                 )
 
@@ -268,10 +267,9 @@ def create_prompt_comparison_plots(plotting_data: dict, output_dir: str):
                     ax.set_axisbelow(True)
 
             # Overall title
-            strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Detecting AI-Generated Spam (Enhanced): {method_display} Testing (Trained on {opposite_method})\n'
-                f'Prompt Comparison - {strategy_display} Strategy',
+                f'Mixed-to-Synthetic Detection: {method_display} Testing (Trained on {opposite_method})\n'
+                f'Prompt Comparison',
                 fontsize=14, fontweight='bold', y=0.995
             )
 
@@ -402,10 +400,9 @@ def create_cross_method_comparison(plotting_data: dict, output_dir: str):
                     ax.grid(True, alpha=0.3)
 
             # Overall title
-            strategy_display = strategy.replace('_', '-').title()
             fig.suptitle(
-                f'Detecting AI-Generated Spam (Enhanced): Method Comparison\n'
-                f'Prompt: {prompt.capitalize()}, Strategy: {strategy_display}',
+                f'Mixed-to-Synthetic Detection: Method Comparison\n'
+                f'Prompt: {prompt.capitalize()}',
                 fontsize=14, fontweight='bold'
             )
 

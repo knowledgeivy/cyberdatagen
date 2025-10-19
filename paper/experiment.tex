@@ -53,11 +53,11 @@ Our evaluation comprises three complementary tracks systematically addressing th
 
 This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. We systematically vary synthetic data proportion $\theta$ from 0\% (pure real baseline) to 100\% (pure synthetic) in 10\% increments across both LLM models, all three prompt strategies, and 20 replications using SVM classification. Training sets contain fixed 900 ham samples with varying mixtures of real and synthetic spam ($(1-\theta) \times 100$ real + $\theta \times 100$ synthetic). All classifiers test on identical held-out real data (900 ham, 100 spam), isolating synthetic training data impact on real-world detection effectiveness.
 
-\subsubsection{Track 2a: Baseline Detection - Real-Data-Only (RQ2a)}
+\subsubsection{Track 2a: Real-to-Synthetic Detection (RQ2a)}
 
 This track establishes defenders' zero-shot readiness against AI-powered spam using only traditional training data. Classifiers train exclusively on real spam (900 ham, 100 spam, no synthetic exposure), then test on LLM-generated synthetic spam across both models and all prompt strategies. Both SVM and Random Forest classifiers evaluate architectural differences in detecting AI-generated spam without prior exposure. This baseline quantifies whether features distinguishing real spam from ham generalize to identifying synthetic spam.
 
-\subsubsection{Track 2b: Enhanced Detection - Hybrid-Data (RQ2b)}
+\subsubsection{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}
 
 This track evaluates whether cross-model synthetic augmentation improves detection through "fighting fire with fire" strategies. Classifiers train on mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test on synthetic spam from the \emph{opposite} LLM. For example, when testing GPT-4.1-mini detection, training employs real spam augmented with Claude-3.5-Haiku synthetic samples. This cross-model design assesses whether synthetic augmentation from available LLM sources enhances readiness against attacks from different LLM sources. Both SVM and Random Forest evaluate architectural robustness across all configurations.
 
@@ -68,10 +68,6 @@ The complete framework comprises 2,280 training-evaluation units: 1,320 (Track 1
 \subsection{Classification Models}
 
 We employ two widely-adopted classifiers representing distinct learning paradigms: \textbf{Support Vector Machine} (margin-based, linear kernel) and \textbf{Random Forest} (ensemble-based). Hyperparameters are optimized through systematic grid search with 5-fold stratified cross-validation on representative baseline configurations, using F1-score as the optimization metric. Track 1 employs SVM exclusively to focus evaluation on generation quality, while Tracks 2a-2b employ both classifiers to assess architectural robustness in cross-model detection scenarios.
-
-Key findings from hyperparameter optimization: linear kernel substantially outperforms RBF for SVM (F1 = 0.825 vs 0.48-0.61), confirming appropriateness of linear boundaries for high-dimensional sparse TF-IDF features; Random Forest exhibits remarkable parameter robustness (F1 range 0.886-0.917, $<$3\% variation); SVM performance is invariant to regularization strength with linear kernel (all C values yield F1 = 0.825 ± 0.031).
-
-Final configurations: \textbf{SVM} - C=1.0, linear kernel, balanced class weights; \textbf{Random Forest} - 100 trees, max depth=10, min samples split=5, balanced class weights. Complete grid search results and parameter justifications are provided in Appendix~\ref{appendix:hyperparameters}, Table~\ref{tab:hyperparameter_grid}.
 
 \subsection{Feature Representation}
 
