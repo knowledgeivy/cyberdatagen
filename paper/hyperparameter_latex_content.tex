@@ -21,7 +21,7 @@ To ensure fair comparison across all experimental conditions and eliminate hyper
     \item \textbf{Cross-validation}: Stratified 5-fold CV with random\_state = 42
 \end{itemize}
 
-\textbf{Key Findings} (detailed results in Appendix~\ref{appendix:hyperparameter_grid_search}):
+\textbf{Key Findings} (detailed results in Appendix~\ref{appendix:hyperparameters}):
 
 \begin{enumerate}
     \item \textbf{Random Forest exhibits remarkable hyperparameter robustness}: Top configurations vary by less than 3\% F1-score (0.886--0.917), confirming the ensemble method's stability. The best configuration (n\_estimators=100, max\_depth=None) achieves F1 = 0.917 $\pm$ 0.038, while our selected configuration (n\_estimators=100, max\_depth=10) performs nearly identically at F1 = 0.914 $\pm$ 0.024.

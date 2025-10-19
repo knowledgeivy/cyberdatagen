@@ -1,7 +1,7 @@
 \section{Experimental Configuration}
 \label{sec:experiment}
 
-This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and cost analyses are provided in Appendices~\ref{appendix:hyperparameters}, \ref{appendix:prompts}, and \ref{appendix:costs}.
+This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{appendix:hyperparameters}, \ref{appendix:prompts}, and \ref{appendix:llm_config}.
 
 \subsection{Dataset and Sampling}
 
@@ -11,7 +11,7 @@ We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39
 
 \subsubsection{Model Selection}
 
-We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini-2024-04-14} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Beyond state-of-the-art generation quality, these models offer optimal cost-performance trade-offs for spam attackers (see Appendix~\ref{appendix:costs}, Table~\ref{tab:llm_costs} for detailed cost comparison). Both models provide sufficient context windows for email generation while maintaining low per-token costs, making them economically viable for large-scale spam campaigns. This selection reflects realistic attacker constraints where generation quality must balance against operational costs.
+We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini-2024-04-14} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). Beyond state-of-the-art generation quality, these models offer optimal cost-performance trade-offs for spam attackers (see Appendix~\ref{appendix:llm_config}, Table~\ref{tab:llm_config_costs} for detailed cost comparison). Both models provide sufficient context windows for email generation while maintaining low per-token costs, making them economically viable for large-scale spam campaigns. This selection reflects realistic attacker constraints where generation quality must balance against operational costs.
 
 Both models employ identical generation parameters: temperature = 0.7 (balancing creativity and consistency), max tokens = 1,000, top-p = 1.0. Complete API configurations and parameter justifications are provided in Appendix~\ref{appendix:llm_config}.
 
@@ -107,4 +107,4 @@ Following Section~\ref{sec:methodology}, we compute descriptive statistics (mean
 
 \subsection{Computational Infrastructure}
 
-All experiments employ official LLM APIs (GPT-4.1-mini, Claude-3.5-Haiku) with total estimated generation cost of \$3.30 for 12,000 synthetic samples (see Appendix~\ref{appendix:costs}, Table~\ref{tab:llm_costs} for per-model cost breakdown). Classifier training and evaluation execute on standard computing infrastructure: Intel Xeon 32-core CPU, 128 GB RAM, 1 TB SSD. No specialized hardware (GPU) required. Total pipeline runtime approximately 22 hours including LLM generation (8 hours with API rate limiting), classifier training (12 hours), and statistical analysis (2 hours).
+All experiments employ official LLM APIs (GPT-4.1-mini, Claude-3.5-Haiku) with total estimated generation cost of \$3.30 for 12,000 synthetic samples (see Appendix~\ref{appendix:llm_config}, Table~\ref{tab:llm_config_costs} for per-model cost breakdown). Classifier training and evaluation execute on standard computing infrastructure: Intel Xeon 32-core CPU, 128 GB RAM, 1 TB SSD. No specialized hardware (GPU) required. Total pipeline runtime approximately 22 hours including LLM generation (8 hours with API rate limiting), classifier training (12 hours), and statistical analysis (2 hours).

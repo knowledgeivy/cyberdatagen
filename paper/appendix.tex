@@ -81,19 +81,14 @@ Vectorizer fits exclusively on training data; identical transformation applies t
 \subsection{Prompt Templates}
 \label{appendix:prompts}
 
-Complete prompt templates for synthetic spam generation across three systematically varied strategies:
-
-\subsubsection{Original Strategy Prompt}
+All prompts follow a consistent template structure with only the strategy-specific instructions varying. The general template format is:
 
 \begin{verbatim}
 You are an expert email content analyzer. Given the following
 spam email, generate a semantically similar but lexically
 distinct spam variant.
 
-Instructions: Faithfully reproduce the spam characteristics
-including urgency signals, persuasive elements, and social
-engineering tactics. Introduce natural lexical variation while
-maintaining semantic similarity and malicious intent.
+Instructions: [Strategy-Specific Instructions]
 
 Original Email:
 {original_spam_content}
@@ -105,54 +100,17 @@ Output Format (JSON):
 }
 \end{verbatim}
 
-\subsubsection{Strong Strategy Prompt}
+\noindent\textbf{Strategy-Specific Instructions:}
 
-\begin{verbatim}
-You are an expert email content analyzer. Given the following
-spam email, generate a semantically similar but lexically
-distinct spam variant.
+\begin{itemize}
+    \item \textbf{Original Strategy:} Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent.
 
-Instructions: Amplify spam indicators by emphasizing urgency
-signals (limited time, immediate action required), persuasive
-elements (too-good-to-be-true offers, authority figures), and
-social engineering tactics (credential requests, fake
-notifications). Make the spam characteristics more explicit
-and prominent.
+    \item \textbf{Strong Strategy:} Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required), persuasive elements (too-good-to-be-true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make the spam characteristics more explicit and prominent.
 
-Original Email:
-{original_spam_content}
+    \item \textbf{Weak Strategy:} Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect.
+\end{itemize}
 
-Output Format (JSON):
-{
-  "subject": "generated subject line",
-  "body": "generated email body"
-}
-\end{verbatim}
-
-\subsubsection{Weak Strategy Prompt}
-
-\begin{verbatim}
-You are an expert email content analyzer. Given the following
-spam email, generate a semantically similar but lexically
-distinct spam variant.
-
-Instructions: Generate subtle spam with reduced explicit
-indicators. Create content that appears more legitimate while
-retaining underlying spam nature. Use professional language
-and minimize obvious urgency signals, making the spam more
-difficult to detect.
-
-Original Email:
-{original_spam_content}
-
-Output Format (JSON):
-{
-  "subject": "generated subject line",
-  "body": "generated email body"
-}
-\end{verbatim}
-
-All prompts follow consistent JSON-formatted template structure ensuring reliable parsing and automated integration into experimental pipeline. The \texttt{\{original\_spam\_content\}} placeholder is replaced with actual spam email text during generation.
+The \texttt{\{original\_spam\_content\}} placeholder is replaced with actual spam email text during generation, ensuring automated integration into the experimental pipeline.
 
 \subsection{Performance Metrics Definitions}
 \label{appendix:metrics}
