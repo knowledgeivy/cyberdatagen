@@ -1,172 +1,78 @@
 \section{Methodology}
 \label{sec:methodology}
 
-\subsection{Framework Overview}
-
-Our methodology implements a four-stage evaluation framework designed to rigorously assess synthetic spam data across generation quality, detection effectiveness, and cross-model generalization. Figure~\ref{fig:framework} illustrates the complete experimental pipeline from data preparation through statistical analysis.
+Our evaluation framework systematically assesses LLM-generated synthetic spam across three complementary dimensions: whether synthetic data can substitute for real training examples, whether traditional detectors recognize AI-generated attacks, and whether cross-model augmentation improves defensive capabilities. Figure~\ref{fig:framework} illustrates the complete experimental pipeline.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{pic/model_flowchart.png}
-    \caption{Experimental framework for evaluating LLM-generated synthetic spam. The pipeline encompasses stratified sampling, controlled generation with multiple prompt strategies, systematic mixing under different strategies, and comprehensive statistical analysis across three experimental tracks.}
+    \caption{Experimental framework for evaluating LLM-generated synthetic spam. The pipeline encompasses stratified sampling, controlled generation with multiple prompt strategies, cross-group mixing, and statistical analysis across three experimental tracks.}
     \label{fig:framework}
 \end{figure}
 
-The framework consists of four sequential stages that collectively enable systematic evaluation of synthetic data utility:
-
-\textbf{Stage 1: Stratified Data Preparation.} Partition the spam corpus into $R$ independent groups using stratified random sampling, with each group containing $N$ samples maintaining fixed spam ratio $\rho$. This design enables statistical replication while ensuring distributional balance across groups.
-
-\textbf{Stage 2: Controlled Synthetic Generation.} Apply multiple LLMs with systematically varied prompt strategies to generate synthetic spam from real seed samples, exploring the generation parameter space through controlled manipulation of generation instructions.
-
-\textbf{Stage 3: Systematic Mixing and Training.} Implement two fundamental mixing strategies (within-group and cross-group) across varying synthetic proportions $\theta \in [0, 1]$, training classifiers on mixed real-synthetic datasets under diverse distributional conditions.
-
-\textbf{Stage 4: Statistical Evaluation.} Employ comprehensive statistical analysis including hypothesis testing with multiple comparison correction, effect size quantification, and performance degradation modeling to establish rigorous conclusions about synthetic data effectiveness.
-
-This modular design enables systematic investigation of each component's contribution to overall synthetic data quality and utility, with clear separation between data preparation, generation, experimental manipulation, and statistical inference.
+The framework employs stratified sampling to create independent experimental groups, uses multiple LLMs with varied prompt strategies to generate synthetic spam, trains classifiers on mixed real-synthetic datasets under cross-group conditions that reflect realistic deployment scenarios, and applies rigorous statistical analysis including hypothesis testing with multiple comparison correction and effect size quantification. This design enables systematic evaluation of synthetic data utility while controlling for distributional confounds and ensuring reproducible conclusions.
 
 \subsection{Data Sampling Design}
 
-\subsubsection{Stratified Group Partitioning}
+We partition the spam corpus into $R$ independent groups using stratified random sampling, with each group containing $N$ samples at fixed spam-to-ham ratio $\rho$. Sampling without replacement ensures statistical independence between groups, satisfying assumptions for parametric hypothesis testing. This replicated design enables calculation of performance variance across groups, construction of confidence intervals, and rigorous hypothesis testing with quantified uncertainty rather than point estimates.
 
-We employ stratified random sampling to partition the spam corpus into $R$ independent experimental groups. Each group $G_i$ ($i = 1, \ldots, R$) contains $N$ samples with fixed spam-to-ham ratio $\rho$:
-\begin{equation}
-G_i = \{(\mathbf{x}_j, y_j)\}_{j=1}^{N}, \quad |\{j : y_j = 1\}| = \lfloor \rho \cdot N \rfloor
-\end{equation}
-where $\mathbf{x}_j$ represents email features, $y_j \in \{0, 1\}$ denotes class labels (0=ham, 1=spam), and $\rho$ is the target spam proportion.
-
-This stratified design serves two critical functions:
-
-\textbf{Statistical Independence.} Sampling without replacement ensures groups are statistically independent experimental units, satisfying the independence assumption required for parametric hypothesis testing and enabling valid application of t-tests and ANOVA.
-
-\textbf{Replication for Robust Inference.} Multiple independent groups enable calculation of performance variance, construction of confidence intervals, and hypothesis testing across experimental conditions. The required sample size $R$ is determined through statistical power analysis:
-\begin{equation}
-R \geq \frac{2(z_{\alpha/2} + z_{\beta})^2 \sigma^2}{\delta^2}
-\end{equation}
-where $\delta$ is the minimum detectable effect size, $\alpha$ is the significance level (type I error rate), $\beta$ is type II error rate, and $\sigma$ is the expected standard deviation across groups. Specific parameter values are determined through pilot experiments and specified in Section~\ref{sec:experiment}.
-
-\subsubsection{Training-Testing Split}
-
-To eliminate test set variance as a confounding factor, we maintain a fixed test set across all experimental conditions. The test set, held out before any experimental manipulation, remains constant while training sets vary according to synthetic ratios and mixing strategies. This design ensures that observed performance differences reflect genuine treatment effects rather than evaluation artifacts arising from test set composition variability.
+To eliminate test set variance as a confounding factor, we maintain a fixed held-out test set across all experimental conditions. The test set remains constant while training sets vary according to synthetic proportions, ensuring that observed performance differences reflect genuine treatment effects rather than evaluation artifacts from test set composition variability. Specific values for $R$, $N$, and $\rho$ are determined through power analysis and specified in Section~\ref{sec:experiment}.
 
 \subsection{Synthetic Data Generation}
 
-\subsubsection{LLM-Based Text Generation}
+We employ Large Language Models to generate synthetic spam through prompt-guided text generation. Given a real spam email as seed, the LLM produces a synthetic variant maintaining semantic similarity while introducing lexical and structural variation. Unlike feature-space augmentation methods that operate on vectorized representations, LLM generation produces actual text content enabling human inspection, semantic validation, and reuse across multiple downstream applications.
 
-We employ Large Language Models to generate synthetic spam through prompt-guided neural generation. Given a real spam email $\text{doc}_i$ as a seed, the LLM produces a synthetic variant maintaining semantic similarity while introducing lexical and structural variation:
-\begin{equation}
-\text{doc}_{\text{synth}} = \text{LLM}(\text{prompt}(\text{doc}_i, \text{strategy}) \mid \Theta)
-\end{equation}
-where $\Theta$ represents learned model parameters and $\text{strategy}$ controls generation characteristics through prompt engineering.
+We design three systematically varied prompt strategies to explore how generation instructions influence synthetic data quality:
 
-Unlike traditional feature-space augmentation methods (e.g., SMOTE) that operate on vectorized representations, LLM generation produces actual text content before feature extraction. This text-space generation enables human inspection, semantic validation, and reuse across multiple downstream applications beyond immediate classification.
+\textbf{Original:} Faithfully reproduces spam characteristics while introducing natural lexical variation, maintaining semantic similarity and malicious intent without amplification or attenuation.
 
-\subsubsection{Prompt Engineering Strategies}
+\textbf{Strong:} Explicitly amplifies spam indicators by emphasizing urgency signals, persuasive elements, and social engineering techniques.
 
-We design three systematically varied prompt strategies to explore how generation instructions influence synthetic data quality and downstream classifier performance:
+\textbf{Weak:} Produces subtle spam with reduced explicit indicators, generating content that appears more legitimate while retaining underlying spam nature.
 
-\textbf{Original Strategy.} Instructs the LLM to faithfully reproduce spam characteristics while introducing natural lexical variation. Prompts emphasize maintaining semantic similarity and malicious intent of source emails without amplification or attenuation.
+This controlled variation enables systematic investigation of whether prompt intensity affects generation quality and classifier performance. Complete prompt templates are specified in Section~\ref{sec:experiment} and Appendix~\ref{appendix:prompts}.
 
-\textbf{Strong Strategy.} Explicitly amplifies spam indicators by instructing the LLM to emphasize representative phishing characteristics. Generates samples with explicit urgency signals, persuasive elements, and social engineering techniques.
+\subsection{Cross-Group Mixing Strategy}
 
-\textbf{Weak Strategy.} Produces subtle spam with reduced explicit indicators, instructing the LLM to generate content that appears more legitimate while retaining underlying spam nature. Tests whether synthetic data with attenuated features impacts classifier effectiveness.
+We employ cross-group mixing where training data from group $i$ combines with synthetic data generated from different groups $j \neq i$. This design deliberately introduces distributional mismatch between generation sources and training targets, reflecting realistic deployment scenarios where exact distribution matching between synthetic generation sources and operational training data is infeasible or unverifiable.
 
-This controlled three-point variation enables systematic investigation of prompt influence on generation quality. The hypothesis is that explicit instruction intensity (weak → original → strong) systematically affects synthetic data characteristics along a continuum. Complete prompt templates are specified in Section~\ref{sec:experiment} and Appendix~\ref{appendix:prompts}.
-
-% \subsection{Data Distribution Analysis}
-% \label{sec:methodology:distribution_analysis}
-
-% \textbf{[PLACEHOLDER: PCA/Embeddings Analysis]}
-
-% This section will present distributional analysis comparing LLM-generated synthetic spam versus real spam in high-dimensional embedding spaces. We employ dimensionality reduction techniques including Principal Component Analysis (PCA) and t-SNE to visualize whether synthetic data overlaps with or separates from real spam distributions. This analysis provides qualitative insights into generation quality before conducting classification experiments, revealing whether different LLMs and prompt strategies produce distributional alignment or divergence relative to real spam patterns.
-
-% \textit{Content to be added: 2 visualization figures showing PCA/t-SNE projections of real vs synthetic spam embeddings for both LLM models.}
-
-\subsection{Mixing Strategies}
-
-We implement two fundamental mixing strategies that systematically vary the distributional relationship between training data and synthetic generation sources.
-
-\subsubsection{Within-Group Mixing}
-
-Within-group mixing combines real data from group $i$ with synthetic data generated from the \emph{same} group $i$. The training set for group $i$ is constructed as:
-\begin{equation}
-\text{Train}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_i^{(\theta)}
-\end{equation}
-where $\theta \in [0, 1]$ denotes the synthetic proportion, $\text{Real}_i^{(1-\theta)}$ represents a $(1-\theta)$ fraction of real samples from group $i$, and $\text{Synthetic}_i^{(\theta)}$ represents synthetic samples generated using real spam from group $i$ as seeds.
-
-This strategy represents ideal conditions where synthetic generation sources match the target training distribution, testing effectiveness under optimal distributional alignment. Within-group performance establishes an upper bound on synthetic data utility, representing best-case scenarios where generation successfully captures local distributional characteristics.
-
-\subsubsection{Cross-Group Mixing}
-
-Cross-group mixing combines real data from group $i$ with synthetic data generated from a \emph{different} group $j \neq i$. The training set construction is:
-\begin{equation}
-\text{Train}_i = \text{Real}_i^{(1-\theta)} \cup \text{Synthetic}_{j \neq i}^{(\theta)}
-\end{equation}
-where synthetic samples are sourced from a group different from the one providing real training data.
-
-This strategy deliberately introduces distributional mismatch between generation sources and training targets, testing whether synthetic data provides value through semantic diversity rather than precise distribution matching. Cross-group performance is critical for assessing practical utility in real-world deployments where exact distribution matching between synthetic generation sources and operational training data is often infeasible or unverifiable.
-
-\subsubsection{Comparing Strategies: Statistical Significance}
-
-The choice between mixing strategies has fundamental implications for generalization and operational deployment:
-
-\textbf{Within-Group} tests the hypothesis that synthetic data utility requires close distributional alignment between generation sources and training targets. Strong within-group performance with weak cross-group performance would indicate that precise distribution matching is critical.
-
-\textbf{Cross-Group} tests the hypothesis that semantic diversity and coverage matter more than precise distribution matching. Comparable performance under both strategies would indicate that exact distributional alignment is unnecessary, substantially simplifying deployment logistics.
-
-Systematic comparison enables empirical answers to the critical question: \emph{Does distribution matching matter for synthetic data effectiveness?} The answer has direct operational implications for temporal flexibility (using historical synthetic data to augment current training), source diversity (pooling synthetic data from multiple corpora), and organizational collaboration (sharing synthetic samples without revealing specific operational distributions).
+Cross-group mixing provides two critical advantages over within-group alternatives. First, it tests whether synthetic data provides value through semantic diversity rather than precise distribution matching, establishing whether LLM-generated spam captures generalizable features beyond specific distributional artifacts. Second, it better reflects operational constraints including temporal flexibility (using historical synthetic data for current threats), source diversity (pooling synthetic data from multiple corpora), and organizational collaboration (sharing synthetic samples without revealing operational distributions). Preliminary analysis demonstrated that cross-group mixing maintains comparable performance to within-group mixing while providing more conservative estimates of synthetic data utility under realistic deployment conditions.
 
 \subsection{Evaluation Framework: Three Experimental Tracks}
 
-Our evaluation framework encompasses three complementary experimental tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}.
+Our evaluation framework encompasses three complementary tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}. Table~\ref{tab:tracks_overview} summarizes the training-testing configurations for each track.
+
+\begin{table}[h]
+\centering
+\caption{Experimental Track Configurations}
+\label{tab:tracks_overview}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Track} & \textbf{Training Data} & \textbf{Testing Data} \\
+\midrule
+\textbf{Track 1} & Real ham + & Real ham + \\
+\textit{(RQ1)} & (1-$\theta$) real spam + & real spam \\
+ & $\theta$ synthetic spam & \\
+\midrule
+\textbf{Track 2a} & Real ham + & Real ham + \\
+\textit{(RQ2a)} & real spam only & synthetic spam (LLM A) \\
+\midrule
+\textbf{Track 2b} & Real ham + & Real ham + \\
+\textit{(RQ2b)} & (1-$\theta$) real spam + & synthetic spam (LLM A) \\
+ & $\theta$ synthetic (LLM B) & \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsubsection{Track 1: Synthetic-to-Real Detection (RQ1)}
 
-This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam, addressing the training augmentation question.
+This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. Classifiers train on mixtures of real ham (fixed) and varying proportions of real spam combined with synthetic spam, then test on identical real-world data. As synthetic proportion $\theta$ varies from 0 (pure real) to 1 (pure synthetic), we quantify performance degradation patterns, establishing trade-offs between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring results reflect operational deployment scenarios where detectors must identify genuine spam.
 
-\textbf{Training Paradigm:} Classifiers train on mixtures of real ham (fixed) and varying proportions of real spam $(1-\theta)$ combined with synthetic spam $\theta$:
-\begin{equation}
-\text{Train} = \text{Ham}_{\text{real}} \cup \left[\text{Spam}_{\text{real}}^{(1-\theta)} \cup \text{Spam}_{\text{synth}}^{(\theta)}\right]
-\end{equation}
+\subsubsection{Track 2a: Real-to-Synthetic Detection (RQ2a)}
 
-\textbf{Testing Paradigm:} All classifiers test on identical real-world data comprising real ham and real spam:
-\begin{equation}
-\text{Test} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{real}}
-\end{equation}
+This track evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios. Training employs only real ham and real spam without synthetic exposure, while testing evaluates detection of LLM-generated synthetic spam. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to identifying AI-generated spam, suggesting inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
 
-This design isolates the impact of synthetic training data on real-world detection effectiveness. As synthetic proportion $\theta$ increases from 0 (pure real training) to 1 (pure synthetic training), we quantify performance degradation, establishing the trade-off between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring that results reflect operational deployment scenarios where detectors must identify genuine spam.
+\subsubsection{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}
 
-\subsubsection{Tracks 2a-2b: AI-Generated Spam Detection}
-
-This track evaluates defensive capabilities against AI-powered spam threats through two complementary approaches that vary in whether synthetic training data is available.
-
-\textbf{Track 2a: Real-to-Synthetic Detection (RQ2a)}
-
-This approach evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios.
-
-\textit{Training:} Real ham + real spam only (no synthetic exposure)
-\begin{equation}
-\text{Train}_{\text{baseline}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{real}}
-\end{equation}
-
-\textit{Testing:} Real ham + LLM-generated synthetic spam from model A
-\begin{equation}
-\text{Test}_{\text{baseline}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_A}
-\end{equation}
-
-This baseline establishes defenders' readiness against AI-powered attacks when training data contains only traditional real spam samples. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to detecting LLM-generated spam, suggesting current classifiers provide inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
-
-\textbf{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}
-
-This approach investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation.
-
-\textit{Training:} Real ham + varying mixtures of real spam and synthetic spam from LLM B
-\begin{equation}
-\text{Train}_{\text{enhanced}} = \text{Ham}_{\text{real}} \cup \left[\text{Spam}_{\text{real}}^{(1-\theta)} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_B,(\theta)}\right]
-\end{equation}
-
-\textit{Testing:} Real ham + synthetic spam from LLM A (different from training)
-\begin{equation}
-\text{Test}_{\text{enhanced}} = \text{Ham}_{\text{real}} \cup \text{Spam}_{\text{synth}}^{\text{LLM}_A}
-\end{equation}
-
-This cross-model design evaluates whether features learned from one LLM's synthetic patterns ($\text{LLM}_B$) generalize to detecting another LLM's spam ($\text{LLM}_A$). The approach tests hybrid training strategies where defenders augment real training data with synthetic samples from available LLM sources to improve readiness against attacks from different LLM sources. Performance improvement over baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.
+This track investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation. Classifiers train on real ham plus varying mixtures of real spam and synthetic spam from LLM B, then test on detecting synthetic spam from LLM A (different from training). This cross-model design evaluates whether features learned from one LLM's synthetic patterns generalize to detecting another LLM's spam. Performance improvement over Track 2a baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.
