@@ -61,6 +61,7 @@ Hyperparameters are optimized through 5-fold stratified cross-validation on base
 \centering
 \caption{TF-IDF Feature Extraction Parameters}
 \label{tab:feature_config}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{ll}
 \toprule
 \textbf{Parameter} & \textbf{Value} \\
@@ -74,6 +75,7 @@ max\_df & 0.95 (maximum document frequency) \\
 sublinear\_tf & True (log scaling) \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 Vectorizer fits exclusively on training data; identical transformation applies to test data to prevent information leakage. Configuration captures word-level and phrase-level patterns while limiting dimensionality for computational efficiency.
@@ -147,6 +149,7 @@ Linear regression modeling performance degradation as function of synthetic prop
 \centering
 \caption{Linear Regression: Performance vs. Synthetic Proportion (Track 1)}
 \label{tab:degradation_regression}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lccc}
 \toprule
 \textbf{Model} & \textbf{Slope} $\beta_1$ & \textbf{$R^2$} & \textbf{Interpretation} \\
@@ -155,6 +158,7 @@ GPT-4.1-mini & -0.0011 & 0.982 & -0.11\% per 1\% synthetic \\
 Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synthetic \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 High $R^2$ values ($>$0.97) indicate linear models explain $>$97\% of performance variance, enabling reliable interpolation for arbitrary mixing ratios. Slope coefficients quantify expected degradation per 1\% synthetic increase: GPT shows 3.5× lower degradation rate than Claude (-0.11\% vs -0.39\% per 1\% synthetic).
@@ -199,6 +203,7 @@ Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamin
 \centering
 \caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1)}
 \label{tab:hypothesis_tests}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lccc}
 \toprule
 \textbf{Model} & \textbf{$t$-statistic} & \textbf{$p$-value} & \textbf{Cohen's $d$} \\
@@ -207,6 +212,7 @@ GPT-4.1-mini & -8.32 & $< 10^{-6}$ & -2.67 (large) \\
 Claude-3.5-Haiku & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 All comparisons show statistically significant differences ($p < 0.001$) with large effect sizes ($|d| > 0.8$), confirming synthetic data substitution produces substantial, reliable performance changes beyond random variation.
