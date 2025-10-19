@@ -110,7 +110,7 @@ def load_synthetic_data(model: str, prompt: str) -> pd.DataFrame:
         model_name = "gpt-4.1-mini"
     else:  # claude35haiku
         base_dir = SYNTHETIC_CLAUDE_DIR
-        model_name = "claude-3.5-haiku"
+        model_name = "claude-3-5-haiku"
 
     print(f"Loading {model} synthetic data with {prompt} prompt...")
 
@@ -161,7 +161,7 @@ def save_synthetic_data(model: str, prompt: str, df: pd.DataFrame, spam_df: pd.D
 
             doc = {
                 "id": anonymize_id(f"{model}_{prompt}_{idx}", f"synth_{model}"),
-                "text": f"Subject: {row.get('rewritten_subject', row.get('subject', ''))}\n\n{row.get('rewritten_body', row.get('body', ''))}",
+                "text": f"Subject: {row.get('synthetic_subject', row.get('rewritten_subject', row.get('subject', '')))}\n\n{row.get('synthetic_body', row.get('rewritten_body', row.get('body', '')))}",
                 "label": "spam",
                 "source": model,
                 "prompt_strategy": prompt,
