@@ -10,6 +10,7 @@
 \centering
 \caption{Complete LLM Generation Parameters}
 \label{tab:llm_config_full}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{lcc}
 \toprule
 \textbf{Parameter} & \textbf{GPT-4.1-mini} & \textbf{Claude-3.5-Haiku} \\
@@ -24,6 +25,7 @@ Presence penalty & 0.0 & N/A \\
 Response format & JSON object & JSON mode \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \subsubsection{Cost Comparison}
@@ -32,6 +34,7 @@ Response format & JSON object & JSON mode \\
 \begin{table}[h]
 \centering
 \caption{LLM Cost Analysis and Comparison}
+\resizebox{\columnwidth}{!}{
 \label{tab:llm_costs}
 \begin{tabular}{lccc}
 \toprule
@@ -46,6 +49,7 @@ Claude-3.5-Haiku (6,000 emails) & & & \$1.50 \\
 \textbf{Total cost} & & & \textbf{\$3.30} \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 Both models provide optimal cost-performance trade-offs for spam generation: sufficient context windows (GPT: 128K, Claude: 200K), low per-token costs compared to flagship models (GPT-4: 10× more expensive, Claude Opus: 15× more expensive), and state-of-the-art generation quality. For large-scale spam campaigns, these models represent economically viable choices balancing quality and operational costs.
@@ -207,11 +211,11 @@ Preliminary experiments compared within-group mixing (training on synthetic data
 \subsection{Performance Degradation Models}
 \label{appendix:degradation_models}
 
-Linear regression modeling performance degradation as function of synthetic proportion $\theta$ yields highly predictive models across all configurations. Table~\ref{tab:degradation_regression} presents regression parameters for Synthetic-to-Real Detection experiments.
+Linear regression modeling performance degradation as function of synthetic proportion $\theta$ yields highly predictive models across all configurations. Table~\ref{tab:degradation_regression} presents regression parameters for Track 1 experiments.
 
 \begin{table}[h]
 \centering
-\caption{Linear Regression: Performance vs. Synthetic Proportion (Synthetic-to-Real)}
+\caption{Linear Regression: Performance vs. Synthetic Proportion (Track 1)}
 \label{tab:degradation_regression}
 \begin{tabular}{lccc}
 \toprule
@@ -228,11 +232,11 @@ High $R^2$ values ($>$0.97) indicate linear models explain $>$97\% of performanc
 \subsection{Training Ratio Sensitivity Analysis}
 \label{appendix:training_ratio_analysis}
 
-Mixed-to-Synthetic Detection experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
+Track 2b experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
 
 \begin{table}[h]
 \centering
-\caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Mixed-to-Synthetic)}
+\caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Track 2b)}
 \label{tab:training_ratio_sensitivity}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llccc}
@@ -259,11 +263,11 @@ Key patterns: (1) SVM shows non-monotonic behavior for GPT detection (peaks at 5
 
 \subsubsection{Hypothesis Testing Results}
 
-Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$). Table~\ref{tab:hypothesis_tests} presents selected comparisons for Synthetic-to-Real Detection (100\% synthetic vs. baseline).
+Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$). Table~\ref{tab:hypothesis_tests} presents selected comparisons for Track 1 (100\% synthetic vs. baseline).
 
 \begin{table}[h]
 \centering
-\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Synthetic-to-Real)}
+\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1)}
 \label{tab:hypothesis_tests}
 \begin{tabular}{lccc}
 \toprule
@@ -279,11 +283,11 @@ All comparisons show statistically significant differences ($p < 0.001$) with la
 
 \subsubsection{Complete Performance Metrics}
 
-Table~\ref{tab:complete_metrics} presents all classification metrics for Synthetic-to-Real Detection baseline (0\%) and 100\% synthetic configurations.
+Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1 baseline (0\%) and 100\% synthetic configurations.
 
 \begin{table}[h]
 \centering
-\caption{Complete Classification Metrics (Synthetic-to-Real, SVM, Original Prompt)}
+\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt)}
 \label{tab:complete_metrics}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcccccc}
