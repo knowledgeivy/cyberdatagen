@@ -93,11 +93,11 @@ Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
 
 \subsection{Classification and Feature Representation}
 
-We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{appendix:hyperparameters} and \ref{appendix:feature_config}.
+We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{appendix:hyperparameters}.
 
 \subsection{Statistical Analysis}
 
-We compute descriptive statistics (mean, standard deviation) across 20 independent groups for each configuration. Paired \textit{t}-tests compare each synthetic ratio against baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$) for multiple comparisons. Cohen's $d$ effect sizes quantify practical importance beyond statistical significance. Linear regression models performance degradation as a function of synthetic proportion. F1-score serves as the primary metric, with supporting metrics including Accuracy, Precision, Recall, and AUC-ROC. Complete statistical procedures and metric definitions are provided in Appendix~\ref{appendix:metrics}.
+We compute descriptive statistics (mean, standard deviation) across 20 independent groups for each configuration. Paired \textit{t}-tests compare each synthetic ratio against baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$) for multiple comparisons. Cohen's $d$ effect sizes quantify practical importance beyond statistical significance. Linear regression models performance degradation as a function of synthetic proportion. F1-score serves as the primary metric, with supporting metrics including Accuracy, Precision, Recall, and AUC-ROC.
 
 \subsection{Experimental Scale and Infrastructure}
 
