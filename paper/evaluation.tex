@@ -8,12 +8,12 @@ Our evaluation systematically assesses LLM-generated synthetic spam across three
 
 This track addresses RQ1: \textit{Can LLM-generated synthetic spam effectively train classifiers to detect real spam?} We systematically vary synthetic proportion $\theta$ from 0\% (pure real) to 100\% (pure synthetic) while testing on identical real spam.
 
-Figure~\ref{fig:track1} presents F1-score trajectories across all three prompt strategies for both LLM models using SVM classification. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
+Figure~\ref{fig:track1} presents performance trajectories (Precision, Recall, F1-Score) across all three prompt strategies (original/strong/weak) for both LLM models and both classifiers. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{pic/track1_combined_gpt_claude.png}
-\caption{Track 1 - Synthetic-to-Real Detection across prompt strategies (original/strong/weak). (a) GPT-4.1-mini exhibits prompt invariance with nearly identical degradation (F1: 0.85 $\rightarrow$ 0.70-0.74 at 100\% synthetic, -13.4\% relative) and linear decline ($R^2 > 0.98$). (b) Claude-3.5-Haiku shows prompt sensitivity: original/strong prompts degrade moderately (F1 $\rightarrow$ 0.45-0.55 at 100\%, -46.2\% relative), while weak prompt exhibits severe degradation (F1 $\rightarrow$ 0.30-0.40). Shaded regions: $\pm$1 SD across 20 groups.}
+\caption{Track 1 - Synthetic-to-Real Detection: Performance metrics (Precision, Recall, F1-Score) across prompt strategies (original/strong/weak, rows) and models (columns). (a) GPT-4.1-mini: F1-score exhibits prompt invariance with nearly identical degradation (0.85 $\rightarrow$ 0.70-0.74 at 100\% synthetic, -13.4\% relative). SVM maintains high precision but suffers recall loss. (b) Claude-3.5-Haiku: Shows prompt sensitivity with original/strong prompts degrading moderately (F1 $\rightarrow$ 0.45-0.55 at 100\%, -46.2\% relative), while weak prompt exhibits severe degradation (F1 $\rightarrow$ 0.30-0.40). Shaded regions: $\pm$1 SD across 20 groups.}
 \label{fig:track1}
 \end{figure*}
 
@@ -63,12 +63,12 @@ Figure~\ref{fig:track1} presents F1-score trajectories across all three prompt s
 
 This track addresses RQ2a: \textit{Can classifiers trained on real data detect LLM-generated spam?} Classifiers train exclusively on real spam (no synthetic exposure), then test on detecting LLM-generated synthetic spam, representing zero-shot AI-spam detection scenarios.
 
-Figure~\ref{fig:track2a} presents baseline detection performance across both classifiers (SVM, Random Forest) and all prompt strategies. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
+Figure~\ref{fig:track2a} presents detection performance metrics (Precision, Recall, F1-Score) across both classifiers, all prompt strategies, and varying training data sizes. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{pic/track2a_combined_gpt_claude.png}
-\caption{Track 2a - Real-to-Synthetic Detection (Baseline). (a) GPT-4.1-mini: Both classifiers achieve strong baseline detection (SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87), indicating GPT synthetic spam retains stronger distributional similarities to real spam. (b) Claude-3.5-Haiku: SVM shows moderate baseline detection (F1 = 0.53-0.74 across prompts), while Random Forest maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability.}
+\caption{Track 2a - Real-to-Synthetic Detection (Baseline): Performance metrics (Precision, Recall, F1-Score) across prompt strategies (rows) and models (columns). (a) Detecting GPT-4.1-mini spam: Both classifiers achieve strong baseline detection (SVM F1 = 0.74-0.82, Random Forest F1 = 0.82-0.87), with SVM showing increasing F1 as training data grows while Random Forest remains stable. (b) Detecting Claude-3.5-Haiku spam: SVM shows moderate baseline detection improving with more training data (F1 = 0.53-0.74 across prompts), while Random Forest maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability.}
 \label{fig:track2a}
 \end{figure*}
 
@@ -118,12 +118,12 @@ Figure~\ref{fig:track2a} presents baseline detection performance across both cla
 
 This track addresses RQ2b: \textit{Does incorporating synthetic data from other LLMs improve detection?} We train classifiers on varying mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test detection of synthetic spam from a \emph{different} LLM, evaluating cross-model hybrid training strategies.
 
-Figure~\ref{fig:track2b} presents detection performance across training ratios. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
+Figure~\ref{fig:track2b} presents detection performance metrics (Precision, Recall, F1-Score) across varying synthetic training ratios and prompt strategies. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{pic/track2b_combined_gpt_claude.png}
-\caption{Track 2b - Mixed-to-Synthetic Detection (Cross-Model Augmentation). (a) Detecting GPT-4.1-mini spam (trained on Claude-3.5-Haiku synthetic): SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%) before declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially (F1: 0.82 $\rightarrow$ 0.89, +8.5\%). (b) Detecting Claude-3.5-Haiku spam (trained on GPT-4.1-mini synthetic): SVM shows monotonic improvement (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). Random Forest maintains stable high performance (F1 $\approx$ 0.80) across all ratios.}
+\caption{Track 2b - Mixed-to-Synthetic Detection: Performance metrics (Precision, Recall, F1-Score) across prompt strategies (original/strong/weak, rows) and detection targets (columns). (a) Detecting GPT-4.1-mini (trained on Claude-3.5-Haiku synthetic): SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%) before declining at 100\% (F1 = 0.65, -13\%). Random Forest improves substantially with cross-model augmentation (F1: 0.82 $\rightarrow$ 0.89, +8.5\%). (b) Detecting Claude-3.5-Haiku (trained on GPT-4.1-mini synthetic): SVM shows monotonic improvement (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). Random Forest maintains stable high performance (F1 $\approx$ 0.80) across all ratios.}
 \label{fig:track2b}
 \end{figure*}
 
