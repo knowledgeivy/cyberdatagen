@@ -1,16 +1,14 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units (2 models × 3 prompts × multiple configurations × 20 replications). Following the methodology framework (Section~\ref{sec:methodology}), we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b). All experiments employ cross-group mixing strategy based on preliminary analysis showing consistent advantages over within-group mixing (detailed comparison in Appendix~\ref{appendix:mixing_strategy_comparison}).
+Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units. Following the methodology framework (Section~\ref{sec:methodology}), we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b). All experiments employ cross-group mixing strategy based on preliminary analysis showing consistent advantages over within-group mixing (detailed comparison in Appendix~\ref{appendix:mixing_strategy_comparison}).
 
 \subsection{Track 1: Synthetic-to-Real Detection}
 \label{sec:eval:track1}
 
 This track addresses RQ1: \textit{Can LLM-generated synthetic spam effectively train classifiers to detect real spam?} We systematically vary synthetic proportion $\theta$ from 0\% (pure real) to 100\% (pure synthetic) while testing on identical real spam.
 
-\subsubsection{Performance Degradation Patterns}
-
-Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score trajectories across all three prompt strategies for both LLM models using SVM classification.
+Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score trajectories across all three prompt strategies for both LLM models using SVM classification. Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
@@ -26,7 +24,6 @@ Figure~\ref{fig:track1_gpt} and Figure~\ref{fig:track1_claude} present F1-score 
 \label{fig:track1_claude}
 \end{figure*}
 
-Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic performance across all experimental configurations, comparing SVM and Random Forest classifiers across both LLM models and all three prompt strategies.
 
 \begin{table*}[t]
 \centering
@@ -57,7 +54,6 @@ Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic perfor
 }
 \end{table*}
 
-\textbf{Key Findings:}
 
 \textbf{(1) Classifier architecture fundamentally determines robustness to synthetic training data.} Random Forest demonstrates substantially higher resilience to LLM-generated synthetic spam compared to SVM across both generation models. For GPT-4.1-mini, Random Forest maintains near-baseline performance at 100\% synthetic (F1: 0.793 → 0.788-0.827, -0.6\% to +4.3\% relative), while SVM degrades significantly (F1: 0.849 → 0.617-0.735, -13.4\% to -27.3\% relative). For Claude-3.5-Haiku original prompt, Random Forest exhibits minimal degradation (F1: 0.793 → 0.796, +0.4\%), whereas SVM suffers severe performance loss (F1: 0.849 → 0.457, -46.2\%). The ensemble architecture's inherent regularization and feature subsampling mechanisms appear to mitigate distributional shift effects between synthetic and real spam.
 
@@ -72,7 +68,7 @@ Table~\ref{tab:track1_summary_rf} summarizes baseline and 100\% synthetic perfor
 
 This track addresses RQ2a: \textit{Can classifiers trained on real data detect LLM-generated spam?} Classifiers train exclusively on real spam (no synthetic exposure), then test on detecting LLM-generated synthetic spam, representing zero-shot AI-spam detection scenarios.
 
-Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baseline detection performance across both classifiers (SVM, Random Forest) and all prompt strategies.
+Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baseline detection performance across both classifiers (SVM, Random Forest) and all prompt strategies. Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
 
 \begin{figure*}[t]
 \centering
@@ -88,7 +84,7 @@ Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt} present baselin
 \label{fig:track2a_gpt}
 \end{figure*}
 
-Table~\ref{tab:track2a_summary} presents detection performance across varying training data sizes (100, 150, 200 real spam samples), testing targets (GPT-4.1-mini vs Claude-3.5-Haiku synthetic spam), classifiers (SVM vs Random Forest), and all three prompt strategies.
+
 
 \begin{table*}[t]
 \centering
@@ -119,8 +115,6 @@ Table~\ref{tab:track2a_summary} presents detection performance across varying tr
 }
 \end{table*}
 
-\textbf{Key Findings:}
-
 \textbf{(1) Classifier-dependent response to increased training data.} As shown in Figure~\ref{fig:track2a_claude} and Figure~\ref{fig:track2a_gpt}, SVM exhibits substantial monotonic improvement with additional real spam training data: for GPT detection, F1 increases from 0.744 (100 spam) to 0.881 (200 spam, +18.4\% relative); for Claude detection, F1 improves from 0.532 to 0.624 (+17.3\%). In contrast, Random Forest maintains stable or slightly declining performance (F1: 0.83 → 0.79 for GPT, 0.80 → 0.78 for Claude), suggesting it already achieves near-optimal feature learning at baseline training size while SVM benefits from additional training examples to refine decision boundaries.
 
 \textbf{(2) Prompt strength inversely correlates with detectability.} Weak prompts generate the most detectable synthetic spam across both models and training sizes: for GPT at 100 spam, weak prompt yields F1 = 0.636 (SVM) vs 0.744 (original, -14.5\% relative); for Claude, the gap is more dramatic (0.335 vs 0.532, -37.0\%). Strong prompts produce intermediate detectability. This inverse relationship indicates weaker prompts generate lower-fidelity synthetic spam with greater distributional divergence from real spam, making them easier to detect but less useful for data augmentation (consistent with Track 1 findings). Original prompts produce the most deceptive synthetic spam, suggesting careful prompt design is critical for generating realistic AI spam.
@@ -134,7 +128,8 @@ Table~\ref{tab:track2a_summary} presents detection performance across varying tr
 
 This track addresses RQ2b: \textit{Does incorporating synthetic data from other LLMs improve detection?} We train classifiers on varying mixtures of real spam and synthetic spam from one LLM (training ratios: 0\%, 50\%, 100\%), then test detection of synthetic spam from a \emph{different} LLM, evaluating cross-model hybrid training strategies.
 
-Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detection performance across training ratios.
+Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detection performance across training ratios. Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
+
 
 \begin{figure*}[t]
 \centering
@@ -150,7 +145,6 @@ Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt} present detecti
 \label{fig:track2b_gpt}
 \end{figure*}
 
-Table~\ref{tab:track2b_summary} presents enhanced detection performance across all experimental configurations, demonstrating how training with synthetic spam from one LLM affects detection of synthetic spam from a different LLM.
 
 \begin{table*}[t]
 \centering
@@ -180,8 +174,6 @@ Table~\ref{tab:track2b_summary} presents enhanced detection performance across a
 \end{tabular}
 }
 \end{table*}
-
-\textbf{Key Findings:}
 
 \textbf{(1) Cross-model synthetic augmentation provides substantial detection improvements.} As shown in Figure~\ref{fig:track2b_claude} and Figure~\ref{fig:track2b_gpt}, training with synthetic spam from one LLM significantly improves detection of another LLM's synthetic spam. For Claude detection using GPT synthetic training data, SVM improves from baseline F1 = 0.532-0.590 to 0.688-0.860 at 100\% synthetic (+29.3\% to +45.8\% relative across prompts). For GPT detection using Claude synthetic training data, Random Forest achieves F1 = 0.894-0.908 at 100\% synthetic (+8.5\% to +10.2\% relative), demonstrating effective cross-model feature learning. This indicates LLM-generated spam shares underlying statistical patterns that generalize across different generation sources.
 
