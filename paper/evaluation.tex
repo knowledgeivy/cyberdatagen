@@ -1,7 +1,7 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units. Following the methodology framework (Section~\ref{sec:methodology}), we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b).
+Our evaluation systematically assesses LLM-generated synthetic spam across three complementary experimental tracks spanning 4,080 training-evaluation units. Following the methodology framework, we present results organized by research questions: Track 1 evaluates synthetic data for classifier training (RQ1), Track 2a establishes baseline detection capabilities against AI-powered spam (RQ2a), and Track 2b investigates hybrid training strategies (RQ2b).
 
 \subsection{Track 1: Synthetic-to-Real Detection}
 \label{sec:eval:track1}
@@ -12,7 +12,7 @@ Our evaluation systematically assesses LLM-generated synthetic spam across three
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/track1_combined_gpt_claude.png}
+\includegraphics[width=0.9\textwidth]{pic/track1_combined_gpt_claude.png}
 \caption{Track 1 - Synthetic-to-Real Detection: Performance metrics (Precision, Recall, F1-Score) across prompt strategies (original/strong/weak, rows) and models (columns). (a) GPT: F1-score exhibits prompt invariance with nearly identical degradation (0.85 $\rightarrow$ 0.70-0.74 at 100\% synthetic, -13.4\% relative). SVM maintains high precision but suffers recall loss. (b) Claude: Shows prompt sensitivity with original/strong prompts degrading moderately (F1 $\rightarrow$ 0.45-0.55 at 100\%, -46.2\% relative), while weak prompt exhibits severe degradation (F1 $\rightarrow$ 0.30-0.40). Shaded regions: $\pm$1 SD across 20 groups.}
 \label{fig:track1}
 \end{figure*}
@@ -69,7 +69,7 @@ GPT generates substantially higher-quality synthetic training data than Claude a
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{pic/track2a_combined_gpt_claude.png}
-\caption{Track 2a - Real-to-Synthetic Detection (Baseline): Performance metrics (Precision, Recall, F1-Score) across prompt strategies (rows) and models (columns). (a) Detecting GPT spam: Both classifiers achieve strong baseline detection (SVM F1 = 0.74-0.82, Random Forest (RF) F1 = 0.82-0.87), with SVM showing increasing F1 as training data grows while RF remains stable. (b) Detecting Claude spam: SVM shows moderate baseline detection improving with more training data (F1 = 0.53-0.74 across prompts), while RF maintains strong performance (F1 = 0.80-0.85). Prompt variation affects detectability.}
+\caption{Track 2a - Real-to-Synthetic Detection (Baseline): Performance metrics (Precision, Recall, F1-Score) across prompt strategies (rows) and models (columns). (a) Detecting GPT spam: SVM F1 = 0.74-0.82, RF F1 = 0.82-0.87, with SVM showing increasing F1 as training data grows while RF remains stable. (b) Detecting Claude spam: SVM shows moderate baseline detection improving with more training data (F1 = 0.53-0.74 across prompts), while RF maintains strong performance (F1 = 0.80-0.85).}
 \label{fig:track2a}
 \end{figure*}
 
@@ -121,8 +121,8 @@ Model-dependent baseline detectability reveals generation quality differences. A
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{pic/track2b_combined_gpt_claude.png}
-\caption{Track 2b - Mixed-to-Synthetic Detection: Performance metrics (Precision, Recall, F1-Score) across prompt strategies (original/strong/weak, rows) and detection targets (columns). (a) Detecting GPT (trained on Claude synthetic): SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%) before declining at 100\% (F1 = 0.65, -13\%). Random Forest (RF) improves substantially with cross-model augmentation (F1: 0.82 $\rightarrow$ 0.89, +8.5\%). (b) Detecting Claude (trained on GPT synthetic): SVM shows monotonic improvement (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). RF maintains stable high performance (F1 $\approx$ 0.80) across all ratios.}
+\includegraphics[width=0.9\textwidth]{pic/track2b_combined_gpt_claude.png}
+\caption{Track 2b - Mixed-to-Synthetic Detection: Performance metrics (Precision, Recall, F1-Score) across prompt strategies (original/strong/weak, rows) and detection targets (columns). (a) Detecting GPT (trained on Claude synthetic): SVM peaks at 50\% synthetic (F1 = 0.77, +3.5\%) before declining at 100\% (F1 = 0.65, -13\%). RF improves substantially with cross-model augmentation (F1: 0.82 $\rightarrow$ 0.89, +8.5\%). (b) Detecting Claude (trained on GPT synthetic): SVM shows monotonic improvement (F1: 0.53 $\rightarrow$ 0.69, +30\% relative). RF maintains stable high performance (F1 $\approx$ 0.80) across all ratios.}
 \label{fig:track2b}
 \end{figure*}
 

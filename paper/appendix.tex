@@ -37,11 +37,14 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 
 \begin{table}[ht]
 \centering
-\caption{Grid Search and Hyperparameter}
-\label{appendix:hyperparameter_grid}
+\caption{Hyperparameters and TF-IDF Settings}
+\label{appendix:classification_config}
+\small
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcc}
 \toprule
+\multicolumn{4}{c}{\textbf{Classifier Hyperparameters (Grid Search)}} \\
+\midrule
 \textbf{Classifier} & \textbf{Parameter} & \textbf{Search Range} & \textbf{Optimal Value} \\
 \midrule
 \multirow{3}{*}{SVM} & C & \{0.1, 1.0, 10.0\} & 1.0 \\
@@ -53,26 +56,16 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 & min\_samples\_split & \{2, 5\} & 5 \\
 & min\_samples\_leaf & \{1, 2\} & 2 \\
 & Class weight & \{None, balanced\} & balanced \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-\begin{table}[ht]
-\centering
-\caption{TF-IDF Feature Extraction Parameters}
-\label{appendix:feature_config}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{ll}
-\toprule
-\textbf{Parameter} & \textbf{Value} \\
 \midrule
-max\_features & 10,000 \\
-ngram\_range & (1, 2) - unigrams + bigrams \\
-stop\_words & English standard list \\
-min\_df & 2 \\
-max\_df & 0.95 \\
-sublinear\_tf & True (log scaling) \\
+\multicolumn{4}{c}{\textbf{TF-IDF Feature Extraction}} \\
+\midrule
+\multicolumn{2}{l}{\textbf{Parameter}} & \multicolumn{2}{c}{\textbf{Value}} \\
+\midrule
+\multicolumn{2}{l}{max\_features} & \multicolumn{2}{c}{10,000} \\
+\multicolumn{2}{l}{ngram\_range} & \multicolumn{2}{c}{(1, 2) - unigrams + bigrams} \\
+\multicolumn{2}{l}{stop\_words} & \multicolumn{2}{c}{English standard list} \\
+\multicolumn{2}{l}{min\_df / max\_df} & \multicolumn{2}{c}{2 / 0.95} \\
+\multicolumn{2}{l}{sublinear\_tf} & \multicolumn{2}{c}{True (log scaling)} \\
 \bottomrule
 \end{tabular}
 }
@@ -116,58 +109,17 @@ sublinear\_tf & True (log scaling) \\
 
 \begin{table}[ht]
 \centering
-\caption{Linear Regression: Performance vs. Synthetic Proportion (Track 1)}
-\label{tab:degradation_regression}
+\caption{Statistical Analysis (Track 1): Linear Regression and Hypothesis Testing. Paired $t$-tests compare 100\% synthetic against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$).}
+\small
 \resizebox{\columnwidth}{!}{
-\begin{tabular}{lccc}
+\begin{tabular}{lcccccc}
 \toprule
-\textbf{Model} & \textbf{Slope} $\beta_1$ & \textbf{$R^2$} & \textbf{Interpretation} \\
+\multirow{2}{*}{\textbf{Model}} & \multicolumn{3}{c}{\textbf{Linear Regression}} & \multicolumn{3}{c}{\textbf{Hypothesis Testing}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+& \textbf{Slope} $\beta_1$ & \textbf{$R^2$} & \textbf{Interpretation} & \textbf{$t$-stat} & \textbf{$p$-value} & \textbf{Cohen's $d$} \\
 \midrule
-GPT-4.1-mini & -0.0011 & 0.982 & -0.11\% per 1\% synthetic \\
-Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synthetic \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-% \subsection{Training Ratio Sensitivity Analysis}
-% \label{appendix:training_ratio_analysis}
-
-% Track 2b experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
-
-% \begin{table}[h]
-% \centering
-% \caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Track 2b)}
-% \label{tab:training_ratio_sensitivity}
-% \resizebox{\columnwidth}{!}{
-% \begin{tabular}{llccc}
-% \toprule
-% \textbf{Testing} & \textbf{Classifier} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
-% \textbf{Target} & & \textbf{(Baseline)} & \textbf{(Hybrid)} & \textbf{(Pure Synth)} \\
-% \midrule
-% \multicolumn{5}{l}{\textit{GPT-4.1-mini Detection (trained on Claude)}} \\
-% & SVM & 0.744 & 0.770 & 0.649 \\
-% & Random Forest & 0.824 & 0.816 & 0.894 \\
-% \midrule
-% \multicolumn{5}{l}{\textit{Claude-3.5-Haiku Detection (trained on GPT)}} \\
-% & SVM & 0.532 & 0.666 & 0.688 \\
-% & Random Forest & 0.802 & 0.802 & 0.802 \\
-% \bottomrule
-% \end{tabular}
-% }
-% \end{table}
-
-\begin{table}[ht]
-\centering
-\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1) Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$).}
-\label{tab:hypothesis_tests}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{lccc}
-\toprule
-\textbf{Model} & \textbf{$t$-statistic} & \textbf{$p$-value} & \textbf{Cohen's $d$} \\
-\midrule
-GPT-4.1-mini & -8.32 & $< 10^{-6}$ & -2.67 (large) \\
-Claude-3.5-Haiku & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
+GPT-4.1-mini & -0.0011 & 0.982 & -0.11\% per 1\% synth & -8.32 & $< 10^{-6}$ & -2.67 (large) \\
+Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synth & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
 \bottomrule
 \end{tabular}
 }
@@ -179,22 +131,22 @@ Claude-3.5-Haiku & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
 
 % Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1 baseline (0\%) and 100\% synthetic configurations.
 
-\begin{table}[ht]
-\centering
-\caption{Complete Classification Metrics (Track 1, SVM, Original Prompt, Cross-Group)}
-\label{tab:complete_metrics}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{llcccccc}
-\toprule
-\textbf{Model} & \textbf{Ratio} & \textbf{F1} & \textbf{Acc} & \textbf{Prec} & \textbf{Rec} & \textbf{AUC} & \textbf{BAcc} \\
-\midrule
-\multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
-& 100\% & 0.735 $\pm$ 0.051 & 0.958 $\pm$ 0.006 & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.986 $\pm$ 0.005 & 0.800 $\pm$ 0.049 \\
-\midrule
-\multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
-& 100\% & 0.457 $\pm$ 0.045 & 0.930 $\pm$ 0.004 & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.969 $\pm$ 0.010 & 0.649 $\pm$ 0.019 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
+% \begin{table}[ht]
+% \centering
+% \caption{Complete Classification Metrics (Track 1, SVM, Original Prompt, Cross-Group)}
+% \label{tab:complete_metrics}
+% \resizebox{\columnwidth}{!}{
+% \begin{tabular}{llcccccc}
+% \toprule
+% \textbf{Model} & \textbf{Ratio} & \textbf{F1} & \textbf{Acc} & \textbf{Prec} & \textbf{Rec} & \textbf{AUC} & \textbf{BAcc} \\
+% \midrule
+% \multirow{2}{*}{GPT-4.1-mini} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+% & 100\% & 0.735 $\pm$ 0.051 & 0.958 $\pm$ 0.006 & 0.970 $\pm$ 0.054 & 0.603 $\pm$ 0.104 & 0.986 $\pm$ 0.005 & 0.800 $\pm$ 0.049 \\
+% \midrule
+% \multirow{2}{*}{Claude-3.5-Haiku} & 0\% & 0.849 $\pm$ 0.026 & 0.973 $\pm$ 0.003 & 0.972 $\pm$ 0.047 & 0.759 $\pm$ 0.072 & 0.990 $\pm$ 0.004 & 0.878 $\pm$ 0.034 \\
+% & 100\% & 0.457 $\pm$ 0.045 & 0.930 $\pm$ 0.004 & 0.997 $\pm$ 0.004 & 0.297 $\pm$ 0.037 & 0.969 $\pm$ 0.010 & 0.649 $\pm$ 0.019 \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table}
 

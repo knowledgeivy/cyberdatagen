@@ -4,7 +4,7 @@
 This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, classification settings and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{sec:appendix}.
 
 \subsection{Dataset and Sampling}
-We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Dataset is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
+We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{\url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
 The corpus is partitioned into $R = 20$ independent groups through stratified random sampling, with each group containing $N = 1{,}000$ samples at fixed spam ratio $\rho = 0.1$ (100 spam, 900 ham). This 10\% imbalance reflects realistic operational conditions. An 80-20 train-test split establishes a fixed held-out test set held constant across all experiments, eliminating test set variance as a confounding factor.
 
 \subsection{LLM Models and Generation}
