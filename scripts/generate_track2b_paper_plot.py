@@ -3,12 +3,14 @@
 Generate Track 2b paper plot: GPT and Claude side-by-side
 Mixed-to-Synthetic Detection (Cross-Model Augmentation)
 Showing Precision, Recall, and F1-Score
-Optimized for publication with larger fonts
+Reading directly from results files to avoid plotting_data.json issues
 """
 
 import argparse
 import os
 import json
+import glob
+import statistics
 import matplotlib.pyplot as plt
 import numpy as np
 from loguru import logger
@@ -29,26 +31,81 @@ def setup_matplotlib_for_paper():
     plt.rcParams['lines.markersize'] = 8
 
 
-def load_plotting_data(data_file: str) -> dict:
-    """Load plotting data from JSON file"""
-    with open(data_file, 'r') as f:
-        return json.load(f)
+def load_results_data(results_dir: str, method: str, prompt: str, strategy: str):
+    """Load results directly from result files
+
+    Args:
+        results_dir: Directory containing result files
+        method: gpt41mini or claude35haiku
+        prompt: original, strong, or weak
+        strategy: cross_group or within_group
+
+    Returns:
+        Dict with metrics data organized by classifier and ratio
+    """
+    data = {
+        'svm': {},
+        'random_forest': {}
+    }
+
+    # Find all result files for this configuration
+    pattern = f"{method}_{prompt}_{strategy}_ratio*_reverse_results.json"
+    files = glob.glob(os.path.join(results_dir, pattern))
+
+    logger.info(f"Found {len(files)} files for {method}/{prompt}/{strategy}")
+
+    for filepath in files:
+        # Extract ratio from filename
+        filename = os.path.basename(filepath)
+        ratio_str = filename.split('_ratio')[1].split('_')[0]
+        ratio = int(ratio_str)
+
+        # Load file
+        with open(filepath, 'r') as f:
+            file_data = json.load(f)
+
+        # Extract metrics for each classifier
+        for clf_name in ['svm', 'random_forest']:
+            metrics_list = {
+                'precision': [],
+                'recall': [],
+                'f1_score': []
+            }
+
+            # Collect metrics from all groups
+            for result in file_data['results']:
+                if 'classifiers' in result and clf_name in result['classifiers']:
+                    clf_metrics = result['classifiers'][clf_name]['metrics']
+                    metrics_list['precision'].append(clf_metrics['precision'])
+                    metrics_list['recall'].append(clf_metrics['recall'])
+                    metrics_list['f1_score'].append(clf_metrics['f1_score'])
+
+            # Calculate statistics
+            if ratio not in data[clf_name]:
+                data[clf_name][ratio] = {}
+
+            for metric_name, values in metrics_list.items():
+                if values:
+                    data[clf_name][ratio][metric_name] = {
+                        'mean': statistics.mean(values),
+                        'std': statistics.stdev(values) if len(values) > 1 else 0
+                    }
+
+    return data
 
 
-def create_track2b_combined_plot(data_file: str, output_path: str,
+def create_track2b_combined_plot(results_dir: str, output_path: str,
                                   strategy: str = 'cross_group'):
     """
     Create combined Track 2b plot with GPT and Claude side by side
     Showing Precision, Recall, and F1-Score
 
     Args:
-        data_file: Path to plotting data JSON
+        results_dir: Directory containing result files
         output_path: Output file path
         strategy: within_group or cross_group
     """
     logger.info("Creating Track 2b combined paper plot...")
-
-    plotting_data = load_plotting_data(data_file)
 
     prompts = ['original', 'strong', 'weak']
     prompt_labels = {
@@ -79,21 +136,9 @@ def create_track2b_combined_plot(data_file: str, output_path: str,
         ('claude35haiku', 'Claude-3.5-Haiku')
     ]):
 
-        if method not in plotting_data:
-            logger.warning(f"Method {method} not found in plotting data")
-            continue
-
         for prompt_idx, prompt in enumerate(prompts):
-            if prompt not in plotting_data[method]:
-                logger.warning(f"Prompt {prompt} not found for {method}")
-                continue
-
-            prompt_data = plotting_data[method][prompt]
-            if strategy not in prompt_data:
-                logger.warning(f"Strategy {strategy} not found")
-                continue
-
-            strategy_data = prompt_data[strategy]
+            # Load data for this configuration
+            data = load_results_data(results_dir, method, prompt, strategy)
 
             for metric_idx, metric in enumerate(metrics):
                 col_idx = model_idx * 3 + metric_idx
@@ -101,20 +146,19 @@ def create_track2b_combined_plot(data_file: str, output_path: str,
 
                 # Plot each classifier
                 for clf_name, style in clf_styles.items():
-                    if clf_name not in strategy_data:
+                    if clf_name not in data:
                         continue
 
-                    clf_data = strategy_data[clf_name]
-                    ratios = sorted([int(r) for r in clf_data.keys()])
+                    clf_data = data[clf_name]
+                    ratios = sorted(clf_data.keys())
 
                     means = []
                     stds = []
 
                     for ratio in ratios:
-                        ratio_stats = clf_data[str(ratio)]
-                        if metric in ratio_stats:
-                            means.append(ratio_stats[metric]['mean'])
-                            stds.append(ratio_stats[metric]['std'])
+                        if metric in clf_data[ratio]:
+                            means.append(clf_data[ratio][metric]['mean'])
+                            stds.append(clf_data[ratio][metric]['std'])
                         else:
                             means.append(np.nan)
                             stds.append(np.nan)
@@ -188,8 +232,8 @@ def create_track2b_combined_plot(data_file: str, output_path: str,
 
 def main():
     parser = argparse.ArgumentParser(description='Generate Track 2b paper plot')
-    parser.add_argument('--data-file', required=True,
-                       help='Path to plotting data JSON file')
+    parser.add_argument('--results-dir', default='output/reverse_detection/results',
+                       help='Directory containing result files')
     parser.add_argument('--output', required=True,
                        help='Output file path')
     parser.add_argument('--strategy', default='cross_group',
@@ -199,7 +243,7 @@ def main():
     args = parser.parse_args()
 
     setup_matplotlib_for_paper()
-    create_track2b_combined_plot(args.data_file, args.output, args.strategy)
+    create_track2b_combined_plot(args.results_dir, args.output, args.strategy)
 
 
 if __name__ == '__main__':
