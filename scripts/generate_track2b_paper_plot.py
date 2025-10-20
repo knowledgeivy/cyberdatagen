@@ -211,14 +211,9 @@ def create_track2b_combined_plot(results_dir: str, output_path: str,
 
                 # Legend (F1-Score column of each model)
                 if prompt_idx == 0 and metric_idx == 2:
-                    # GPT legend: lower right
-                    # Claude legend: center right to avoid overlapping
-                    if model_idx == 0:
-                        ax.legend(loc='lower right', fontsize=13, framealpha=0.95,
-                                 edgecolor='gray', fancybox=True, shadow=True)
-                    else:
-                        ax.legend(loc='center right', fontsize=13, framealpha=0.95,
-                                 edgecolor='gray', fancybox=True, shadow=True)
+                    # Unified placement: both GPT and Claude use lower right
+                    ax.legend(loc='lower right', fontsize=13, framealpha=0.95,
+                             edgecolor='gray', fancybox=True, shadow=True)
 
     plt.tight_layout()
 
