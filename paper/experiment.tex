@@ -1,7 +1,7 @@
 \section{Experimental Configuration}
 \label{sec:experiment}
 
-This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{appendix:hyperparameter_grid}, \ref{appendix:prompts}, and \ref{appendix:llm_config}.
+This section specifies the complete experimental configuration required to reproduce our evaluation framework. Following the methodology established in Section~\ref{sec:methodology}, we provide concrete parameter values for dataset composition, LLM configurations, experimental tracks, and statistical analysis procedures. Detailed hyperparameter grids, prompt templates, and LLM configurations are provided in Appendices~\ref{sec:appendix}.
 
 \subsection{Dataset and Sampling}
 We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39,154 real-world email samples (21,842 spam, 17,312 legitimate).\footnote{Our dataset is publicly available at \url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
@@ -11,11 +11,11 @@ The corpus is partitioned into $R = 20$ independent groups through stratified ra
 
 \subsection{LLM Models and Generation}
 
-We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). These models offer optimal cost-performance trade-offs for realistic spam generation scenarios, providing sufficient context windows while maintaining low per-token costs economically viable for large-scale campaigns. Both models employ identical generation parameters: temperature = 0.7, max tokens = 1,000, top-p = 1.0. Complete API configurations, cost analysis, and parameter justifications are provided in Appendix~\ref{appendix:llm_config}.
+We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). These models offer optimal cost-performance trade-offs for realistic spam generation scenarios, providing sufficient context windows while maintaining low per-token costs economically viable for large-scale campaigns. Both models employ identical generation parameters: temperature = 0.7, max tokens = 1,000, top-p = 1.0. Complete API configurations, cost analysis, and parameter justifications are provided in Appendix~\ref{sec:appendix}.
 
 \subsubsection{Prompt Engineering Strategies}
 
-We implement three systematically varied prompt strategies to explore generation intensity: \textbf{Original} (faithful reproduction with lexical variation), \textbf{Strong} (amplified spam indicators), and \textbf{Weak} (subtle spam with reduced explicit signals). Each prompt follows a consistent JSON-formatted template ensuring reliable parsing. Complete prompt templates with exact wording are provided in Appendix~\ref{appendix:prompts}. Table~\ref{tab:spam_examples_gpt} illustrates how prompt variation affects generation quality across the three strategies. Complete synthetic datasets for both GPT-4.1-mini and Claude-3.5-Haiku are publicly available in our repository.
+We implement three systematically varied prompt strategies to explore generation intensity: \textbf{Original} (faithful reproduction with lexical variation), \textbf{Strong} (amplified spam indicators), and \textbf{Weak} (subtle spam with reduced explicit signals). Each prompt follows a consistent JSON-formatted template ensuring reliable parsing. Complete prompt templates with exact wording are provided in Appendix~\ref{sec:appendix}. Table~\ref{tab:spam_examples_gpt} illustrates how prompt variation affects generation quality across the three strategies.
 
 
 \vspace{0.5em}
@@ -91,14 +91,12 @@ Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
 
 \textbf{Track 2b (RQ2b):} Evaluates cross-model augmentation effectiveness at three synthetic ratios ($\theta = 0\%, 50\%, 100\%$). Training employs synthetic spam from one LLM while testing evaluates detection of synthetic spam from the opposite LLM. For example, training on Claude synthetic spam tests detection of GPT synthetic spam.
 
-\subsection{Classification and Feature Representation}
+\subsection{Classification Configurations}
 
-We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{appendix:hyperparameter_grid} and ~\ref{appendix:feature_config}
+We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{sec:appendix}
 
-\subsection{Statistical Analysis}
+\subsection{Evaluation Metrics}
 
 We compute descriptive statistics (mean, standard deviation) across 20 independent groups for each configuration. Paired \textit{t}-tests compare each synthetic ratio against baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$) for multiple comparisons. Cohen's $d$ effect sizes quantify practical importance beyond statistical significance. Linear regression models performance degradation as a function of synthetic proportion. F1-score serves as the primary metric, with supporting metrics including Accuracy, Precision, Recall, and AUC-ROC.
 
-\subsection{Experimental Scale and Infrastructure}
-
-The complete evaluation framework comprises 4,080 training-evaluation units across all tracks (Track 1: 2,640; Track 2a: 720; Track 2b: 720), covering all combinations of LLM models, prompt strategies, classifiers, and replications. All experiments employ official LLM APIs (GPT-4.1-mini, Claude-3.5-Haiku) with total generation cost of \$3.30 for 12,000 synthetic samples. Classifier training executes on standard computing infrastructure (Intel Xeon 32-core CPU, 128 GB RAM) without specialized hardware requirements. Total pipeline runtime is approximately 22 hours. Complete cost breakdown and infrastructure specifications are provided in Appendix~\ref{appendix:llm_config}.
+The complete evaluation framework comprises 4,080 training-evaluation units across all tracks (Track 1: 2,640; Track 2a: 720; Track 2b: 720), covering all combinations of LLM models, prompt strategies, classifiers, and replications. All experiments employ official LLM APIs (GPT-4.1-mini, Claude-3.5-Haiku) with total 12,000 synthetic samples. Classifier training executes on standard computing infrastructure (Intel Xeon 32-core CPU, 128 GB RAM) without specialized hardware requirements. Complete cost breakdown and infrastructure specifications are provided in Appendix~\ref{sec:appendix}.

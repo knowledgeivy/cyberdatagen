@@ -1,12 +1,22 @@
-\section{Appendices}
 \label{sec:appendix}
 
-\subsection{LLM Configuration and Costs}
-\label{appendix:llm_config}
 
-Table~\ref{tab:llm_config_costs} summarizes key LLM parameters and API costs. Both models use identical generation parameters (temperature = 0.7, max tokens = 1,000) with remaining parameters set to defaults (top-p = 1.0, JSON response format).
+\noindent\textbf{Strategy-Specific Instructions:}
 
-\begin{table}[h]
+\begin{itemize}
+    \item \textbf{Original Strategy:} Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent.
+
+    \item \textbf{Strong Strategy:} Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required), persuasive elements (too-good-to-be-true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make the spam characteristics more explicit and prominent.
+
+    \item \textbf{Weak Strategy:} Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect.
+\end{itemize}
+
+% \subsection{LLM Configuration and Costs}
+% \label{appendix:llm_config}
+
+% Table~\ref{tab:llm_config_costs} summarizes key LLM parameters and API costs. Both models use identical generation parameters (temperature = 0.7, max tokens = 1,000) with remaining parameters set to defaults (top-p = 1.0, JSON response format).
+
+\begin{table}[ht]
 \centering
 \caption{LLM Configuration and API Costs}
 \label{tab:llm_config_costs}
@@ -25,7 +35,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 }
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Grid Search Results and Final Hyperparameter Configurations}
 \label{appendix:hyperparameter_grid}
@@ -48,7 +58,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 }
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{TF-IDF Feature Extraction Parameters}
 \label{appendix:feature_config}
@@ -69,18 +79,9 @@ sublinear\_tf & True (log scaling) \\
 }
 \end{table}
 
-\subsection{Prompt Templates}
-\label{appendix:prompts}
+% \subsection{Prompt Templates}
+% \label{appendix:prompts}
 
-\noindent\textbf{Strategy-Specific Instructions:}
-
-\begin{itemize}
-    \item \textbf{Original Strategy:} Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent.
-
-    \item \textbf{Strong Strategy:} Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required), persuasive elements (too-good-to-be-true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make the spam characteristics more explicit and prominent.
-
-    \item \textbf{Weak Strategy:} Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect.
-\end{itemize}
 
 % \subsection{Performance Metrics Definitions}
 % \label{appendix:metrics}
@@ -108,12 +109,12 @@ sublinear\_tf & True (log scaling) \\
 
 % Preliminary experiments compared within-group mixing (training on synthetic data from same group) versus cross-group mixing (training on synthetic data from different group). Cross-group strategy shows consistent advantages: mean F1 improvement of +0.009 ($p < 10^{-6}$, Cohen's $d = 0.13$) across all configurations. More importantly, cross-group mixing better reflects realistic deployment scenarios where synthetic generation sources may differ temporally or distributionally from operational training data. All main experiments employ cross-group strategy based on these findings.
 
-\subsection{Performance Degradation Models}
-\label{appendix:degradation_models}
+% \subsection{Performance Degradation Models}
+% \label{appendix:degradation_models}
 
-Linear regression modeling performance degradation as function of synthetic proportion $\theta$ yields highly predictive models across all configurations. Table~\ref{tab:degradation_regression} presents regression parameters for Track 1 experiments.
+% Linear regression modeling performance degradation as function of synthetic proportion $\theta$ yields highly predictive models across all configurations. Table~\ref{tab:degradation_regression} presents regression parameters for Track 1 experiments.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Linear Regression: Performance vs. Synthetic Proportion (Track 1)}
 \label{tab:degradation_regression}
@@ -129,45 +130,36 @@ Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synthetic \\
 }
 \end{table}
 
-High $R^2$ values ($>$0.97) indicate linear models explain $>$97\% of performance variance, enabling reliable interpolation for arbitrary mixing ratios. Slope coefficients quantify expected degradation per 1\% synthetic increase: GPT shows 3.5× lower degradation rate than Claude (-0.11\% vs -0.39\% per 1\% synthetic).
+% \subsection{Training Ratio Sensitivity Analysis}
+% \label{appendix:training_ratio_analysis}
 
-\subsection{Training Ratio Sensitivity Analysis}
-\label{appendix:training_ratio_analysis}
+% Track 2b experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
 
-Track 2b experiments evaluate detection performance at three training ratios: 0\% (pure real baseline), 50\% (hybrid), and 100\% (pure cross-model synthetic). Table~\ref{tab:training_ratio_sensitivity} presents detailed sensitivity analysis across all prompt strategies.
+% \begin{table}[h]
+% \centering
+% \caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Track 2b)}
+% \label{tab:training_ratio_sensitivity}
+% \resizebox{\columnwidth}{!}{
+% \begin{tabular}{llccc}
+% \toprule
+% \textbf{Testing} & \textbf{Classifier} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
+% \textbf{Target} & & \textbf{(Baseline)} & \textbf{(Hybrid)} & \textbf{(Pure Synth)} \\
+% \midrule
+% \multicolumn{5}{l}{\textit{GPT-4.1-mini Detection (trained on Claude)}} \\
+% & SVM & 0.744 & 0.770 & 0.649 \\
+% & Random Forest & 0.824 & 0.816 & 0.894 \\
+% \midrule
+% \multicolumn{5}{l}{\textit{Claude-3.5-Haiku Detection (trained on GPT)}} \\
+% & SVM & 0.532 & 0.666 & 0.688 \\
+% & Random Forest & 0.802 & 0.802 & 0.802 \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
-\caption{Training Ratio Sensitivity: Mean F1 Across All Prompts (Track 2b)}
-\label{tab:training_ratio_sensitivity}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{llccc}
-\toprule
-\textbf{Testing} & \textbf{Classifier} & \textbf{0\%} & \textbf{50\%} & \textbf{100\%} \\
-\textbf{Target} & & \textbf{(Baseline)} & \textbf{(Hybrid)} & \textbf{(Pure Synth)} \\
-\midrule
-\multicolumn{5}{l}{\textit{GPT-4.1-mini Detection (trained on Claude)}} \\
-& SVM & 0.744 & 0.770 & 0.649 \\
-& Random Forest & 0.824 & 0.816 & 0.894 \\
-\midrule
-\multicolumn{5}{l}{\textit{Claude-3.5-Haiku Detection (trained on GPT)}} \\
-& SVM & 0.532 & 0.666 & 0.688 \\
-& Random Forest & 0.802 & 0.802 & 0.802 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-\subsection{Detailed Statistical Analysis}
-\label{appendix:detailed_statistics}
-
-\subsubsection{Hypothesis Testing Results}
-
-Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$). Table~\ref{tab:hypothesis_tests} presents selected comparisons for Track 1 (100\% synthetic vs. baseline).
-
-\begin{table}[h]
-\centering
-\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1)}
+\caption{Hypothesis Testing: 100\% Synthetic vs. Baseline (Track 1) Paired $t$-tests compare each synthetic ratio against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$). Table~\ref{tab:hypothesis_tests} presents selected comparisons for Track 1 (100\% synthetic vs. baseline).}
 \label{tab:hypothesis_tests}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{lccc}
@@ -181,13 +173,13 @@ Claude-3.5-Haiku & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
 }
 \end{table}
 
-All comparisons show statistically significant differences ($p < 0.001$) with large effect sizes ($|d| > 0.8$), confirming synthetic data substitution produces substantial, reliable performance changes beyond random variation.
+% All comparisons show statistically significant differences ($p < 0.001$) with large effect sizes ($|d| > 0.8$), confirming synthetic data substitution produces substantial, reliable performance changes beyond random variation.
 
-\subsubsection{Complete Performance Metrics}
+% \subsubsection{Complete Performance Metrics}
 
-Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1 baseline (0\%) and 100\% synthetic configurations.
+% Table~\ref{tab:complete_metrics} presents all classification metrics for Track 1 baseline (0\%) and 100\% synthetic configurations.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Complete Classification Metrics (Track 1, SVM, Original Prompt, Cross-Group)}
 \label{tab:complete_metrics}
