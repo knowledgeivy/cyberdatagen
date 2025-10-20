@@ -6,7 +6,7 @@ Our evaluation framework systematically assesses LLM-generated synthetic spam ac
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{pic/model_flowchart.png}
-    \caption{Experimental framework for evaluating LLM-generated synthetic spam. The pipeline encompasses stratified sampling, controlled generation with multiple prompt strategies, cross-group mixing, and statistical analysis across three experimental tracks.}
+    \caption{The flowchart for experimental framework}
     \label{fig:framework}
 \end{figure}
 
@@ -46,14 +46,8 @@ Cross-group mixing provides two critical advantages over within-group alternativ
 Our evaluation framework encompasses three complementary tracks that systematically address the research questions outlined in Section~\ref{sec:introduction}. 
 
 
-\subsubsection{Track 1: Synthetic-to-Real Detection (RQ1)}
+\textbf{Track 1: Synthetic-to-Real Detection (RQ1)}: This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. Classifiers train on mixtures of real ham (fixed) and varying proportions of real spam combined with synthetic spam, then test on identical real-world data. As synthetic proportion $\theta$ varies from 0 (pure real) to 1 (pure synthetic), we quantify performance degradation patterns, establishing trade-offs between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring results reflect operational deployment scenarios where detectors must identify genuine spam.
 
-This track evaluates whether LLM-generated synthetic spam can effectively train classifiers to detect real spam. Classifiers train on mixtures of real ham (fixed) and varying proportions of real spam combined with synthetic spam, then test on identical real-world data. As synthetic proportion $\theta$ varies from 0 (pure real) to 1 (pure synthetic), we quantify performance degradation patterns, establishing trade-offs between reduced real data requirements and maintained detection accuracy. The test set remains purely real throughout, ensuring results reflect operational deployment scenarios where detectors must identify genuine spam.
+\textbf{Track 2a: Real-to-Synthetic Detection (RQ2a)}: This track evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios. Training employs only real ham and real spam without synthetic exposure, while testing evaluates detection of LLM-generated synthetic spam. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to identifying AI-generated spam, suggesting inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
 
-\subsubsection{Track 2a: Real-to-Synthetic Detection (RQ2a)}
-
-This track evaluates whether classifiers trained solely on real spam can detect LLM-generated synthetic spam, representing zero-shot detection scenarios. Training employs only real ham and real spam without synthetic exposure, while testing evaluates detection of LLM-generated synthetic spam. Strong baseline performance would indicate that features distinguishing real spam from ham generalize to identifying AI-generated spam, suggesting inherent robustness. Weak baseline performance would indicate that AI-generated spam represents a novel threat requiring adaptive training strategies.
-
-\subsubsection{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}
-
-This track investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation. Classifiers train on real ham plus varying mixtures of real spam and synthetic spam from LLM B, then test on detecting synthetic spam from LLM A (different from training). This cross-model design evaluates whether features learned from one LLM's synthetic patterns generalize to detecting another LLM's spam. Performance improvement over Track 2a baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.
+\textbf{Track 2b: Mixed-to-Synthetic Detection (RQ2b)}: This track investigates whether incorporating synthetic data from other LLMs improves detection capabilities through cross-model augmentation. Classifiers train on real ham plus varying mixtures of real spam and synthetic spam from LLM B, then test on detecting synthetic spam from LLM A (different from training). This cross-model design evaluates whether features learned from one LLM's synthetic patterns generalize to detecting another LLM's spam. Performance improvement over Track 2a baseline would demonstrate that cross-model synthetic augmentation enhances detection capabilities, enabling "fighting fire with fire" defensive strategies.

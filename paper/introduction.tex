@@ -2,17 +2,20 @@
 \label{sec:introduction}
 Generative AI, particularly Large Language Models (LLMs), has fundamentally transformed the landscape of spam and phishing attacks. Traditional spam relied on template-based generation with characteristic indicators—spelling errors, grammar mistakes, and repetitive patterns—that enabled relatively straightforward detection. Modern LLMs eliminate these telltale signs, producing spam emails with natural language characteristics, contextual coherence, and grammatical correctness that closely mimic legitimate communications. This transformation presents attackers with unprecedented capabilities for automated generation of convincing phishing campaigns at scale, while simultaneously offering defenders new capabilities for addressing persistent training data challenges through synthetic data generation. This duality raises a fundamental question: Does Generative AI favor attackers or defenders in spam detection?
 
-\subsection{Research Questions}
+Spam detection systems require large, diverse training datasets, yet acquiring such data confronts fundamental obstacles: privacy regulations, legal constraints, and the inherent rarity of spam in operational environments. If LLM-generated synthetic spam can substitute for real training data without performance degradation, defenders gain a transformative capability to build detection systems without accessing sensitive data and rapidly respond to emerging threats.
 
-Our investigation addresses three complementary research questions that systematically examine whether Generative AI favors attackers or defenders:
+As attackers gain access to increasingly capable language models, the operational question facing defenders is whether existing detection systems trained exclusively on historical spam remain effective against AI-generated attacks they have never encountered. This zero-shot detection scenario represents the current threat landscape where organizations face adversaries wielding LLMs capable of generating grammatically flawless, contextually coherent phishing emails at scale. Defenders typically cannot predict which specific LLM adversaries will employ for attack generation. This uncertainty raises a strategic question about cross-model generalization: can defenders leverage readily available LLMs to generate synthetic training data that improves detection of attacks from different LLM sources? If cross-model augmentation proves effective, defenders gain a proactive capability to strengthen detection systems by "fighting fire with fire."
 
-\textbf{RQ1: Can LLM-generated synthetic spam effectively substitute for real training data?} Spam detection systems require large, diverse training datasets, yet acquiring such data confronts fundamental obstacles: privacy regulations, legal constraints, and the inherent rarity of spam in operational environments. If LLM-generated synthetic spam can substitute for real training data without performance degradation, defenders gain a transformative capability to build detection systems without accessing sensitive data and rapidly respond to emerging threats.
+% \subsection{Research Questions}
 
-\textbf{RQ2a: Can traditional spam detectors recognize LLM-generated attacks without prior exposure?} As attackers gain access to increasingly capable language models, the operational question facing defenders is whether existing detection systems trained exclusively on historical spam remain effective against AI-generated attacks they have never encountered. This zero-shot detection scenario represents the current threat landscape where organizations face adversaries wielding LLMs capable of generating grammatically flawless, contextually coherent phishing emails at scale.
+Therefore, our investigation addresses three complementary research questions that systematically examine whether Generative AI favors attackers or defenders:
 
-\textbf{RQ2b: Does augmenting training data with synthetic spam from available LLMs improve detection of attacks from different LLM sources?} Defenders typically cannot predict which specific LLM adversaries will employ for attack generation. This uncertainty raises a strategic question about cross-model generalization: can defenders leverage readily available LLMs to generate synthetic training data that improves detection of attacks from different LLM sources? If cross-model augmentation proves effective, defenders gain a proactive capability to strengthen detection systems by "fighting fire with fire."
-
-\subsection{Principal Contributions}
+\begin{enumerate}
+    \item \textbf{RQ1: Can LLM-generated synthetic spam effectively substitute for real training data?}
+    \item \textbf{RQ2a: Can traditional spam detectors recognize LLM-generated attacks without prior exposure?}
+    \item \textbf{RQ2b: Does augmenting training data with synthetic spam from available LLMs improve detection of attacks from different LLM sources?}
+\end{enumerate}
+% \subsection{Principal Contributions}
 
 This work makes several fundamental contributions to understanding Generative AI's role in spam detection:
 \begin{enumerate}
@@ -26,11 +29,11 @@ This work makes several fundamental contributions to understanding Generative AI
 
     \item \textbf{Evidence-Based Resolution of Offense-Defense Balance.} We provide empirically-grounded answers to whether Generative AI favors attackers or defenders, revealing fundamental asymmetries in capabilities, costs, and operational constraints. The precision-recall trade-offs we identify translate directly to operational guidance for both offensive evaluation and defensive deployment strategies.
 
-    \item \textbf{Public Benchmark Dataset.} We release a comprehensive benchmark comprising LLM-generated spam samples across multiple models and prompt strategies, enabling reproducibility and standardized evaluation for future research.\footnote{Dataset and complete experimental configurations available at: \url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
+    \item \textbf{Public Benchmark Dataset.} We release a comprehensive benchmark comprising LLM-generated spam samples across multiple models and prompt strategies, enabling reproducibility and standardized evaluation for future research.\footnote{Dataset is available at: \\url{https://github.com/tisage/llm-synthetic-spam-benchmark}}
 
 \end{enumerate}
 
 
-\subsection{Paper Organization}
+% \subsection{Paper Organization}
 
-The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work on synthetic data generation and AI-powered spam detection. Section~\ref{sec:methodology} presents our evaluation framework and experimental design principles. Section~\ref{sec:experiment} specifies the complete experimental configuration including dataset preparation, LLM parameters, classification models, and statistical analysis procedures. Section~\ref{sec:evaluation} presents comprehensive results across all experimental tracks with statistical analysis. Section~\ref{sec:discussion} interprets findings and discusses implications for attackers and defenders. Section~\ref{sec:conclusion} summarizes contributions and outlines future research directions.
+The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work. Section~\ref{sec:methodology} presents our evaluation framework and experimental design principles. Section~\ref{sec:experiment} specifies the experimental configuration. Section~\ref{sec:evaluation} presents comprehensive results across all experimental tracks with statistical analysis. Section~\ref{sec:discussion} interprets findings and discusses implications for attackers and defenders. Section~\ref{sec:conclusion} summarizes contributions.

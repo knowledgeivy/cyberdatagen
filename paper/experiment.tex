@@ -11,7 +11,7 @@ The corpus is partitioned into $R = 20$ independent groups through stratified ra
 
 \subsection{LLM Models and Generation}
 
-We employ two state-of-the-art large language models: \textbf{GPT-4.1-mini} (OpenAI) and \textbf{Claude-3.5-Haiku} (Anthropic). These models offer optimal cost-performance trade-offs for realistic spam generation scenarios, providing sufficient context windows while maintaining low per-token costs economically viable for large-scale campaigns. Both models employ identical generation parameters: temperature = 0.7, max tokens = 1,000, top-p = 1.0. Complete API configurations, cost analysis, and parameter justifications are provided in Appendix~\ref{sec:appendix}.
+We employ two state-of-the-art large language models: \textit{GPT-4.1-mini} (OpenAI) and \textit{Claude-3.5-Haiku} (Anthropic). These models offer optimal cost-performance trade-offs for realistic spam generation scenarios, providing sufficient context windows while maintaining low per-token costs economically viable for large-scale campaigns. Both models employ identical generation parameters: temperature = 0.7, max tokens = 1,000, top-p = 1.0. Complete API configurations, cost analysis, and parameter justifications are provided in Appendix~\ref{sec:appendix}.
 
 \subsubsection{Prompt Engineering Strategies}
 
@@ -62,7 +62,7 @@ We implement three systematically varied prompt strategies to explore generation
 
 \subsection{Experimental Tracks}
 
-Following the methodology framework (Section~\ref{sec:methodology}), we implement three experimental tracks with specific parameter configurations. All tracks employ cross-group mixing, both SVM and Random Forest classifiers, all three prompt strategies, and 20 independent replications. Table~\ref{tab:track_params} summarizes the key configuration differences.
+Following the methodology framework (Section~\ref{sec:methodology}), we implement three experimental tracks with specific parameter configurations. All tracks employ cross-group mixing, no synthetic exposure, all three prompt strategies, and 20 independent replications. Table~\ref{tab:track_params} summarizes the key configuration differences.
 
 \begin{table}[h]
 \centering
@@ -87,13 +87,13 @@ Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
 
 \textbf{Track 1 (RQ1):} Varies synthetic proportion $\theta$ from 0\% to 100\% in 10\% increments to quantify performance degradation as real spam is replaced by synthetic spam during training. Training sets contain $(1-\theta) \times 100$ real spam + $\theta \times 100$ synthetic spam + 900 ham. Testing employs 100 real spam + 900 ham (fixed across all ratios).
 
-\textbf{Track 2a (RQ2a):} Varies training data size to evaluate whether additional real spam improves zero-shot detection of LLM-generated synthetic spam. Training employs 100\%, 150\%, or 200\% real spam (100, 150, or 200 samples) with 900 ham, no synthetic exposure. Testing evaluates detection of LLM-generated synthetic spam across both models and all prompt strategies.
+\textbf{Track 2a (RQ2a):} Varies training data size to evaluate whether additional real spam improves zero-shot detection of LLM-generated synthetic spam. Training employs 100\%, 150\%, or 200\% real spam (100, 150, or 200 samples) with 900 ham. Testing evaluates detection of LLM-generated synthetic spam across both models and all prompt strategies.
 
 \textbf{Track 2b (RQ2b):} Evaluates cross-model augmentation effectiveness at three synthetic ratios ($\theta = 0\%, 50\%, 100\%$). Training employs synthetic spam from one LLM while testing evaluates detection of synthetic spam from the opposite LLM. For example, training on Claude synthetic spam tests detection of GPT synthetic spam.
 
 \subsection{Classification Configurations}
 
-We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based, linear kernel) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{sec:appendix}
+We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{sec:appendix}
 
 \subsection{Evaluation Metrics}
 
