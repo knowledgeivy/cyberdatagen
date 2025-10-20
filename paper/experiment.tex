@@ -74,7 +74,7 @@ Training spam & Real + Synthetic & Real only & Real + Synthetic \\
 Testing spam & Real & Synthetic & Synthetic \\
 Controlled variable & Synthetic ratio & Training size & Synthetic ratio \\
  & $\theta$ & (real spam count) & $\theta$ (cross-model) \\
-Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
+Variable values & 0\%, 10\%, ..., 100\% & 100\%, 150\%, 200\% & 0\%, 50\%, 100\% \\
 \bottomrule
 \end{tabular}
 }
@@ -88,7 +88,7 @@ Variable values & 0\%, 10\%, ..., 100\% & 100, 150, 200 & 0\%, 50\%, 100\% \\
 
 \subsection{Classification Configurations}
 
-We employ two classifiers representing distinct learning paradigms: Support Vector Machine (margin-based) and Random Forest (ensemble-based). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{sec:appendix}
+We employ two classifiers representing distinct learning paradigms: Support Vector Machine (SVM) and Random Forest (RF). All emails are transformed to TF-IDF feature vectors, with the vectorizer fitted exclusively on training data to prevent information leakage. Hyperparameters are optimized through grid search with 5-fold stratified cross-validation using F1-score as the optimization metric. Complete hyperparameter grids and TF-IDF configurations are provided in Appendices~\ref{sec:appendix}
 
 \subsection{Evaluation Metrics}
 
