@@ -8,7 +8,7 @@ We employ the CEAS-08 spam email dataset~\cite{champa2024curated}, comprising 39
 
 \subsection{LLM Models and Generation}
 
-\textit{Ethics Note:} All synthetic spam emails generated in this study are created solely for research purposes to advance defensive cybersecurity capabilities. We do not distribute generated content and implement appropriate safeguards to prevent misuse. Complete prompt templates are provided in supplementary materials to support reproducibility.
+\textit{Ethics Note:} All synthetic spam emails are generated solely for research purposes to advance defensive cybersecurity capabilities. Complete prompt templates are provided in supplementary materials to support reproducibility.
 
 We employ two state-of-the-art large language models: \textit{GPT-4.1-mini} (OpenAI) and \textit{Claude-3.5-Haiku} (Anthropic). These models offer optimal cost-performance trade-offs for realistic spam generation scenarios, providing sufficient context windows while maintaining low per-token costs economically viable for large-scale campaigns. Both models employ identical generation parameters: temperature = 0.7, max tokens = 1,000, top-p = 1.0. Complete API configurations, cost analysis, and parameter justifications are provided in Appendix~\ref{sec:appendix}.
 
@@ -31,31 +31,29 @@ We implement three systematically varied prompt strategies to explore generation
 \vspace{0.5em}
 
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Representative Synthetic Spam Examples (GPT-4.1-mini). Original prompts produce natural spam with realistic language patterns, strong prompts amplify urgency cues and explicit offers, while weak prompts generate subtle spam with professional tone\footnotemark[2].}
+\caption{Representative Synthetic Spam Examples (GPT-4.1-mini). Original prompts produce natural spam with realistic language patterns, strong prompts amplify urgency cues and explicit offers, while weak prompts generate subtle spam with professional tone.}
 \label{tab:spam_examples_gpt}
 \small
-\resizebox{\columnwidth}{!}{
 \begin{tabular}{p{0.12\textwidth}p{0.83\textwidth}}
 \toprule
 \textbf{Strategy} & \textbf{Generated Email} \\
 \midrule
 \textbf{Original} &
-\textit{Subject:} Larger masculine enhancement solution \\
-& \textit{Body:} If you find your size lacking, visit our shop to find the perfect solution! Watch your member grow significantly in both size and girth! http://flapprice.com/ [...] \\
+\textit{Subject:} Congratulations! You've Won \$5.5 Million \\
+& \textit{Body:} Dear Winner, Your email has been randomly selected in our international lottery draw. You have won \$5,500,000.00! To claim your prize, contact our claims department immediately with your personal details. Act now - this offer expires in 48 hours! http://prize... \\
 \midrule
 \textbf{Strong} &
-\textit{Subject:} Discover the Secret to Bigger Size \\
-& \textit{Body:} Captivate the women with the latest enhancement [...] and see their excitement grow as you satisfy them more fully. Numerous studies indicate that women favor partners with impressive dimensions. http://pill... \\
+\textit{Subject:} URGENT: \$5.5M Lottery Prize - CLAIM NOW! \\
+& \textit{Body:} IMMEDIATE ACTION REQUIRED! You are the GUARANTEED winner of \$5.5 MILLION DOLLARS! This is a LIMITED TIME OFFER - only 24 hours left! Don't let this life-changing opportunity slip away... Contact us RIGHT NOW or lose your prize forever! http://urgent... \\
 \midrule
 \textbf{Weak} &
-\textit{Subject:} Discover Ways to Enhance Your Confidence \\
-& \textit{Body:} Make a lasting impression with a little help, and see how it can change your experiences. Many studies indicate that a significant size can be appealing [...] http://pill... \\
+\textit{Subject:} Notification Regarding Prize Selection \\
+& \textit{Body:} Dear Recipient, We are pleased to inform you that your email address was included in our recent prize selection process. You may be eligible to receive a substantial financial award. For verification and processing, please provide your contact information at your earliest convenience... http://verify... \\
 \bottomrule
 \end{tabular}
-}
-\end{table}
+\end{table*}
 
 \subsection{Experimental Tracks}
 
