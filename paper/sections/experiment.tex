@@ -59,12 +59,11 @@ We implement three systematically varied prompt strategies to explore generation
 
 Following the methodology framework (Section~\ref{sec:methodology}), we implement three experimental tracks with specific parameter configurations. All tracks employ cross-group mixing, no synthetic exposure, all three prompt strategies, and 20 independent replications. Table~\ref{tab:track_params} summarizes the key configuration differences.
 
-\begin{table}[h]
+\begin{table*}[t]
 \centering
 \caption{Track-Specific Parameters}
 \label{tab:track_params}
 \small
-\resizebox{\columnwidth}{!}{
 \begin{tabular}{lccc}
 \toprule
 \textbf{Parameter} & \textbf{Track 1} & \textbf{Track 2a} & \textbf{Track 2b} \\
@@ -76,8 +75,7 @@ Controlled variable & Synthetic ratio & Training size & Synthetic ratio \\
 Variable values & 0\%, 10\%, ..., 100\% & 100\%, 150\%, 200\% & 0\%, 50\%, 100\% \\
 \bottomrule
 \end{tabular}
-}
-\end{table}
+\end{table*}
 
 \textbf{Track 1 (RQ1):} Varies synthetic proportion $\theta$ from 0\% to 100\% in 10\% increments to quantify performance degradation as real spam is replaced by synthetic spam during training. Training sets contain $(1-\theta) \times 100$ real spam + $\theta \times 100$ synthetic spam + 900 ham. Testing employs 100 real spam + 900 ham (fixed across all ratios).
 
