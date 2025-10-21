@@ -1,0 +1,208 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{Supplementary Material:\\
+Complete Prompt Templates for LLM-Generated Spam}
+\author{}
+\date{}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  xleftmargin=0.5cm,
+  xrightmargin=0.5cm,
+  backgroundcolor=\color{gray!10}
+}
+
+\begin{document}
+\maketitle
+
+\section*{Research Ethics Statement}
+
+All synthetic spam emails generated using these prompts are created solely for academic research purposes to advance defensive cybersecurity capabilities. These prompts and generated content are provided to support reproducibility and scientific validation of our experimental methodology.
+
+\textbf{Important:} We strongly urge researchers to use these materials responsibly and only for legitimate security research, spam detection system evaluation, and educational purposes. Any malicious use of these prompts or generated content is strictly prohibited and contrary to the intent of this research.
+
+\section*{Overview}
+
+This document contains the complete prompt templates used to generate synthetic spam emails with GPT-4.1-mini and Claude-3.5-Haiku in our systematic evaluation. Three prompt strategies are implemented:
+
+\begin{itemize}
+    \item \textbf{Original Strategy:} Faithful reproduction with lexical variation
+    \item \textbf{Strong Strategy:} Amplified spam indicators and urgency signals
+    \item \textbf{Weak Strategy:} Subtle spam with reduced explicit signals
+\end{itemize}
+
+All prompts follow a consistent JSON-formatted template structure to ensure reliable parsing and standardized output format across both LLM models.
+
+\section*{Base Prompt Template Structure}
+
+All three strategies share the following base structure:
+
+\begin{lstlisting}
+You are an expert email content analyzer. Given the following spam email, generate a semantically similar but lexically distinct spam variant.
+
+[STRATEGY-SPECIFIC INSTRUCTIONS]
+
+Original Email:
+Subject: {original_subject}
+Body: {original_body}
+
+Requirements:
+- Generate a new spam email that conveys the same malicious intent
+- Use different wording while maintaining semantic similarity
+- Output format: JSON with "subject" and "body" fields
+- Ensure the generated content is realistic and grammatically correct
+
+Output Format (JSON):
+{"subject": "...", "body": "..."}
+\end{lstlisting}
+
+\clearpage
+
+\section*{Complete Prompt Templates}
+
+\subsection*{Strategy 1: Original Prompt}
+
+\textbf{Purpose:} Faithfully reproduce spam characteristics with natural lexical variation.
+
+\begin{lstlisting}
+You are an expert email content analyzer. Given the following spam email, generate a semantically similar but lexically distinct spam variant.
+
+Instructions:
+- Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics present in the original
+- Introduce natural lexical variation while maintaining semantic similarity and malicious intent
+- Preserve the core persuasive structure and call-to-action patterns
+- Generate realistic spam that mimics the original's manipulation techniques
+
+Original Email:
+Subject: {original_subject}
+Body: {original_body}
+
+Requirements:
+- Generate a new spam email that conveys the same malicious intent as the original
+- Use different wording while maintaining semantic similarity
+- Preserve urgency levels, persuasion tactics, and social engineering elements from the original
+- Output format: JSON with "subject" and "body" fields
+- Ensure the generated content is realistic and grammatically correct
+
+Output Format (JSON):
+{"subject": "...", "body": "..."}
+\end{lstlisting}
+
+\subsection*{Strategy 2: Strong Prompt}
+
+\textbf{Purpose:} Amplify spam indicators to create more explicit malicious content.
+
+\begin{lstlisting}
+You are an expert email content analyzer. Given the following spam email, generate a semantically similar but lexically distinct spam variant.
+
+Instructions:
+- Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required, countdown elements)
+- Strengthen persuasive elements (too-good-to-be-true offers, authority figures, social proof, scarcity)
+- Enhance social engineering tactics (credential requests, fake notifications, urgent warnings)
+- Make the spam characteristics more explicit and prominent than the original
+- Increase the intensity of call-to-action language and urgency markers
+
+Original Email:
+Subject: {original_subject}
+Body: {original_body}
+
+Requirements:
+- Generate a new spam email with AMPLIFIED manipulation techniques
+- Use different wording while making urgency and persuasion MORE explicit
+- Strengthen social engineering elements beyond the original
+- Output format: JSON with "subject" and "body" fields
+- Ensure the generated content is realistic and grammatically correct
+
+Output Format (JSON):
+{"subject": "...", "body": "..."}
+\end{lstlisting}
+
+\clearpage
+
+\subsection*{Strategy 3: Weak Prompt}
+
+\textbf{Purpose:} Generate subtle spam that appears more legitimate while retaining malicious intent.
+
+\begin{lstlisting}
+You are an expert email content analyzer. Given the following spam email, generate a semantically similar but lexically distinct spam variant.
+
+Instructions:
+- Generate subtle spam with reduced explicit indicators
+- Create content that appears more legitimate and professional while retaining underlying spam nature
+- Use professional, formal language and minimize obvious urgency signals
+- Reduce explicit persuasion tactics while maintaining the core malicious intent
+- Make the spam more difficult to detect by reducing typical spam characteristics
+- Employ sophisticated social engineering that relies on subtlety rather than explicit manipulation
+
+Original Email:
+Subject: {original_subject}
+Body: {original_body}
+
+Requirements:
+- Generate a new spam email with REDUCED explicit spam signals
+- Use professional, legitimate-sounding language
+- Minimize obvious urgency markers and too-good-to-be-true offers
+- Maintain malicious intent through subtle persuasion
+- Output format: JSON with "subject" and "body" fields
+- Ensure the generated content is realistic and grammatically correct
+
+Output Format (JSON):
+{"subject": "...", "body": "..."}
+\end{lstlisting}
+
+\section*{Implementation Notes}
+
+\subsection*{LLM Configuration Parameters}
+
+Both GPT-4.1-mini and Claude-3.5-Haiku were configured with identical generation parameters:
+
+\begin{itemize}
+    \item \textbf{Temperature:} 0.7 (balanced creativity and consistency)
+    \item \textbf{Max Tokens:} 1,000 (sufficient for email content)
+    \item \textbf{Top-p:} 1.0 (full vocabulary access)
+    \item \textbf{Response Format:} JSON mode (structured output)
+\end{itemize}
+
+\subsection*{Generation Process}
+
+For each of the 100 real spam emails in each training group:
+\begin{enumerate}
+    \item Extract original subject and body text
+    \item Substitute into prompt template for the selected strategy
+    \item Send to LLM API with configured parameters
+    \item Parse JSON response to extract generated subject and body
+    \item Validate output format and retry if parsing fails
+\end{enumerate}
+
+\subsection*{Quality Control}
+
+Generated synthetic spam undergoes validation checks:
+\begin{itemize}
+    \item JSON format compliance
+    \item Non-empty subject and body fields
+    \item Minimum length requirements (subject $>$ 3 chars, body $>$ 20 chars)
+    \item Character encoding validation
+\end{itemize}
+
+\section*{Citation}
+
+If you use these prompt templates in your research, please cite the main paper:
+
+\begin{quote}
+\textit{[Full citation will be added upon publication]}
+\end{quote}
+
+\section*{Contact}
+
+For questions about these prompts or the experimental methodology, please contact the authors through the paper's correspondence email or open an issue in the public repository:
+
+\texttt{https://github.com/tisage/llm-synthetic-spam-benchmark}
+
+\end{document}
