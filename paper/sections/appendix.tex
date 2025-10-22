@@ -2,12 +2,12 @@
 
 % Prompt templates are provided in supplementary materials
 % \noindent\textbf{LLM Prompt Strategy:}
-%
+
 % \begin{itemize}
 %     \item \textbf{Original Strategy:} Faithfully reproduce the spam characteristics including urgency signals, persuasive elements, and social engineering tactics. Introduce natural lexical variation while maintaining semantic similarity and malicious intent.
-%
+
 %     \item \textbf{Strong Strategy:} Amplify spam indicators by emphasizing urgency signals (limited time, immediate action required), persuasive elements (too-good-to-be-true offers, authority figures), and social engineering tactics (credential requests, fake notifications). Make the spam characteristics more explicit and prominent.
-%
+
 %     \item \textbf{Weak Strategy:} Generate subtle spam with reduced explicit indicators. Create content that appears more legitimate while retaining underlying spam nature. Use professional language and minimize obvious urgency signals, making the spam more difficult to detect.
 % \end{itemize}
 
@@ -38,7 +38,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 \begin{table}[ht]
 \centering
 \caption{Hyperparameters and TF-IDF Settings}
-\label{appendix:classification_config}
+\label{tab:hyperparameters}
 \small
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{llcc}
@@ -110,6 +110,7 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 \begin{table}[ht]
 \centering
 \caption{Statistical Analysis (Track 1): Linear Regression and Hypothesis Testing. Paired $t$-tests compare 100\% synthetic against 0\% baseline with Benjamini-Hochberg FDR correction ($\alpha = 0.05$).}
+\label{tab:statists}
 \small
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{lcccccc}
