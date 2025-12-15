@@ -113,14 +113,21 @@ Output cost & \$0.600 / 1M tokens & \$1.250 / 1M tokens \\
 \label{tab:statists}
 \small
 \resizebox{\columnwidth}{!}{
-\begin{tabular}{lcccccc}
+\begin{tabular}{lcc}
 \toprule
-\multirow{2}{*}{\textbf{Model}} & \multicolumn{3}{c}{\textbf{Linear Regression}} & \multicolumn{3}{c}{\textbf{Hypothesis Testing}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-& \textbf{Slope} $\beta_1$ & \textbf{$R^2$} & \textbf{Interpretation} & \textbf{$t$-stat} & \textbf{$p$-value} & \textbf{Cohen's $d$} \\
+\textbf{Metric} & \textbf{GPT-4.1-mini} & \textbf{Claude-3.5-Haiku} \\
 \midrule
-GPT-4.1-mini & -0.0011 & 0.982 & -0.11\% per 1\% synth & -8.32 & $< 10^{-6}$ & -2.67 (large) \\
-Claude-3.5-Haiku & -0.0039 & 0.976 & -0.39\% per 1\% synth & -25.41 & $< 10^{-15}$ & -9.18 (large) \\
+\multicolumn{3}{c}{\textit{Linear Regression}} \\
+\midrule
+Slope ($\beta_1$) & -0.0011 & -0.0039 \\
+$R^2$ & 0.982 & 0.976 \\
+Interpretation & -0.11\% per 1\% synth & -0.39\% per 1\% synth \\
+\midrule
+\multicolumn{3}{c}{\textit{Hypothesis Testing}} \\
+\midrule
+$t$-statistic & -8.32 & -25.41 \\
+$p$-value & $< 10^{-6}$ & $< 10^{-15}$ \\
+Cohen's $d$ & -2.67 (large) & -9.18 (large) \\
 \bottomrule
 \end{tabular}
 }
