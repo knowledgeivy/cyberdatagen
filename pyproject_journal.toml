@@ -1,0 +1,62 @@
+[project]
+name = "cyberdata-journal"
+version = "1.0.0"
+description = "LLM Synthetic Spam Evaluation — Journal Extension of ICISSP 2026"
+requires-python = ">=3.12"
+dependencies = [
+    # Data science core
+    "numpy>=1.26.0",
+    "pandas>=2.0.0",
+    "scipy>=1.11.0",
+    "scikit-learn>=1.4.0",
+
+    # LLM APIs
+    "openai>=1.0.0",
+    "anthropic>=0.40.0",
+
+    # Sentence-BERT (wraps HuggingFace + PyTorch)
+    "sentence-transformers>=3.0.0",
+    "torch>=2.2.0",
+
+    # HuggingFace (for Enron dataset download)
+    "datasets>=2.20.0",
+    "huggingface-hub>=0.24.0",
+
+    # Visualization
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.18.0",
+
+    # Utilities
+    "pyyaml>=6.0",
+    "tqdm>=4.66.0",
+    "jinja2>=3.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cyberdata"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
