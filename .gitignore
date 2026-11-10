@@ -1,28 +1,34 @@
 # Ignore Mac system files
-.DS_store
+.DS_Store
 
-# Ignore folder
+# Ignore folders
 __pycache__
 .venv
 .pytest_cache
 .benchmarks
 .obsidian
 .claude
-
+db
+wandb
+tianyuelite
 models
-# embedding
 logs
 rag
-raw/**/
-!raw/rewrite/
-raw/archive
-raw/SevenPhishingEmailDataset
 
 # Ignore key files
 .env
 
-# Ignore .vscode folder
-.code-workspace
+# Ignore editor settings
+.vscode/
+
+# Ignore personal notebooks
+01_learn_from_book_joe.ipynb
+
+# Ignore raw data (keep rewrite)
+raw/**/
+!raw/rewrite/
+raw/archive
+raw/SevenPhishingEmailDataset
 
 # Ignore large dataset files
 # Ignore data/ but keep synthetic generated data
